@@ -36,6 +36,7 @@ rectangle mtRooms-accounts {
 :Accounting Dept.: as Accounting
 
 Ops -up-> (View/Print booking sheet)
+Ops -up-> (Print room display sheet)
 note top of (View/Print booking sheet) : Per day/week view option?\nAlso should have requirements on it?
 
 Accounting -up-> (View/Print payments)

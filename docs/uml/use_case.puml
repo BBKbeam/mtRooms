@@ -1,15 +1,15 @@
 @startuml
 
-Customer -down-> (Book rooms)
-Customer -down-> (Modify booking)
-Customer -down-> (Cancel booking)
-Customer -down-> (Pay deposit)
-Customer -down-> (Pay booking)
+Customer -down..> (Book rooms)
+Customer -down..> (Modify booking)
+Customer -down..> (Cancel booking)
+Customer -down..> (Pay deposit)
+Customer -down..> (Pay booking)
 
 (Book rooms) -down-> Operator
 (Modify booking) -down-> Operator
 (Cancel booking) -down-> Operator
-(Pay booking) -down-> Operator
+(Pay deposit) -down-> Operator
 (Pay booking) -down-> Operator
 
 rectangle mtRooms-booking {
@@ -18,7 +18,7 @@ rectangle mtRooms-booking {
     Operator -down-> (Remove booking)
 }
 
-rectangle mtRooms-accounts {
+rectangle mtRooms-CustomerAccounts {
     Operator -down-> (Add account)
     note "Customer account \non the system" as note1
     note1 -up.. (Add account)
@@ -35,11 +35,15 @@ rectangle mtRooms-accounts {
 :Operation Dept.: as Ops
 :Accounting Dept.: as Accounting
 
-Ops -up-> (View/Print booking sheet)
-Ops -up-> (Print room display sheet)
-note top of (View/Print booking sheet) : Per day/week view option?\nAlso should have requirements on it?
+rectangle mtRooms-OperationsDept {
+    Ops -up-> (View/Print booking sheet)
+    Ops -up-> (Print room display sheet)
+    note top of (View/Print booking sheet) : Per day/week view option?\nAlso should have requirements on it?
+}
 
-Accounting -up-> (View/Print payments)
-note top of (View/Print payments) : Per customer/time frame/etc.. view?
+rectangle mtRooms-AccountingDept {
+    Accounting -up-> (View/Print payments)
+    note top of (View/Print payments) : Per customer/time frame/etc.. view?
+}
 
 @enduml

@@ -4,6 +4,10 @@ package BuildingTopology {
     object Building
     object Floor
     object Room
+
+    object Services
+    object Catering
+
     object Content
     object MovableContent
     object FixedContent
@@ -24,6 +28,8 @@ package BuildingTopology {
     Projector -up-|> FixedContent
 
     Content "0..*" -right-o "1" Room
+    Services "0..*" -left-o "1" Room
+    Catering -up-|> Services
 
     Floor "1..*" -down-* "1" Building
     Room "1..*" -down-* "1" Floor

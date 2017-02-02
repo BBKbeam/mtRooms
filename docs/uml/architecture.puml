@@ -1,14 +1,61 @@
 @startuml
 
-package "Some Group" {
-HTTP - [First Component]
-[Another Component]
-}
 
-package "Other Groups" {
-FTP - [Second Component]
+package mtRooms {
+    component Views {
 
-[First Component] --> FTP
+
+    interface iOpsDeptView
+    [OpsDeptView]
+    interface iAccountingDeptView
+    [AccountingDeptView]
+    interface iReceptionView
+    [ReceptionView]
+
+    iOpsDeptView -- OpsDeptView
+    iAccountingDeptView -- AccountingDeptView
+    iReceptionView -- ReceptionView
+    }
+
+    component  {
+        interface iBookingSystem
+        [BookingSystem]
+        interface iCustomerAccounts
+        interface iCustomerBilling
+        [CustomerAccounts]
+        interface iPayment
+        [Payment]
+        interface iBookings
+        interface iBookingsView
+        [Bookings]
+
+        iBookingSystem -- BookingSystem
+        BookingSystem --( iBookings
+        BookingSystem --( iCustomerAccounts
+        BookingSystem --( iPayment
+        iCustomerAccounts -- CustomerAccounts
+        iCustomerBilling -- CustomerAccounts
+        iPayment -- Payment
+        iBookings -right- Bookings
+        iBookingsView -- Bookings
+    }
+
+    OpsDeptView ..> iBookingsView
+    ReceptionView ..> iBookingSystem
+    Payment --( iCustomerBilling
+
+    component "Storage" {
+        interface iAccountsDB
+        database AccountsDB
+        interface iBuildingDB
+        database BuildingDB
+
+        iBuildingDB -down- BuildingDB
+        iAccountsDB -down- AccountsDB
+    }
+
+    CustomerAccounts ..> iAccountsDB
+    Bookings ..> iBuildingDB
 }
 
 @enduml

@@ -1,0 +1,58 @@
+@startuml
+
+
+start
+:Insert name/password;
+:Validate/Verify login|
+
+fork
+:Insert **parameters**;
+    note left
+    //parameters//:
+    - room
+    - year(default current)
+    - month
+    - day
+    - hour /slot
+    end note
+
+while (room available?) is (N)
+:Modify **parameters**;
+end while(Y)
+end fork
+
+:Insert user;
+    if (user available?)then(N)
+    :Add user;
+    :Update users|
+        note left
+        Could be individual or
+        a member of a cost-centre
+        end note
+    :Add paymentMethod;
+    :Update paymentMethods|
+        note left
+        E.g a cost-centre #
+        end note
+    else(Y)
+    endif
+
+:Verify booking;
+:Verify paymentMethod;
+:Book room;
+
+    if (cancellation **requested** 24hr before meeting time?) then (Y)
+    :Cancel booking;
+    else (N)
+    :Confirm booking;
+        fork
+            :Invoice user;
+            :Process payment;
+            :Update invoices|
+        fork again
+            :Update bookingList|
+            :Print bookingList;
+        end fork
+    endif
+end
+@enduml

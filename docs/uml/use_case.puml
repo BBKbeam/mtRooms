@@ -18,14 +18,14 @@ rectangle mtRooms-booking {
     Operator -down-> (Remove booking)
 }
 
-rectangle mtRooms-CustomerAccounts {
-    Operator -down-> (Add account)
+rectangle mtRooms-CustomerInformation {
+    Operator -down-> (Add customer)
     note "Customer account \non the system" as note1
-    note1 -up.. (Add account)
-    note1 -up.. (Add account info)
-    note1 -up.. (Edit account info)
-    Operator -down-> (Add account info)
-    Operator -down-> (Edit account info)
+    note1 -up.. (Add customer)
+    note1 -up.. (Add customer info)
+    note1 -up.. (Edit customer info)
+    Operator -down-> (Add customer info)
+    Operator -down-> (Edit customer info)
     Operator -down-> (Add payment)
     note bottom of (Add payment) : Link this to (Add booking)?
     Operator -down-> (Refund payment)

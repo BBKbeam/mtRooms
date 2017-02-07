@@ -2,42 +2,77 @@
 
 
 package mtRooms {
+    package "booking" {
+        component BookingProcessing {
+            interface IBookingProcess
+            [BookingProcess]
+            interface IOptimisedSearch
+            [OptimisedSearch]
 
+            IBookingProcess -- BookingProcess
+            IOptimisedSearch -left- OptimisedSearch
 
-    component BookingProcessing {
-'       //TODO add the rest of the components
-        [OptimisedSearch]
+            BookingProcess -left-( IOptimisedSearch
+        }
     }
 
-    BookingProcessing -down-( ICustomerInfo
-    BookingProcessing -down-( IPaymentProcessing
-    BookingProcessing -down-( IBooking
+    package "revenue" {
+        [RevenueReportGenerator]
+        interface IRevenueReportGenerator
+        [InvoiceSender]
+        interface IInvoiceSender
+        [PaymentProcessing]
+        interface IPaymentProcessing
 
-    package {
+        IRevenueReportGenerator -- RevenueReportGenerator
+        IInvoiceSender -- InvoiceSender
+    }
+
+    package "operation" {
+        [LogisticReportGenerator]
+        interface ILogisticReportGenerator
+
+        ILogisticReportGenerator -- LogisticReportGenerator
+    }
+
+    package "data_access" {
         interface IBooking
+        interface IBookingReport
         [Booking]
         interface ICustomerInfo
         [CustomerInfo]
-        interface IPaymentProcessing
-        [PaymentProcessing]
+
         IBooking -- Booking
+        IBookingReport -- Booking
         ICustomerInfo -- CustomerInfo
         IPaymentProcessing -- PaymentProcessing
     }
 
-    package "Data" {
-            interface ICustomerRecords
-            interface IBookingRecords
-            interface IPaymentRecords
-            database Database
+    BookingProcess -down-( IPaymentProcessing
+    BookingProcess -down-( IBooking
+    BookingProcess -down-( ICustomerInfo
+    OptimisedSearch -down-( IBooking
+    LogisticReportGenerator --( IBookingReport
+    InvoiceSender --( IBookingReport
+    InvoiceSender --( ICustomerInfo
+    RevenueReportGenerator --( ICustomerRecords
+    RevenueReportGenerator --( IPaymentRecords
 
-            ICustomerRecords -down- Database
-            IBookingRecords -down- Database
-            IPaymentRecords -down- Database
+    package "data" {
+        interface ICustomerRecords
+        interface IBookingRecords
+        interface IPaymentRecords
+        database Database
+
+        ICustomerRecords -down- Database
+        IBookingRecords -down- Database
+        IPaymentRecords -down- Database
     }
 
     Booking --( IBookingRecords
     CustomerInfo --( ICustomerRecords
+    CustomerInfo --( IPaymentRecords
+    CustomerInfo --( IBookingRecords
     PaymentProcessing --( IPaymentRecords
 }
 

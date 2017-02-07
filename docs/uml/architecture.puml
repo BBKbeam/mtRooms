@@ -2,60 +2,43 @@
 
 
 package mtRooms {
-    component Views {
 
 
-    interface iOpsDeptView
-    [OpsDeptView]
-    interface iAccountingDeptView
-    [AccountingDeptView]
-    interface iReceptionView
-    [ReceptionView]
-
-    iOpsDeptView -- OpsDeptView
-    iAccountingDeptView -- AccountingDeptView
-    iReceptionView -- ReceptionView
+    component BookingProcessing {
+'       //TODO add the rest of the components
+        [OptimisedSearch]
     }
 
-    component  {
-        interface iBookingSystem
-        [BookingSystem]
-        interface iCustomerAccounts
-        interface iCustomerBilling
-        [CustomerAccounts]
-        interface iPayment
-        [Payment]
-        interface iBookings
-        interface iBookingsView
-        [Bookings]
+    BookingProcessing -down-( ICustomerInfo
+    BookingProcessing -down-( IPaymentProcessing
+    BookingProcessing -down-( IBooking
 
-        iBookingSystem -- BookingSystem
-        BookingSystem --( iBookings
-        BookingSystem --( iCustomerAccounts
-        BookingSystem --( iPayment
-        iCustomerAccounts -- CustomerAccounts
-        iCustomerBilling -- CustomerAccounts
-        iPayment -- Payment
-        iBookings -right- Bookings
-        iBookingsView -- Bookings
+    package {
+        interface IBooking
+        [Booking]
+        interface ICustomerInfo
+        [CustomerInfo]
+        interface IPaymentProcessing
+        [PaymentProcessing]
+        IBooking -- Booking
+        ICustomerInfo -- CustomerInfo
+        IPaymentProcessing -- PaymentProcessing
     }
 
-    OpsDeptView ..> iBookingsView
-    ReceptionView ..> iBookingSystem
-    Payment --( iCustomerBilling
+    package "Data" {
+            interface ICustomerRecords
+            interface IBookingRecords
+            interface IPaymentRecords
+            database Database
 
-    component "Storage" {
-        interface iAccountsDB
-        database AccountsDB
-        interface iBuildingDB
-        database BuildingDB
-
-        iBuildingDB -down- BuildingDB
-        iAccountsDB -down- AccountsDB
+            ICustomerRecords -down- Database
+            IBookingRecords -down- Database
+            IPaymentRecords -down- Database
     }
 
-    CustomerAccounts ..> iAccountsDB
-    Bookings ..> iBuildingDB
+    Booking --( IBookingRecords
+    CustomerInfo --( ICustomerRecords
+    PaymentProcessing --( IPaymentRecords
 }
 
 @enduml

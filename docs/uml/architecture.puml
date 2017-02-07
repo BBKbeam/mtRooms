@@ -1,38 +1,21 @@
 @startuml
 
+'skinparam linetype ortho
+'skinparam linetype polyline
 
 package mtRooms {
     package "booking" {
-        component BookingProcessing {
-            interface IBookingProcess
-            [BookingProcess]
-            interface IOptimisedSearch
-            [OptimisedSearch]
-
-            IBookingProcess -- BookingProcess
-            IOptimisedSearch -left- OptimisedSearch
-
-            BookingProcess -left-( IOptimisedSearch
-        }
-    }
-
-    package "revenue" {
-        [RevenueReportGenerator]
-        interface IRevenueReportGenerator
-        [InvoiceSender]
-        interface IInvoiceSender
-        [PaymentProcessing]
+        interface IBookingProcess
+        [BookingProcess]
+        interface IOptimisedSearch
+        [OptimisedSearch]
         interface IPaymentProcessing
+        [PaymentProcessing]
 
-        IRevenueReportGenerator -- RevenueReportGenerator
-        IInvoiceSender -- InvoiceSender
-    }
+        IBookingProcess -- BookingProcess
+        IOptimisedSearch -- OptimisedSearch
 
-    package "operation" {
-        [LogisticReportGenerator]
-        interface ILogisticReportGenerator
-
-        ILogisticReportGenerator -- LogisticReportGenerator
+        BookingProcess --( IOptimisedSearch
     }
 
     package "data_access" {
@@ -48,32 +31,46 @@ package mtRooms {
         IPaymentProcessing -- PaymentProcessing
     }
 
-    BookingProcess -down-( IPaymentProcessing
-    BookingProcess -down-( IBooking
-    BookingProcess -down-( ICustomerInfo
-    OptimisedSearch -down-( IBooking
-    LogisticReportGenerator --( IBookingReport
-    InvoiceSender --( IBookingReport
-    InvoiceSender --( ICustomerInfo
-    RevenueReportGenerator --( ICustomerRecords
-    RevenueReportGenerator --( IPaymentRecords
+    package "revenue" {
+        [RevenueReportGenerator]
+        interface IRevenueReportGenerator
+        [InvoiceSender]
+        interface IInvoiceSender
 
-    package "data" {
-        interface ICustomerRecords
-        interface IBookingRecords
-        interface IPaymentRecords
-        database Database
-
-        ICustomerRecords -down- Database
-        IBookingRecords -down- Database
-        IPaymentRecords -down- Database
+        IRevenueReportGenerator -- RevenueReportGenerator
+        IInvoiceSender -- InvoiceSender
     }
 
-    Booking --( IBookingRecords
-    CustomerInfo --( ICustomerRecords
-    CustomerInfo --( IPaymentRecords
-    CustomerInfo --( IBookingRecords
-    PaymentProcessing --( IPaymentRecords
+    package "operation" {
+        [LogisticReportGenerator]
+        interface ILogisticReportGenerator
+
+        ILogisticReportGenerator -- LogisticReportGenerator
+    }
+
+    component db_wrapper {
+        interface IDatabase
+        database Database
+
+        IDatabase -- Database
+    }
+
+    BookingProcess --( IPaymentProcessing
+    BookingProcess --( IBooking
+    BookingProcess --( ICustomerInfo
+    OptimisedSearch --( IBooking
+
+    Booking --( IDatabase
+    CustomerInfo --( IDatabase
+    CustomerInfo --( IDatabase
+    CustomerInfo --( IDatabase
+
+    PaymentProcessing --( IDatabase
+    LogisticReportGenerator --( IBookingReport
+    InvoiceSender --( IDatabase
+    InvoiceSender --( IDatabase
+    RevenueReportGenerator --( IDatabase
+    RevenueReportGenerator --( IDatabase
 }
 
 @enduml

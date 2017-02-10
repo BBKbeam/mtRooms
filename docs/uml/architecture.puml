@@ -1,9 +1,16 @@
 @startuml
 
 'skinparam linetype ortho
-'skinparam linetype polyline
+skinparam linetype polyline
 
 package mtRooms {
+    package "gui" {
+        [BillingView]
+        [LogisticsView]
+        [BookingView]
+        [PaymentView]
+    }
+
     package "booking" {
         interface IBookingProcess
         [BookingProcess]
@@ -54,6 +61,11 @@ package mtRooms {
 
         IDatabase -- Database
     }
+
+    IInvoiceSender )-up- BillingView
+    ILogisticReportGenerator )-up- LogisticsView
+    BookingView --( IBookingProcess
+    PaymentView --( IBookingProcess
 
     BookingProcess --( IPaymentProcessing
     BookingProcess --( IBooking

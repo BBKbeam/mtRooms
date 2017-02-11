@@ -1,0 +1,28 @@
+@startuml
+
+package mtRooms {
+    package "booking" {
+        interface IBookingProcess
+        interface IOptimisedSearch
+        interface IPaymentProcessing
+    }
+
+    package "data_access" {
+        interface IBooking
+        interface IBookingReport
+        interface ICustomerInfo
+    }
+
+    package "operation" {
+        interface ILogisticReportGenerator
+    }
+
+    package "revenue" {
+        interface IRevenueReportGenerator
+        interface IInvoiceSender
+    }
+
+    interface IDatabase
+}
+
+@enduml

@@ -27,12 +27,12 @@ end fork
     :Update users|
         note left
         Could be individual or
-        a member of a cost-centre
+        a member of a cost-centre(for internal users)
         end note
     :Add paymentMethod;
     :Update paymentMethods|
         note left
-        E.g a cost-centre #
+        E.g a cost-centre(for internal users)#
         end note
     else(Y)
     endif

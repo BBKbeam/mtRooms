@@ -55,12 +55,19 @@ package mtRooms {
         ILogisticReportGenerator -- LogisticReportGenerator
     }
 
-    component db_wrapper {
+    component DB_Wrapper {
         interface IDatabase
         database Database
 
         IDatabase -- Database
     }
+    
+    interface ITimeZoneTranslation
+    [TimeZoneTranslation]
+    ITimeZoneTranslation -- TimeZoneTranslation
+    
+    DB_Wrapper --( ITimeZoneTranslation
+    
 
     IInvoiceSender )-up- BillingView
     ILogisticReportGenerator )-up- LogisticsView

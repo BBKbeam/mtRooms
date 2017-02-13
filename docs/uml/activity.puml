@@ -43,6 +43,10 @@ end fork
 
     if (cancellation **requested** 24hr before meeting time?) then (Y)
     :Cancel booking;
+            note left
+            //How are we going to
+            implement cancellation?
+            end note
     else (N)
     :Confirm booking;
         fork

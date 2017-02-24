@@ -77,3 +77,4 @@ fabric.properties
 .directory
 .idea/
 mtRooms.iml
+*.bak

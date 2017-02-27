@@ -1,14 +1,14 @@
 @startuml
 
 package mtRooms {
-    package "booking" {
-        interface IBookingProcess
+    package "reservation" {
+        interface IReservationProcess
         interface IOptimisedSearch
         interface IPaymentProcessing
     }
 
     package "data_access" {
-        interface IBooking
+        interface IReservation
         interface IBookingReport
         interface ICustomerInfo
     }

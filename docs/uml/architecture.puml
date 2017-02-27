@@ -7,22 +7,22 @@ package mtRooms {
     package "gui" {
         [BillingView]
         [LogisticsView]
-        [BookingView]
+        [ReservationView]
         [PaymentView]
     }
 
-    package "booking" {
-        interface IBookingProcess
-        [BookingProcess]
+    package "reservation" {
+        interface IReservationProcess
+        [ReservationProcess]
         interface IOptimisedSearch
         [OptimisedSearch]
         interface IPaymentProcessing
         [PaymentProcessing]
 
-        IBookingProcess -- BookingProcess
+        IReservationProcess -- ReservationProcess
         IOptimisedSearch -- OptimisedSearch
 
-        BookingProcess --( IOptimisedSearch
+        ReservationProcess --( IOptimisedSearch
     }
 
     package "data_access" {
@@ -71,12 +71,12 @@ package mtRooms {
 
     IInvoiceSender )-up- BillingView
     ILogisticReportGenerator )-up- LogisticsView
-    BookingView --( IBookingProcess
-    PaymentView --( IBookingProcess
+    ReservationView --( IReservationProcess
+    PaymentView --( IReservationProcess
 
-    BookingProcess --( IPaymentProcessing
-    BookingProcess --( IBooking
-    BookingProcess --( ICustomerInfo
+    ReservationProcess --( IPaymentProcessing
+    ReservationProcess --( IBooking
+    ReservationProcess --( ICustomerInfo
     OptimisedSearch --( IBooking
 
     Booking --( IDatabase

@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.engine.revenue;
+package bbk_beam.mtRooms.revenue;
 
 public interface IRevenueReportGenerator {
 }

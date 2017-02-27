@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.engine.operation;
+package bbk_beam.mtRooms.operation;
 
 public interface ILogisticReportGenerator {
 }

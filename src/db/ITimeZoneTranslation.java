@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.engine.db;
+package bbk_beam.mtRooms.db;
 
 public interface ITimeZoneTranslation {
 }

@@ -1,6 +1,20 @@
 package bbk_beam.mtRooms.operation;
 
 public interface ILogisticReportGenerator {
-    public Collection getInfo( Date date );
-    public Collection getInfo( Date fromDate, Date toDate );
+    /**
+     * Gets logistical information for a day
+     *
+     * @param date Date
+     * @return Logistics information
+     */
+    public Collection getInfo(Date date);
+
+    /**
+     * Gets logistical information
+     *
+     * @param fromDate From date
+     * @param toDate   To date
+     * @return Logistics information
+     */
+    public Collection getInfo(Date fromDate, Date toDate);
 }

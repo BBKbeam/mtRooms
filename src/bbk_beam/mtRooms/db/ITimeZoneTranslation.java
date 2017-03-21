@@ -1,5 +1,7 @@
 package bbk_beam.mtRooms.db;
 
+import java.sql.Timestamp;
+
 public interface ITimeZoneTranslation {
     /**
      * Translates a UTC timestamp into a local one
@@ -7,5 +9,5 @@ public interface ITimeZoneTranslation {
      * @param utc UTC Time stamp
      * @return Local Time stamp
      */
-    public TimeStamp translate(TimeStamp utc);
+    public Timestamp translate(Timestamp utc);
 }

@@ -15,7 +15,7 @@ public interface IDatabase {
      * @param password Password
      * @return Success
      */
-    public bool connect(String host, String username, String password);
+    public boolean connect(String host, String username, String password);
 
     /**
      * Disconnect from the connected Database
@@ -23,7 +23,7 @@ public interface IDatabase {
      * @return Success
      * @throws SQLException when attempting to disconnect nothing
      */
-    public bool disconnect() throws SQLException;
+    public boolean disconnect() throws SQLException;
 
     /**
      * Query the Database

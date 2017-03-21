@@ -1,7 +1,7 @@
 @startuml
 
 'skinparam linetype ortho
-skinparam linetype polyline
+'skinparam linetype polyline
 
 package mtRooms {
     package "gui" {
@@ -18,24 +18,25 @@ package mtRooms {
         [OptimisedSearch]
         interface IPaymentProcessing
         [PaymentProcessing]
+        interface IBooking
+        interface IBookingReport
+        [Booking]
 
         IReservationProcess -- ReservationProcess
         IOptimisedSearch -- OptimisedSearch
 
         ReservationProcess --( IOptimisedSearch
-    }
-
-    package "data_access" {
-        interface IBooking
-        interface IBookingReport
-        [Booking]
-        interface ICustomerInfo
-        [CustomerInfo]
 
         IBooking -- Booking
         IBookingReport -- Booking
-        ICustomerInfo -- CustomerInfo
         IPaymentProcessing -- PaymentProcessing
+    }
+
+    package "customer" {
+        interface ICustomerInfo
+        [CustomerInfo]
+
+        ICustomerInfo -- CustomerInfo
     }
 
     package "revenue" {
@@ -80,6 +81,7 @@ package mtRooms {
     OptimisedSearch --( IBooking
 
     Booking --( IDatabase
+
     CustomerInfo --( IDatabase
     CustomerInfo --( IDatabase
     CustomerInfo --( IDatabase

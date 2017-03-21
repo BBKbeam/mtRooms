@@ -5,11 +5,11 @@ package mtRooms {
         interface IReservationProcess
         interface IOptimisedSearch
         interface IPaymentProcessing
+        interface IReservation
+        interface IReservationReport
     }
 
-    package "data_access" {
-        interface IReservation
-        interface IBookingReport
+    package "customer" {
         interface ICustomerInfo
     }
 

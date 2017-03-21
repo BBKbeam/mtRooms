@@ -10,7 +10,7 @@ package mtRooms {
     }
 
     package "customer" {
-        interface ICustomerInfo
+        interface ICustomerAccountAccess
     }
 
     package "operation" {

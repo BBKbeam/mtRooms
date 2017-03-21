@@ -33,10 +33,10 @@ package mtRooms {
     }
 
     package "customer" {
-        interface ICustomerInfo
-        [CustomerInfo]
+        interface ICustomerAccountAccess
+        [CustomerAccountAccess]
 
-        ICustomerInfo -- CustomerInfo
+        ICustomerAccountAccess -- CustomerAccountAccess
     }
 
     package "revenue" {
@@ -77,14 +77,14 @@ package mtRooms {
 
     ReservationProcess --( IPaymentProcessing
     ReservationProcess --( IBooking
-    ReservationProcess --( ICustomerInfo
+    ReservationProcess --( ICustomerAccountAccess
     OptimisedSearch --( IBooking
 
     Booking --( IDatabase
 
-    CustomerInfo --( IDatabase
-    CustomerInfo --( IDatabase
-    CustomerInfo --( IDatabase
+    CustomerAccountAccess --( IDatabase
+    CustomerAccountAccess --( IDatabase
+    CustomerAccountAccess --( IDatabase
 
     PaymentProcessing --( IDatabase
     LogisticReportGenerator --( IBookingReport

@@ -1,0 +1,95 @@
+@startuml
+
+'skinparam linetype ortho
+skinparam linetype polyline
+
+package mtRooms {
+    package "gui" {
+        [BillingView]
+        [LogisticsView]
+        [ReservationView]
+        [PaymentView]
+    }
+
+    package "reservation" {
+        interface IReservationProcess
+        [ReservationProcess]
+        interface IOptimisedSearch
+        [OptimisedSearch]
+        interface IPaymentProcessing
+        [PaymentProcessing]
+
+        IReservationProcess -- ReservationProcess
+        IOptimisedSearch -- OptimisedSearch
+
+        ReservationProcess --( IOptimisedSearch
+    }
+
+    package "data_access" {
+        interface IBooking
+        interface IBookingReport
+        [Booking]
+        interface ICustomerInfo
+        [CustomerInfo]
+
+        IBooking -- Booking
+        IBookingReport -- Booking
+        ICustomerInfo -- CustomerInfo
+        IPaymentProcessing -- PaymentProcessing
+    }
+
+    package "revenue" {
+        [RevenueReportGenerator]
+        interface IRevenueReportGenerator
+        [InvoiceSender]
+        interface IInvoiceSender
+
+        IRevenueReportGenerator -- RevenueReportGenerator
+        IInvoiceSender -- InvoiceSender
+    }
+
+    package "operation" {
+        [LogisticReportGenerator]
+        interface ILogisticReportGenerator
+
+        ILogisticReportGenerator -- LogisticReportGenerator
+    }
+
+    component DB_Wrapper {
+        interface IDatabase
+        database Database
+
+        IDatabase -- Database
+    }
+    
+    interface ITimeZoneTranslation
+    [TimeZoneTranslation]
+    ITimeZoneTranslation -- TimeZoneTranslation
+    
+    DB_Wrapper --( ITimeZoneTranslation
+    
+
+    IInvoiceSender )-up- BillingView
+    ILogisticReportGenerator )-up- LogisticsView
+    ReservationView --( IReservationProcess
+    PaymentView --( IReservationProcess
+
+    ReservationProcess --( IPaymentProcessing
+    ReservationProcess --( IBooking
+    ReservationProcess --( ICustomerInfo
+    OptimisedSearch --( IBooking
+
+    Booking --( IDatabase
+    CustomerInfo --( IDatabase
+    CustomerInfo --( IDatabase
+    CustomerInfo --( IDatabase
+
+    PaymentProcessing --( IDatabase
+    LogisticReportGenerator --( IBookingReport
+    InvoiceSender --( IDatabase
+    InvoiceSender --( IDatabase
+    RevenueReportGenerator --( IDatabase
+    RevenueReportGenerator --( IDatabase
+}
+
+@enduml

@@ -13,4 +13,5 @@ public interface ICustomer {
     String getPhone1();
     String getPhone2();
     String getEmail();
+    void setEmail( String email );
 }

@@ -1,5 +1,8 @@
 package bbk_beam.mtRooms.revenue;
 
+import bbk_beam.mtRooms.customer.ICustomer;
+import bbk_beam.mtRooms.reservation.IReservation;
+
 public interface IInvoiceSender {
     /**
      * Gets the customer account details
@@ -16,6 +19,6 @@ public interface IInvoiceSender {
      * @return customer reservation number
      */
 
-    public IReservation getReservationRef(Int getReservationID);
+    public IReservation getReservationRef(Integer getReservationID);
 
 }

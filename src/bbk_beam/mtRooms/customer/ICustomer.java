@@ -1,5 +1,7 @@
 package bbk_beam.mtRooms.customer;
 
+import java.util.Date;
+
 public interface ICustomer {
     /**
      * Gets the customer's ID

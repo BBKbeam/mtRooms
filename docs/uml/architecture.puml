@@ -140,6 +140,10 @@ package mtRooms {
                 IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
 
+                IDatabase <.. IReservationDB
+                IDatabase <.. IUserAccDB
+                note "Both 'UserAccDB' and 'ReservationDB' \nuse the same interface implementation" as N1
+                N1 .. IDatabase
                 ReservationDbAccess --( ITimeZoneTranslation
                 ReservationDbAccess --( IReservationDB
                 UserAccDbAccess --( IUserAccDB

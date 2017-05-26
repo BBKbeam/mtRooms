@@ -12,24 +12,26 @@ package mtRooms {
     }
 
     package "reservation" {
-        interface IReservationProcess
-        [ReservationProcess]
-        interface IOptimisedSearch
-        [OptimisedSearch]
-        interface IPaymentProcessing
-        [PaymentProcessing]
-        interface IBooking
-        interface IBookingReport
-        [Booking]
+        component ReservationSystem {
+            interface IReservationSession
+            interface IReservationPayment
+            [ReservationSession]
+            interface IOptimisedSearch
+            [OptimisedSearch]
+            interface IPaymentProcessing
+            [PaymentProcessing]
+            interface IReservation
+            [Reservation]
 
-        IReservationProcess -- ReservationProcess
-        IOptimisedSearch -- OptimisedSearch
+            IReservationSession -- ReservationSession
+            IReservationPayment -- ReservationSession
+            IOptimisedSearch -- OptimisedSearch
 
-        ReservationProcess --( IOptimisedSearch
+            ReservationSession --( IOptimisedSearch
 
-        IBooking -- Booking
-        IBookingReport -- Booking
-        IPaymentProcessing -- PaymentProcessing
+            IReservation -- Reservation
+            IPaymentProcessing -- PaymentProcessing
+        }
     }
 
     package "customer" {
@@ -56,42 +58,50 @@ package mtRooms {
         ILogisticReportGenerator -- LogisticReportGenerator
     }
 
-    component DB_Wrapper {
-        interface IDatabase
-        database Database
+    package "db" {
+        interface IDatabaseAccessDelegate
 
-        IDatabase -- Database
+        component DatabaseAccessSystem {
+            interface IDatabase
+            database Database
+            [DatabaseAccess]
+            interface ITimeZoneTranslation
+            [TimeZoneTranslation]
+            ITimeZoneTranslation -- TimeZoneTranslation
+
+            DatabaseAccess --( ITimeZoneTranslation
+            IDatabase -- Database
+            IDatabaseAccess -- DatabaseAccess
+            DatabaseAccess --( IDatabase
+        }
+
+        IDatabaseAccessDelegate --( IDatabaseAccess
     }
-    
-    interface ITimeZoneTranslation
-    [TimeZoneTranslation]
-    ITimeZoneTranslation -- TimeZoneTranslation
-    
-    DB_Wrapper --( ITimeZoneTranslation
-    
+
+
 
     IInvoiceSender )-up- BillingView
     ILogisticReportGenerator )-up- LogisticsView
-    ReservationView --( IReservationProcess
-    PaymentView --( IReservationProcess
+    ReservationView --( IReservationSession
+    PaymentView --( IReservationPayment
 
-    ReservationProcess --( IPaymentProcessing
-    ReservationProcess --( IBooking
-    ReservationProcess --( ICustomerAccountAccess
-    OptimisedSearch --( IBooking
+    ReservationSession --( IPaymentProcessing
+    ReservationSession --( IReservation
+    ReservationSession --( ICustomerAccountAccess
+    'OptimisedSearch -right-( IReservation
 
-    Booking --( IDatabase
+    Reservation --( IDatabaseAccessDelegate
 
-    CustomerAccountAccess --( IDatabase
-    CustomerAccountAccess --( IDatabase
-    CustomerAccountAccess --( IDatabase
+    CustomerAccountAccess --( IDatabaseAccessDelegate
+    CustomerAccountAccess --( IDatabaseAccessDelegate
+    CustomerAccountAccess --( IDatabaseAccessDelegate
 
-    PaymentProcessing --( IDatabase
-    LogisticReportGenerator --( IBookingReport
-    InvoiceSender --( IDatabase
-    InvoiceSender --( IDatabase
-    RevenueReportGenerator --( IDatabase
-    RevenueReportGenerator --( IDatabase
+    PaymentProcessing --( IDatabaseAccessDelegate
+    LogisticReportGenerator --( IDatabaseAccessDelegate
+    InvoiceSender --( IDatabaseAccessDelegate
+    InvoiceSender --( IDatabaseAccessDelegate
+    RevenueReportGenerator --( IDatabaseAccessDelegate
+    RevenueReportGenerator --( IDatabaseAccessDelegate
 }
 
 @enduml

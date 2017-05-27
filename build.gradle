@@ -3,7 +3,8 @@ version '0.1'
 
 allprojects {
     apply plugin: 'java'
-    apply plugin: "jacoco"
+    apply plugin: 'jacoco'
+    apply plugin: 'idea'
     sourceCompatibility = '1.8'
     group 'org.bbk_beam.mtRooms'
     version '0.1'

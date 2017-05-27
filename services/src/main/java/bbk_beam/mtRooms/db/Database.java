@@ -13,7 +13,7 @@ public class Database {
      * @return Success
      */
     public boolean connect(String host, String username, String password) {
-
+        return false;
     }
 
     /**
@@ -23,7 +23,7 @@ public class Database {
      * @throws SQLException when attempting to disconnect nothing
      */
     public boolean disconnect() throws SQLException {
-
+        return false;
     }
 
     /**
@@ -33,6 +33,6 @@ public class Database {
      * @return ResultSet of the query
      */
     public ResultSet queryDB(String query) {
-
+        return null;
     }
 }

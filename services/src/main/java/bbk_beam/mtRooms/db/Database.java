@@ -36,16 +36,6 @@ public class Database {
         } catch (SQLException e) {
             log.log_Error("Could not connect to DB:'", this.path, "'.");
             log.log_Exception(e);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-                connection = null;
-            } catch (SQLException ex) {
-                log.log_Error("Could not close the connection to DB:'", this.path, "'.");
-                log.log_Exception(ex);
-            }
         }
         return false;
     }

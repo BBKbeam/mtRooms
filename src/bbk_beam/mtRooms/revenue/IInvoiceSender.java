@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.revenue;
 
-import bbk_beam.mtRooms.customer.ICustomer;
+import bbk_beam.mtRooms.reservation.ICustomer;
 import bbk_beam.mtRooms.reservation.IReservation;
 
 public interface IInvoiceSender {

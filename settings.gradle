@@ -1,2 +1,5 @@
 rootProject.name = 'mtRooms'
 
+include 'frontend'
+include 'services'
+//include 'log'

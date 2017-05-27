@@ -1,0 +1,6 @@
+apply plugin: 'application'
+mainClassName = 'bbk_beam.mtRooms.ui.MtRoomsGUI'
+
+dependencies {
+    compile project(':services')
+}

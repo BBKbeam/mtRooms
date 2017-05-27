@@ -1,4 +1,4 @@
 package bbk_beam.mtRooms.reservation;
 
-public interface IPaymentProcessing {
+public interface IReservationPayment {
 }

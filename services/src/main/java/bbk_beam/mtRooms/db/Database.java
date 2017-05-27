@@ -1,9 +1,9 @@
 package bbk_beam.mtRooms.db;
 
-import java.sql.SQLException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 
-public interface IDatabase {
+public class Database {
     /**
      * Connect to a Database
      *
@@ -12,7 +12,9 @@ public interface IDatabase {
      * @param password Password
      * @return Success
      */
-    public boolean connect(String host, String username, String password);
+    public boolean connect(String host, String username, String password) {
+
+    }
 
     /**
      * Disconnect from the connected Database
@@ -20,7 +22,9 @@ public interface IDatabase {
      * @return Success
      * @throws SQLException when attempting to disconnect nothing
      */
-    public boolean disconnect() throws SQLException;
+    public boolean disconnect() throws SQLException {
+
+    }
 
     /**
      * Query the Database
@@ -28,5 +32,7 @@ public interface IDatabase {
      * @param query Database query string
      * @return ResultSet of the query
      */
-    public ResultSet queryDB(String query);
+    public ResultSet queryDB(String query) {
+
+    }
 }

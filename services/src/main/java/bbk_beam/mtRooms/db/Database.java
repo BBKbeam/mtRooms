@@ -46,16 +46,17 @@ public class Database {
      */
     public boolean disconnect() throws SQLException {
         try {
-            if (connection != null && !connection.isClosed()) {
+            if (connection == null) {
+                log.log_Error("Trying to disconnect from null connection.");
+                return false;
+            } else if( connection.isClosed() ) {
+                log.log_Error("Trying to disconnect from closed connection.");
+                return false;
+            } else { //Closing connection
                 connection.close();
                 return true;
             }
         } catch (SQLException e) {
-            if (connection == null) {
-                log.log_Error("Trying to disconnect from null connection.");
-            } else {
-                log.log_Error("Trying to disconnect from closed connection.");
-            }
             log.log_Exception(e);
         }
         return false;

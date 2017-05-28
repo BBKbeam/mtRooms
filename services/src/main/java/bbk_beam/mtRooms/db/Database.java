@@ -8,6 +8,7 @@ public class Database {
     private final Logger log = Logger.getLoggerInstance(Database.class.getName());
     private String path;
     private Connection connection = null;
+    private boolean connected_flag = false;
 
     /**
      * Constructor
@@ -30,6 +31,7 @@ public class Database {
                 return false;
             }
             connection = DriverManager.getConnection("jdbc:sqlite:" + this.path);
+            connected_flag = true;
             return true;
         } catch (SQLException e) {
             log.log_Error("Could not connect to DB:'", this.path, "'.");
@@ -54,6 +56,7 @@ public class Database {
                 return false;
             } else { //Closing connection
                 connection.close();
+                connected_flag = false;
                 return true;
             }
         } catch (SQLException e) {
@@ -91,4 +94,13 @@ public class Database {
             throw new DBQueryException("Could not process query to DB.", e);
         }
     }
+
+    /**
+     * Checks if the connected flag is raised
+     * @return Connection to DB flag
+     */
+    public boolean isConnected() {
+        return this.connected_flag;
+    }
+
 }

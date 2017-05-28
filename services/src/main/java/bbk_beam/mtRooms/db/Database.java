@@ -2,10 +2,7 @@ package bbk_beam.mtRooms.db;
 
 import eadjlib.logger.Logger;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class Database {
     private final Logger log = Logger.getLoggerInstance(Database.class.getName());
@@ -14,9 +11,10 @@ public class Database {
 
     /**
      * Constructor
+     *
      * @param db_path SQLite Database path
      */
-    Database( String db_path ) {
+    Database(String db_path) {
         this.path = db_path;
     }
 
@@ -27,8 +25,8 @@ public class Database {
      */
     public boolean connect() {
         try {
-            if( connection != null && !connection.isClosed() ) {
-                log.log_Error( "Trying to connect over an existing connection to '", this.path, "'. Please close prior to connecting.");
+            if (connection != null && !connection.isClosed()) {
+                log.log_Error("Trying to connect over an existing connection to '", this.path, "'. Please close prior to connecting.");
                 return false;
             }
             connection = DriverManager.getConnection("jdbc:sqlite:" + this.path);
@@ -48,12 +46,12 @@ public class Database {
      */
     public boolean disconnect() throws SQLException {
         try {
-           if( connection != null && !connection.isClosed() ) {
-               connection.close();
-               return true;
-           }
-        } catch( SQLException e ) {
-            if( connection == null ) {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+                return true;
+            }
+        } catch (SQLException e) {
+            if (connection == null) {
                 log.log_Error("Trying to disconnect from null connection.");
             } else {
                 log.log_Error("Trying to disconnect from closed connection.");
@@ -68,8 +66,28 @@ public class Database {
      *
      * @param query Database query string
      * @return ResultSet of the query
+     * @throws DBQueryException when querying the DB fails
      */
-    public ResultSet queryDB(String query) {
-        return null;
+    public ResultSet queryDB(String query) throws DBQueryException {
+        try {
+            //Error control
+            if (this.connection == null) {
+                log.log_Error("Cannot pass query \"", query, "\" to a null DB connection.");
+                throw new DBQueryException("Database connection does not exist.");
+            } else if (this.connection.isClosed()) {
+                log.log_Error("Cannot pass query \"", query, "\" to a disconnected DB.");
+                throw new DBQueryException("Database is not connected.");
+            }
+            //Query processing
+            Statement statement = this.connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+            if (!resultSet.isBeforeFirst()) {
+                log.log_Trace("No data from query: ", query);
+            }
+            return resultSet;
+        } catch (SQLException e) {
+            log.log_Error("Problem encountered passing query: ", query);
+            throw new DBQueryException("Could not process query to DB.", e);
+        }
     }
 }

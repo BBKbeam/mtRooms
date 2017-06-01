@@ -1,0 +1,21 @@
+MUSTS 
+
+>> Customer Account View
+User must be able to add a customer account
+User must filled in custom account required fields
+User must have colored/text feedback on errors 
+User must be able to update information
+
+
+
+>> Payment processor/Revenue View
+
+
+
+
+>> Reservations View 
+
+
+>> Operations View
+User must be able to select a day or a date range (less than a week really)
+User must be able to print a schedule of the selected date(s) with the room setup requirements

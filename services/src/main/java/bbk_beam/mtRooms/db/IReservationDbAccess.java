@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.db;
 
 public interface IReservationDbAccess {
+
     //DB transactions should atomic and queued FIFO (serialised)
     //transaction provenance and timestamp should be here
     //Any view on the timetable should be told if changes occur from another source and updated with the latest

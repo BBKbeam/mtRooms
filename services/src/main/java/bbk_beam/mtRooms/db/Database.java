@@ -1,5 +1,6 @@
 package bbk_beam.mtRooms.db;
 
+import bbk_beam.mtRooms.db.exception.DBQueryException;
 import eadjlib.logger.Logger;
 
 import java.sql.*;

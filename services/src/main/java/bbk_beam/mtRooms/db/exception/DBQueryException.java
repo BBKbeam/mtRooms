@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.db;
+package bbk_beam.mtRooms.db.exception;
 
 public class DBQueryException extends Exception {
     public DBQueryException() {

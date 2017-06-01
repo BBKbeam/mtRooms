@@ -1,97 +1,200 @@
 @startuml
 
 'skinparam linetype ortho
-'skinparam linetype polyline
+skinparam linetype polyline
+
+skinparam package {
+    backgroundColor lightgrey
+}
 
 package mtRooms {
-    package "gui" {
-        [BillingView]
-        [LogisticsView]
-        [ReservationView]
-        [PaymentView]
+    frame "Presentation Layer" #lightblue {
+        package "ui" {
+            component FrontDeskView #white {
+                IFrontDeskController -- [FrontDeskController]
+                IReservationView -- [ReservationView]
+                IPaymentView -- [PaymentView]
+
+                FrontDeskController --( IReservationView
+                FrontDeskController --( IPaymentView
+            }
+
+            component AdminView #white {
+                IAdminViewController -- [AdminViewController]
+                IUserAccountView -- [UserAccountView]
+                ICustomerAccountView -- [CustomerAccountView]
+
+                AdminViewController --( IUserAccountView
+                AdminViewController --( ICustomerAccountView
+            }
+
+            component LogisticsView #white {
+                ILogisticsViewController -- [LogisticsViewController]
+                ILogisticsReportView -- [LogisticsReportView]
+
+                LogisticsViewController --( ILogisticsReportView
+            }
+
+            component RevenueView #white {
+                IRevenueViewController -- [RevenueViewController]
+                IInvoiceView -- [InvoiceView]
+                IRevenueReportView -- [RevenueReportView]
+
+                RevenueViewController --( IInvoiceView
+                RevenueViewController --( IRevenueReportView
+            }
+        }
     }
 
-    package "reservation" {
-        interface IReservationProcess
-        [ReservationProcess]
-        interface IOptimisedSearch
-        [OptimisedSearch]
-        interface IPaymentProcessing
-        [PaymentProcessing]
-        interface IBooking
-        interface IBookingReport
-        [Booking]
+    frame "Service Layer" #lightgreen {
+        package "uaa" {
+            IAuthenticator -- [Authenticator]
+            IFrontDeskDelegate -- [FrontDeskDelegate]
+            IAuthenticatedFrontDesk -- [AuthenticatedFrontDesk]
+            IAdminDelegate -- [AdminDelegate]
+            IAuthenticatedAdmin -- [AuthenticatedAdmin]
+            IRevenuePersonnelDelegate -- [RevenuePersonnelDelegate]
+            IAuthenticatedRevenuePersonnel -- [AuthenticatedRevenuePersonnel]
+            ILogisticsPersonnelDelegate -- [LogisticsPersonnelDelegate]
+            IAuthenticatedLogisticsPersonnel -- [AuthenticatedLogisticsPersonnel]
 
-        IReservationProcess -- ReservationProcess
-        IOptimisedSearch -- OptimisedSearch
-
-        ReservationProcess --( IOptimisedSearch
-
-        IBooking -- Booking
-        IBookingReport -- Booking
-        IPaymentProcessing -- PaymentProcessing
+            AuthenticatedFrontDesk --( IAuthenticator
+            AuthenticatedFrontDesk --( IFrontDeskDelegate
+            AuthenticatedAdmin --( IAuthenticator
+            AuthenticatedAdmin --( IAdminDelegate
+            AuthenticatedLogisticsPersonnel --( IAuthenticator
+            AuthenticatedLogisticsPersonnel --( ILogisticsPersonnelDelegate
+            AuthenticatedRevenuePersonnel --( IAuthenticator
+            AuthenticatedRevenuePersonnel --( IRevenuePersonnelDelegate
+        }
     }
 
-    package "customer" {
-        interface ICustomerAccountAccess
-        [CustomerAccountAccess]
+    frame "Business Logic Layer" #orange {
+        package "reservation" {
+            component ReservationSystem #white {
+                IReservationSession -- [ReservationSession]
+                IReservationPayment -- [ReservationSession]
+                IOptimisedSearch -- [OptimisedSearch]
+                IReservation -- [Reservation]
+                IPaymentProcessing -- [PaymentProcessing]
+                ICustomerAccountAccess -- [CustomerAccountAccess]
 
-        ICustomerAccountAccess -- CustomerAccountAccess
+                ReservationSession --( IOptimisedSearch
+                ReservationSession --( IPaymentProcessing
+                ReservationSession --( IReservation
+                ReservationSession --( ICustomerAccountAccess
+            }
+        }
+
+        package "revenue" {
+            component RevenueSystem #white {
+                IRevenueReporter -- [ReportCreator]
+                IRevenueAggregator -- [RevenueAggregator]
+                IReportPrinter -- [ReportPrinter]
+
+                ReportCreator --( IRevenueAggregator
+                ReportCreator --( IReportPrinter
+            }
+
+            component InvoiceSystem #white {
+                IInvoiceAggregator -- [InvoiceAggregator]
+                IMailer -- [Mailer]
+                IInvoice -- [InvoiceCreator]
+
+                InvoiceCreator --( IInvoiceAggregator
+                InvoiceCreator --( IMailer
+            }
+        }
+
+        package "operation" {
+            component LogisticsSystem #white {
+                ILogisticReportGenerator -- [LogisticReportGenerator]
+            }
+        }
+
+        package "admin" {
+            component AdministrationSystem #white {
+                IAdminSession -- [AdminSession]
+                IUserAccAdministration -- [UserAccAdministration]
+                IReservationDbMaintenance -- [ReservationDbMaintenance]
+
+                AdminSession --( IUserAccAdministration
+                AdminSession --( IReservationDbMaintenance
+            }
+
+            component AuthenticationSystem #white {
+                IAuthenticationSystem -- [UserAccountChecker]
+            }
+        }
     }
 
-    package "revenue" {
-        [RevenueReportGenerator]
-        interface IRevenueReportGenerator
-        [InvoiceSender]
-        interface IInvoiceSender
+    frame "Data Layer" #purple {
+        package "db" {
+            component ReservationDbAccessSystem #white {
+                database ReservationDB
+                database UserAccDB
 
-        IRevenueReportGenerator -- RevenueReportGenerator
-        IInvoiceSender -- InvoiceSender
+                IUserAccDB -- UserAccDB
+                IReservationDB -- [ReservationDB]
+                ITimeZoneTranslation -- [TimeZoneTranslation]
+                IReservationDbAccess -- [ReservationDbAccess]
+                IUserAccDbAccess -- [UserAccDbAccess]
+
+                IDatabase <.. IReservationDB
+                IDatabase <.. IUserAccDB
+                note "Both 'UserAccDB' and 'ReservationDB' \nuse the same interface implementation" as N1
+                N1 .. IDatabase
+                ReservationDbAccess --( ITimeZoneTranslation
+                ReservationDbAccess --( IReservationDB
+                UserAccDbAccess --( IUserAccDB
+            }
+        }
     }
 
-    package "operation" {
-        [LogisticReportGenerator]
-        interface ILogisticReportGenerator
+    '##-------------------------------##
+    '## Presentation to Service Layer ##
+    '##-------------------------------##
+    ReservationView --( IAuthenticatedFrontDesk
+    PaymentView --( IAuthenticatedFrontDesk
 
-        ILogisticReportGenerator -- LogisticReportGenerator
-    }
+    UserAccountView --( IAuthenticatedAdmin
+    CustomerAccountView --( IAuthenticatedAdmin
 
-    component DB_Wrapper {
-        interface IDatabase
-        database Database
+    LogisticsReportView --( IAuthenticatedLogisticsPersonnel
 
-        IDatabase -- Database
-    }
-    
-    interface ITimeZoneTranslation
-    [TimeZoneTranslation]
-    ITimeZoneTranslation -- TimeZoneTranslation
-    
-    DB_Wrapper --( ITimeZoneTranslation
-    
+    InvoiceView --( IAuthenticatedRevenuePersonnel
+    RevenueReportView --( IAuthenticatedRevenuePersonnel
 
-    IInvoiceSender )-up- BillingView
-    ILogisticReportGenerator )-up- LogisticsView
-    ReservationView --( IReservationProcess
-    PaymentView --( IReservationProcess
+    '##---------------------------------##
+    '## Service to Business Logic Layer ##
+    '##---------------------------------##
+    AdminDelegate --( IAdminSession
 
-    ReservationProcess --( IPaymentProcessing
-    ReservationProcess --( IBooking
-    ReservationProcess --( ICustomerAccountAccess
-    OptimisedSearch --( IBooking
+    Authenticator --( IAuthenticationSystem
 
-    Booking --( IDatabase
+    FrontDeskDelegate --( IReservationSession
+    FrontDeskDelegate --( IReservationPayment
 
-    CustomerAccountAccess --( IDatabase
-    CustomerAccountAccess --( IDatabase
-    CustomerAccountAccess --( IDatabase
+    RevenuePersonnelDelegate --( IRevenueReporter
+    RevenuePersonnelDelegate --( IInvoice
 
-    PaymentProcessing --( IDatabase
-    LogisticReportGenerator --( IBookingReport
-    InvoiceSender --( IDatabase
-    InvoiceSender --( IDatabase
-    RevenueReportGenerator --( IDatabase
-    RevenueReportGenerator --( IDatabase
+    LogisticsPersonnelDelegate --( ILogisticReportGenerator
+
+    '##------------------------------##
+    '## Business Logic to Data Layer ##
+    '##------------------------------##
+    UserAccountChecker --( IUserAccDbAccess
+
+    UserAccAdministration --( IUserAccDbAccess
+    ReservationDbMaintenance --( IReservationDbAccess
+
+    CustomerAccountAccess --( IReservationDbAccess
+    Reservation --( IReservationDbAccess
+
+    PaymentProcessing --( IReservationDbAccess
+    LogisticReportGenerator --( IReservationDbAccess
+    InvoiceAggregator --( IReservationDbAccess
+    RevenueAggregator --( IReservationDbAccess
 }
 
 @enduml

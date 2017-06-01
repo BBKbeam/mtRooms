@@ -1,0 +1,56 @@
+@startuml
+
+title Business Concept Model
+
+object Customer
+object CustomerDetails
+object Reservation
+object Bill
+object Payment
+
+object Company
+object Building
+object Floor
+object Room
+
+object Services
+object Catering
+
+object Content
+object MovableContent
+object FixedContent
+object Storage
+object Chair
+object Table
+object Podium
+object WhiteBoard
+object Projector
+
+Company "1" -- "1..*" Building
+Company "1" -- "*" Reservation
+Reservation "*" -- "1" Customer
+Reservation "1" -- "0..1" Bill
+Reservation "*" -- "1..*" Room
+
+Bill "1" -- "0..1" Payment
+Customer "1" -- "0..1" CustomerDetails
+
+MovableContent -up- Content
+Chair -up- MovableContent
+Table -up- MovableContent
+Podium -up- MovableContent
+
+FixedContent -up- Content
+WhiteBoard -up- FixedContent
+Projector -up- FixedContent
+
+Content "0..*" -up- "1" Room
+Services "0..*" -up- "1" Room
+Catering -up- Services
+
+Floor "1..*" -up- "1" Building
+Room "1..*" -up- "1" Floor
+Storage -up- Floor
+Storage "1" -down- "0..*" Content
+
+@enduml

@@ -1,0 +1,50 @@
+@startuml
+
+:Front Desk User: as FD
+:Operations Dept. User: as Ops
+:Accounting Dept. User: as Acc
+
+rectangle "Reservation System" {
+    note "A reservation may include 1..* rooms/time-slots" as N1
+    FD -> (Make a reservation)
+    FD -> (Edit a reservation)
+    FD -> (Cancel a reservation)
+    (Make a reservation) .. N1
+    (Edit a reservation) .. N1
+    (Cancel a reservation) .. N1
+}
+
+rectangle "Customer Account System" {
+    FD -> (Add a customer account)
+    FD -> (View a customer account)
+    rectangle "Find account view" {
+        FD -> (Search by surname)
+        FD -> (Search by acc. number)
+    }
+    rectangle "Customer account view" {
+        FD -> (Update account information)
+        FD -> (View all reservations made on account)
+        FD -> (Filter reservations made on account)
+        FD -> (Access a reservation from list in account)
+        note "Links to the Reservation System" as N2
+        (Access a reservation from list in account) .. N2
+    }
+}
+
+rectangle "Operations System" {
+    note "Schedule includes the room specifications on each time slots of the rooms used" as N3
+    note "Date range should probably be no more than a week from current day" as N4
+    Ops -> (View schedule for a day on a room)
+    Ops -> (View schedule for a day on multiple rooms)
+    Ops -> (View schedule for a date range on a room)
+    Ops -> (View schedule for a date range on multiple rooms)
+    (View schedule for a date range on a room) .. N4
+    (View schedule for a date range on multiple rooms) .. N4
+    Ops -> (Print viewed schedule)
+}
+
+rectangle "Payment Processing System" {
+
+}
+
+@enduml

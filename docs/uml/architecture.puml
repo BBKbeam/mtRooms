@@ -124,6 +124,9 @@ package mtRooms {
 
             component AuthenticationSystem #white {
                 IAuthenticationSystem -- [UserAccountChecker]
+                ISessionIdGenerator -- [SessionIdGenerator]
+
+                UserAccountChecker --( ISessionIdGenerator
             }
         }
     }
@@ -139,14 +142,17 @@ package mtRooms {
                 ITimeZoneTranslation -- [TimeZoneTranslation]
                 IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
+                ISessionTracker -- [SessionTracker]
 
                 IDatabase <.. IReservationDB
                 IDatabase <.. IUserAccDB
                 note "Both 'UserAccDB' and 'ReservationDB' \nuse the same interface implementation" as N1
                 N1 .. IDatabase
                 ReservationDbAccess --( ITimeZoneTranslation
+                ReservationDbAccess --( ISessionTracker
                 ReservationDbAccess --( IReservationDB
                 UserAccDbAccess --( IUserAccDB
+                UserAccDbAccess --( ISessionTracker
             }
         }
     }

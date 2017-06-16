@@ -78,11 +78,26 @@ package mtRooms {
                 IReservation -- [Reservation]
                 IPaymentProcessing -- [PaymentProcessing]
                 ICustomerAccountAccess -- [CustomerAccountAccess]
+                ICacheSchedule -- [:ScheduleCache]
+                IChangeSchedule -- [:ScheduleCache]
+                IScheduleChanged -- [:ScheduleCache]
+                IPay -- [ReservationDbDelegate]
+                IReserve -- [ReservationDbDelegate]
+                ISearch -- [ReservationDbDelegate]
+                ICustomerAccount -- [ReservationDbDelegate]
 
                 ReservationSession --( IOptimisedSearch
                 ReservationSession --( IPaymentProcessing
                 ReservationSession --( IReservation
                 ReservationSession --( ICustomerAccountAccess
+                OptimisedSearch --( ICacheSchedule
+                ReservationSession --( IScheduleChanged
+                Reservation --( IChangeSchedule
+
+                OptimisedSearch --( ISearch
+                Reservation  --( IReserve
+                CustomerAccountAccess   --( ICustomerAccount
+                PaymentProcessing --( IPay
             }
         }
 
@@ -136,9 +151,9 @@ package mtRooms {
             component ReservationDbAccessSystem #white {
                 database ReservationDB
                 database UserAccDB
-
                 IUserAccDB -- UserAccDB
-                IReservationDB -- [ReservationDB]
+                IReservationDB -- ReservationDB
+
                 ITimeZoneTranslation -- [TimeZoneTranslation]
                 IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
@@ -194,10 +209,8 @@ package mtRooms {
     UserAccAdministration --( IUserAccDbAccess
     ReservationDbMaintenance --( IReservationDbAccess
 
-    CustomerAccountAccess --( IReservationDbAccess
-    Reservation --( IReservationDbAccess
+    ReservationDbDelegate --( IReservationDbAccess
 
-    PaymentProcessing --( IReservationDbAccess
     LogisticReportGenerator --( IReservationDbAccess
     InvoiceAggregator --( IReservationDbAccess
     RevenueAggregator --( IReservationDbAccess

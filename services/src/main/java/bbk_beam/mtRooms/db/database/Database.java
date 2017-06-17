@@ -1,11 +1,11 @@
 package bbk_beam.mtRooms.db.database;
 
-import bbk_beam.mtRooms.db.exception.DBQueryException;
+import bbk_beam.mtRooms.db.exception.DbQueryException;
 import eadjlib.logger.Logger;
 
 import java.sql.*;
 
-public class Database {
+public class Database implements IDatabase, IUserAccDb, IReservationDb {
     private final Logger log = Logger.getLoggerInstance(Database.class.getName());
     private String path;
     private Connection connection = null;
@@ -20,11 +20,7 @@ public class Database {
         this.path = db_path;
     }
 
-    /**
-     * Connect to a Database
-     *
-     * @return Success
-     */
+    @Override
     public boolean connect() {
         try {
             if (connection != null && !connection.isClosed()) {
@@ -41,18 +37,13 @@ public class Database {
         return false;
     }
 
-    /**
-     * Disconnect from the connected Database
-     *
-     * @return Success
-     * @throws SQLException when attempting to disconnect nothing
-     */
+    @Override
     public boolean disconnect() throws SQLException {
         try {
             if (connection == null) {
                 log.log_Error("Trying to disconnect from null connection.");
                 return false;
-            } else if( connection.isClosed() ) {
+            } else if (connection.isClosed()) {
                 log.log_Error("Trying to disconnect from closed connection.");
                 return false;
             } else { //Closing connection
@@ -66,22 +57,16 @@ public class Database {
         return false;
     }
 
-    /**
-     * Query the Database
-     *
-     * @param query Database query string
-     * @return ResultSet of the query
-     * @throws DBQueryException when querying the DB fails
-     */
-    public ResultSet queryDB(String query) throws DBQueryException {
+    @Override
+    public ResultSet queryDB(String query) throws DbQueryException {
         try {
             //Error control
             if (this.connection == null) {
                 log.log_Error("Cannot pass query \"", query, "\" to a null DB connection.");
-                throw new DBQueryException("Database connection does not exist.");
+                throw new DbQueryException("Database connection does not exist.");
             } else if (this.connection.isClosed()) {
                 log.log_Error("Cannot pass query \"", query, "\" to a disconnected DB.");
-                throw new DBQueryException("Database is not connected.");
+                throw new DbQueryException("Database is not connected.");
             }
             //Query processing
             Statement statement = this.connection.createStatement();
@@ -92,16 +77,36 @@ public class Database {
             return resultSet;
         } catch (SQLException e) {
             log.log_Error("Problem encountered passing query: ", query);
-            throw new DBQueryException("Could not process query to DB.", e);
+            throw new DbQueryException("Could not process query to DB.", e);
         }
     }
 
-    /**
-     * Checks if the connected flag is raised
-     * @return Connection to DB flag
-     */
+    @Override
     public boolean isConnected() {
         return this.connected_flag;
     }
 
+    @Override
+    public boolean setupReservationDB() {
+        DatabaseSetup builder = new DatabaseSetup();
+        return builder.buildReservationDB(this);
+    }
+
+    @Override
+    public boolean checkReservationDB() {
+        DatabaseChecker checker = new DatabaseChecker();
+        return checker.checkReservationDB(this);
+    }
+
+    @Override
+    public boolean setupUserAccDB() {
+        DatabaseSetup builder = new DatabaseSetup();
+        return builder.buildUserAccDB(this);
+    }
+
+    @Override
+    public boolean checkUserAccDB() {
+        DatabaseChecker checker = new DatabaseChecker();
+        return checker.checkUserAccDB(this);
+    }
 }

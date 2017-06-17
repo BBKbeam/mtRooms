@@ -11,27 +11,52 @@ public class DbSystemBootstrap implements IDbSystemBootstrap {
     private final Logger log = Logger.getLoggerInstance(DbSystemBootstrap.class.getName());
     private IUserAccDbAccess userAccDbAccess = null;
     private IQueryDB reservationDbAccess = null;
+    private Database db = null;
+    private boolean instantiated_flag = false;
 
     @Override
     public void init(String database) throws DbBootstrapException {
         try {
-            Database db = new Database(database);
-            if (!db.connect()) {
-                log.log_Fatal("Could not connect to database '", database, "'.");
-                db = null;
-                throw new DbBootstrapException("Could not connect to database '" + database + "'.");
+            if (!instantiated_flag) {
+                //Database connection
+                this.db = new Database(database);
+                if (!this.db.connect()) {
+                    log.log_Fatal("Could not connect to database '", database, "'.");
+                    this.db = null;
+                    throw new DbBootstrapException("Could not connect to database '" + database + "'.");
+                }
+                log.log_Debug("Database '", database, "' connection successful.");
+                //Access components instantiation
+                SessionTracker tracker = new SessionTracker();
+                this.userAccDbAccess = new UserAccDbAccess(tracker, db);
+                this.reservationDbAccess = new ReservationDbAccess(tracker, db);
+                //Flag raised
+                instantiated_flag = true;
+                log.log("Reservation DB System bootstrapping successful");
+            } else {
+                log.log_Error("Trying to bootstrap over already active Reservation DB System.");
+                if (this.userAccDbAccess != null) {
+                    log.log_Error("=> Already instantiated: 'UserAccDbAccess'.");
+                }
+                if (this.reservationDbAccess != null) {
+                    log.log_Error("=> Already instantiated: 'ReservationDbAccess'.");
+                }
+                throw new DbBootstrapException("Trying to bootstrap over already active or partly active Reservation DB System.");
             }
-            log.log_Debug("Database '", database, "' connection successful.");
-
-            SessionTracker tracker = new SessionTracker();
-            this.userAccDbAccess = new UserAccDbAccess(tracker, db);
-            this.reservationDbAccess = new ReservationDbAccess(tracker, db);
-
         } catch (SQLException e) {
             log.log_Fatal("Problems encountered whilst instantiating.");
+            try {
+                if (!this.db.disconnect()) {
+                    log.log_Error("Could not disconnect cleanly from the database.");
+                }
+            } catch (SQLException exception) {
+                log.log_Error("The database was already disconnected from. Weird but good... I guess?!");
+            }
+            this.userAccDbAccess = null;
+            this.reservationDbAccess = null;
+            this.db = null;
             throw new DbBootstrapException("Problems encountered whilst instantiating.", e);
         }
-
     }
 
     @Override

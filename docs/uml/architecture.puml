@@ -152,16 +152,27 @@ package mtRooms {
     frame "Data Layer" #purple {
         package "db" {
             component ReservationDbAccessSystem #white {
-                database ReservationDB
-                database UserAccDB
-                IUserAccDB -- UserAccDB
-                IReservationDB -- ReservationDB
-                ITimeZoneTranslation -- [TimeZoneTranslation]
+                package "database" {
+                    database SQLiteDB as DB
+                    IReservationDB -- [Database]
+                    IUserAccDB -- [Database]
+                    IReservationDB ..> IDatabase
+                    IUserAccDB ..> IDatabase
+                    ITimeZoneTranslation -- [TimeZoneTranslation]
+                    IDatabaseSetup -- [DatabaseSetup]
+                    IDatabaseChecker -- [DatabaseChecker]
+
+                    [Database] -down- DB
+                    [Database] --( IDatabaseSetup
+                    [Database] --( IDatabaseChecker
+                }
+                package "session" {
+                    [<u>:SessionTracker] as SessionTracker
+                    ICurrentSessions -- [SessionTracker]
+                }
                 IQueryDb -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
-                [<u>:SessionTracker] as SessionTracker
-                ICurrentSessions -- [SessionTracker]
-                IDbSystemBootstrap -- [DbSystemBootstrap]
+                IDatabaseSystemBootstrap -- [DbSystemBootstrap]
 
                 DbSystemBootstrap *-left- ReservationDbAccess
                 DbSystemBootstrap *-right- UserAccDbAccess
@@ -171,10 +182,6 @@ package mtRooms {
                 UserAccDbAccess --( IUserAccDB
                 UserAccDbAccess --( ICurrentSessions
             }
-'            note as db_Note1
-'              i/ <color:royalBlue>IUserAccDbAccess</color> <b>extends</b> <color:royalBlue>IQueryDb</color>
-'              ii/ Both <color:royalBlue>UserAccDB</color> and <color:royalBlue>ReservationDB</color> uses are instances of the same interface implementation.
-'            end note
         }
     }
 

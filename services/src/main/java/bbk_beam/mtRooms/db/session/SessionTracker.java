@@ -1,11 +1,15 @@
 package bbk_beam.mtRooms.db.session;
 
+import bbk_beam.mtRooms.db.ReservationDbAccess;
+import bbk_beam.mtRooms.db.exception.InvalidSessionException;
 import bbk_beam.mtRooms.db.exception.SessionException;
+import eadjlib.logger.Logger;
 
 import java.util.Date;
 import java.util.HashMap;
 
 public class SessionTracker {
+    private final Logger log = Logger.getLoggerInstance(ReservationDbAccess.class.getName());
     private HashMap<String, Date> tracker;
 
     /**
@@ -34,11 +38,11 @@ public class SessionTracker {
      * Removes a session from the tracker
      *
      * @param session_id Session ID
-     * @throws SessionException when trying to remove non-tracked session ID
+     * @throws InvalidSessionException when trying to remove non-tracked session ID
      */
-    public void removeSession(String session_id) throws SessionException {
+    public void removeSession(String session_id) throws InvalidSessionException {
         if (this.tracker.remove(session_id) == null) {
-            throw new SessionException("Trying to remove non tracked session ID.");
+            throw new InvalidSessionException("Trying to remove non tracked session ID.");
         }
     }
 
@@ -60,6 +64,32 @@ public class SessionTracker {
      */
     Date getSessionType(String session_id) {
         return this.tracker.get(session_id);
+    }
+
+    /**
+     * Gets the existence state of a session in the tracker
+     *
+     * @param session_id Session ID
+     * @return Existence state in the tracker
+     */
+    boolean exists(String session_id) {
+        return this.tracker.containsKey(session_id);
+    }
+
+    /**
+     * Gets the validity state (not expired) of a session
+     *
+     * @param session_id Session ID
+     * @return Valid state
+     * @throws InvalidSessionException when ID is not in the session tracked
+     */
+    boolean isValid(String session_id) throws InvalidSessionException {
+        if (this.exists(session_id)) {
+            log.log_Debug( "Session [", session_id, "]=", this.tracker.get( session_id ) );
+            return this.tracker.get(session_id).compareTo(new Date()) > 0;
+        } else {
+            throw new InvalidSessionException("Session (id: " + session_id + ") is not tracked.");
+        }
     }
 
     /**

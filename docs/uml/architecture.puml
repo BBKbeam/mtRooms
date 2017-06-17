@@ -72,15 +72,18 @@ package mtRooms {
     frame "Business Logic Layer" #orange {
         package "reservation" {
             component ReservationSystem #white {
+                [ReservationSession] <<Observer>>
+                [<u>:ScheduleCache] <<Observable>> as ScheduleCache
+
                 IReservationSession -- [ReservationSession]
                 IReservationPayment -- [ReservationSession]
                 IOptimisedSearch -- [OptimisedSearch]
                 IReservation -- [Reservation]
                 IPaymentProcessing -- [PaymentProcessing]
                 ICustomerAccountAccess -- [CustomerAccountAccess]
-                ICacheSchedule -- [:ScheduleCache]
-                IChangeSchedule -- [:ScheduleCache]
-                IScheduleChanged -- [:ScheduleCache]
+                ICacheSchedule -- [ScheduleCache]
+                IChangeSchedule -- [ScheduleCache]
+                IScheduleChanged -- [ScheduleCache]
                 IPay -- [ReservationDbDelegate]
                 IReserve -- [ReservationDbDelegate]
                 ISearch -- [ReservationDbDelegate]
@@ -157,17 +160,26 @@ package mtRooms {
                 ITimeZoneTranslation -- [TimeZoneTranslation]
                 IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
-                ISessionTracker -- [SessionTracker]
+
+                component "Session Tracking" {
+                    [<u>:CurrentSessions] as CurrentSessions
+                    '[<u>:SessionTracker] as SessionTracker
+                    ISessionTracker -- [SessionTracker]
+                    ICurrentReservationSessions -- [CurrentSessions]
+                    ICurrentSessions -- [CurrentSessions]
+                }
 
                 IDatabase <.. IReservationDB
                 IDatabase <.. IUserAccDB
                 note "Both 'UserAccDB' and 'ReservationDB' \nuse the same interface implementation" as N1
                 N1 .. IDatabase
+
                 ReservationDbAccess --( ITimeZoneTranslation
-                ReservationDbAccess --( ISessionTracker
+                ReservationDbAccess --( ICurrentReservationSessions
                 ReservationDbAccess --( IReservationDB
                 UserAccDbAccess --( IUserAccDB
-                UserAccDbAccess --( ISessionTracker
+                UserAccDbAccess --( ICurrentSessions
+                CurrentSessions --( ISessionTracker
             }
         }
     }

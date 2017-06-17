@@ -3,16 +3,14 @@ package bbk_beam.mtRooms.db;
 import bbk_beam.mtRooms.db.database.Database;
 import bbk_beam.mtRooms.db.exception.DBQueryException;
 import bbk_beam.mtRooms.db.exception.InvalidSessionException;
-import bbk_beam.mtRooms.db.exception.SessionException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.session.SessionTracker;
 import eadjlib.logger.Logger;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 
-public class ReservationDbAccess implements IReservationDbAccess {
+public class ReservationDbAccess implements IQueryDB {
     private final Logger log = Logger.getLoggerInstance(ReservationDbAccess.class.getName());
     private SessionTracker sessions;
     private Database db;
@@ -24,7 +22,7 @@ public class ReservationDbAccess implements IReservationDbAccess {
      * @param db      Current Database instance to use
      * @throws SQLException when connection to the database fails
      */
-    public ReservationDbAccess(SessionTracker tracker, Database db) throws SQLException {
+    ReservationDbAccess(SessionTracker tracker, Database db) throws SQLException {
         this.sessions = tracker;
         this.db = db;
         if (!this.db.isConnected()) {
@@ -33,16 +31,6 @@ public class ReservationDbAccess implements IReservationDbAccess {
                 throw new SQLException("Could not connect to database.");
             }
         }
-    }
-
-    @Override
-    public void openSession(String id, Date expiry) throws SessionException {
-        this.sessions.addSession(id, expiry);
-    }
-
-    @Override
-    public void closeSession(String id) throws InvalidSessionException {
-        this.sessions.removeSession(id);
     }
 
     @Override

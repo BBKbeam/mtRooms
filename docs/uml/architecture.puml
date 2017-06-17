@@ -156,25 +156,25 @@ package mtRooms {
                 database UserAccDB
                 IUserAccDB -- UserAccDB
                 IReservationDB -- ReservationDB
-
                 ITimeZoneTranslation -- [TimeZoneTranslation]
-                IReservationDbAccess -- [ReservationDbAccess]
+                IQueryDb -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
-
                 [<u>:SessionTracker] as SessionTracker
                 ICurrentSessions -- [SessionTracker]
+                IDbSystemBootstrap -- [DbSystemBootstrap]
 
-                IDatabase <.. IReservationDB
-                IDatabase <.. IUserAccDB
-                note "Both 'UserAccDB' and 'ReservationDB' \nuse are instances of the same interface\n implementation" as N1
-                N1 .. IDatabase
-
+                DbSystemBootstrap *-left- ReservationDbAccess
+                DbSystemBootstrap *-right- UserAccDbAccess
                 ReservationDbAccess --( ITimeZoneTranslation
                 ReservationDbAccess --( ICurrentSessions
                 ReservationDbAccess --( IReservationDB
                 UserAccDbAccess --( IUserAccDB
                 UserAccDbAccess --( ICurrentSessions
             }
+'            note as db_Note1
+'              i/ <color:royalBlue>IUserAccDbAccess</color> <b>extends</b> <color:royalBlue>IQueryDb</color>
+'              ii/ Both <color:royalBlue>UserAccDB</color> and <color:royalBlue>ReservationDB</color> uses are instances of the same interface implementation.
+'            end note
         }
     }
 
@@ -213,13 +213,13 @@ package mtRooms {
     UserAccountChecker --( IUserAccDbAccess
 
     UserAccAdministration --( IUserAccDbAccess
-    ReservationDbMaintenance --( IReservationDbAccess
+    ReservationDbMaintenance --( IQueryDb
 
-    ReservationDbDelegate --( IReservationDbAccess
+    ReservationDbDelegate --( IQueryDb
 
-    LogisticReportGenerator --( IReservationDbAccess
-    InvoiceAggregator --( IReservationDbAccess
-    RevenueAggregator --( IReservationDbAccess
+    LogisticReportGenerator --( IQueryDb
+    InvoiceAggregator --( IQueryDb
+    RevenueAggregator --( IQueryDb
 }
 
 @enduml

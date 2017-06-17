@@ -1,5 +1,6 @@
-package bbk_beam.mtRooms.db;
+package bbk_beam.mtRooms.db.database;
 
+import bbk_beam.mtRooms.db.database.Database;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

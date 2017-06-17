@@ -1,5 +1,6 @@
 package bbk_beam.mtRooms.db;
 
+import bbk_beam.mtRooms.db.database.Database;
 import bbk_beam.mtRooms.db.exception.DBQueryException;
 import bbk_beam.mtRooms.db.exception.InvalidSessionException;
 import bbk_beam.mtRooms.db.exception.SessionException;

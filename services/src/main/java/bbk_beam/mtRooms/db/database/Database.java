@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.db;
+package bbk_beam.mtRooms.db.database;
 
 import bbk_beam.mtRooms.db.exception.DBQueryException;
 import eadjlib.logger.Logger;
@@ -16,7 +16,7 @@ public class Database {
      *
      * @param db_path SQLite Database path
      */
-    Database(String db_path) {
+    public Database(String db_path) {
         this.path = db_path;
     }
 

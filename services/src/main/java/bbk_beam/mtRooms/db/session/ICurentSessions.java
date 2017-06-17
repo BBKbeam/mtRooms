@@ -6,69 +6,70 @@ import bbk_beam.mtRooms.db.exception.SessionException;
 import java.util.Date;
 
 /**
- * Interface for accessing tracked current user account sessions
+ * Interface for accessing current tracked sessions
  */
-public interface ICurentSessions extends ICurrentReservationSessions {
+public interface ICurentSessions {
     /**
-     * Adds user session to the tracker
-     *
-     * @param id     Session ID
-     * @param expiry Expiry timestamp
-     * @throws SessionException when ID is already tracked
-     */
-    public void addUserAccountSession(String id, Date expiry) throws SessionException;
-
-    /**
-     * Removes a user session from the tracker
-     *
-     * @param id Session ID
-     * @throws SessionException when trying to remove non-tracked session ID
-     */
-    public void removeUserAccountSession(String id) throws SessionException, InvalidSessionException;
-
-    /**
-     * Gets the empty state of the user sessions tracker
-     *
-     * @return Empty state
-     */
-    public boolean noUserSessions();
-
-    /**
-     * Gets the empty state of all the trackers (user and reservation)
-     *
-     * @return Global empty tracker state
-     */
-    public boolean noSessions();
-
-    /**
-     * Gets the number of sessions currently in the user tracker
-     *
-     * @return Number of reservation sessions
-     */
-    public int userAccountSessionsCount();
-
-    /**
-     * Gets the existence state of the user session in the tracker
+     * Adds a session to the tracker
      *
      * @param session_id Session ID
-     * @return Existence in the tracker
+     * @param expiry     Expiry timestamp
+     * @throws SessionException when trying to add an already tracked session ID
      */
-    public boolean userSessionExists(String session_id);
+    public void addSession(String session_id, Date expiry) throws SessionException;
 
     /**
-     * Gets the existence state of the session in any if the trackers
+     * Removes a session from the tracker
      *
      * @param session_id Session ID
-     * @return Existence in the trackers
+     * @throws InvalidSessionException when trying to remove non-tracked session ID
      */
-    public boolean sessionExists(String session_id);
+    public void removeSession(String session_id) throws InvalidSessionException;
 
     /**
-     * Gets the valid (not expired) state of a user session
+     * Gets the tracked status of a session
      *
      * @param session_id Session ID
-     * @return Valid state of session
-     * @throws InvalidSessionException when sesion ID given is not tracked
+     * @return Tracked state
      */
-    public boolean userSessionValid(String session_id) throws InvalidSessionException;
+    public boolean isTracked(String session_id);
+
+    /**
+     * Gets the expiry timestamp of a tracked session
+     *
+     * @param session_id Session ID
+     * @return Expiry date or null if not found
+     */
+    public Date getSessionType(String session_id);
+
+    /**
+     * Gets the existence state of a session in the tracker
+     *
+     * @param session_id Session ID
+     * @return Existence state in the tracker
+     */
+    public boolean exists(String session_id);
+
+    /**
+     * Gets the validity state (not expired) of a session
+     *
+     * @param session_id Session ID
+     * @return Valid state
+     * @throws InvalidSessionException when ID is not in the session tracked
+     */
+    public boolean isValid(String session_id) throws InvalidSessionException;
+
+    /**
+     * Gets the number of sessions currently tracked
+     *
+     * @return Tracked sessions count
+     */
+    public int trackedCount();
+
+    /**
+     * Gets the no-tracking state
+     *
+     * @return No sessions tracked state
+     */
+    public boolean isEmpty();
 }

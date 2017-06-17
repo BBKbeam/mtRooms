@@ -5,7 +5,7 @@ import bbk_beam.mtRooms.db.exception.DBQueryException;
 import bbk_beam.mtRooms.db.exception.InvalidSessionException;
 import bbk_beam.mtRooms.db.exception.SessionException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
-import bbk_beam.mtRooms.db.session.ICurrentReservationSessions;
+import bbk_beam.mtRooms.db.session.SessionTracker;
 import eadjlib.logger.Logger;
 
 import java.sql.ResultSet;
@@ -14,7 +14,7 @@ import java.util.Date;
 
 public class ReservationDbAccess implements IReservationDbAccess {
     private final Logger log = Logger.getLoggerInstance(ReservationDbAccess.class.getName());
-    private ICurrentReservationSessions sessions;
+    private SessionTracker sessions;
     private Database db;
 
     /**
@@ -24,7 +24,7 @@ public class ReservationDbAccess implements IReservationDbAccess {
      * @param db      Current Database instance to use
      * @throws SQLException when connection to the database fails
      */
-    public ReservationDbAccess(ICurrentReservationSessions tracker, Database db) throws SQLException {
+    public ReservationDbAccess(SessionTracker tracker, Database db) throws SQLException {
         this.sessions = tracker;
         this.db = db;
         if (!this.db.isConnected()) {
@@ -37,18 +37,18 @@ public class ReservationDbAccess implements IReservationDbAccess {
 
     @Override
     public void openSession(String id, Date expiry) throws SessionException {
-        this.sessions.addReservationSession(id, expiry);
+        this.sessions.addSession(id, expiry);
     }
 
     @Override
     public void closeSession(String id) throws InvalidSessionException {
-        this.sessions.removeReservationSession(id);
+        this.sessions.removeSession(id);
     }
 
     @Override
     public ResultSet queryDB(String session_id, String query) throws DBQueryException, InvalidSessionException, SessionExpiredException {
         try {
-            if (sessions.reservationSessionValid(session_id)) {
+            if (sessions.isValid(session_id)) {
                 return this.db.queryDB(query);
             } else {
                 log.log_Error("Session [", session_id, "] has expired.");

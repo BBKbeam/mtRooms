@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.db;
+package bbk_beam.mtRooms.db.database;
 
 import java.sql.Timestamp;
 

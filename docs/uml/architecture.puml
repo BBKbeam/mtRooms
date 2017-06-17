@@ -161,25 +161,19 @@ package mtRooms {
                 IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
 
-                component "Session Tracking" {
-                    [<u>:CurrentSessions] as CurrentSessions
-                    '[<u>:SessionTracker] as SessionTracker
-                    ISessionTracker -- [SessionTracker]
-                    ICurrentReservationSessions -- [CurrentSessions]
-                    ICurrentSessions -- [CurrentSessions]
-                }
+                [<u>:SessionTracker] as SessionTracker
+                ICurrentSessions -- [SessionTracker]
 
                 IDatabase <.. IReservationDB
                 IDatabase <.. IUserAccDB
-                note "Both 'UserAccDB' and 'ReservationDB' \nuse the same interface implementation" as N1
+                note "Both 'UserAccDB' and 'ReservationDB' \nuse are instances of the same interface\n implementation" as N1
                 N1 .. IDatabase
 
                 ReservationDbAccess --( ITimeZoneTranslation
-                ReservationDbAccess --( ICurrentReservationSessions
+                ReservationDbAccess --( ICurrentSessions
                 ReservationDbAccess --( IReservationDB
                 UserAccDbAccess --( IUserAccDB
                 UserAccDbAccess --( ICurrentSessions
-                CurrentSessions --( ISessionTracker
             }
         }
     }

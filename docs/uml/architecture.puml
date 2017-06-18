@@ -170,7 +170,7 @@ package mtRooms {
                     [<u>:SessionTracker] as SessionTracker
                     ICurrentSessions -- [SessionTracker]
                 }
-                IQueryDb -- [ReservationDbAccess]
+                IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
                 IDatabaseSystemBootstrap -- [DbSystemBootstrap]
 
@@ -220,13 +220,13 @@ package mtRooms {
     UserAccountChecker --( IUserAccDbAccess
 
     UserAccAdministration --( IUserAccDbAccess
-    ReservationDbMaintenance --( IQueryDb
+    ReservationDbMaintenance --( IReservationDbAccess
 
-    ReservationDbDelegate --( IQueryDb
+    ReservationDbDelegate --( IReservationDbAccess
 
-    LogisticReportGenerator --( IQueryDb
-    InvoiceAggregator --( IQueryDb
-    RevenueAggregator --( IQueryDb
+    LogisticReportGenerator --( IReservationDbAccess
+    InvoiceAggregator --( IReservationDbAccess
+    RevenueAggregator --( IReservationDbAccess
 }
 
 @enduml

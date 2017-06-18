@@ -88,7 +88,7 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
 
     @Override
     public boolean setupReservationDB() {
-        DatabaseSetup builder = new DatabaseSetup();
+        DatabaseBuilder builder = new DatabaseBuilder();
         return builder.buildReservationDB(this);
     }
 
@@ -100,7 +100,7 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
 
     @Override
     public boolean setupUserAccDB() {
-        DatabaseSetup builder = new DatabaseSetup();
+        DatabaseBuilder builder = new DatabaseBuilder();
         return builder.buildUserAccDB(this);
     }
 

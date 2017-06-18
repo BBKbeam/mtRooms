@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.db.database;
 
-public class DatabaseSetup {
+public class DatabaseBuilder {
     //TODO DB setup tool
     //i.e.: create all the tables and structures required for a new blank db
 

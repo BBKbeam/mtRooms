@@ -6,7 +6,7 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 
 import java.sql.ResultSet;
 
-public interface IQueryDB {
+public interface IReservationDbAccess {
     /**
      * Passes a SQL query to the database
      *

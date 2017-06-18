@@ -23,7 +23,9 @@ public class UserAccDbAccess implements IUserAccDbAccess {
      * @throws DbBuildException when database is corrupted or incomplete
      */
     UserAccDbAccess(SessionTracker session_tracker, IUserAccDb db) throws SQLException, DbBuildException {
-        //TODO
+        this.sessions = session_tracker;
+        this.db = db;
+        //TODO error control
     }
 
     @Override
@@ -43,8 +45,7 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
-    public ResultSet queryDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO
-        return null;
+    public ResultSet queryDB(String session_id, String query) throws DbQueryException {
+        return this.db.queryDB(query);
     }
 }

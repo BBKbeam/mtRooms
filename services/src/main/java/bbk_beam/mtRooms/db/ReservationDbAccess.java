@@ -8,7 +8,7 @@ import eadjlib.logger.Logger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ReservationDbAccess implements IQueryDB {
+public class ReservationDbAccess implements IReservationDbAccess {
     private final Logger log = Logger.getLoggerInstance(ReservationDbAccess.class.getName());
     private SessionTracker sessions;
     private IReservationDb db;

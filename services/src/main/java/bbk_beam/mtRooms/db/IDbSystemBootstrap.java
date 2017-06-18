@@ -28,5 +28,5 @@ public interface IDbSystemBootstrap {
      * @return ReservationDbAccess instance
      * @throws DbBootstrapException when bootstrap was not initiated
      */
-    public IQueryDB getReservationDbAccess() throws DbBootstrapException;
+    public IReservationDbAccess getReservationDbAccess() throws DbBootstrapException;
 }

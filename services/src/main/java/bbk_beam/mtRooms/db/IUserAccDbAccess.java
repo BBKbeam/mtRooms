@@ -1,11 +1,13 @@
 package bbk_beam.mtRooms.db;
 
+import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionException;
 
+import java.sql.ResultSet;
 import java.util.Date;
 
-public interface IUserAccDbAccess extends IQueryDB {
+public interface IUserAccDbAccess extends IReservationDbAccess {
     /**
      * Checks the validity of a session ID
      *
@@ -30,4 +32,14 @@ public interface IUserAccDbAccess extends IQueryDB {
      * @throws SessionInvalidException when trying to close a non-tracked session
      */
     public void closeSession(String session_id) throws SessionInvalidException;
+
+    /**
+     * Passes a SQL query to the database
+     *
+     * @param session_id Session ID of the originating query
+     * @param query      SQL Query
+     * @return ResultSet of query
+     * @throws DbQueryException        When a problem was encountered processing the query
+     */
+    public ResultSet queryDB(String session_id, String query) throws DbQueryException;
 }

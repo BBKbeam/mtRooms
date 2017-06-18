@@ -11,7 +11,7 @@ import java.sql.SQLException;
 public class DbSystemBootstrap implements IDbSystemBootstrap {
     private final Logger log = Logger.getLoggerInstance(DbSystemBootstrap.class.getName());
     private IUserAccDbAccess userAccDbAccess = null;
-    private IQueryDB reservationDbAccess = null;
+    private IReservationDbAccess reservationDbAccess = null;
     private Database db = null;
     private boolean instantiated_flag = false;
 
@@ -73,7 +73,7 @@ public class DbSystemBootstrap implements IDbSystemBootstrap {
     }
 
     @Override
-    public IQueryDB getReservationDbAccess() throws DbBootstrapException {
+    public IReservationDbAccess getReservationDbAccess() throws DbBootstrapException {
         if (this.reservationDbAccess == null) {
             log.log_Error("Trying to get instance of [ReservationDbAccess] which hasn't been initialised.");
             throw new DbBootstrapException("Trying to get instance of [ReservationDbAccess] which hasn't been initialised.");

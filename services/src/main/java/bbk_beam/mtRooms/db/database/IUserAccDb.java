@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.db.database;
 
-import bbk_beam.mtRooms.db.exception.EmptyDatabaseException;
+import bbk_beam.mtRooms.db.exception.DbEmptyException;
 
 /**
  * User Accounts database interface
@@ -17,7 +17,7 @@ public interface IUserAccDb extends IDatabase {
      * Checks the structure of the user accounts database
      *
      * @return Success
-     * @throws EmptyDatabaseException when non of the user account tables exist
+     * @throws DbEmptyException when non of the user account tables exist
      */
-    public boolean checkUserAccDB() throws EmptyDatabaseException;
+    public boolean checkUserAccDB() throws DbEmptyException;
 }

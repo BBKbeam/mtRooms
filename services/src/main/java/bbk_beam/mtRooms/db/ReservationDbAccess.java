@@ -34,7 +34,7 @@ public class ReservationDbAccess implements IQueryDB {
                         log.log_Fatal("Tables in database either corrupted or incomplete.");
                         throw new DbBuildException("Database corruption detected.");
                     }
-                } catch (EmptyDatabaseException e) {
+                } catch (DbEmptyException e) {
                     if (!db.setupReservationDB()) {
                         log.log_Fatal("Could not build new database structure.");
                         throw new DbBuildException("Could not build new database structure.");
@@ -45,7 +45,7 @@ public class ReservationDbAccess implements IQueryDB {
     }
 
     @Override
-    public ResultSet queryDB(String session_id, String query) throws DbQueryException, InvalidSessionException, SessionExpiredException {
+    public ResultSet queryDB(String session_id, String query) throws DbQueryException, SessionInvalidException, SessionExpiredException {
         try {
             if (sessions.isValid(session_id)) {
                 return this.db.queryDB(query);
@@ -53,9 +53,9 @@ public class ReservationDbAccess implements IQueryDB {
                 log.log_Error("Session [", session_id, "] has expired.");
                 throw new SessionExpiredException("Session (id: " + session_id + ") has expired.");
             }
-        } catch (InvalidSessionException e) {
+        } catch (SessionInvalidException e) {
             log.log_Error("Session [", session_id, "] is not valid.");
-            throw new InvalidSessionException("Query passed with invalid session.", e);
+            throw new SessionInvalidException("Query passed with invalid session.", e);
         }
     }
 }

@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.db.session;
 
-import bbk_beam.mtRooms.db.exception.InvalidSessionException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionException;
 
 import java.util.Date;
@@ -22,9 +22,9 @@ public interface ICurentSessions {
      * Removes a session from the tracker
      *
      * @param session_id Session ID
-     * @throws InvalidSessionException when trying to remove non-tracked session ID
+     * @throws SessionInvalidException when trying to remove non-tracked session ID
      */
-    public void removeSession(String session_id) throws InvalidSessionException;
+    public void removeSession(String session_id) throws SessionInvalidException;
 
     /**
      * Gets the tracked status of a session
@@ -55,9 +55,9 @@ public interface ICurentSessions {
      *
      * @param session_id Session ID
      * @return Valid state
-     * @throws InvalidSessionException when ID is not in the session tracked
+     * @throws SessionInvalidException when ID is not in the session tracked
      */
-    public boolean isValid(String session_id) throws InvalidSessionException;
+    public boolean isValid(String session_id) throws SessionInvalidException;
 
     /**
      * Gets the number of sessions currently tracked

@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.db;
 
-import bbk_beam.mtRooms.db.exception.InvalidSessionException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionException;
 
 import java.util.Date;
@@ -27,7 +27,7 @@ public interface IUserAccDbAccess extends IQueryDB {
      * Closes a session with the database
      *
      * @param session_id Session ID
-     * @throws InvalidSessionException when trying to close a non-tracked session
+     * @throws SessionInvalidException when trying to close a non-tracked session
      */
-    public void closeSession(String session_id) throws InvalidSessionException;
+    public void closeSession(String session_id) throws SessionInvalidException;
 }

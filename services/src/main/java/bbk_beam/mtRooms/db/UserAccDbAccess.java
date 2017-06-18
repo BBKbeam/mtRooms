@@ -38,12 +38,12 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
-    public void closeSession(String session_id) throws InvalidSessionException {
+    public void closeSession(String session_id) throws SessionInvalidException {
         //TODO
     }
 
     @Override
-    public ResultSet queryDB(String session_id, String query) throws DbQueryException, SessionExpiredException, InvalidSessionException {
+    public ResultSet queryDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //TODO
         return null;
     }

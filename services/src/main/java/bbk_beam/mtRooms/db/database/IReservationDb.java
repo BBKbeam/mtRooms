@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.db.database;
 
-import bbk_beam.mtRooms.db.exception.EmptyDatabaseException;
+import bbk_beam.mtRooms.db.exception.DbEmptyException;
 
 /**
  * Reservation database interface
@@ -17,7 +17,7 @@ public interface IReservationDb extends IDatabase {
      * Checks the structure of the reservation database
      *
      * @return Success
-     * @throws EmptyDatabaseException when non of the required reservation tables exist
+     * @throws DbEmptyException when non of the required reservation tables exist
      */
-    public boolean checkReservationDB() throws EmptyDatabaseException;
+    public boolean checkReservationDB() throws DbEmptyException;
 }

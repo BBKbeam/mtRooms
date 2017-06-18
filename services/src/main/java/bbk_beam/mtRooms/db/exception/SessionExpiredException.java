@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.db.exception;
 
-public class SessionExpiredException extends Exception {
+public class SessionExpiredException extends SessionException {
     public SessionExpiredException() {
         super();
     }

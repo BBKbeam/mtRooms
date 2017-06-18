@@ -2,8 +2,8 @@ package bbk_beam.mtRooms.db;
 
 import bbk_beam.mtRooms.db.database.Database;
 import bbk_beam.mtRooms.db.exception.DbBuildException;
-import bbk_beam.mtRooms.db.exception.EmptyDatabaseException;
-import bbk_beam.mtRooms.db.exception.InvalidSessionException;
+import bbk_beam.mtRooms.db.exception.DbEmptyException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.session.SessionTracker;
 import org.junit.After;
@@ -48,7 +48,7 @@ public class ReservationDbAccessTest {
     @Test(expected = DbBuildException.class)
     public void constructor_failed_db_build() throws Exception {
         when(mocked_Database.connect()).thenReturn(true);
-        when(mocked_Database.checkReservationDB()).thenThrow(new EmptyDatabaseException(""));
+        when(mocked_Database.checkReservationDB()).thenThrow(new DbEmptyException(""));
         when(mocked_Database.setupReservationDB()).thenReturn(false);
         ReservationDbAccess reservation_access = new ReservationDbAccess(mocked_SessionTracker, mocked_Database);
     }
@@ -61,14 +61,14 @@ public class ReservationDbAccessTest {
         Assert.assertTrue(true); //No exception thrown if it gets here!
     }
 
-    @Test(expected = InvalidSessionException.class)
+    @Test(expected = SessionInvalidException.class)
     public void queryDB_with_invalid_session() throws Exception {
         //Constructor
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkReservationDB()).thenReturn(true);
         ReservationDbAccess reservation_access = new ReservationDbAccess(mocked_SessionTracker, mocked_Database);
         //Session Tracker
-        when(mocked_SessionTracker.isValid("test_session_0001")).thenThrow(new InvalidSessionException(""));
+        when(mocked_SessionTracker.isValid("test_session_0001")).thenThrow(new SessionInvalidException(""));
         //Test
         reservation_access.queryDB("test_session_0001", "SELECT * FROM sometable;");
     }

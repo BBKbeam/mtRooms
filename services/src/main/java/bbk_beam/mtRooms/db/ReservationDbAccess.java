@@ -37,7 +37,7 @@ public class ReservationDbAccess implements IQueryDB {
                 } catch (EmptyDatabaseException e) {
                     if (!db.setupReservationDB()) {
                         log.log_Fatal("Could not build new database structure.");
-                        throw new SQLException("Could not build new database structure.");
+                        throw new DbBuildException("Could not build new database structure.");
                     }
                 }
             }

@@ -45,7 +45,7 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
-    public ResultSet queryDB(String session_id, String query) throws DbQueryException {
+    public ResultSet queryDB(String query) throws DbQueryException {
         return this.db.queryDB(query);
     }
 }

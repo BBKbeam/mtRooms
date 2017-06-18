@@ -7,7 +7,7 @@ import bbk_beam.mtRooms.db.exception.SessionException;
 import java.sql.ResultSet;
 import java.util.Date;
 
-public interface IUserAccDbAccess extends IReservationDbAccess {
+public interface IUserAccDbAccess {
     /**
      * Checks the validity of a session ID
      *
@@ -36,10 +36,9 @@ public interface IUserAccDbAccess extends IReservationDbAccess {
     /**
      * Passes a SQL query to the database
      *
-     * @param session_id Session ID of the originating query
      * @param query      SQL Query
      * @return ResultSet of query
      * @throws DbQueryException        When a problem was encountered processing the query
      */
-    public ResultSet queryDB(String session_id, String query) throws DbQueryException;
+    public ResultSet queryDB(String query) throws DbQueryException;
 }

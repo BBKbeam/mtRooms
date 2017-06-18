@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.db.database;
 
 import bbk_beam.mtRooms.db.exception.DbQueryException;
+import bbk_beam.mtRooms.db.exception.EmptyDatabaseException;
 import eadjlib.logger.Logger;
 
 import java.sql.*;
@@ -93,7 +94,7 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
     }
 
     @Override
-    public boolean checkReservationDB() {
+    public boolean checkReservationDB() throws EmptyDatabaseException {
         DatabaseChecker checker = new DatabaseChecker();
         return checker.checkReservationDB(this);
     }
@@ -105,7 +106,7 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
     }
 
     @Override
-    public boolean checkUserAccDB() {
+    public boolean checkUserAccDB() throws EmptyDatabaseException {
         DatabaseChecker checker = new DatabaseChecker();
         return checker.checkUserAccDB(this);
     }

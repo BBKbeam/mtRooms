@@ -1,5 +1,7 @@
 package bbk_beam.mtRooms.db.database;
 
+import bbk_beam.mtRooms.db.exception.EmptyDatabaseException;
+
 public class DatabaseChecker {
     //TODO DB Checker tool
     //i.e.: make sure the db connected to has all the correct tables and columns
@@ -10,8 +12,9 @@ public class DatabaseChecker {
      *
      * @param db Database instance
      * @return Success
+     * @throws EmptyDatabaseException when non of the tables required exists in the database
      */
-    public boolean checkReservationDB(IDatabase db) {
+    public boolean checkReservationDB(IDatabase db) throws EmptyDatabaseException {
         //TODO
         return false;
     }
@@ -21,8 +24,9 @@ public class DatabaseChecker {
      *
      * @param db Database instance
      * @return Success
+     * @throws EmptyDatabaseException when non of the tables required exists in the database
      */
-    public boolean checkUserAccDB(IDatabase db) {
+    public boolean checkUserAccDB(IDatabase db) throws EmptyDatabaseException {
         //TODO
         return false;
     }

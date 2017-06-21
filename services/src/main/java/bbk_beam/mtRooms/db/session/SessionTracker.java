@@ -8,7 +8,7 @@ import eadjlib.logger.Logger;
 import java.util.Date;
 import java.util.HashMap;
 
-public class SessionTracker implements ICurentSessions {
+public class SessionTracker implements ICurrentSessions {
     private final Logger log = Logger.getLoggerInstance(ReservationDbAccess.class.getName());
     private HashMap<String, Date> tracker;
 

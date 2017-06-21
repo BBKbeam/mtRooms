@@ -2,7 +2,7 @@ package bbk_beam.mtRooms.db;
 
 import bbk_beam.mtRooms.db.database.IReservationDb;
 import bbk_beam.mtRooms.db.exception.*;
-import bbk_beam.mtRooms.db.session.SessionTracker;
+import bbk_beam.mtRooms.db.session.ICurrentSessions;
 import eadjlib.logger.Logger;
 
 import java.sql.ResultSet;
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 public class ReservationDbAccess implements IReservationDbAccess {
     private final Logger log = Logger.getLoggerInstance(ReservationDbAccess.class.getName());
-    private SessionTracker sessions;
+    private ICurrentSessions sessions;
     private IReservationDb db;
 
     /**
@@ -21,7 +21,7 @@ public class ReservationDbAccess implements IReservationDbAccess {
      * @throws SQLException     when connection to the database fails
      * @throws DbBuildException when database is corrupted or incomplete
      */
-    ReservationDbAccess(SessionTracker tracker, IReservationDb db) throws SQLException, DbBuildException {
+    ReservationDbAccess(ICurrentSessions tracker, IReservationDb db) throws SQLException, DbBuildException {
         this.sessions = tracker;
         this.db = db;
         if (!this.db.isConnected()) {

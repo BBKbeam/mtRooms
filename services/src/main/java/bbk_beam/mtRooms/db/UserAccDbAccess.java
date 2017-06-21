@@ -1,8 +1,11 @@
 package bbk_beam.mtRooms.db;
 
 import bbk_beam.mtRooms.db.database.IUserAccDb;
-import bbk_beam.mtRooms.db.exception.*;
-import bbk_beam.mtRooms.db.session.SessionTracker;
+import bbk_beam.mtRooms.db.exception.DbBuildException;
+import bbk_beam.mtRooms.db.exception.DbQueryException;
+import bbk_beam.mtRooms.db.exception.SessionException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.db.session.ICurrentSessions;
 import eadjlib.logger.Logger;
 
 import java.sql.ResultSet;
@@ -11,7 +14,7 @@ import java.util.Date;
 
 public class UserAccDbAccess implements IUserAccDbAccess {
     private final Logger log = Logger.getLoggerInstance(UserAccDbAccess.class.getName());
-    private SessionTracker sessions;
+    private ICurrentSessions sessions;
     private IUserAccDb db;
 
     /**
@@ -22,7 +25,7 @@ public class UserAccDbAccess implements IUserAccDbAccess {
      * @throws SQLException     when connection to the database fails
      * @throws DbBuildException when database is corrupted or incomplete
      */
-    UserAccDbAccess(SessionTracker session_tracker, IUserAccDb db) throws SQLException, DbBuildException {
+    UserAccDbAccess(ICurrentSessions session_tracker, IUserAccDb db) throws SQLException, DbBuildException {
         this.sessions = session_tracker;
         this.db = db;
         //TODO error control

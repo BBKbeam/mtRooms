@@ -8,7 +8,7 @@ import java.util.Date;
 /**
  * Interface for accessing current tracked sessions
  */
-public interface ICurentSessions {
+public interface ICurrentSessions {
     /**
      * Adds a session to the tracker
      *

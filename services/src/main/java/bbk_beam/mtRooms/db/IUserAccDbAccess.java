@@ -36,9 +36,9 @@ public interface IUserAccDbAccess {
     /**
      * Passes a SQL query to the database
      *
-     * @param query      SQL Query
+     * @param query SQL Query
      * @return ResultSet of query
-     * @throws DbQueryException        When a problem was encountered processing the query
+     * @throws DbQueryException When a problem was encountered processing the query
      */
     public ResultSet queryDB(String query) throws DbQueryException;
 }

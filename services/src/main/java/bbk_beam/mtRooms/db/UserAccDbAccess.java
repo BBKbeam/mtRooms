@@ -1,12 +1,8 @@
 package bbk_beam.mtRooms.db;
 
 import bbk_beam.mtRooms.db.database.IUserAccDb;
-import bbk_beam.mtRooms.db.exception.DbBuildException;
-import bbk_beam.mtRooms.db.exception.DbQueryException;
-import bbk_beam.mtRooms.db.exception.SessionException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
-import bbk_beam.mtRooms.db.session.ICurrentSessions;
 import bbk_beam.mtRooms.db.exception.*;
+import bbk_beam.mtRooms.db.session.ICurrentSessions;
 import eadjlib.logger.Logger;
 
 import java.sql.ResultSet;
@@ -15,7 +11,7 @@ import java.util.Date;
 
 public class UserAccDbAccess implements IUserAccDbAccess {
     private final Logger log = Logger.getLoggerInstance(UserAccDbAccess.class.getName());
-    private ICurrentSessions currentSession;
+    private ICurrentSessions currentSessions;
     private IUserAccDb db;
 
     /**
@@ -27,7 +23,7 @@ public class UserAccDbAccess implements IUserAccDbAccess {
      * @throws DbBuildException when database is corrupted or incomplete
      */
     UserAccDbAccess(ICurrentSessions session_tracker, IUserAccDb db) throws SQLException, DbBuildException {
-        this.currentSession = session_tracker;
+        this.currentSessions = session_tracker;
         this.db = db;
 
         if (!db.isConnected()) {
@@ -52,34 +48,23 @@ public class UserAccDbAccess implements IUserAccDbAccess {
 
     @Override
     public boolean checkValidity(String session_id) {
-        return (currentSession.isEmpty() && (!currentSession.isTracked(session_id)));
+        try {
+            return this.currentSessions.isValid(session_id);
+        } catch (SessionInvalidException e) {
+            log.log_Error("Session [", session_id, "] does not exist in the tracker.");
+            return false;
+        }
     }
 
     @Override
     public void openSession(String session_id, Date expiry) throws SessionException {
 
-        try {
-            if (currentSession.isValid(session_id)) {
-                if (!currentSession.exists(session_id)) {
-                    currentSession.addSession(session_id, expiry);
-                }
-            }
-        } catch (SessionException e) {
-            log.log_Error("User database access with session_id: [", session_id, "] could not open");
-            throw new SessionException("Session could not open.", e);
-        }
+        this.currentSessions.addSession(session_id, expiry);
     }
 
     @Override
     public void closeSession(String session_id) throws SessionInvalidException {
-        try {
-            if (currentSession.getSessionType(session_id) == null) {
-                currentSession.removeSession(session_id);
-            }
-        } catch (SessionInvalidException e) {
-            log.log_Error(" User database access with session_id: [", session_id, "] could not close");
-            throw new SessionInvalidException("Expired session could not close", e);
-        }
+        this.currentSessions.removeSession(session_id);
     }
 
     @Override

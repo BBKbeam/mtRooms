@@ -31,7 +31,9 @@ public interface IDatabase {
      * @return ResultSet of the query
      * @throws DbQueryException when querying the DB fails
      */
-    public ResultSet queryDB(String query) throws DbQueryException;
+    public boolean queryDB(String query) throws DbQueryException;
+
+    //public int queryDB(String query, ObjectTable table ) throws DbQueryException;
 
     /**
      * Checks if the connected flag is raised

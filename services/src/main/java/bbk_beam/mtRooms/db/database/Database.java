@@ -76,6 +76,7 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
                 log.log_Trace("No data from query: ", query);
             }
             return resultSet;
+            //TODO modify so that ResultSet's scope in kept in this method. Needs a alternate DS for transporting the data to other methods...
         } catch (SQLException e) {
             log.log_Error("Problem encountered passing query: ", query);
             throw new DbQueryException("Could not process query to DB.", e);

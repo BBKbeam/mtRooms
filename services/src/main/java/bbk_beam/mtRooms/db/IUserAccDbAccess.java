@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.db;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionException;
+import eadjlib.datastructure.ObjectTable;
 
 import java.sql.ResultSet;
 import java.util.Date;
@@ -37,8 +38,18 @@ public interface IUserAccDbAccess {
      * Passes a SQL query to the database
      *
      * @param query SQL Query
-     * @return ResultSet of query
-     * @throws DbQueryException When a problem was encountered processing the query
+     * @return Success
+     * @throws DbQueryException when a problem was encountered whilst processing the query
      */
-    public ResultSet queryDB(String query) throws DbQueryException;
+    public boolean queryDB(String query) throws DbQueryException;
+
+    /**
+     * Passes a SQL query to the database
+     *
+     * @param query SQL Query
+     * @param table Result set container
+     * @return Number of rows returned
+     * @throws DbQueryException when a problem was encountered whilst processing the query
+     */
+    public int queryDB(String query, ObjectTable table) throws DbQueryException;
 }

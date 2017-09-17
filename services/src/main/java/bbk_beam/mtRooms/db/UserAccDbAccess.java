@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.db;
 import bbk_beam.mtRooms.db.database.IUserAccDb;
 import bbk_beam.mtRooms.db.exception.*;
 import bbk_beam.mtRooms.db.session.ICurrentSessions;
+import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
 import java.sql.ResultSet;
@@ -58,7 +59,6 @@ public class UserAccDbAccess implements IUserAccDbAccess {
 
     @Override
     public void openSession(String session_id, Date expiry) throws SessionException {
-
         this.currentSessions.addSession(session_id, expiry);
     }
 
@@ -68,7 +68,13 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
-    public ResultSet queryDB(String query) throws DbQueryException {
+    public boolean queryDB(String query) throws DbQueryException {
         return this.db.queryDB(query);
     }
+
+    @Override
+    public int queryDB(String query, ObjectTable table) throws DbQueryException {
+        return this.db.queryDB(query, table);
+    }
+
 }

@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.db.database;
 
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.DbEmptyException;
+import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
 import java.sql.*;
@@ -59,7 +60,27 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
     }
 
     @Override
-    public ResultSet queryDB(String query) throws DbQueryException {
+    public boolean queryDB(String query) throws DbQueryException {
+        try {
+            //Error control
+            if (this.connection == null) {
+                log.log_Error("Cannot execute query \"", query, "\" to a null DB connection.");
+                throw new DbQueryException("Database connection does not exist.");
+            } else if (this.connection.isClosed()) {
+                log.log_Error("Cannot execute query \"", query, "\" to a disconnected DB.");
+                throw new DbQueryException("Database is not connected.");
+            }
+            //Query processing
+            Statement statement = this.connection.createStatement();
+            return statement.execute(query);
+        } catch (SQLException e) {
+            log.log_Error("Problem encountered executing query: ", query);
+            throw new DbQueryException("Could not process query to DB.", e);
+        }
+    }
+
+    @Override
+    public int queryDB(String query, ObjectTable table) throws DbQueryException {
         try {
             //Error control
             if (this.connection == null) {
@@ -74,9 +95,17 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
             ResultSet resultSet = statement.executeQuery(query);
             if (!resultSet.isBeforeFirst()) {
                 log.log_Trace("No data from query: ", query);
+                return 0;
+            } else {
+                ResultSetMetaData metadata = resultSet.getMetaData();
+                int cols = metadata.getColumnCount();
+                while (resultSet.next()) {
+                    for (int i = 1; i <= cols; ++i) {
+                        table.add(resultSet.getObject(i));
+                    }
+                }
+                return table.rowCount();
             }
-            return resultSet;
-            //TODO modify so that ResultSet's scope in kept in this method. Needs a alternate DS for transporting the data to other methods...
         } catch (SQLException e) {
             log.log_Error("Problem encountered passing query: ", query);
             throw new DbQueryException("Could not process query to DB.", e);

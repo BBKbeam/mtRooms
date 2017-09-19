@@ -93,6 +93,5 @@ public class ReservationDbAccessTest {
         ReservationDbAccess reservation_access = new ReservationDbAccess(mocked_SessionTracker, mocked_Database);
         //Session Tracker
         when(mocked_SessionTracker.isValid("test_session_0001")).thenReturn(true);
-
     }
 }

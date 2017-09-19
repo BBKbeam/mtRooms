@@ -1,11 +1,10 @@
 package bbk_beam.mtRooms.db;
 
 import bbk_beam.mtRooms.db.exception.DbQueryException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import eadjlib.datastructure.ObjectTable;
 
-import java.sql.ResultSet;
 import java.util.Date;
 
 public interface IUserAccDbAccess {

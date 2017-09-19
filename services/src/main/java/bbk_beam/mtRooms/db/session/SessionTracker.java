@@ -21,7 +21,7 @@ public class SessionTracker implements ICurrentSessions {
 
     @Override
     public void addSession(String session_id, Date expiry) throws SessionException {
-        if (this.tracker.containsValue(session_id)) {
+        if (this.tracker.containsKey(session_id)) {
             throw new SessionException("Trying to track an already tracked session ID");
         } else {
             this.tracker.put(session_id, expiry);

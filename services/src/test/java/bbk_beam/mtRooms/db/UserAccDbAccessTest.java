@@ -116,17 +116,4 @@ public class UserAccDbAccessTest {
         UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
         userAccDbAccess.closeSession( "0001");
     }
-
-    @org.junit.Test
-    public void queryDB() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
-    }
-
-    @org.junit.Test
-    public void queryDB1() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
-    }
-
 }

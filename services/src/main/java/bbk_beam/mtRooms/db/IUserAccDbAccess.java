@@ -40,15 +40,14 @@ public interface IUserAccDbAccess {
      * @return Success
      * @throws DbQueryException when a problem was encountered whilst processing the query
      */
-    public boolean queryDB(String query) throws DbQueryException;
+    public boolean pushToDB(String query) throws DbQueryException;
 
     /**
      * Passes a SQL query to the database
      *
      * @param query SQL Query
-     * @param table Result set container
-     * @return Number of rows returned
+     * @return Result set container
      * @throws DbQueryException when a problem was encountered whilst processing the query
      */
-    public int queryDB(String query, ObjectTable table) throws DbQueryException;
+    public ObjectTable pullFromDB(String query) throws DbQueryException;
 }

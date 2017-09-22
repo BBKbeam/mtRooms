@@ -6,7 +6,6 @@ import bbk_beam.mtRooms.db.session.ICurrentSessions;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ReservationDbAccess implements IReservationDbAccess {
@@ -46,10 +45,10 @@ public class ReservationDbAccess implements IReservationDbAccess {
     }
 
     @Override
-    public boolean queryDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public boolean pushToDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         try {
             if (sessions.isValid(session_id)) {
-                return this.db.queryDB(query);
+                return this.db.push(query);
             } else {
                 log.log_Error("Session [", session_id, "] has expired.");
                 throw new SessionExpiredException("Session (id: " + session_id + ") has expired.");
@@ -61,10 +60,10 @@ public class ReservationDbAccess implements IReservationDbAccess {
     }
 
     @Override
-    public int queryDB(String session_id, String query, ObjectTable table) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public ObjectTable pullFromDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         try {
             if (sessions.isValid(session_id)) {
-                return this.db.queryDB(query, table);
+                return this.db.pull(query);
             } else {
                 log.log_Error("Session [", session_id, "] has expired.");
                 throw new SessionExpiredException("Session (id: " + session_id + ") has expired.");

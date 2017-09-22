@@ -32,17 +32,16 @@ public interface IDatabase {
      * @return Success
      * @throws DbQueryException when querying the DB fails
      */
-    public boolean queryDB(String query) throws DbQueryException;
+    public boolean push(String query) throws DbQueryException;
 
     /**
      * Query the Database
      *
      * @param query Database query string
-     * @param table Container for result set
-     * @return Number of rows fetched
+     * @return ObjectTable containing the result set
      * @throws DbQueryException when querying the DB fails
      */
-    public int queryDB(String query, ObjectTable table) throws DbQueryException;
+    public ObjectTable pull(String query) throws DbQueryException;
 
     /**
      * Checks if the connected flag is raised

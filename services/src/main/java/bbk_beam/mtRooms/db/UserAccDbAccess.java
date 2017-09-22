@@ -6,7 +6,6 @@ import bbk_beam.mtRooms.db.session.ICurrentSessions;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 
@@ -68,13 +67,13 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
-    public boolean queryDB(String query) throws DbQueryException {
-        return this.db.queryDB(query);
+    public boolean pushToDB(String query) throws DbQueryException {
+        return this.db.push(query);
     }
 
     @Override
-    public int queryDB(String query, ObjectTable table) throws DbQueryException {
-        return this.db.queryDB(query, table);
+    public ObjectTable pullFromDB(String query) throws DbQueryException {
+        return this.db.pull(query);
     }
 
 }

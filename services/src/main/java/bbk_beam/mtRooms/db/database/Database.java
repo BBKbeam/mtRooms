@@ -6,6 +6,8 @@ import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Database implements IDatabase, IUserAccDb, IReservationDb {
     private final Logger log = Logger.getLoggerInstance(Database.class.getName());
@@ -60,7 +62,7 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
     }
 
     @Override
-    public boolean queryDB(String query) throws DbQueryException {
+    public boolean push(String query) throws DbQueryException {
         try {
             //Error control
             if (this.connection == null) {
@@ -80,7 +82,7 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
     }
 
     @Override
-    public int queryDB(String query, ObjectTable table) throws DbQueryException {
+    public ObjectTable pull(String query) throws DbQueryException {
         try {
             //Error control
             if (this.connection == null) {
@@ -93,22 +95,31 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
             //Query processing
             Statement statement = this.connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
+            ResultSetMetaData metadata = resultSet.getMetaData();
+            //Create ObjectTable with column headings
+            List<String> headings = new ArrayList<>();
+            for( int i = 1; i <= metadata.getColumnCount(); i++ ) {
+                headings.add(metadata.getColumnName(i));
+            }
+            ObjectTable table = new ObjectTable( headings );
+            //Loading result set into table
             if (!resultSet.isBeforeFirst()) {
                 log.log_Trace("No data from query: ", query);
-                return 0;
             } else {
-                ResultSetMetaData metadata = resultSet.getMetaData();
                 int cols = metadata.getColumnCount();
                 while (resultSet.next()) {
                     for (int i = 1; i <= cols; ++i) {
                         table.add(resultSet.getObject(i));
                     }
                 }
-                return table.rowCount();
             }
+            return table;
         } catch (SQLException e) {
             log.log_Error("Problem encountered passing query: ", query);
             throw new DbQueryException("Could not process query to DB.", e);
+        } catch( RuntimeException e ) {
+            log.log_Error("No data returned from query execution (0x0 table): ", query);
+            throw new DbQueryException("No data returned from query execution (0x0 table).", e);
         }
     }
 

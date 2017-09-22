@@ -3,10 +3,11 @@ package bbk_beam.mtRooms.db.database;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import eadjlib.logger.Logger;
 
-public class DatabaseBuilder {
+class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
+    //Update when adding/removing tables from schema
     private final int reservation_table_count = 1;
-    private final int user_table_count = 0;
+    private final int user_table_count = -1;
     //TODO DB setup tool
     //i.e.: create all the tables and structures required for a new blank db
 
@@ -16,7 +17,7 @@ public class DatabaseBuilder {
      * @param db Database instance
      * @return Success
      */
-    public boolean buildReservationDB(IDatabase db) {
+    boolean buildReservationDB(IDatabase db) {
         int build_count = 0;
         //TODO
         if( buildTable_Building( db ) ) build_count++;
@@ -30,9 +31,10 @@ public class DatabaseBuilder {
      * @param db Database instance
      * @return Success
      */
-    public boolean buildUserAccDB(IDatabase db) {
+    boolean buildUserAccDB(IDatabase db) {
+        int build_count = 0;
         //TODO
-        return false;
+        return user_table_count == build_count;
     }
 
     private boolean buildTable_Building(IDatabase db) {
@@ -46,7 +48,7 @@ public class DatabaseBuilder {
                 + "telephone VARCHAR(50) "
                 + ")";
         try {
-            db.queryDB( query );
+            db.push( query );
             return true;
         } catch (DbQueryException e) {
             log.log_Error( "Issue encountered processing query: ", query );

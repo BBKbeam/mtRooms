@@ -6,6 +6,7 @@ import bbk_beam.mtRooms.db.exception.DbEmptyException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.session.SessionTracker;
+import eadjlib.datastructure.ObjectTable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -13,6 +14,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -62,7 +64,7 @@ public class ReservationDbAccessTest {
     }
 
     @Test(expected = SessionInvalidException.class)
-    public void queryDB_with_invalid_session() throws Exception {
+    public void pullFromDB_with_invalid_session() throws Exception {
         //Constructor
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkReservationDB()).thenReturn(true);
@@ -70,11 +72,11 @@ public class ReservationDbAccessTest {
         //Session Tracker
         when(mocked_SessionTracker.isValid("test_session_0001")).thenThrow(new SessionInvalidException(""));
         //Test
-        reservation_access.queryDB("test_session_0001", "SELECT * FROM sometable;");
+        reservation_access.pullFromDB("test_session_0001", "SELECT * FROM sometable;");
     }
 
     @Test(expected = SessionExpiredException.class)
-    public void queryDB_with_expired_session() throws Exception {
+    public void pullFromDB_with_expired_session() throws Exception {
         //Constructor
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkReservationDB()).thenReturn(true);
@@ -82,16 +84,21 @@ public class ReservationDbAccessTest {
         //Session Tracker
         when(mocked_SessionTracker.isValid("test_session_0001")).thenReturn(false);
         //Test
-        reservation_access.queryDB("test_session_0001", "SELECT * FROM sometable;");
+        reservation_access.pullFromDB("test_session_0001", "SELECT * FROM sometable;");
     }
 
     @Test
-    public void queryDB() throws Exception {
+    public void pullFromDB() throws Exception {
         //Constructor
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkReservationDB()).thenReturn(true);
         ReservationDbAccess reservation_access = new ReservationDbAccess(mocked_SessionTracker, mocked_Database);
         //Session Tracker
         when(mocked_SessionTracker.isValid("test_session_0001")).thenReturn(true);
+        //Database
+        ObjectTable table = new ObjectTable("Column1");
+        doReturn(table).when(mocked_Database).pull("SELECT * FROM sometable");
+        //Test
+        Assert.assertEquals(table, reservation_access.pullFromDB("test_session_0001", "SELECT * FROM sometable"));
     }
 }

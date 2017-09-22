@@ -40,7 +40,7 @@ public interface ICurrentSessions {
      * @param session_id Session ID
      * @return Expiry date or null if not found
      */
-    public Date getSessionType(String session_id);
+    public Date getSessionExpiry(String session_id);
 
     /**
      * Gets the existence state of a session in the tracker

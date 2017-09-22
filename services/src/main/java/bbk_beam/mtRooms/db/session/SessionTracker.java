@@ -41,7 +41,7 @@ public class SessionTracker implements ICurrentSessions {
     }
 
     @Override
-    public Date getSessionType(String session_id) {
+    public Date getSessionExpiry(String session_id) {
         return this.tracker.get(session_id);
     }
 

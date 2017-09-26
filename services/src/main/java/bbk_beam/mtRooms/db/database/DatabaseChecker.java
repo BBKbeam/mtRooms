@@ -39,7 +39,7 @@ class DatabaseChecker {
      */
     boolean checkUserAccDB(IDatabase db) throws DbEmptyException {
         int check_count = 0;
-        //TODO
+        //TODO UserAccDb table checks
 
         return user_table_count == check_count;
     }

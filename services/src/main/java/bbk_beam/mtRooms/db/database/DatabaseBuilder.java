@@ -34,8 +34,25 @@ class DatabaseBuilder {
      */
     boolean buildUserAccDB(IDatabase db) {
         int build_count = 0;
-        //TODO
+        //TODO UserAccDB table builds
         return user_table_count == build_count;
+    }
+
+    /**
+     * Pushes a query to the database
+     *
+     * @param db    Database instance
+     * @param query Query to pass
+     * @return Success of query
+     */
+    protected boolean pushQuery(IDatabase db, String query) {
+        try {
+            return db.push(query);
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
     }
 
     private boolean buildTable_Building(IDatabase db) {
@@ -48,13 +65,7 @@ class DatabaseBuilder {
                 + "country VARCHAR(145), "
                 + "telephone VARCHAR(50) "
                 + ")";
-        try {
-            return db.push(query);
-        } catch (DbQueryException e) {
-            log.log_Error("Issue encountered processing query: ", query);
-            log.log_Exception(e);
-            return false;
-        }
+        return pushQuery(db, query);
     }
 
     private boolean buildTable_Floor(IDatabase db) {
@@ -65,12 +76,6 @@ class DatabaseBuilder {
                 + "UNIQUE( id, building_id ), "
                 + "PRIMARY KEY( id, building_id ) "
                 + ")";
-        try {
-            return db.push(query);
-        } catch (DbQueryException e) {
-            log.log_Error("Issue encountered processing query: ", query);
-            log.log_Exception(e);
-            return false;
-        }
+        return pushQuery(db, query);
     }
 }

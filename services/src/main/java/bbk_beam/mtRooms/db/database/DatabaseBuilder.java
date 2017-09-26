@@ -6,7 +6,7 @@ import eadjlib.logger.Logger;
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 6;
+    private final int reservation_table_count = 7;
     private final int user_table_count = -1;
     //TODO DB setup tool
     //i.e.: create all the tables and structures required for a new blank db
@@ -25,6 +25,7 @@ class DatabaseBuilder {
         if (buildTable_RoomCategory(db)) build_count++;
         if (buildTable_RoomPrice(db)) build_count++;
         if (buildTable_RoomFixtures(db)) build_count++;
+        if (buildTable_Room(db)) build_count++;
         if (buildTable_PaymentMethod(db)) build_count++;
 
         return reservation_table_count == build_count;
@@ -76,6 +77,7 @@ class DatabaseBuilder {
         String query = "CREATE TABLE Floor( "
                 + "id INTEGER NOT NULL, "
                 + "building_id INTEGER NOT NULL, "
+                + "description VARCHAR(50) NOT NULL, "
                 + "FOREIGN KEY(building_id) REFERENCES Building(id) ON DELETE CASCADE, "
                 + "UNIQUE( id, building_id ), "
                 + "PRIMARY KEY( id, building_id ) "
@@ -108,6 +110,20 @@ class DatabaseBuilder {
                 + "catering_space BOOLEAN NOT NULL, "
                 + "whiteboard BOOLEAN NOT NULL, "
                 + "projector BOOLEAN NOT NULL "
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_Room(IDatabase db) {
+        String query = "CREATE TABLE Room( "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "floor_id INTEGER NOT NULL, "
+                + "room_category_id INTEGER NOT NULL, "
+                + "room_price_id INTEGER NOT NULL, "
+                + "description VARCHAR(255) NOT NULL, "
+                + "FOREIGN KEY(floor_id) REFERENCES Floor(id), "
+                + "FOREIGN KEY(room_category_id) REFERENCES RoomCategory(id), "
+                + "FOREIGN KEY(room_price_id) REFERENCES RoomPrice(id) "
                 + ")";
         return pushQuery(db, query);
     }

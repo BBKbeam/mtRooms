@@ -1,7 +1,7 @@
 package bbk_beam.mtRooms.db.database;
 
-import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.DbEmptyException;
+import bbk_beam.mtRooms.db.exception.DbQueryException;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -33,9 +33,14 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
             }
             connection = DriverManager.getConnection("jdbc:sqlite:" + this.path);
             connected_flag = true;
-            return true;
+            if (!push("PRAGMA foreign_keys = ON;"))
+                log.log_Error("Could not switch on foreign key support in DB.");
+            return connected_flag;
         } catch (SQLException e) {
             log.log_Error("Could not connect to DB:'", this.path, "'.");
+            log.log_Exception(e);
+        } catch (DbQueryException e) {
+            log.log_Error("Could not switch on foreign key support in DB.");
             log.log_Exception(e);
         }
         return false;
@@ -74,7 +79,10 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
             }
             //Query processing
             Statement statement = this.connection.createStatement();
-            return statement.execute(query);
+            if (statement.execute(query)) {
+                log.log_Error("ResultSet returned in push(query) method. Use pull(..) method instead. Query: ", query);
+            }
+            return true;
         } catch (SQLException e) {
             log.log_Error("Problem encountered executing query: ", query);
             throw new DbQueryException("Could not process query to DB.", e);
@@ -98,10 +106,10 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
             ResultSetMetaData metadata = resultSet.getMetaData();
             //Create ObjectTable with column headings
             List<String> headings = new ArrayList<>();
-            for( int i = 1; i <= metadata.getColumnCount(); i++ ) {
+            for (int i = 1; i <= metadata.getColumnCount(); i++) {
                 headings.add(metadata.getColumnName(i));
             }
-            ObjectTable table = new ObjectTable( headings );
+            ObjectTable table = new ObjectTable(headings);
             //Loading result set into table
             if (!resultSet.isBeforeFirst()) {
                 log.log_Trace("No data from query: ", query);
@@ -117,7 +125,7 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
         } catch (SQLException e) {
             log.log_Error("Problem encountered passing query: ", query);
             throw new DbQueryException("Could not process query to DB.", e);
-        } catch( RuntimeException e ) {
+        } catch (RuntimeException e) {
             log.log_Error("No data returned from query execution (0x0 table): ", query);
             throw new DbQueryException("No data returned from query execution (0x0 table).", e);
         }

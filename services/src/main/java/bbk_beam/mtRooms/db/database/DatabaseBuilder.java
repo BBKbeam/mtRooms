@@ -47,7 +47,7 @@ class DatabaseBuilder {
      * @param query Query to pass
      * @return Success of query
      */
-    protected boolean pushQuery(IDatabase db, String query) {
+    private boolean pushQuery(IDatabase db, String query) {
         try {
             return db.push(query);
         } catch (DbQueryException e) {

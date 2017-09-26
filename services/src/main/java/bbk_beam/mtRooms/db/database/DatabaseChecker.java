@@ -53,8 +53,8 @@ class DatabaseChecker {
      * @param columnMetaData Column meta-data from database
      * @return Validity
      */
-    protected boolean checkColumn(ColProperty colProperty,
-                                  HashMap<String, Object> columnMetaData) {
+    private boolean checkColumn(ColProperty colProperty,
+                                HashMap<String, Object> columnMetaData) {
         boolean ok_flag = true;
         if (!columnMetaData.get("type").equals(colProperty.getType())) {
             log.log_Error(colProperty, " (type): expected '", colProperty.getType(), "', got '", columnMetaData.get("type"), "'");

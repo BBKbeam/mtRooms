@@ -10,7 +10,7 @@ import java.util.HashMap;
 class DatabaseChecker {
     private final Logger log = Logger.getLoggerInstance(DatabaseChecker.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 5;
+    private final int reservation_table_count = 6;
     private final int user_table_count = -1;
     //TODO DB Checker tool
 
@@ -29,6 +29,7 @@ class DatabaseChecker {
         if (checkTable_RoomCategory(db)) check_count++;
         if (checkTable_RoomPrice(db)) check_count++;
         if (checkTable_RoomFixtures(db)) check_count++;
+        if (checkTable_PaymentMethod(db)) check_count++;
 
         return reservation_table_count == check_count;
     }
@@ -316,6 +317,42 @@ class DatabaseChecker {
             }
             if (checked != column_count) {
                 log.log_Error("'RoomFixtures' table does not have the required columns (", checked, "/", column_count, ").'");
+                ok_flag = false;
+            }
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
+
+    private boolean checkTable_PaymentMethod(IDatabase db) {
+        final int column_count = 2;
+        String query = "PRAGMA table_info( PaymentMethod )";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("PaymentMethod", "id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+                if (row.get("name").equals("description")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("PaymentMethod", "description", "VARCHAR(255)", true, null, 0),
+                            row
+                    );
+                }
+            }
+            if (checked != column_count) {
+                log.log_Error("'PaymentMethod' table does not have the required columns (", checked, "/", column_count, ").'");
                 ok_flag = false;
             }
             return ok_flag;

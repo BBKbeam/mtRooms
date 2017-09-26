@@ -6,7 +6,7 @@ import eadjlib.logger.Logger;
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 5;
+    private final int reservation_table_count = 6;
     private final int user_table_count = -1;
     //TODO DB setup tool
     //i.e.: create all the tables and structures required for a new blank db
@@ -25,6 +25,7 @@ class DatabaseBuilder {
         if (buildTable_RoomCategory(db)) build_count++;
         if (buildTable_RoomPrice(db)) build_count++;
         if (buildTable_RoomFixtures(db)) build_count++;
+        if (buildTable_PaymentMethod(db)) build_count++;
 
         return reservation_table_count == build_count;
     }
@@ -107,6 +108,14 @@ class DatabaseBuilder {
                 + "catering_space BOOLEAN NOT NULL, "
                 + "whiteboard BOOLEAN NOT NULL, "
                 + "projector BOOLEAN NOT NULL "
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_PaymentMethod(IDatabase db) {
+        String query = "CREATE TABLE PaymentMethod( "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "description VARCHAR(255) NOT NULL "
                 + ")";
         return pushQuery(db, query);
     }

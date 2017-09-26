@@ -6,7 +6,7 @@ import eadjlib.logger.Logger;
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 4;
+    private final int reservation_table_count = 5;
     private final int user_table_count = -1;
     //TODO DB setup tool
     //i.e.: create all the tables and structures required for a new blank db
@@ -24,6 +24,7 @@ class DatabaseBuilder {
         if (buildTable_Floor(db)) build_count++;
         if (buildTable_RoomCategory(db)) build_count++;
         if (buildTable_RoomPrice(db)) build_count++;
+        if (buildTable_RoomFixtures(db)) build_count++;
 
         return reservation_table_count == build_count;
     }
@@ -83,7 +84,7 @@ class DatabaseBuilder {
 
     private boolean buildTable_RoomCategory(IDatabase db) {
         String query = "CREATE TABLE RoomCategory( "
-                + "id INTEGER PRIMARY KEY NOT NULL, "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "capacity INTEGER NOT NULL, "
                 + "dimension INTEGER "
                 + ")";
@@ -92,9 +93,20 @@ class DatabaseBuilder {
 
     private boolean buildTable_RoomPrice(IDatabase db) {
         String query = "CREATE TABLE RoomPrice( "
-                + "id INTEGER PRIMARY KEY NOT NULL, "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "year INTEGER NOT NULL, "
                 + "room_price INTEGER NOT NULL "
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_RoomFixtures(IDatabase db) {
+        String query = "CREATE TABLE RoomFixtures( "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "fixed_chairs BOOLEAN NOT NULL, "
+                + "catering_space BOOLEAN NOT NULL, "
+                + "whiteboard BOOLEAN NOT NULL, "
+                + "projector BOOLEAN NOT NULL "
                 + ")";
         return pushQuery(db, query);
     }

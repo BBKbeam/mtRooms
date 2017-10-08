@@ -10,7 +10,7 @@ import java.util.HashMap;
 class DatabaseChecker {
     private final Logger log = Logger.getLoggerInstance(DatabaseChecker.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 7;
+    private final int reservation_table_count = 9;
     private final int user_table_count = -1;
     //TODO DB Checker tool
 
@@ -30,6 +30,8 @@ class DatabaseChecker {
         if (checkTable_RoomPrice(db)) check_count++;
         if (checkTable_RoomFixtures(db)) check_count++;
         if (checkTable_Room(db)) check_count++;
+        if (checkTable_Room_has_RoomPrice(db)) check_count++;
+        if (checkTable_Room_had_RoomFixtures(db)) check_count++;
         if (checkTable_PaymentMethod(db)) check_count++;
 
         return reservation_table_count == check_count;
@@ -236,7 +238,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_RoomPrice(IDatabase db) {
-        final int column_count = 3;
+        final int column_count = 2;
         String query = "PRAGMA table_info( RoomPrice )";
         try {
             boolean ok_flag = true;
@@ -248,13 +250,6 @@ class DatabaseChecker {
                     checked++;
                     ok_flag = checkColumn(
                             new ColProperty("RoomPrice", "id", "INTEGER", true, null, 1),
-                            row
-                    );
-                }
-                if (row.get("name").equals("year")) {
-                    checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomPrice", "year", "INTEGER", true, null, 0),
                             row
                     );
                 }
@@ -336,7 +331,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_Room(IDatabase db) {
-        final int column_count = 5;
+        final int column_count = 4;
         String query = "PRAGMA table_info( Room )";
         try {
             boolean ok_flag = true;
@@ -365,13 +360,6 @@ class DatabaseChecker {
                             row
                     );
                 }
-                if (row.get("name").equals("room_price_id")) {
-                    checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room", "room_price_id", "INTEGER", true, null, 0),
-                            row
-                    );
-                }
                 if (row.get("name").equals("description")) {
                     checked++;
                     ok_flag = checkColumn(
@@ -382,6 +370,85 @@ class DatabaseChecker {
             }
             if (checked != column_count) {
                 log.log_Error("'Room' table does not have the required columns (", checked, "/", column_count, ").'");
+                ok_flag = false;
+            }
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
+
+    private boolean checkTable_Room_has_RoomPrice(IDatabase db) {
+        final int column_count = 3;
+        String query = "PRAGMA table_info( Room_has_RoomPrice )";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("room_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_RoomPrice", "room_id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+                if (row.get("name").equals("price_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_RoomPrice", "price_id", "INTEGER", true, null, 2),
+                            row
+                    );
+                }
+                if (row.get("name").equals("year")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_RoomPrice", "year", "INTEGER", true, null, 3),
+                            row
+                    );
+                }
+            }
+            if (checked != column_count) {
+                log.log_Error("'Room_has_RoomPrice' table does not have the required columns (", checked, "/", column_count, ").'");
+                ok_flag = false;
+            }
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
+
+    private boolean checkTable_Room_had_RoomFixtures(IDatabase db) {
+        final int column_count = 2;
+        String query = "PRAGMA table_info( Room_has_RoomFixtures )";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("room_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_RoomFixtures", "room_id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+                if (row.get("name").equals("room_fixture_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_RoomFixtures", "room_fixture_id", "INTEGER", true, null, 2),
+                            row
+                    );
+                }
+            }
+            if (checked != column_count) {
+                log.log_Error("'Room_has_RoomFixtures' table does not have the required columns (", checked, "/", column_count, ").'");
                 ok_flag = false;
             }
             return ok_flag;

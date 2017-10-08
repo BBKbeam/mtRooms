@@ -6,7 +6,7 @@ import eadjlib.logger.Logger;
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 7;
+    private final int reservation_table_count = 9;
     private final int user_table_count = -1;
     //TODO DB setup tool
     //i.e.: create all the tables and structures required for a new blank db
@@ -26,6 +26,8 @@ class DatabaseBuilder {
         if (buildTable_RoomPrice(db)) build_count++;
         if (buildTable_RoomFixtures(db)) build_count++;
         if (buildTable_Room(db)) build_count++;
+        if (buildTable_Room_has_RoomPrice(db)) build_count++;
+        if (buildTable_Room_has_RoomFixtures(db)) build_count++;
         if (buildTable_PaymentMethod(db)) build_count++;
 
         return reservation_table_count == build_count;
@@ -97,7 +99,6 @@ class DatabaseBuilder {
     private boolean buildTable_RoomPrice(IDatabase db) {
         String query = "CREATE TABLE RoomPrice( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                + "year INTEGER NOT NULL, "
                 + "room_price INTEGER NOT NULL "
                 + ")";
         return pushQuery(db, query);
@@ -119,11 +120,32 @@ class DatabaseBuilder {
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "floor_id INTEGER NOT NULL, "
                 + "room_category_id INTEGER NOT NULL, "
-                + "room_price_id INTEGER NOT NULL, "
                 + "description VARCHAR(255) NOT NULL, "
-                + "FOREIGN KEY(floor_id) REFERENCES Floor(id), "
-                + "FOREIGN KEY(room_category_id) REFERENCES RoomCategory(id), "
-                + "FOREIGN KEY(room_price_id) REFERENCES RoomPrice(id) "
+                + "FOREIGN KEY( floor_id ) REFERENCES Floor( id ), "
+                + "FOREIGN KEY( room_category_id ) REFERENCES RoomCategory( id ) "
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_Room_has_RoomPrice(IDatabase db) {
+        String query = "CREATE TABLE Room_has_RoomPrice( "
+                + "room_id INTEGER NOT NULL, "
+                + "price_id INTEGER NOT NULL, "
+                + "year INTEGER NOT NULL, "
+                + "FOREIGN KEY( room_id ) REFERENCES Room( id ), "
+                + "FOREIGN KEY( price_id ) REFERENCES RoomPrice( id ), "
+                + "PRIMARY KEY( room_id, price_id, year ) "
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_Room_has_RoomFixtures(IDatabase db) {
+        String query = "CREATE TABLE Room_has_RoomFixtures( "
+                + "room_id INTEGER NOT NULL, "
+                + "room_fixture_id INTEGER NOT NULL, "
+                + "FOREIGN KEY( room_id ) REFERENCES Room( id ), "
+                + "FOREIGN KEY( room_fixture_id ) REFERENCES RoomFixture( id ), "
+                + "PRIMARY KEY( room_id, room_fixture_id ) "
                 + ")";
         return pushQuery(db, query);
     }
@@ -135,4 +157,6 @@ class DatabaseBuilder {
                 + ")";
         return pushQuery(db, query);
     }
+
+
 }

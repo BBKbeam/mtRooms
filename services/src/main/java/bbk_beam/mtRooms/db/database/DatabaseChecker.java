@@ -238,7 +238,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_RoomPrice(IDatabase db) {
-        final int column_count = 2;
+        final int column_count = 3;
         String query = "PRAGMA table_info( RoomPrice )";
         try {
             boolean ok_flag = true;
@@ -253,10 +253,17 @@ class DatabaseChecker {
                             row
                     );
                 }
-                if (row.get("name").equals("room_price")) {
+                if (row.get("name").equals("price")) {
                     checked++;
                     ok_flag = checkColumn(
-                            new ColProperty("RoomPrice", "room_price", "INTEGER", true, null, 0),
+                            new ColProperty("RoomPrice", "price", "INTEGER", true, null, 0),
+                            row
+                    );
+                }
+                if( row.get("name").equals("year")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("RoomPrice", "year", "INTEGER", true, null, 0),
                             row
                     );
                 }
@@ -331,7 +338,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_Room(IDatabase db) {
-        final int column_count = 4;
+        final int column_count = 5;
         String query = "PRAGMA table_info( Room )";
         try {
             boolean ok_flag = true;
@@ -349,7 +356,14 @@ class DatabaseChecker {
                 if (row.get("name").equals("floor_id")) {
                     checked++;
                     ok_flag = checkColumn(
-                            new ColProperty("Room", "floor_id", "INTEGER", true, null, 0),
+                            new ColProperty("Room", "floor_id", "INTEGER", true, null, 2),
+                            row
+                    );
+                }
+                if (row.get("name").equals("building_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room", "building_id", "INTEGER", true, null, 3),
                             row
                     );
                 }
@@ -389,24 +403,24 @@ class DatabaseChecker {
             ObjectTable table = db.pull(query);
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_RoomPrice", "id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
                 if (row.get("name").equals("room_id")) {
                     checked++;
                     ok_flag = checkColumn(
-                            new ColProperty("Room_has_RoomPrice", "room_id", "INTEGER", true, null, 1),
+                            new ColProperty("Room_has_RoomPrice", "room_id", "INTEGER", true, null, 0),
                             row
                     );
                 }
                 if (row.get("name").equals("price_id")) {
                     checked++;
                     ok_flag = checkColumn(
-                            new ColProperty("Room_has_RoomPrice", "price_id", "INTEGER", true, null, 2),
-                            row
-                    );
-                }
-                if (row.get("name").equals("year")) {
-                    checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_RoomPrice", "year", "INTEGER", true, null, 3),
+                            new ColProperty("Room_has_RoomPrice", "price_id", "INTEGER", true, null, 0),
                             row
                     );
                 }

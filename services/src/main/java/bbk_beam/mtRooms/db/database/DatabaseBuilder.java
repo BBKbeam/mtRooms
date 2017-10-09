@@ -99,7 +99,8 @@ class DatabaseBuilder {
     private boolean buildTable_RoomPrice(IDatabase db) {
         String query = "CREATE TABLE RoomPrice( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                + "room_price INTEGER NOT NULL "
+                + "price INTEGER NOT NULL, "
+                + "year INTEGER NOT NULL "
                 + ")";
         return pushQuery(db, query);
     }
@@ -119,22 +120,25 @@ class DatabaseBuilder {
         String query = "CREATE TABLE Room( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "floor_id INTEGER NOT NULL, "
+                + "building_id INTEGER NOT NULL, "
                 + "room_category_id INTEGER NOT NULL, "
                 + "description VARCHAR(255) NOT NULL, "
                 + "FOREIGN KEY( floor_id ) REFERENCES Floor( id ), "
-                + "FOREIGN KEY( room_category_id ) REFERENCES RoomCategory( id ) "
+                + "FOREIGN KEY( building_id ) REFERENCES Floor( building_id ), "
+                + "FOREIGN KEY( room_category_id ) REFERENCES RoomCategory( id ), "
+                + "PRIMARY KEY( id, floor_id, building_id ) "
                 + ")";
         return pushQuery(db, query);
     }
 
     private boolean buildTable_Room_has_RoomPrice(IDatabase db) {
         String query = "CREATE TABLE Room_has_RoomPrice( "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "room_id INTEGER NOT NULL, "
                 + "price_id INTEGER NOT NULL, "
-                + "year INTEGER NOT NULL, "
                 + "FOREIGN KEY( room_id ) REFERENCES Room( id ), "
                 + "FOREIGN KEY( price_id ) REFERENCES RoomPrice( id ), "
-                + "PRIMARY KEY( room_id, price_id, year ) "
+                + "UNIQUE( room_id, price_id ) "
                 + ")";
         return pushQuery(db, query);
     }

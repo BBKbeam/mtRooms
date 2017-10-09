@@ -118,7 +118,7 @@ class DatabaseBuilder {
 
     private boolean buildTable_Room(IDatabase db) {
         String query = "CREATE TABLE Room( "
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "id INTEGER NOT NULL, "
                 + "floor_id INTEGER NOT NULL, "
                 + "building_id INTEGER NOT NULL, "
                 + "room_category_id INTEGER NOT NULL, "
@@ -161,6 +161,5 @@ class DatabaseBuilder {
                 + ")";
         return pushQuery(db, query);
     }
-
 
 }

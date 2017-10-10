@@ -6,7 +6,7 @@ import eadjlib.logger.Logger;
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 9;
+    private final int reservation_table_count = 11;
     private final int user_table_count = -1;
     //TODO DB setup tool
     //i.e.: create all the tables and structures required for a new blank db
@@ -29,7 +29,15 @@ class DatabaseBuilder {
         if (buildTable_Room_has_RoomPrice(db)) build_count++;
         if (buildTable_Room_has_RoomFixtures(db)) build_count++;
         if (buildTable_PaymentMethod(db)) build_count++;
+        if (buildTable_DiscountCategory(db)) build_count++;
+        if (buildTable_Discount(db)) build_count++;
 
+        /** tables to do
+         * Customer
+         * MembershipType
+         * Reservation
+         * Room_has_Reservation
+         */
         return reservation_table_count == build_count;
     }
 
@@ -162,4 +170,21 @@ class DatabaseBuilder {
         return pushQuery(db, query);
     }
 
+    private boolean buildTable_DiscountCategory(IDatabase db) {
+        String query = "CREATE TABLE DiscountCategory( "
+                + "id INTEGER PRIMARY KEY NOT NULL, "
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_Discount(IDatabase db) {
+        String query = "CREATE TABLE Discount( "
+                + "id INTEGER AUTOINCREMENT NOT NULL, "
+                + "discount_rate DOUBLE NOT NULL, "
+                + "discount_category_id INTEGER NOT NULL,"
+                + "PRIMARY KEY( id, discount_category_id ),"
+                + "FOREIGN KEY(discount_category_id) REFERENCES DiscountCategory(id)"
+                + ")";
+        return pushQuery(db, query);
+    }
 }

@@ -11,7 +11,7 @@ class DatabaseChecker {
     private final Logger log = Logger.getLoggerInstance(DatabaseChecker.class.getName());
     //Update when adding/removing tables from schema
     private final int reservation_table_count = 11;
-    private final int user_table_count = -1;
+    private final int user_table_count = 2;
     //TODO DB Checker tool
 
     /**
@@ -47,8 +47,8 @@ class DatabaseChecker {
      */
     boolean checkUserAccDB(IDatabase db) throws DbEmptyException {
         int check_count = 0;
-        //TODO UserAccDb table checks
-
+        if (checkTable_AccountType(db)) check_count++;
+        if (checkTable_UserAccount(db)) check_count++;
         return user_table_count == check_count;
     }
 
@@ -81,6 +81,7 @@ class DatabaseChecker {
         return ok_flag;
     }
 
+    //=========================================Reservation Tables ======================================================
     private boolean checkTable_Building(IDatabase db) {
         final int column_count = 7;
         String query = "PRAGMA table_info( Building )";
@@ -589,7 +590,115 @@ class DatabaseChecker {
             log.log_Exception(e);
             return false;
         }
-
     }
 
+    //========================================User Account Tables ======================================================
+    private boolean checkTable_AccountType(IDatabase db) {
+        final int column_count = 2;
+        String query = "PRAGMA table_info( AccountType )";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("AccountType", "id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+                if (row.get("name").equals("description")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("AccountType", "description", "VARCHAR(255)", true, null, 0),
+                            row
+                    );
+                }
+            }
+            if (checked != column_count) {
+                log.log_Error("'AccountType' table does not have the required columns (", checked, "/", column_count, ").'");
+                ok_flag = false;
+            }
+            //TODO check there is admin and user types
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
+
+    private boolean checkTable_UserAccount(IDatabase db) {
+        final int column_count = 7;
+        String query = "PRAGMA table_info( UserAccount )";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("UserAccount", "id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+                if (row.get("name").equals("username")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("UserAccount", "username", "TEXT", true, null, 0),
+                            row
+                    );
+                }
+                if (row.get("name").equals("pwd_hash")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("UserAccount", "pwd_hash", "TEXT", true, null, 0),
+                            row
+                    );
+                }
+                if (row.get("name").equals("created")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("UserAccount", "created", "VARCHAR(255)", true, null, 0),
+                            row
+                    );
+                }
+                if (row.get("name").equals("last_pwd_change")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("UserAccount", "last_pwd_change", "VARCHAR(255)", true, null, 0),
+                            row
+                    );
+                }
+                if (row.get("name").equals("account_type_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("UserAccount", "account_type_id", "INTEGER", true, null, 0),
+                            row
+                    );
+                }
+                if (row.get("name").equals("active_state")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("UserAccount", "active_state", "BOOLEAN", true, null, 0),
+                            row
+                    );
+                }
+            }
+            if (checked != column_count) {
+                log.log_Error("'UserAccount' table does not have the required columns (", checked, "/", column_count, ").'");
+                ok_flag = false;
+            }
+            //TODO check there is at least 1 admin root account
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
 }

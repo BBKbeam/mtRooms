@@ -511,7 +511,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_DiscountCategory(IDatabase db) {
-        final int column_count = 1;
+        final int column_count = 2;
         String query = "PRAGMA table_info( DiscountCategory )";
         try {
             boolean ok_flag = true;
@@ -523,6 +523,13 @@ class DatabaseChecker {
                     checked++;
                     ok_flag = checkColumn(
                             new ColProperty("DiscountCategory", "id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+                if (row.get("name").equals("description")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("DiscountCategory", "description", "VARCHAR(255)", true, null, 0),
                             row
                     );
                 }
@@ -567,7 +574,7 @@ class DatabaseChecker {
                 if (row.get("name").equals("discount_category_id")) {
                     checked++;
                     ok_flag = checkColumn(
-                            new ColProperty("Discount", "discount_category_id", "INTEGER", true, null, 1),
+                            new ColProperty("Discount", "discount_category_id", "INTEGER", true, null, 0),
                             row
                     );
                 }

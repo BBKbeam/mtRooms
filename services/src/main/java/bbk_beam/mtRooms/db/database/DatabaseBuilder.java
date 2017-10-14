@@ -173,17 +173,17 @@ class DatabaseBuilder {
     private boolean buildTable_DiscountCategory(IDatabase db) {
         String query = "CREATE TABLE DiscountCategory( "
                 + "id INTEGER PRIMARY KEY NOT NULL, "
+                + "description VARCHAR(255) NOT NULL "
                 + ")";
         return pushQuery(db, query);
     }
 
     private boolean buildTable_Discount(IDatabase db) {
         String query = "CREATE TABLE Discount( "
-                + "id INTEGER AUTOINCREMENT NOT NULL, "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "discount_rate DOUBLE NOT NULL, "
-                + "discount_category_id INTEGER NOT NULL,"
-                + "PRIMARY KEY( id, discount_category_id ),"
-                + "FOREIGN KEY(discount_category_id) REFERENCES DiscountCategory(id)"
+                + "discount_category_id INTEGER NOT NULL, "
+                + "FOREIGN KEY( discount_category_id ) REFERENCES DiscountCategory( id ) "
                 + ")";
         return pushQuery(db, query);
     }

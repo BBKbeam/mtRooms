@@ -6,7 +6,7 @@ import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
-import sun.rmi.transport.ObjectTable;
+import eadjlib.datastructure.ObjectTable;
 
 public interface IAdminSession {
     /**

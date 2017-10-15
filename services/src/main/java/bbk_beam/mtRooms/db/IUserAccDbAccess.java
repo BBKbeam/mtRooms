@@ -18,6 +18,15 @@ public interface IUserAccDbAccess {
     public boolean checkValidity(String session_id);
 
     /**
+     * Gets the type of the session
+     *
+     * @param session_id Session ID
+     * @return Session type
+     * @throws SessionInvalidException when session ID is not tracked
+     */
+    public SessionType getSessionType(String session_id) throws SessionInvalidException;
+
+    /**
      * Opens a session with the database
      *
      * @param session_id Session ID

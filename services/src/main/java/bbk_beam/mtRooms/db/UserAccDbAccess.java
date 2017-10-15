@@ -58,6 +58,11 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
+    public SessionType getSessionType(String session_id) throws SessionInvalidException {
+        return this.currentSessions.getSessionType(session_id);
+    }
+
+    @Override
     public void openSession(String session_id, Date expiry, SessionType session_type) throws SessionException {
         this.currentSessions.addSession(session_id, expiry, session_type);
     }

@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.db;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 
 import java.util.Date;
@@ -23,7 +24,7 @@ public interface IUserAccDbAccess {
      * @param expiry     Expiry timestamp
      * @throws SessionException when session ID is already tracked
      */
-    public void openSession(String session_id, Date expiry) throws SessionException;
+    public void openSession(String session_id, Date expiry, SessionType session_type) throws SessionException;
 
     /**
      * Closes a session with the database

@@ -5,11 +5,8 @@ import eadjlib.logger.Logger;
 
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
-    //Update when adding/removing tables from schema
     private final int reservation_table_count = 15;
-    private final int user_table_count = -1;
-    //TODO DB setup tool
-    //i.e.: create all the tables and structures required for a new blank db
+    private final int user_table_count = 2;
 
     /**
      * Builds the Reservation database
@@ -19,7 +16,6 @@ class DatabaseBuilder {
      */
     boolean buildReservationDB(IDatabase db) {
         int build_count = 0;
-        //TODO
         if (buildTable_Building(db)) build_count++;
         if (buildTable_Floor(db)) build_count++;
         if (buildTable_RoomCategory(db)) build_count++;
@@ -35,7 +31,6 @@ class DatabaseBuilder {
         if (buildTable_Customer(db)) build_count++;
         if (buildTable_Reservation(db)) build_count++;
         if (buildTable_Room_has_Reservation(db)) build_count++;
-
         return reservation_table_count == build_count;
     }
 
@@ -47,7 +42,8 @@ class DatabaseBuilder {
      */
     boolean buildUserAccDB(IDatabase db) {
         int build_count = 0;
-        //TODO UserAccDB table builds
+        if (buildTable_AccountType(db)) build_count++;
+        if (buildTable_UserAccount(db)) build_count++;
         return user_table_count == build_count;
     }
 
@@ -68,6 +64,7 @@ class DatabaseBuilder {
         }
     }
 
+    //=========================================Reservation Tables ======================================================
     private boolean buildTable_Building(IDatabase db) {
         String query = "CREATE TABLE Building( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
@@ -171,17 +168,17 @@ class DatabaseBuilder {
     private boolean buildTable_DiscountCategory(IDatabase db) {
         String query = "CREATE TABLE DiscountCategory( "
                 + "id INTEGER PRIMARY KEY NOT NULL, "
+                + "description VARCHAR(255) NOT NULL "
                 + ")";
         return pushQuery(db, query);
     }
 
     private boolean buildTable_Discount(IDatabase db) {
         String query = "CREATE TABLE Discount( "
-                + "id INTEGER AUTOINCREMENT NOT NULL, "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "discount_rate DOUBLE NOT NULL, "
-                + "discount_category_id INTEGER NOT NULL,"
-                + "PRIMARY KEY( id, discount_category_id ),"
-                + "FOREIGN KEY(discount_category_id) REFERENCES DiscountCategory(id)"
+                + "discount_category_id INTEGER NOT NULL, "
+                + "FOREIGN KEY( discount_category_id ) REFERENCES DiscountCategory( id ) "
                 + ")";
         return pushQuery(db, query);
     }
@@ -268,4 +265,28 @@ class DatabaseBuilder {
      * http://www.sqlitetutorial.net/sqlite-autoincrement/
      */
 
+    //========================================User Account Tables ======================================================
+    private boolean buildTable_AccountType(IDatabase db) {
+        String query = "CREATE TABLE AccountType( "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "description VARCHAR(255) NOT NULL "
+                + ")";
+        //TODO Add admin, user types into table
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_UserAccount(IDatabase db) {
+        String query = "CREATE TABLE UserAccount( "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "username TEXT NOT NULL, "
+                + "pwd_hash TEXT NOT NULL, "
+                + "created VARCHAR(255) NOT NULL, "
+                + "last_pwd_change VARCHAR(255) NOT NULL, "
+                + "account_type_id INTEGER NOT NULL, "
+                + "active_state BOOLEAN NOT NULL, "
+                + "FOREIGN KEY( account_type_id ) REFERENCES AccountType( id ) "
+                + ")";
+        //TODO Add dummy root admin account
+        return pushQuery(db, query);
+    }
 }

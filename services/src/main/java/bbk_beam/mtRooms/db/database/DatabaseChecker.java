@@ -22,7 +22,6 @@ class DatabaseChecker {
      */
     boolean checkReservationDB(IDatabase db) throws DbEmptyException {
         int check_count = 0;
-        //TODO
         if (checkTable_Building(db)) check_count++;
         if (checkTable_Floor(db)) check_count++;
         if (checkTable_RoomCategory(db)) check_count++;

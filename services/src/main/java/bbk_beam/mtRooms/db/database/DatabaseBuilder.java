@@ -187,28 +187,28 @@ class DatabaseBuilder {
         String query = " CREATE TABLE MembershipType ( "
                 + "id INTEGER PRIMARY KEY  NOT NULL,"
                 + "discount_category_id INTEGER NOT NULL,"
-                + "FOREIGN KEY(discount_category_id) REFERENCES DiscountCategory(id),"
+                + "FOREIGN KEY(discount_category_id) REFERENCES DiscountCategory(id)"
                 + ")";
         return pushQuery(db, query);
     }
 
     private boolean buildTable_Customer(IDatabase db) {
         String query = " CREATE TABLE Customer ("
-                + "idCustomer INTEGER  NOT NULL"
-                + "membership_type_id INTEGER NOT NULL,"
-                + "customer_since DATE,"
-                + "title VARCHAR(10),"
-                + "name VARCHAR(45),"
-                + "address_1 VARCHAR(255),"
-                + "address_2 VARCHAR(255),"
-                + "city VARCHAR(150),"
-                + "county VARCHAR(145),"
-                + "country VARCHAR(145),"
-                + "postcode VARCHAR(15),"
-                + "telephone_1 INTEGER,"
-                + "telephone_2 INTEGER,"
-                + "email VARCHAR(145) NOT NULL,"
-                + "PRIMARY KEY (idCustomer, membership_type_id ),"
+                + "idCustomer INTEGER  NOT NULL, "
+                + "membership_type_id INTEGER NOT NULL, "
+                + "customer_since DATE, "
+                + "title VARCHAR(10), "
+                + "name VARCHAR(45), "
+                + "address_1 VARCHAR(255), "
+                + "address_2 VARCHAR(255), "
+                + "city VARCHAR(150), "
+                + "county VARCHAR(145), "
+                + "country VARCHAR(145), "
+                + "postcode VARCHAR(15), "
+                + "telephone_1 INTEGER, "
+                + "telephone_2 INTEGER, "
+                + "email VARCHAR(145) NOT NULL, "
+                + "PRIMARY KEY (idCustomer, membership_type_id ), "
                 + "FOREIGN KEY(membership_type_id) REFERENCES MembershipType(id)"
                 + ")";
 
@@ -254,7 +254,7 @@ class DatabaseBuilder {
                 + "FOREIGN KEY (payment_method_id) REFERENCES Reservation(payment_method_id),"
                 + "FOREIGN KEY (discount_id) REFERENCES Discount(id),"
                 + "FOREIGN KEY (discount_category_id) REFERENCES Discount(discount_category_id),"
-                + "FOREIGN KEY (has_room_price_id) REFERENCES Room_has_RoomPrice(id),"
+                + "FOREIGN KEY (has_room_price_id) REFERENCES Room_has_RoomPrice(id)"
                 + ")";
 
         return pushQuery(db, query);

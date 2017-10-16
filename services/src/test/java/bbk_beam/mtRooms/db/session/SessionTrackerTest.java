@@ -5,11 +5,9 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.time.Instant;
-
-import static org.junit.Assert.*;
 
 public class SessionTrackerTest {
     @Test(expected = SessionException.class)
@@ -52,7 +50,7 @@ public class SessionTrackerTest {
     public void getSessionExpiry() throws Exception {
         Date date = Date.from(Instant.now());
         SessionTracker sessionTracker = new SessionTracker();
-        Assert.assertNull( sessionTracker.getSessionExpiry("0001"));
+        Assert.assertNull(sessionTracker.getSessionExpiry("0001"));
         sessionTracker.addSession("0001", date);
         Assert.assertEquals(date, sessionTracker.getSessionExpiry("0001"));
         sessionTracker.removeSession("0001");

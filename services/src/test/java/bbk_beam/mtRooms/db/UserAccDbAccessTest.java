@@ -13,7 +13,6 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Date;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class UserAccDbAccessTest {
@@ -94,7 +93,7 @@ public class UserAccDbAccessTest {
         when(mocked_Database.setupUserAccDB()).thenReturn(true);
         doThrow(SessionException.class).when(mocked_SessionTracker).addSession("0001", date);
         UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
-        userAccDbAccess.openSession( "0001", date);
+        userAccDbAccess.openSession("0001", date);
     }
 
     @org.junit.Test
@@ -104,7 +103,7 @@ public class UserAccDbAccessTest {
         when(mocked_Database.setupUserAccDB()).thenReturn(true);
         doNothing().when(mocked_SessionTracker).removeSession("0001");
         UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
-        userAccDbAccess.closeSession( "0001");
+        userAccDbAccess.closeSession("0001");
     }
 
     @org.junit.Test(expected = SessionInvalidException.class)
@@ -114,6 +113,6 @@ public class UserAccDbAccessTest {
         when(mocked_Database.setupUserAccDB()).thenReturn(true);
         doThrow(SessionInvalidException.class).when(mocked_SessionTracker).removeSession("0001");
         UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
-        userAccDbAccess.closeSession( "0001");
+        userAccDbAccess.closeSession("0001");
     }
 }

@@ -1,11 +1,9 @@
 package bbk_beam.mtRooms.db;
 
 import bbk_beam.mtRooms.db.exception.DbQueryException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import eadjlib.datastructure.ObjectTable;
-
-import java.sql.ResultSet;
 
 public interface IReservationDbAccess {
 

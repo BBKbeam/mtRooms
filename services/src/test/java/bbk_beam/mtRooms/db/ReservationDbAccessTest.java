@@ -3,8 +3,8 @@ package bbk_beam.mtRooms.db;
 import bbk_beam.mtRooms.db.database.Database;
 import bbk_beam.mtRooms.db.exception.DbBuildException;
 import bbk_beam.mtRooms.db.exception.DbEmptyException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionTracker;
 import eadjlib.datastructure.ObjectTable;
 import org.junit.After;
@@ -14,9 +14,7 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class ReservationDbAccessTest {
     private Database mocked_Database;

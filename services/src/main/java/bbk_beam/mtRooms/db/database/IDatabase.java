@@ -3,7 +3,6 @@ package bbk_beam.mtRooms.db.database;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import eadjlib.datastructure.ObjectTable;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**

@@ -1,8 +1,8 @@
 package bbk_beam.mtRooms.db.session;
 
 import bbk_beam.mtRooms.db.ReservationDbAccess;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.exception.SessionException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import eadjlib.logger.Logger;
 
 import java.util.Date;

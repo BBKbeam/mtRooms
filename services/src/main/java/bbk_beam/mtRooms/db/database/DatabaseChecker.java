@@ -10,9 +10,8 @@ import java.util.HashMap;
 class DatabaseChecker {
     private final Logger log = Logger.getLoggerInstance(DatabaseChecker.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 11;
+    private final int reservation_table_count = 14;
     private final int user_table_count = 2;
-    //TODO DB Checker tool
 
     /**
      * Runs all the checks for the Reservation database
@@ -35,6 +34,10 @@ class DatabaseChecker {
         if (checkTable_PaymentMethod(db)) check_count++;
         if (checkTable_DiscountCategory(db)) check_count++;
         if (checkTable_Discount(db)) check_count++;
+        if (checkTable_MembershipType(db)) check_count++;
+        if (checkTable_Customer(db)) check_count++;
+        if (checkTable_Reservation(db)) check_count++;
+        if (checkTable_Room_has_Reservation(db)) check_count++;
         return reservation_table_count == check_count;
     }
 
@@ -262,7 +265,7 @@ class DatabaseChecker {
                             row
                     );
                 }
-                if( row.get("name").equals("year")) {
+                if (row.get("name").equals("year")) {
                     checked++;
                     ok_flag = checkColumn(
                             new ColProperty("RoomPrice", "year", "INTEGER", true, null, 0),
@@ -536,7 +539,7 @@ class DatabaseChecker {
                 }
             }
             if (checked != column_count) {
-                log.log_Error("'DiscountCategory' table does not have the required columns (", checked, "/", column_count, ").'");
+                log.log_Error("'DiscountCategory' table does not have the required columns (", checked, "/", column_count, ").");
                 ok_flag = false;
             }
             return ok_flag;
@@ -590,6 +593,354 @@ class DatabaseChecker {
             log.log_Exception(e);
             return false;
         }
+    }
+
+    private boolean checkTable_MembershipType(IDatabase db) {
+        final int column_count = 2;
+        String query = "PRAGMA table_info( MembershipType)";
+
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("MembershipType", "id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("discount_category_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("DiscountCategory", "discount_category_id", "INTEGER", true, null, 0),
+                            row
+                    );
+                }
+            }
+
+            if (checked != column_count) {
+                log.log_Error("'MembershipType' table does not have the required columns (", checked, "/", column_count, ").'");
+                ok_flag = false;
+            }
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
+
+    //TODO verify SQLite DATE specification
+    private boolean checkTable_Customer(IDatabase db) {
+
+        final int column_count = 15;
+        String query = "PRAGMA table_info( Customer)";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("idCustomer")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "idCustomer", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("membership_type_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "membership_type_id", "INTEGER", true, null, 2),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("customer_since")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "customer_since", "DATE", false, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("title")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "title", "VARCHAR(10)", false, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("name")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "name", "VARCHAR(45)", false, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("address_1")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "address_1", "VARCHAR(255)", false, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("address_2")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "address_2", "VARCHAR(255)", false, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("city")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "city", "VARCHAR(150)", false, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("county")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "county", "VARCHAR(145)", false, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("country")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "country", "VARCHAR(145)", false, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("postcode")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "postcode", "VARCHAR(15)", false, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("telephone_1")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "telephone_1", "INTEGER", true, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("telephone_2")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "telephone_2", "INTEGER", true, null, 0),
+                            row
+                    );
+                }
+
+
+                if (row.get("name").equals("email")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Customer", "email", "VARCHAR(145)", true, null, 0),
+                            row
+                    );
+                }
+            }
+
+            if (checked != column_count) {
+                log.log_Error("'Customer' table does not have the required columns (", checked, "/", column_count, ").'");
+                ok_flag = false;
+            }
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
+
+    private boolean checkTable_Reservation(IDatabase db) {
+        final int column_count = 3;
+        String query = "PRAGMA table_info(Reservation)";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Reservation", "id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("customer_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Reservation", "customer_id", "INTEGER", true, null, 2),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("payment_method_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Reservation", "customer_id", "INTEGER", true, null, 3),
+                            row
+                    );
+                }
+
+            }
+
+            if (checked != column_count) {
+                log.log_Error("'Reservation' table does not have the required columns (\", checked, \"/\", column_count, \").");
+                ok_flag = false;
+            }
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
+
+    private boolean checkTable_Room_has_Reservation(IDatabase db) {
+
+        final int column_count = 12;
+        String query = "PRAGMA table_info(Room_has_Reservation)";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+
+                if (row.get("name").equals("room_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "room_id", "INTEGER", true, null, 1),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("floor_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "floor_id", "INTEGER", true, null, 2),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("building_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "building_id", "INTEGER", true, null, 3),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("reservation_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "reservation_id", "INTEGER", true, null, 4),
+                            row
+                    );
+                }
+
+
+                if (row.get("name").equals("customer_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "customer_id", "INTEGER", true, null, 5),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("payment_method_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "payment_method_id", "INTEGER", true, null, 6),
+                            row
+                    );
+                }
+
+
+                if (row.get("name").equals("discount_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "discount_id", "INTEGER", true, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("discount_category_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "discount_category_id", "INTEGER", true, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("has_room_price_id")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "has_room_price_id", "INTEGER", true, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("timestamp_in")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "timestamp_in", "TIMESTAMP", true, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("timestamp_out")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "timestamp_out", "TIMESTAMP", true, null, 0),
+                            row
+                    );
+                }
+
+                if (row.get("name").equals("notes")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("Room_has_Reservation", "notes", "TEXT", false, null, 0),
+                            row
+                    );
+                }
+
+
+            }
+
+            if (checked != column_count) {
+                log.log_Error("'Room_has_Reservation' table does not have the required columns (\", checked, \"/\", column_count, \").");
+                ok_flag = false;
+            }
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+
     }
 
     //========================================User Account Tables ======================================================
@@ -701,4 +1052,5 @@ class DatabaseChecker {
             return false;
         }
     }
+
 }

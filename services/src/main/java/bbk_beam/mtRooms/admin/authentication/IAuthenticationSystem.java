@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.admin.authentication;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.db.session.SessionType;
 
 public interface IAuthenticationSystem {
     /**
@@ -27,16 +28,9 @@ public interface IAuthenticationSystem {
     /**
      * Check for validity of a token for user level access
      *
-     * @param session_token Session token
+     * @param session_token     Session token
+     * @param user_session_type Session type of user
      * @return Valid state
      */
-    public boolean isValidUser(Token session_token);
-
-    /**
-     * Check for validity of a token for admin level access
-     *
-     * @param session_token Session token
-     * @return Valid state
-     */
-    public boolean isValidAdmin(Token session_token);
+    public boolean hasValidAccessRights(Token session_token, SessionType user_session_type);
 }

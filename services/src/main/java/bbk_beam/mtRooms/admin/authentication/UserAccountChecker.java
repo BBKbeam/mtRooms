@@ -32,34 +32,11 @@ public class UserAccountChecker implements IAuthenticationSystem {
     }
 
     @Override
-    public boolean isValidUser(Token session_token) {
+    public boolean hasValidAccessRights(Token session_token, SessionType user_session_type) {
         try {
             SessionType type = this.user_access.getSessionType(session_token.getSessionId());
-            switch (type) {
-                case ADMIN: //Admins have user rights
-                    log.log("User session '", session_token.getSessionId(), "' [ADMIN] verified.");
-                    return this.user_access.checkValidity(session_token.getSessionId());
-                case USER:
-                    log.log("User session '", session_token.getSessionId(), "' [USER] verified.");
-                    return this.user_access.checkValidity(session_token.getSessionId());
-            }
-        } catch (SessionInvalidException e) {
-            log.log_Error("Session '", session_token.getSessionId(), "' not valid.");
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isValidAdmin(Token session_token) {
-        try {
-            SessionType type = this.user_access.getSessionType(session_token.getSessionId());
-            switch (type) {
-                case ADMIN: //Admins have user rights
-                    log.log("Admin session '", session_token.getSessionId(), "' [ADMIN] verified.");
-                    return this.user_access.checkValidity(session_token.getSessionId());
-                default:
-                    return false;
-            }
+            log.log_Debug("Checking user session '", session_token.getSessionId(), "' [", type.name(), "] has [", user_session_type.name(), "] level access.");
+            return user_session_type.level() >= type.level();
         } catch (SessionInvalidException e) {
             log.log_Error("Session '", session_token.getSessionId(), "' not valid.");
         }

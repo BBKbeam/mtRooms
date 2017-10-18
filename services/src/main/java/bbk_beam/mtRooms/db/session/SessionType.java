@@ -1,5 +1,11 @@
 package bbk_beam.mtRooms.db.session;
 
+/**
+ * SessionType container
+ * The type value dictates the access level
+ * An access level has the rights of all higher denominations as well as its own.
+ * i.e.: The lowest value has all access whereas the highest only has it's own access.
+ */
 public enum SessionType {
     ADMIN(0),
     USER(1);

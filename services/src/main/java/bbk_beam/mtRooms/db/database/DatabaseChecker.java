@@ -631,7 +631,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_UserAccount(IDatabase db) {
-        final int column_count = 7;
+        final int column_count = 8;
         String query = "PRAGMA table_info( UserAccount )";
         try {
             boolean ok_flag = true;

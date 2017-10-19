@@ -56,6 +56,7 @@ public class UserAccountChecker implements IAuthenticationSystem {
                     log.log_Debug("Found user with session id '", session_id, "' already being tracked. Generating new session id.");
                     session_id = this.id_generator.nextSessionId();
                 }
+                sessionID_to_Username_Map.put(session_id, username);
                 log.log("User '", username, "' assigned session id #", session_id, " (", created.toString(), " to ", expiry.toString(), ").");
                 return new Token(session_id, created, expiry);
             } else {
@@ -70,7 +71,7 @@ public class UserAccountChecker implements IAuthenticationSystem {
             throw new AuthenticationFailureException("User '" + username + "' does not exist.", e);
         } catch (AuthenticationHasherException e) {
             log.log_Error("Problem encountered processing hash for user '", username, "'.");
-            throw new AuthenticationFailureException("Problem encountered processing hash for user '" + username + "'.");
+            throw new AuthenticationFailureException("Problem encountered processing hash for user '" + username + "'.", e);
         }
     }
 

@@ -660,6 +660,13 @@ class DatabaseChecker {
                             row
                     );
                 }
+                if (row.get("name").equals("pwd_salt")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("UserAccount", "pwd_salt", "TEXT", true, null, 0),
+                            row
+                    );
+                }
                 if (row.get("name").equals("created")) {
                     checked++;
                     ok_flag = checkColumn(

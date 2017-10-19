@@ -205,6 +205,7 @@ class DatabaseBuilder {
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "username TEXT NOT NULL, "
                 + "pwd_hash TEXT NOT NULL, "
+                + "pwd_salt TEXT NOT NULL, "
                 + "created VARCHAR(255) NOT NULL, "
                 + "last_pwd_change VARCHAR(255) NOT NULL, "
                 + "account_type_id INTEGER NOT NULL, "

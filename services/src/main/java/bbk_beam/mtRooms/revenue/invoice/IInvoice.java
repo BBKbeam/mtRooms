@@ -8,7 +8,7 @@ public interface IInvoice {
      * Gets the customer account details
      *
      * @param customerID CustomerID
-     *  return Customer details
+     *                   return Customer details
      */
     public ICustomer getCustomerAccount(String customerID);
 

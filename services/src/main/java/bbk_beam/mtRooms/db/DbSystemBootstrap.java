@@ -58,8 +58,8 @@ public class DbSystemBootstrap implements IDbSystemBootstrap {
             this.db = null;
             throw new DbBootstrapException("Problems encountered whilst instantiating.", e);
         } catch (DbBuildException e) {
-            log.log_Fatal( "Checks or Build of database tables did not go well." );
-            throw new DbBootstrapException( "Check/Build of the database tables when wrong during instantiation", e  );
+            log.log_Fatal("Checks or Build of database tables did not go well.");
+            throw new DbBootstrapException("Check/Build of the database tables when wrong during instantiation", e);
         }
     }
 

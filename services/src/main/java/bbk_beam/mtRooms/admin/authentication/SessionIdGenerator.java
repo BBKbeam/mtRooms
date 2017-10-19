@@ -8,6 +8,7 @@ public class SessionIdGenerator {
 
     /**
      * Generates a new session ID
+     *
      * @return New session ID
      */
     public String nextSessionId() {

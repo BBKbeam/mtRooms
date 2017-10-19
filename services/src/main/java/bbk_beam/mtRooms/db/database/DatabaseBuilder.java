@@ -5,11 +5,8 @@ import eadjlib.logger.Logger;
 
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
-    //Update when adding/removing tables from schema
-    private final int reservation_table_count = 11;
+    private final int reservation_table_count = 15;
     private final int user_table_count = 2;
-    //TODO DB setup tool
-    //i.e.: create all the tables and structures required for a new blank db
 
     /**
      * Builds the Reservation database
@@ -19,7 +16,6 @@ class DatabaseBuilder {
      */
     boolean buildReservationDB(IDatabase db) {
         int build_count = 0;
-        //TODO
         if (buildTable_Building(db)) build_count++;
         if (buildTable_Floor(db)) build_count++;
         if (buildTable_RoomCategory(db)) build_count++;
@@ -31,13 +27,10 @@ class DatabaseBuilder {
         if (buildTable_PaymentMethod(db)) build_count++;
         if (buildTable_DiscountCategory(db)) build_count++;
         if (buildTable_Discount(db)) build_count++;
-
-        /** tables to do
-         * Customer
-         * MembershipType
-         * Reservation
-         * Room_has_Reservation
-         */
+        if (buildTable_MembershipType(db)) build_count++;
+        if (buildTable_Customer(db)) build_count++;
+        if (buildTable_Reservation(db)) build_count++;
+        if (buildTable_Room_has_Reservation(db)) build_count++;
         return reservation_table_count == build_count;
     }
 
@@ -190,6 +183,78 @@ class DatabaseBuilder {
         return pushQuery(db, query);
     }
 
+    private boolean buildTable_MembershipType(IDatabase db) {
+        String query = " CREATE TABLE MembershipType ( "
+                + "id INTEGER PRIMARY KEY  NOT NULL,"
+                + "discount_category_id INTEGER NOT NULL,"
+                + "FOREIGN KEY(discount_category_id) REFERENCES DiscountCategory(id)"
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_Customer(IDatabase db) {
+        String query = " CREATE TABLE Customer ("
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "membership_type_id INTEGER NOT NULL, "
+                + "customer_since DATE NOT NULL, "
+                + "title VARCHAR(10) NOT NULL, "
+                + "name VARCHAR(255) NOT NULL, "
+                + "surname VARCHAR(255) NOT NULL, "
+                + "address_1 VARCHAR(255) NOT NULL, "
+                + "address_2 VARCHAR(255), "
+                + "city VARCHAR(145) NOT NULL, "
+                + "county VARCHAR(145), "
+                + "country VARCHAR(145) NOT NULL, "
+                + "postcode VARCHAR(15) NOT NULL, "
+                + "telephone_1 VARCHAR(45) NOT NULL, "
+                + "telephone_2 VARCHAR(45), "
+                + "email VARCHAR(145) NOT NULL, "
+                + "FOREIGN KEY(membership_type_id) REFERENCES MembershipType(id)"
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_Reservation(IDatabase db) {
+        String query = "CREATE TABLE Reservation ("
+                + "id INTEGER NOT NULL,"
+                + "customer_id INTEGER NOT NULL,"
+                + "payment_method_id INTEGER NOT NULL,"
+                + "PRIMARY KEY (id, customer_id, payment_method_id),"
+                + "FOREIGN KEY (customer_id) REFERENCES Customer(idCustomer),"
+                + "FOREIGN KEY (payment_method_id) REFERENCES PaymentMethod(id),"
+                + "UNIQUE(id) "
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_Room_has_Reservation(IDatabase db) {
+        String query = "CREATE TABLE Room_has_Reservation ("
+                + "room_id INTEGER NOT NULL,"
+                + "floor_id INTEGER NOT NULL,"
+                + "building_id INTEGER NOT NULL,"
+                + "reservation_id INTEGER NOT NULL,"
+                + "customer_id INTEGER NOT NULL,"
+                + "payment_method_id INTEGER NOT NULL,"
+                + "discount_id INTEGER NOT NULL,"
+                + "discount_category_id INTEGER NOT NULL,"
+                + "has_room_price_id INTEGER NOT NULL,"
+                + "timestamp_in TIMESTAMP NOT NULL,"
+                + "timestamp_out TIMESTAMP NOT NULL,"
+                + "notes TEXT,"
+                + "PRIMARY KEY (room_id, floor_id, building_id, reservation_id, customer_id, payment_method_id ),"
+                + "FOREIGN KEY (room_id) REFERENCES Room(id),"
+                + "FOREIGN KEY (floor_id) REFERENCES Room(floor_id),"
+                + "FOREIGN KEY (building_id) REFERENCES Room(building_id),"
+                + "FOREIGN KEY (reservation_id) REFERENCES Reservation(id),"
+                + "FOREIGN KEY (customer_id) REFERENCES Reservation(customer_id),"
+                + "FOREIGN KEY (payment_method_id) REFERENCES Reservation(payment_method_id),"
+                + "FOREIGN KEY (discount_id) REFERENCES Discount(id),"
+                + "FOREIGN KEY (discount_category_id) REFERENCES Discount(discount_category_id),"
+                + "FOREIGN KEY (has_room_price_id) REFERENCES Room_has_RoomPrice(id)"
+                + ")";
+        return pushQuery(db, query);
+    }
+
     //========================================User Account Tables ======================================================
     private boolean buildTable_AccountType(IDatabase db) {
         String query = "CREATE TABLE AccountType( "
@@ -215,5 +280,4 @@ class DatabaseBuilder {
         //TODO Add dummy root admin account
         return pushQuery(db, query);
     }
-
 }

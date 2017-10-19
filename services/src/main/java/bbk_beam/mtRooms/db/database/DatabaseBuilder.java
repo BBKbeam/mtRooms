@@ -194,27 +194,24 @@ class DatabaseBuilder {
 
     private boolean buildTable_Customer(IDatabase db) {
         String query = " CREATE TABLE Customer ("
-                + "idCustomer INTEGER  NOT NULL, "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "membership_type_id INTEGER NOT NULL, "
-                + "customer_since DATE, "
-                + "title VARCHAR(10), "
-                + "name VARCHAR(45), "
-                + "address_1 VARCHAR(255), "
+                + "customer_since DATE NOT NULL, "
+                + "title VARCHAR(10) NOT NULL, "
+                + "name VARCHAR(255) NOT NULL, "
+                + "surname VARCHAR(255) NOT NULL, "
+                + "address_1 VARCHAR(255) NOT NULL, "
                 + "address_2 VARCHAR(255), "
-                + "city VARCHAR(150), "
+                + "city VARCHAR(145) NOT NULL, "
                 + "county VARCHAR(145), "
-                + "country VARCHAR(145), "
-                + "postcode VARCHAR(15), "
-                + "telephone_1 INTEGER, "
-                + "telephone_2 INTEGER, "
+                + "country VARCHAR(145) NOT NULL, "
+                + "postcode VARCHAR(15) NOT NULL, "
+                + "telephone_1 VARCHAR(45) NOT NULL, "
+                + "telephone_2 VARCHAR(45), "
                 + "email VARCHAR(145) NOT NULL, "
-                + "PRIMARY KEY (idCustomer, membership_type_id ), "
                 + "FOREIGN KEY(membership_type_id) REFERENCES MembershipType(id)"
                 + ")";
-
         return pushQuery(db, query);
-
-
     }
 
     private boolean buildTable_Reservation(IDatabase db) {
@@ -227,7 +224,6 @@ class DatabaseBuilder {
                 + "FOREIGN KEY (payment_method_id) REFERENCES PaymentMethod(id),"
                 + "UNIQUE(id) "
                 + ")";
-
         return pushQuery(db, query);
     }
 
@@ -256,14 +252,8 @@ class DatabaseBuilder {
                 + "FOREIGN KEY (discount_category_id) REFERENCES Discount(discount_category_id),"
                 + "FOREIGN KEY (has_room_price_id) REFERENCES Room_has_RoomPrice(id)"
                 + ")";
-
         return pushQuery(db, query);
     }
-
-
-    /** TODO verify use of autoincrement with SQLite
-     * http://www.sqlitetutorial.net/sqlite-autoincrement/
-     */
 
     //========================================User Account Tables ======================================================
     private boolean buildTable_AccountType(IDatabase db) {

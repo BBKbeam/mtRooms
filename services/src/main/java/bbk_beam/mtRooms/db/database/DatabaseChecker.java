@@ -10,7 +10,7 @@ import java.util.HashMap;
 class DatabaseChecker {
     private final Logger log = Logger.getLoggerInstance(DatabaseChecker.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 14;
+    private final int reservation_table_count = 15;
     private final int user_table_count = 2;
 
     /**
@@ -95,52 +95,45 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Building", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Building", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("name")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Building", "name", "TEXT", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Building", "name", "TEXT", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("address1")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Building", "address1", "VARCHAR(255)", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Building", "address1", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("address2")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Building", "address2", "VARCHAR(255)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Building", "address2", "VARCHAR(255)", false, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("postcode")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Building", "postcode", "VARCHAR(145)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Building", "postcode", "VARCHAR(145)", false, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("country")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Building", "country", "VARCHAR(145)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Building", "country", "VARCHAR(145)", false, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("telephone")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Building", "telephone", "VARCHAR(50)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Building", "telephone", "VARCHAR(50)", false, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -166,24 +159,21 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Floor", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Floor", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("building_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Floor", "building_id", "INTEGER", true, null, 2),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Floor", "building_id", "INTEGER", true, null, 2);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("description")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Floor", "description", "VARCHAR(50)", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Floor", "description", "VARCHAR(50)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -209,24 +199,21 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomCategory", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomCategory", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("capacity")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomCategory", "capacity", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomCategory", "capacity", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("dimension")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomCategory", "dimension", "INTEGER", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomCategory", "dimension", "INTEGER", false, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -252,24 +239,21 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomPrice", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomPrice", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("price")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomPrice", "price", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomPrice", "price", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("year")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomPrice", "year", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomPrice", "year", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -295,38 +279,33 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomFixtures", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomFixtures", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("fixed_chairs")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomFixtures", "fixed_chairs", "BOOLEAN", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomFixtures", "fixed_chairs", "BOOLEAN", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("catering_space")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomFixtures", "catering_space", "BOOLEAN", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomFixtures", "catering_space", "BOOLEAN", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("whiteboard")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomFixtures", "whiteboard", "BOOLEAN", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomFixtures", "whiteboard", "BOOLEAN", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("projector")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("RoomFixtures", "projector", "BOOLEAN", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("RoomFixtures", "projector", "BOOLEAN", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -352,38 +331,33 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("floor_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room", "floor_id", "INTEGER", true, null, 2),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room", "floor_id", "INTEGER", true, null, 2);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("building_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room", "building_id", "INTEGER", true, null, 3),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room", "building_id", "INTEGER", true, null, 3);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("room_category_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room", "room_category_id", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room", "room_category_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("description")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room", "description", "VARCHAR(255)", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room", "description", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -409,24 +383,21 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_RoomPrice", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("room_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_RoomPrice", "room_id", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "room_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("price_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_RoomPrice", "price_id", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "price_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -452,17 +423,15 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("room_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_RoomFixtures", "room_id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_RoomFixtures", "room_id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("room_fixture_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_RoomFixtures", "room_fixture_id", "INTEGER", true, null, 2),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_RoomFixtures", "room_fixture_id", "INTEGER", true, null, 2);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -488,17 +457,15 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("PaymentMethod", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("PaymentMethod", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("description")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("PaymentMethod", "description", "VARCHAR(255)", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("PaymentMethod", "description", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -524,17 +491,15 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("DiscountCategory", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("DiscountCategory", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("description")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("DiscountCategory", "description", "VARCHAR(255)", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("DiscountCategory", "description", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -551,7 +516,7 @@ class DatabaseChecker {
 
     private boolean checkTable_Discount(IDatabase db) {
         final int column_count = 3;
-        String query = "PRAGMA table_info( Discount)";
+        String query = "PRAGMA table_info( Discount )";
         try {
             boolean ok_flag = true;
             int checked = 0;
@@ -560,26 +525,21 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Discount", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Discount", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("discount_rate")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Discount", "discount_rate", "DOUBLE", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Discount", "discount_rate", "DOUBLE", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("discount_category_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Discount", "discount_category_id", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Discount", "discount_category_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -596,8 +556,7 @@ class DatabaseChecker {
 
     private boolean checkTable_MembershipType(IDatabase db) {
         final int column_count = 2;
-        String query = "PRAGMA table_info( MembershipType)";
-
+        String query = "PRAGMA table_info( MembershipType )";
         try {
             boolean ok_flag = true;
             int checked = 0;
@@ -606,21 +565,17 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("MembershipType", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("MembershipType", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("discount_category_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("DiscountCategory", "discount_category_id", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("DiscountCategory", "discount_category_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
-
             if (checked != column_count) {
                 log.log_Error("'MembershipType' table does not have the required columns (", checked, "/", column_count, ").'");
                 ok_flag = false;
@@ -633,131 +588,106 @@ class DatabaseChecker {
         }
     }
 
-    //TODO verify SQLite DATE specification
     private boolean checkTable_Customer(IDatabase db) {
-
         final int column_count = 15;
-        String query = "PRAGMA table_info( Customer)";
+        String query = "PRAGMA table_info( Customer )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
-                if (row.get("name").equals("idCustomer")) {
+                if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "idCustomer", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "idCustomer", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("membership_type_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "membership_type_id", "INTEGER", true, null, 2),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "membership_type_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("customer_since")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "customer_since", "DATE", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "customer_since", "DATE", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("title")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "title", "VARCHAR(10)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "title", "VARCHAR(10)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("name")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "name", "VARCHAR(45)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "name", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
+                if (row.get("name").equals("surname")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Customer", "surname", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
                 if (row.get("name").equals("address_1")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "address_1", "VARCHAR(255)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "address_1", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("address_2")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "address_2", "VARCHAR(255)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "address_2", "VARCHAR(255)", false, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("city")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "city", "VARCHAR(150)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "city", "VARCHAR(145)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("county")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "county", "VARCHAR(145)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "county", "VARCHAR(145)", false, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("country")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "country", "VARCHAR(145)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "country", "VARCHAR(145)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("postcode")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "postcode", "VARCHAR(15)", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "postcode", "VARCHAR(15)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("telephone_1")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "telephone_1", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "telephone_1", "VARCHAR(45)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("telephone_2")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "telephone_2", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "telephone_2", "VARCHAR(45)", false, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
-
                 if (row.get("name").equals("email")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Customer", "email", "VARCHAR(145)", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Customer", "email", "VARCHAR(145)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
-
             if (checked != column_count) {
                 log.log_Error("'Customer' table does not have the required columns (", checked, "/", column_count, ").'");
                 ok_flag = false;
@@ -772,7 +702,7 @@ class DatabaseChecker {
 
     private boolean checkTable_Reservation(IDatabase db) {
         final int column_count = 3;
-        String query = "PRAGMA table_info(Reservation)";
+        String query = "PRAGMA table_info( Reservation )";
         try {
             boolean ok_flag = true;
             int checked = 0;
@@ -781,30 +711,23 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Reservation", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Reservation", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("customer_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Reservation", "customer_id", "INTEGER", true, null, 2),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Reservation", "customer_id", "INTEGER", true, null, 2);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("payment_method_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Reservation", "customer_id", "INTEGER", true, null, 3),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Reservation", "customer_id", "INTEGER", true, null, 3);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
             }
-
             if (checked != column_count) {
                 log.log_Error("'Reservation' table does not have the required columns (\", checked, \"/\", column_count, \").");
                 ok_flag = false;
@@ -818,117 +741,87 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_Room_has_Reservation(IDatabase db) {
-
         final int column_count = 12;
-        String query = "PRAGMA table_info(Room_has_Reservation)";
+        String query = "PRAGMA table_info( Room_has_Reservation )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
-
                 if (row.get("name").equals("room_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "room_id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "room_id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("floor_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "floor_id", "INTEGER", true, null, 2),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "floor_id", "INTEGER", true, null, 2);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("building_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "building_id", "INTEGER", true, null, 3),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "building_id", "INTEGER", true, null, 3);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("reservation_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "reservation_id", "INTEGER", true, null, 4),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "reservation_id", "INTEGER", true, null, 4);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
-
                 if (row.get("name").equals("customer_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "customer_id", "INTEGER", true, null, 5),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "customer_id", "INTEGER", true, null, 5);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("payment_method_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "payment_method_id", "INTEGER", true, null, 6),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "payment_method_id", "INTEGER", true, null, 6);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
-
                 if (row.get("name").equals("discount_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "discount_id", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "discount_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("discount_category_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "discount_category_id", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "discount_category_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("has_room_price_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "has_room_price_id", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "has_room_price_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("timestamp_in")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "timestamp_in", "TIMESTAMP", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "timestamp_in", "TIMESTAMP", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("timestamp_out")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "timestamp_out", "TIMESTAMP", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "timestamp_out", "TIMESTAMP", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
                 if (row.get("name").equals("notes")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("Room_has_Reservation", "notes", "TEXT", false, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "notes", "TEXT", false, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
-
-
             }
-
             if (checked != column_count) {
                 log.log_Error("'Room_has_Reservation' table does not have the required columns (\", checked, \"/\", column_count, \").");
                 ok_flag = false;
@@ -954,17 +847,15 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("AccountType", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("AccountType", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("description")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("AccountType", "description", "VARCHAR(255)", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("AccountType", "description", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {
@@ -991,52 +882,45 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("UserAccount", "id", "INTEGER", true, null, 1),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("UserAccount", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("username")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("UserAccount", "username", "TEXT", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("UserAccount", "username", "TEXT", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("pwd_hash")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("UserAccount", "pwd_hash", "TEXT", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("UserAccount", "pwd_hash", "TEXT", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("created")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("UserAccount", "created", "VARCHAR(255)", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("UserAccount", "created", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("last_pwd_change")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("UserAccount", "last_pwd_change", "VARCHAR(255)", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("UserAccount", "last_pwd_change", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("account_type_id")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("UserAccount", "account_type_id", "INTEGER", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("UserAccount", "account_type_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
                 if (row.get("name").equals("active_state")) {
                     checked++;
-                    ok_flag = checkColumn(
-                            new ColProperty("UserAccount", "active_state", "BOOLEAN", true, null, 0),
-                            row
-                    );
+                    ColProperty expected = new ColProperty("UserAccount", "active_state", "BOOLEAN", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
                 }
             }
             if (checked != column_count) {

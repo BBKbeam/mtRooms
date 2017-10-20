@@ -17,6 +17,7 @@ import java.util.HashMap;
 
 public class UserAccountChecker implements IAuthenticationSystem {
     private final Logger log = Logger.getLoggerInstance(UserAccountChecker.class.getName());
+    private final int SESSION_TIMEOUT_HOURS = 12;
     private IUserAccDbAccess user_access;
     private SessionIdGenerator id_generator;
     private HashMap<String, String> sessionID_to_Username_Map;
@@ -35,7 +36,7 @@ public class UserAccountChecker implements IAuthenticationSystem {
     @Override
     public Token login(String username, String password) throws AuthenticationFailureException {
         String query = "SELECT "
-                + "UserAccount.username, UserAccount.pwd_hash, UserAccount.pwd_salt, UserAccount.active_state, "
+                + "UserAccount.id, UserAccount.username, UserAccount.pwd_hash, UserAccount.pwd_salt, UserAccount.active_state, "
                 + "AccountType.description "
                 + "FROM UserAccount "
                 + "LEFT OUTER JOIN AccountType ON UserAccount.account_type_id = AccountType.id "
@@ -44,13 +45,14 @@ public class UserAccountChecker implements IAuthenticationSystem {
             log.log("Login attempt by user '", username, "'.");
             ObjectTable table = user_access.pullFromDB(query);
             HashMap<String, Object> row = table.getRow(1);
+            Integer user_id = (Integer) row.get("id");
             String hash = (String) row.get("pwd_hash");
             String salt = (String) row.get("pwd_salt");
             if (PasswordHash.validateHash(password, salt, hash)) {
-                log.log("User '", username, "' authenticated.");
+                log.log("User '", username, "' authenticated (#", user_id, ").");
                 Instant now = Instant.now();
                 Date created = Date.from(now);
-                Date expiry = Date.from(now.plus(12, ChronoUnit.HOURS));
+                Date expiry = Date.from(now.plus(SESSION_TIMEOUT_HOURS, ChronoUnit.HOURS));
                 String session_id = this.id_generator.nextSessionId();
                 while (sessionID_to_Username_Map.containsValue(session_id)) {
                     log.log_Debug("Found user with session id '", session_id, "' already being tracked. Generating new session id.");

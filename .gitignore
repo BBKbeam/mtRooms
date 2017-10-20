@@ -77,3 +77,5 @@ fabric.properties
 .directory
 .idea/
 mtRooms.iml
+
+logs/

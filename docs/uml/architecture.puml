@@ -72,17 +72,35 @@ package mtRooms {
     frame "Business Logic Layer" #orange {
         package "reservation" {
             component ReservationSystem #white {
+                [ReservationSession] <<Observer>>
+                [<u>:ScheduleCache] <<Observable>> as ScheduleCache
+
                 IReservationSession -- [ReservationSession]
                 IReservationPayment -- [ReservationSession]
                 IOptimisedSearch -- [OptimisedSearch]
                 IReservation -- [Reservation]
                 IPaymentProcessing -- [PaymentProcessing]
                 ICustomerAccountAccess -- [CustomerAccountAccess]
+                ICacheSchedule -- [ScheduleCache]
+                IChangeSchedule -- [ScheduleCache]
+                IScheduleChanged -- [ScheduleCache]
+                IPay -- [ReservationDbDelegate]
+                IReserve -- [ReservationDbDelegate]
+                ISearch -- [ReservationDbDelegate]
+                ICustomerAccount -- [ReservationDbDelegate]
 
                 ReservationSession --( IOptimisedSearch
                 ReservationSession --( IPaymentProcessing
                 ReservationSession --( IReservation
                 ReservationSession --( ICustomerAccountAccess
+                OptimisedSearch --( ICacheSchedule
+                ReservationSession --( IScheduleChanged
+                Reservation --( IChangeSchedule
+
+                OptimisedSearch --( ISearch
+                Reservation  --( IReserve
+                CustomerAccountAccess   --( ICustomerAccount
+                PaymentProcessing --( IPay
             }
         }
 
@@ -124,6 +142,9 @@ package mtRooms {
 
             component AuthenticationSystem #white {
                 IAuthenticationSystem -- [UserAccountChecker]
+                ISessionIdGenerator -- [SessionIdGenerator]
+
+                UserAccountChecker --( ISessionIdGenerator
             }
         }
     }
@@ -131,22 +152,35 @@ package mtRooms {
     frame "Data Layer" #purple {
         package "db" {
             component ReservationDbAccessSystem #white {
-                database ReservationDB
-                database UserAccDB
+                package "database" {
+                    database SQLiteDB as DB
+                    IReservationDB -- [Database]
+                    IUserAccDB -- [Database]
+                    IReservationDB ..> IDatabase
+                    IUserAccDB ..> IDatabase
+                    ITimeZoneTranslation -- [TimeZoneTranslation]
+                    IDatabaseSetup -- [DatabaseSetup]
+                    IDatabaseChecker -- [DatabaseChecker]
 
-                IUserAccDB -- UserAccDB
-                IReservationDB -- [ReservationDB]
-                ITimeZoneTranslation -- [TimeZoneTranslation]
+                    [Database] -down- DB
+                    [Database] --( IDatabaseSetup
+                    [Database] --( IDatabaseChecker
+                }
+                package "session" {
+                    [<u>:SessionTracker] as SessionTracker
+                    ICurrentSessions -- [SessionTracker]
+                }
                 IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
+                IDatabaseSystemBootstrap -- [DbSystemBootstrap]
 
-                IDatabase <.. IReservationDB
-                IDatabase <.. IUserAccDB
-                note "Both 'UserAccDB' and 'ReservationDB' \nuse the same interface implementation" as N1
-                N1 .. IDatabase
+                DbSystemBootstrap *-left- ReservationDbAccess
+                DbSystemBootstrap *-right- UserAccDbAccess
                 ReservationDbAccess --( ITimeZoneTranslation
+                ReservationDbAccess --( ICurrentSessions
                 ReservationDbAccess --( IReservationDB
                 UserAccDbAccess --( IUserAccDB
+                UserAccDbAccess --( ICurrentSessions
             }
         }
     }
@@ -188,10 +222,8 @@ package mtRooms {
     UserAccAdministration --( IUserAccDbAccess
     ReservationDbMaintenance --( IReservationDbAccess
 
-    CustomerAccountAccess --( IReservationDbAccess
-    Reservation --( IReservationDbAccess
+    ReservationDbDelegate --( IReservationDbAccess
 
-    PaymentProcessing --( IReservationDbAccess
     LogisticReportGenerator --( IReservationDbAccess
     InvoiceAggregator --( IReservationDbAccess
     RevenueAggregator --( IReservationDbAccess

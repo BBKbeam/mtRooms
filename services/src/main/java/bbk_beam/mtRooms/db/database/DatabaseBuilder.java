@@ -273,6 +273,7 @@ class DatabaseBuilder {
                 + "pwd_salt TEXT NOT NULL, "
                 + "created VARCHAR(255) NOT NULL, "
                 + "last_pwd_change VARCHAR(255) NOT NULL, "
+                + "last_login VARCHAR(255) NOT NULL, "
                 + "account_type_id INTEGER NOT NULL, "
                 + "active_state BOOLEAN NOT NULL, "
                 + "FOREIGN KEY( account_type_id ) REFERENCES AccountType( id ) "

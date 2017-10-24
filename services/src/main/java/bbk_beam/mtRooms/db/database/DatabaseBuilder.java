@@ -2,12 +2,11 @@ package bbk_beam.mtRooms.db.database;
 
 import bbk_beam.mtRooms.admin.authentication.PasswordHash;
 import bbk_beam.mtRooms.admin.exception.AuthenticationHasherException;
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import eadjlib.logger.Logger;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
@@ -68,18 +67,6 @@ class DatabaseBuilder {
             log.log_Exception(e);
             return false;
         }
-    }
-
-    /**
-     * Translate a Date object into a SQLite formatted timestamp string
-     *
-     * @param date Date
-     * @return Formatted string
-     */
-    private String getSqliteFormattedTimestamp(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        return dateFormat.format(date);
     }
 
     //=========================================Reservation Tables ======================================================
@@ -307,8 +294,8 @@ class DatabaseBuilder {
                     + "\"root\", "
                     + "\"" + hash + "\", "
                     + "\"" + salt + "\", "
-                    + "\"" + getSqliteFormattedTimestamp(new Date()) + "\", "
-                    + "\"" + getSqliteFormattedTimestamp(new Date()) + "\", "
+                    + "\"" + TimestampConverter.getUTCTimestampString(new Date()) + "\", "
+                    + "\"" + TimestampConverter.getUTCTimestampString(new Date()) + "\", "
                     + "1, "
                     + "1 "
                     + ")";

@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.admin.authentication;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.admin.exception.AuthenticationHasherException;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
@@ -60,6 +61,8 @@ public class UserAccountChecker implements IAuthenticationSystem {
                 }
                 sessionID_to_Username_Map.put(session_id, username);
                 log.log("User '", username, "' assigned session id #", session_id, " (", created.toString(), " to ", expiry.toString(), ").");
+                if (!updateLastLoginTimestamp(username, created))
+                    log.log_Error("Failed update in records for last successful login timestamp (", created, ").");
                 return new Token(session_id, created, expiry);
             } else {
                 log.log_Error("User '", username, "' failed authentication.");
@@ -90,6 +93,26 @@ public class UserAccountChecker implements IAuthenticationSystem {
             return user_session_type.level() >= type.level();
         } catch (SessionInvalidException e) {
             log.log_Error("Session '", session_token.getSessionId(), "' not valid.");
+        }
+        return false;
+    }
+
+    /**
+     * Updates the last successful login timestamp in the records for a username
+     *
+     * @param username Username for the record to update
+     * @param date     Date object of the last successful login
+     * @return Success
+     */
+    private boolean updateLastLoginTimestamp(String username, Date date) {
+        String query = "UPDATE UserAccount "
+                + "SET last_login = \"" + TimestampConverter.getUTCTimestampString(date) + "\" "
+                + "WHERE username = \"" + username + "\"";
+        try {
+            return this.user_access.pushToDB(query);
+        } catch (DbQueryException e) {
+            log.log_Error("Could not update last login timestamp for user '" + username + "'.");
+            log.log_Exception(e);
         }
         return false;
     }

@@ -5,6 +5,7 @@ import eadjlib.logger.Logger;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+import javax.xml.bind.DatatypeConverter;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -24,7 +25,7 @@ public class PasswordHash {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[SALT_BYTES];
         random.nextBytes(salt);
-        return new String(salt);
+        return DatatypeConverter.printHexBinary(salt);
     }
 
     /**
@@ -37,10 +38,10 @@ public class PasswordHash {
      */
     public static String createHash(String password, String salt) throws AuthenticationHasherException {
         try {
-            PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), ITERATIONS, SALT_BYTES);
+            PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray(), DatatypeConverter.parseHexBinary(salt), ITERATIONS, SALT_BYTES);
             SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGO);
             byte[] hash = skf.generateSecret(pbeKeySpec).getEncoded();
-            return new String(hash);
+            return DatatypeConverter.printHexBinary(hash);
         } catch (NoSuchAlgorithmException e) {
             log.log_Fatal("PasswordHash algorithm '", PBKDF2_ALGO, "' is not recognised.");
             throw new AuthenticationHasherException("PasswordHash algorithm '" + PBKDF2_ALGO + "' is not recognised.", e);
@@ -61,11 +62,10 @@ public class PasswordHash {
      */
     public static boolean validateHash(String password, String salt, String hashed_password) throws AuthenticationHasherException {
         try {
-            PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), ITERATIONS, SALT_BYTES);
+            PBEKeySpec pbeKeySpec = new PBEKeySpec(password.toCharArray(), DatatypeConverter.parseHexBinary(salt), ITERATIONS, SALT_BYTES);
             SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGO);
-            byte[] hash = new byte[0];
-            hash = skf.generateSecret(pbeKeySpec).getEncoded();
-            return new String(hash).equals(hashed_password);
+            byte[] hash = skf.generateSecret(pbeKeySpec).getEncoded();
+            return DatatypeConverter.printHexBinary(hash).equals(hashed_password);
         } catch (NoSuchAlgorithmException e) {
             log.log_Fatal("PasswordHash algorithm '", PBKDF2_ALGO, "' is not recognised.");
             throw new AuthenticationHasherException("PasswordHash algorithm '" + PBKDF2_ALGO + "' is not recognised.", e);

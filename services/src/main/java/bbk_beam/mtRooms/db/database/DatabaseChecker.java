@@ -919,7 +919,7 @@ class DatabaseChecker {
                 }
                 if (row.get("name").equals("last_login")) {
                     checked++;
-                    ColProperty expected = new ColProperty("UserAccount", "last_login", "VARCHAR(255)", true, null, 0);
+                    ColProperty expected = new ColProperty("UserAccount", "last_login", "VARCHAR(255)", false, "NULL", 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }

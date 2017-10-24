@@ -1,7 +1,13 @@
 package bbk_beam.mtRooms.db.database;
 
+import bbk_beam.mtRooms.admin.authentication.PasswordHash;
+import bbk_beam.mtRooms.admin.exception.AuthenticationHasherException;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import eadjlib.logger.Logger;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
@@ -62,6 +68,18 @@ class DatabaseBuilder {
             log.log_Exception(e);
             return false;
         }
+    }
+
+    /**
+     * Translate a Date object into a SQLite formatted timestamp string
+     *
+     * @param date Date
+     * @return Formatted string
+     */
+    private String getSqliteFormattedTimestamp(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return dateFormat.format(date);
     }
 
     //=========================================Reservation Tables ======================================================
@@ -257,28 +275,48 @@ class DatabaseBuilder {
 
     //========================================User Account Tables ======================================================
     private boolean buildTable_AccountType(IDatabase db) {
-        String query = "CREATE TABLE AccountType( "
+        String query1 = "CREATE TABLE AccountType( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "description VARCHAR(255) NOT NULL "
                 + ")";
-        //TODO Add admin, user types into table
-        return pushQuery(db, query);
+        String query2 = "INSERT INTO AccountType( description ) VALUES"
+                + "( \"Administrator\" ), "
+                + "( \"User\" )";
+        return pushQuery(db, query1) && pushQuery(db, query2);
     }
 
     private boolean buildTable_UserAccount(IDatabase db) {
-        String query = "CREATE TABLE UserAccount( "
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                + "username TEXT NOT NULL, "
-                + "pwd_hash TEXT NOT NULL, "
-                + "pwd_salt TEXT NOT NULL, "
-                + "created VARCHAR(255) NOT NULL, "
-                + "last_pwd_change VARCHAR(255) NOT NULL, "
-                + "last_login VARCHAR(255) NOT NULL, "
-                + "account_type_id INTEGER NOT NULL, "
-                + "active_state BOOLEAN NOT NULL, "
-                + "FOREIGN KEY( account_type_id ) REFERENCES AccountType( id ) "
-                + ")";
-        //TODO Add dummy root admin account
-        return pushQuery(db, query);
+        try {
+            String query1 = "CREATE TABLE UserAccount( "
+                    + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                    + "username TEXT NOT NULL, "
+                    + "pwd_hash TEXT NOT NULL, "
+                    + "pwd_salt TEXT NOT NULL, "
+                    + "created VARCHAR(255) NOT NULL, "
+                    + "last_pwd_change VARCHAR(255) NOT NULL, "
+                    + "last_login VARCHAR(255) DEFAULT NULL, "
+                    + "account_type_id INTEGER NOT NULL, "
+                    + "active_state BOOLEAN NOT NULL, "
+                    + "FOREIGN KEY( account_type_id ) REFERENCES AccountType( id ) "
+                    + ")";
+            String salt = PasswordHash.createSalt();
+            String hash = PasswordHash.createHash("letmein", salt);
+            String query2 = "INSERT INTO UserAccount( "
+                    + "username, pwd_hash, pwd_salt, created, last_pwd_change, account_type_id, active_state "
+                    + ") VALUES( "
+                    + "\"root\", "
+                    + "\"" + hash + "\", "
+                    + "\"" + salt + "\", "
+                    + "\"" + getSqliteFormattedTimestamp(new Date()) + "\", "
+                    + "\"" + getSqliteFormattedTimestamp(new Date()) + "\", "
+                    + "1, "
+                    + "1 "
+                    + ")";
+            return pushQuery(db, query1) && pushQuery(db, query2);
+        } catch (AuthenticationHasherException e) {
+            log.log_Fatal("Could not create hash for default root account.");
+            log.log_Exception(e);
+        }
+        return false;
     }
 }

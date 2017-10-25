@@ -4,6 +4,7 @@ import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.UserAccDbAccess;
+import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
@@ -64,26 +65,47 @@ public class UserAccountCheckerTest {
 
     @Test(expected = AuthenticationFailureException.class)
     public void login_bad_pwd_hash() throws Exception {
-        //TODO
-        Assert.assertFalse(true);
+        ObjectTable mocked_table = mock(ObjectTable.class);
+        UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
+        HashMap<String, Object> account_row = new HashMap<>();
+        //Account info required for login
+        String salt = PasswordHash.createSalt();
+        String hash = "BADHASH";
+        account_row.put("id", 1);
+        account_row.put("pwd_hash", hash);
+        account_row.put("pwd_salt", salt);
+        //Mock for inner dependency calls
+        when(mocked_user_access.pullFromDB(any(String.class))).thenReturn(mocked_table);
+        when(mocked_table.getRow(1)).thenReturn(account_row);
+        //Login
+        Token token = accountChecker.login("username", "password");
     }
 
     @Test(expected = AuthenticationFailureException.class)
     public void login_bad_sql() throws Exception {
-        //TODO
-        Assert.assertFalse(true);
+        ObjectTable mocked_table = mock(ObjectTable.class);
+        UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
+        HashMap<String, Object> account_row = new HashMap<>();
+        //Account info required for login
+        String salt = PasswordHash.createSalt();
+        String hash = PasswordHash.createHash("password", salt);
+        account_row.put("id", 1);
+        account_row.put("pwd_hash", hash);
+        account_row.put("pwd_salt", salt);
+        //Mock for inner dependency calls
+        when(mocked_user_access.pullFromDB(any(String.class))).thenThrow(new DbQueryException(""));
+        //Login
+        Token token = accountChecker.login("username", "password");
     }
 
     @Test(expected = AuthenticationFailureException.class)
     public void login_missing_account_info() throws Exception {
-        //TODO
-        Assert.assertFalse(true);
-    }
-
-    @Test(expected = AuthenticationFailureException.class)
-    public void login_hasher_failure() throws Exception {
-        //TODO
-        Assert.assertFalse(true);
+        ObjectTable table = new ObjectTable("id", "pwd_hash", "pwd_salt");
+        UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
+        //Mock for inner dependency calls
+        when(mocked_user_access.pullFromDB(any(String.class))).thenReturn(table);
+        //Login
+        Token token = accountChecker.login("username", "password");
     }
 
     @Test

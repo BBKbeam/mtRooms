@@ -5,7 +5,6 @@ import bbk_beam.mtRooms.admin.exception.AuthenticationHasherException;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
-import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
@@ -81,8 +80,20 @@ public class UserAccountChecker implements IAuthenticationSystem {
     }
 
     @Override
-    public void logout(Token session_token) throws SessionInvalidException, SessionExpiredException {
-        //TODO
+    public void logout(Token session_token) throws SessionInvalidException {
+        try {
+            if (this.sessionID_to_Username_Map.containsKey(session_token.getSessionId())) {
+                String username = this.sessionID_to_Username_Map.get(session_token.getSessionId());
+                log.log("Logout initiated for '", username, "'.");
+                this.user_access.closeSession(session_token.getSessionId());
+                if (Date.from(Instant.now()).after(session_token.getExpiry())) {
+                    log.log_Debug("Session [", session_token.getSessionId(), "] was expired (", session_token.getExpiry(), ").");
+                }
+            }
+        } catch (SessionInvalidException e) {
+            log.log_Error("Session [", session_token.getSessionId(), "] is not valid.");
+            throw new SessionInvalidException("Session [" + session_token.getSessionId() + "] is not valid.", e);
+        }
     }
 
     @Override

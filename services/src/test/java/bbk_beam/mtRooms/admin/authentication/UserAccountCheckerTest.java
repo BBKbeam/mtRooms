@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
@@ -111,15 +112,17 @@ public class UserAccountCheckerTest {
     @Test
     public void logout() throws Exception {
         UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
-        //TODO
-        Assert.assertFalse(true);
+        when(mocked_token.getSessionId()).thenReturn("0001");
+        when(mocked_token.getExpiry()).thenReturn(Date.from(Instant.now().minus(1, ChronoUnit.HOURS)));
+        accountChecker.logout(mocked_token);
+        verify(mocked_user_access, times(1)).closeSession("0001");
     }
 
     @Test(expected = SessionInvalidException.class)
     public void logout_bad_session() throws Exception {
         UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
-        //TODO
-        Assert.assertFalse(true);
+        doThrow(new SessionInvalidException("")).when(mocked_user_access).closeSession(any(String.class));
+        accountChecker.logout(mocked_token);
     }
 
     @Test

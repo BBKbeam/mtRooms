@@ -82,14 +82,18 @@ public class UserAccountChecker implements IAuthenticationSystem {
     @Override
     public void logout(Token session_token) throws SessionInvalidException {
         try {
+            log.log("Logout initiated for session [", session_token.getSessionId(), "].");
             if (this.sessionID_to_Username_Map.containsKey(session_token.getSessionId())) {
                 String username = this.sessionID_to_Username_Map.get(session_token.getSessionId());
-                log.log("Logout initiated for '", username, "'.");
-                this.user_access.closeSession(session_token.getSessionId());
-                if (Date.from(Instant.now()).after(session_token.getExpiry())) {
-                    log.log_Debug("Session [", session_token.getSessionId(), "] was expired (", session_token.getExpiry(), ").");
-                }
+                log.log("Session [", session_token.getSessionId(), "] mapped to user '", username, "'.");
+            } else {
+                log.log_Warning("Session [", session_token.getSessionId(), "] is not tracked in id-username map.");
             }
+            this.user_access.closeSession(session_token.getSessionId());
+            if (Date.from(Instant.now()).after(session_token.getExpiry())) {
+                log.log_Debug("Session [", session_token.getSessionId(), "] was expired (", session_token.getExpiry(), ").");
+            }
+            log.log("Session [", session_token.getSessionId(), "] logout completed.");
         } catch (SessionInvalidException e) {
             log.log_Error("Session [", session_token.getSessionId(), "] is not valid.");
             throw new SessionInvalidException("Session [" + session_token.getSessionId() + "] is not valid.", e);

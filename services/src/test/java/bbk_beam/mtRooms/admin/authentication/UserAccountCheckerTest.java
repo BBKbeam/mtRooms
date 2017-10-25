@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.admin.authentication;
 
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.UserAccDbAccess;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
@@ -10,12 +11,14 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.HashMap;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UserAccountCheckerTest {
     private IUserAccDbAccess mocked_user_access;
@@ -38,21 +41,25 @@ public class UserAccountCheckerTest {
         ObjectTable mocked_table = mock(ObjectTable.class);
         UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
         HashMap<String, Object> account_row = new HashMap<>();
-
+        //Account info required for login
         String salt = PasswordHash.createSalt();
         String hash = PasswordHash.createHash("password", salt);
         account_row.put("id", 1);
         account_row.put("pwd_hash", hash);
         account_row.put("pwd_salt", salt);
-
+        //Mock for inner dependency calls
         when(mocked_user_access.pullFromDB(any(String.class))).thenReturn(mocked_table);
         when(mocked_table.getRow(1)).thenReturn(account_row);
-        when(mocked_user_access.pushToDB(any(String.class))).thenReturn(true); //TODO check new date is passed (check with returned token)
-
-
-        accountChecker.login("username", "password");
-        //TODO
-        Assert.assertFalse(true);
+        //Argument capture for pushing SQL update with last login timestamp
+        ArgumentCaptor<String> argument = ArgumentCaptor.forClass(String.class);
+        when(mocked_user_access.pushToDB(any(String.class))).thenReturn(true);
+        //Login
+        Token token = accountChecker.login("username", "password");
+        verify(mocked_user_access).pushToDB(argument.capture());
+        //Checking token expiry set to 12 hours after its creation
+        Assert.assertEquals(token.getExpiry(), Date.from(token.getCreated().toInstant().plus(12, ChronoUnit.HOURS)));
+        //Checking last_login update set to db records is the creation timestamp of the token
+        Assert.assertEquals("UPDATE UserAccount SET last_login = \"" + TimestampConverter.getUTCTimestampString(token.getCreated()) + "\" WHERE username = \"username\"", argument.getValue());
     }
 
     @Test(expected = AuthenticationFailureException.class)

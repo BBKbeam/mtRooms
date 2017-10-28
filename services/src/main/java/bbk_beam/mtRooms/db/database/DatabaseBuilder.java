@@ -15,6 +15,7 @@ class DatabaseBuilder {
      * @return Success
      */
     boolean buildReservationDB(IDatabase db) {
+        log.log("Building reservation tables...");
         int build_count = 0;
         if (buildTable_Building(db)) build_count++;
         if (buildTable_Floor(db)) build_count++;
@@ -41,6 +42,7 @@ class DatabaseBuilder {
      * @return Success
      */
     boolean buildUserAccDB(IDatabase db) {
+        log.log("Building user account tables...");
         int build_count = 0;
         if (buildTable_AccountType(db)) build_count++;
         if (buildTable_UserAccount(db)) build_count++;

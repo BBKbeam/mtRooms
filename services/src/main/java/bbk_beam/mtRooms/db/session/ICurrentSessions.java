@@ -12,11 +12,12 @@ public interface ICurrentSessions {
     /**
      * Adds a session to the tracker
      *
-     * @param session_id Session ID
-     * @param expiry     Expiry timestamp
+     * @param session_id   Session ID
+     * @param expiry       Expiry timestamp
+     * @param session_type Session type
      * @throws SessionException when trying to add an already tracked session ID
      */
-    public void addSession(String session_id, Date expiry) throws SessionException;
+    public void addSession(String session_id, Date expiry, SessionType session_type) throws SessionException;
 
     /**
      * Removes a session from the tracker
@@ -55,9 +56,18 @@ public interface ICurrentSessions {
      *
      * @param session_id Session ID
      * @return Valid state
-     * @throws SessionInvalidException when ID is not in the session tracked
+     * @throws SessionInvalidException when ID is not in the sessions tracked
      */
     public boolean isValid(String session_id) throws SessionInvalidException;
+
+    /**
+     * Gets the type of a session
+     *
+     * @param session_id Session ID
+     * @return Session type
+     * @throws SessionInvalidException when ID is not in the sessions tracked
+     */
+    public SessionType getSessionType(String session_id) throws SessionInvalidException;
 
     /**
      * Gets the number of sessions currently tracked

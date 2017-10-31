@@ -1013,7 +1013,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_UserAccount(IDatabase db) throws DbMissingTableException {
-        final int column_count = 7;
+        final int column_count = 9;
         String query = "PRAGMA table_info( UserAccount )";
         try {
             boolean ok_flag = true;
@@ -1043,6 +1043,13 @@ class DatabaseChecker {
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
+                if (row.get("name").equals("pwd_salt")) {
+                    checked++;
+                    ok_flag = checkColumn(
+                            new ColProperty("UserAccount", "pwd_salt", "TEXT", true, null, 0),
+                            row
+                    );
+                }
                 if (row.get("name").equals("created")) {
                     checked++;
                     ColProperty expected = new ColProperty("UserAccount", "created", "VARCHAR(255)", true, null, 0);
@@ -1052,6 +1059,12 @@ class DatabaseChecker {
                 if (row.get("name").equals("last_pwd_change")) {
                     checked++;
                     ColProperty expected = new ColProperty("UserAccount", "last_pwd_change", "VARCHAR(255)", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("last_login")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("UserAccount", "last_login", "VARCHAR(255)", false, "NULL", 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }

@@ -158,12 +158,11 @@ package mtRooms {
                     IUserAccDB -- [Database]
                     IReservationDB ..> IDatabase
                     IUserAccDB ..> IDatabase
-                    ITimeZoneTranslation -- [TimeZoneTranslation]
-                    IDatabaseSetup -- [DatabaseSetup]
+                    IDatabaseBuilder -- [DatabaseBuilder]
                     IDatabaseChecker -- [DatabaseChecker]
 
                     [Database] -down- DB
-                    [Database] --( IDatabaseSetup
+                    [Database] --( IDatabaseBuilder
                     [Database] --( IDatabaseChecker
                 }
                 package "session" {
@@ -173,10 +172,11 @@ package mtRooms {
                 IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
                 IDatabaseSystemBootstrap -- [DbSystemBootstrap]
+                ITimestampConverter -- [TimestampConverter]
 
+                DatabaseBuilder --( ITimestampConverter
                 DbSystemBootstrap *-left- ReservationDbAccess
                 DbSystemBootstrap *-right- UserAccDbAccess
-                ReservationDbAccess --( ITimeZoneTranslation
                 ReservationDbAccess --( ICurrentSessions
                 ReservationDbAccess --( IReservationDB
                 UserAccDbAccess --( IUserAccDB

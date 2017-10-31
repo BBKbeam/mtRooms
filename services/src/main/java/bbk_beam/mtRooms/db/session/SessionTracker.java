@@ -9,8 +9,47 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class SessionTracker implements ICurrentSessions {
+    private class SessionDetail {
+        private Date date;
+        private SessionType type;
+
+        /**
+         * Constructor
+         *
+         * @param date Expiry timestamp of session
+         * @param type Session type
+         */
+        SessionDetail(Date date, SessionType type) {
+            this.date = date;
+            this.type = type;
+        }
+
+        /**
+         * Gets the expiry date
+         *
+         * @return Expiry date of session
+         */
+        Date getDate() {
+            return this.date;
+        }
+
+        /**
+         * Gets the session type
+         *
+         * @return Session type
+         */
+        SessionType getSessionType() {
+            return this.type;
+        }
+
+        @Override
+        public String toString() {
+            return "[" + this.type.name() + ", " + this.date + "]";
+        }
+    }
+
     private final Logger log = Logger.getLoggerInstance(ReservationDbAccess.class.getName());
-    private HashMap<String, Date> tracker;
+    private HashMap<String, SessionDetail> tracker;
 
     /**
      * Constructor
@@ -20,11 +59,11 @@ public class SessionTracker implements ICurrentSessions {
     }
 
     @Override
-    public void addSession(String session_id, Date expiry) throws SessionException {
+    public void addSession(String session_id, Date expiry, SessionType session_type) throws SessionException {
         if (this.tracker.containsKey(session_id)) {
             throw new SessionException("Trying to track an already tracked session ID");
         } else {
-            this.tracker.put(session_id, expiry);
+            this.tracker.put(session_id, new SessionDetail(expiry, session_type));
         }
     }
 
@@ -42,7 +81,11 @@ public class SessionTracker implements ICurrentSessions {
 
     @Override
     public Date getSessionExpiry(String session_id) {
-        return this.tracker.get(session_id);
+        try {
+            return this.tracker.get(session_id).getDate();
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     @Override
@@ -54,7 +97,17 @@ public class SessionTracker implements ICurrentSessions {
     public boolean isValid(String session_id) throws SessionInvalidException {
         if (this.exists(session_id)) {
             log.log_Debug("Session [", session_id, "]=", this.tracker.get(session_id));
-            return this.tracker.get(session_id).compareTo(new Date()) > 0;
+            return this.tracker.get(session_id).getDate().compareTo(new Date()) > 0;
+        } else {
+            throw new SessionInvalidException("Session (id: " + session_id + ") is not tracked.");
+        }
+    }
+
+    @Override
+    public SessionType getSessionType(String session_id) throws SessionInvalidException {
+        if (this.exists(session_id)) {
+            log.log_Debug("Session [", session_id, "]=", this.tracker.get(session_id));
+            return this.tracker.get(session_id).getSessionType();
         } else {
             throw new SessionInvalidException("Session (id: " + session_id + ") is not tracked.");
         }

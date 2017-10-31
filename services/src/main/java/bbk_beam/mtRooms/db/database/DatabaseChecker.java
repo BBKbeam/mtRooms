@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.db.database;
 
 import bbk_beam.mtRooms.db.exception.DbEmptyException;
+import bbk_beam.mtRooms.db.exception.DbMissingTableException;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
@@ -22,21 +23,85 @@ class DatabaseChecker {
      */
     boolean checkReservationDB(IDatabase db) throws DbEmptyException {
         int check_count = 0;
-        if (checkTable_Building(db)) check_count++;
-        if (checkTable_Floor(db)) check_count++;
-        if (checkTable_RoomCategory(db)) check_count++;
-        if (checkTable_RoomPrice(db)) check_count++;
-        if (checkTable_RoomFixtures(db)) check_count++;
-        if (checkTable_Room(db)) check_count++;
-        if (checkTable_Room_has_RoomPrice(db)) check_count++;
-        if (checkTable_Room_had_RoomFixtures(db)) check_count++;
-        if (checkTable_PaymentMethod(db)) check_count++;
-        if (checkTable_DiscountCategory(db)) check_count++;
-        if (checkTable_Discount(db)) check_count++;
-        if (checkTable_MembershipType(db)) check_count++;
-        if (checkTable_Customer(db)) check_count++;
-        if (checkTable_Reservation(db)) check_count++;
-        if (checkTable_Room_has_Reservation(db)) check_count++;
+        int missing_count = 0;
+        try {
+            if (checkTable_Building(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Floor(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_RoomCategory(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_RoomPrice(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_RoomFixtures(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Room(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Room_has_RoomPrice(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Room_had_RoomFixtures(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_PaymentMethod(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_DiscountCategory(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Discount(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_MembershipType(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Customer(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Reservation(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Room_has_Reservation(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        if (missing_count == reservation_table_count) {
+            throw new DbEmptyException("None of the required tables in the reservation database were found.");
+        }
         return reservation_table_count == check_count;
     }
 
@@ -49,8 +114,20 @@ class DatabaseChecker {
      */
     boolean checkUserAccDB(IDatabase db) throws DbEmptyException {
         int check_count = 0;
-        if (checkTable_AccountType(db)) check_count++;
-        if (checkTable_UserAccount(db)) check_count++;
+        int missing_count = 0;
+        try {
+            if (checkTable_AccountType(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_UserAccount(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        if (missing_count == user_table_count) {
+            throw new DbEmptyException("None of the required tables in the user account database were found.");
+        }
         return user_table_count == check_count;
     }
 
@@ -84,13 +161,17 @@ class DatabaseChecker {
     }
 
     //=========================================Reservation Tables ======================================================
-    private boolean checkTable_Building(IDatabase db) {
+    private boolean checkTable_Building(IDatabase db) throws DbMissingTableException {
         final int column_count = 7;
         String query = "PRAGMA table_info( Building )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Building' table not found in DB.");
+                throw new DbMissingTableException("'Building' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -148,13 +229,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_Floor(IDatabase db) {
+    private boolean checkTable_Floor(IDatabase db) throws DbMissingTableException {
         final int column_count = 3;
         String query = "PRAGMA table_info( Floor )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Floor' table not found in DB.");
+                throw new DbMissingTableException("'Floor' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -188,13 +273,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_RoomCategory(IDatabase db) {
+    private boolean checkTable_RoomCategory(IDatabase db) throws DbMissingTableException {
         final int column_count = 3;
         String query = "PRAGMA table_info( RoomCategory )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'RoomCategory' table not found in DB.");
+                throw new DbMissingTableException("'RoomCategory' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -228,13 +317,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_RoomPrice(IDatabase db) {
+    private boolean checkTable_RoomPrice(IDatabase db) throws DbMissingTableException {
         final int column_count = 3;
         String query = "PRAGMA table_info( RoomPrice )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'RoomPrice' table not found in DB.");
+                throw new DbMissingTableException("'RoomPrice' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -268,13 +361,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_RoomFixtures(IDatabase db) {
+    private boolean checkTable_RoomFixtures(IDatabase db) throws DbMissingTableException {
         final int column_count = 5;
         String query = "PRAGMA table_info( RoomFixtures )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'RoomFixtures' table not found in DB.");
+                throw new DbMissingTableException("'RoomFixtures' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -320,13 +417,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_Room(IDatabase db) {
+    private boolean checkTable_Room(IDatabase db) throws DbMissingTableException {
         final int column_count = 5;
         String query = "PRAGMA table_info( Room )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Room' table not found in DB.");
+                throw new DbMissingTableException("'Room' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -372,13 +473,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_Room_has_RoomPrice(IDatabase db) {
+    private boolean checkTable_Room_has_RoomPrice(IDatabase db) throws DbMissingTableException {
         final int column_count = 3;
         String query = "PRAGMA table_info( Room_has_RoomPrice )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Room_has_RoomPrice' table not found in DB.");
+                throw new DbMissingTableException("'Room_has_RoomPrice' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -412,13 +517,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_Room_had_RoomFixtures(IDatabase db) {
+    private boolean checkTable_Room_had_RoomFixtures(IDatabase db) throws DbMissingTableException {
         final int column_count = 2;
         String query = "PRAGMA table_info( Room_has_RoomFixtures )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Room_has_RoomFixtures' table not found in DB.");
+                throw new DbMissingTableException("'Room_has_RoomFixtures' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("room_id")) {
@@ -446,13 +555,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_PaymentMethod(IDatabase db) {
+    private boolean checkTable_PaymentMethod(IDatabase db) throws DbMissingTableException {
         final int column_count = 2;
         String query = "PRAGMA table_info( PaymentMethod )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'PaymentMethod' table not found in DB.");
+                throw new DbMissingTableException("'PaymentMethod' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -480,13 +593,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_DiscountCategory(IDatabase db) {
+    private boolean checkTable_DiscountCategory(IDatabase db) throws DbMissingTableException {
         final int column_count = 2;
         String query = "PRAGMA table_info( DiscountCategory )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'DiscountCategory' table not found in DB.");
+                throw new DbMissingTableException("'DiscountCategory' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -514,13 +631,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_Discount(IDatabase db) {
+    private boolean checkTable_Discount(IDatabase db) throws DbMissingTableException {
         final int column_count = 3;
         String query = "PRAGMA table_info( Discount )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Discount' table not found in DB.");
+                throw new DbMissingTableException("'Discount' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -554,13 +675,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_MembershipType(IDatabase db) {
+    private boolean checkTable_MembershipType(IDatabase db) throws DbMissingTableException {
         final int column_count = 2;
         String query = "PRAGMA table_info( MembershipType )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'MembershipType' table not found in DB.");
+                throw new DbMissingTableException("'MembershipType' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -588,13 +713,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_Customer(IDatabase db) {
+    private boolean checkTable_Customer(IDatabase db) throws DbMissingTableException {
         final int column_count = 15;
         String query = "PRAGMA table_info( Customer )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Customer' table not found in DB.");
+                throw new DbMissingTableException("'Customer' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -700,13 +829,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_Reservation(IDatabase db) {
+    private boolean checkTable_Reservation(IDatabase db) throws DbMissingTableException {
         final int column_count = 3;
         String query = "PRAGMA table_info( Reservation )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Reservation' table not found in DB.");
+                throw new DbMissingTableException("'Reservation' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -740,13 +873,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_Room_has_Reservation(IDatabase db) {
+    private boolean checkTable_Room_has_Reservation(IDatabase db) throws DbMissingTableException {
         final int column_count = 12;
         String query = "PRAGMA table_info( Room_has_Reservation )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Room_has_Reservation' table not found in DB.");
+                throw new DbMissingTableException("'Room_has_Reservation' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("room_id")) {
@@ -836,13 +973,17 @@ class DatabaseChecker {
     }
 
     //========================================User Account Tables ======================================================
-    private boolean checkTable_AccountType(IDatabase db) {
+    private boolean checkTable_AccountType(IDatabase db) throws DbMissingTableException {
         final int column_count = 2;
         String query = "PRAGMA table_info( AccountType )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'AccountType' table not found in DB.");
+                throw new DbMissingTableException("'AccountType' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
@@ -871,13 +1012,17 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_UserAccount(IDatabase db) {
+    private boolean checkTable_UserAccount(IDatabase db) throws DbMissingTableException {
         final int column_count = 9;
         String query = "PRAGMA table_info( UserAccount )";
         try {
             boolean ok_flag = true;
             int checked = 0;
             ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'UserAccount' table not found in DB.");
+                throw new DbMissingTableException("'UserAccount' table does not exist.");
+            }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {

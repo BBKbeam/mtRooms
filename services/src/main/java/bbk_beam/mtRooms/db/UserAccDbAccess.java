@@ -26,23 +26,22 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     UserAccDbAccess(ICurrentSessions session_tracker, IUserAccDb db) throws SQLException, DbBuildException {
         this.currentSessions = session_tracker;
         this.db = db;
-
         if (!db.isConnected()) {
             if (!db.connect()) {
                 log.log_Fatal("Could not connect to database.");
                 throw new SQLException("Could not connect to database.");
-            } else {
-                try {
-                    if (!db.checkUserAccDB()) {
-                        log.log_Fatal("User tables in database either corrupted or incomplete.");
-                        throw new DbBuildException("Database corruption detected.");
-                    }
-                } catch (DbEmptyException e) {
-                    if (!db.setupUserAccDB()) {
-                        log.log_Fatal("Could not build user new database structure.");
-                        throw new DbBuildException("Could not build new database structure.");
-                    }
-                }
+            }
+        }
+        try {
+            if (!db.checkUserAccDB()) {
+                log.log_Fatal("User tables in database either corrupted or incomplete.");
+                throw new DbBuildException("Database corruption detected.");
+            }
+        } catch (DbEmptyException e) {
+            log.log("None of required user account tables found.");
+            if (!db.setupUserAccDB()) {
+                log.log_Fatal("Could not build user new database structure.");
+                throw new DbBuildException("Could not build new database structure.");
             }
         }
     }

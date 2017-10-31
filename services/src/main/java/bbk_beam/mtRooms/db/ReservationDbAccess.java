@@ -28,18 +28,18 @@ public class ReservationDbAccess implements IReservationDbAccess {
             if (!this.db.connect()) {
                 log.log_Fatal("Could not connect to database.");
                 throw new SQLException("Could not connect to database.");
-            } else {
-                try {
-                    if (!db.checkReservationDB()) {
-                        log.log_Fatal("Tables in database either corrupted or incomplete.");
-                        throw new DbBuildException("Database corruption detected.");
-                    }
-                } catch (DbEmptyException e) {
-                    if (!db.setupReservationDB()) {
-                        log.log_Fatal("Could not build new database structure.");
-                        throw new DbBuildException("Could not build new database structure.");
-                    }
-                }
+            }
+        }
+        try {
+            if (!db.checkReservationDB()) {
+                log.log_Fatal("Tables in database either corrupted or incomplete.");
+                throw new DbBuildException("Database corruption detected.");
+            }
+        } catch (DbEmptyException e) {
+            log.log("None of required reservation tables found.");
+            if (!db.setupReservationDB()) {
+                log.log_Fatal("Could not build new database structure.");
+                throw new DbBuildException("Could not build new database structure.");
             }
         }
     }

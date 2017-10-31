@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.db;
 import bbk_beam.mtRooms.db.database.IUserAccDb;
 import bbk_beam.mtRooms.db.exception.*;
 import bbk_beam.mtRooms.db.session.ICurrentSessions;
+import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -57,8 +58,13 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
-    public void openSession(String session_id, Date expiry) throws SessionException {
-        this.currentSessions.addSession(session_id, expiry);
+    public SessionType getSessionType(String session_id) throws SessionInvalidException {
+        return this.currentSessions.getSessionType(session_id);
+    }
+
+    @Override
+    public void openSession(String session_id, Date expiry, SessionType session_type) throws SessionException {
+        this.currentSessions.addSession(session_id, expiry, session_type);
     }
 
     @Override

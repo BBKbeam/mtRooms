@@ -269,8 +269,8 @@ class DatabaseBuilder {
                 + "description VARCHAR(255) NOT NULL "
                 + ")";
         String query2 = "INSERT INTO AccountType( description ) VALUES"
-                + "( \"Administrator\" ), "
-                + "( \"User\" )";
+                + "( \"ADMIN\" ), "
+                + "( \"USER\" )";
         return pushQuery(db, query1) && pushQuery(db, query2);
     }
 

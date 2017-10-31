@@ -36,6 +36,18 @@ public interface IAdminSession {
     public void updateAccountPassword(Token admin_token, Integer account_id, String password) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException;
 
     /**
+     * Activates an existing account
+     *
+     * @param admin_token Administrator session token
+     * @param account_id  ID of account to activate
+     * @throws SessionInvalidException   when administrator session is not valid
+     * @throws SessionExpiredException   when current administrator session has expired
+     * @throws AccountExistenceException when account does not exist in the records
+     * @throws AccountOverrideException  when account to activate is the current logged-in administrator's
+     */
+    public void activateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException;
+
+    /**
      * Deactivates an existing account
      *
      * @param admin_token Administrator session token

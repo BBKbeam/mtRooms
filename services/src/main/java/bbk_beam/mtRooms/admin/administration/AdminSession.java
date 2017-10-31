@@ -47,6 +47,11 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
+    public void activateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException {
+        //TODO
+    }
+
+    @Override
     public void deactivateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException {
         //TODO
     }

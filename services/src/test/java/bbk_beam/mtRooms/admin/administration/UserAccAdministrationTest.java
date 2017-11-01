@@ -124,9 +124,7 @@ public class UserAccAdministrationTest {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
         String query_type_id = "SELECT id FROM AccountType WHERE description = \"USER\"";
         String query_accounts = "SELECT UserAccount.id, UserAccount.username, UserAccount.pwd_hash, UserAccount.pwd_salt, UserAccount.created, UserAccount.last_pwd_change, UserAccount.last_login, UserAccount.active_state, AccountType.id AS type_id, AccountType.description FROM UserAccount LEFT OUTER JOIN AccountType ON UserAccount.account_type_id = AccountType.id WHERE UserAccount.username = \"mtRoomUser\"";
-        String query_changes = "SELECT changes()";
         ObjectTable mocked_type_id_table = mock(ObjectTable.class);
-        ObjectTable mocked_account_table = mock(ObjectTable.class);
         //Type Id fetching
         when(this.mock_user_db_access.pullFromDB(query_type_id)).thenReturn(mocked_type_id_table);
         when(mocked_type_id_table.isEmpty()).thenReturn(false);
@@ -211,49 +209,71 @@ public class UserAccAdministrationTest {
     }
 
     @Test
-    public void activateAccount() throws Exception {
+    public void deactivateAccount_and_activateAccount() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
-        //TODO
-        Assert.assertTrue(false);
+        //Create new user to test against
+        userAccAdministration.createNewAccount(SessionType.USER, "NewUser001", "password");
+        ObjectTable account_table = userAccAdministration.getAccount("NewUser001");
+        HashMap<String, Object> account_row = account_table.getRow(1);
+        Assert.assertEquals("NewUser001", account_row.get("username"));
+        Integer account_id = (Integer) account_row.get("id");
+        //Deactivate user
+        userAccAdministration.deactivateAccount(account_id);
+        ObjectTable active_flag_table = this.user_db_access.pullFromDB("SELECT active_state FROM UserAccount WHERE id = " + account_id);
+        Assert.assertEquals(0, active_flag_table.getInteger(1, 1));
+        //Activate user
+        userAccAdministration.activateAccount(account_id);
+        active_flag_table = this.user_db_access.pullFromDB("SELECT active_state FROM UserAccount WHERE id = " + account_id);
+        Assert.assertEquals(1, active_flag_table.getInteger(1, 1));
     }
 
     @Test(expected = AccountExistenceException.class)
     public void activateAccount_exists_fail() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
+        userAccAdministration.activateAccount(2);
     }
 
-    @Test
-    public void deactivateAccount() throws Exception {
-        UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
-        userAccAdministration.deactivateAccount(1);
-        ObjectTable result = this.user_db_access.pullFromDB("SELECT active_state FROM UserAccount WHERE id = 1");
-        Assert.assertEquals(0, result.getInteger(1, 1));
+    @Test(expected = DbQueryException.class)
+    public void activateAccount_query_fail() throws Exception {
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        when(mock_user_db_access.pullFromDB(anyString())).thenThrow(DbQueryException.class);
+        userAccAdministration.activateAccount(1);
     }
 
     @Test(expected = AccountExistenceException.class)
     public void deactivateAccount_exists_fail() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
         userAccAdministration.deactivateAccount(2);
-        //TODO
-        Assert.assertTrue(false);
     }
 
     @Test(expected = DbQueryException.class)
     public void deactivateAccount_query_fail() throws Exception {
-        UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
-        userAccAdministration.deactivateAccount(2);
-        //TODO
-        Assert.assertTrue(false);
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        when(mock_user_db_access.pullFromDB(anyString())).thenThrow(DbQueryException.class);
+        userAccAdministration.deactivateAccount(1);
     }
 
     @Test
     public void deleteAccount() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
-        userAccAdministration.deleteAccount(2);
-        //TODO
-        Assert.assertTrue(false);
+        userAccAdministration.deleteAccount(1);
+        ObjectTable account_table = user_db_access.pullFromDB("SELECT * FROM UserAccount WHERE id = 1");
+        Assert.assertTrue(account_table.isEmpty());
     }
+
+    @Test(expected = AccountExistenceException.class)
+    public void deleteAccount_exists_fail() throws Exception {
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
+        userAccAdministration.deleteAccount(2);
+    }
+
+    @Test(expected = DbQueryException.class)
+    public void deleteAccount_query_fail() throws Exception {
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        when(mock_user_db_access.pullFromDB(anyString())).thenThrow(DbQueryException.class);
+        userAccAdministration.deleteAccount(1);
+    }
+
 
     @Test
     public void getAccounts() throws Exception {

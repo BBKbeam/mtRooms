@@ -21,6 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -274,27 +275,40 @@ public class UserAccAdministrationTest {
         userAccAdministration.deleteAccount(1);
     }
 
-
     @Test
     public void getAccounts() throws Exception {
-        UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
-        ObjectTable table = userAccAdministration.getAccounts();
-        System.out.println(table);
-        //TODO
-        Assert.assertTrue(false);
-
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        ObjectTable account_table = mock(ObjectTable.class);
+        when(this.mock_user_db_access.pullFromDB(any())).thenReturn(account_table);
+        Assert.assertEquals(account_table, userAccAdministration.getAccounts());
     }
 
     @Test
     public void getAccount_by_id() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        //Mock
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        ObjectTable account_table = mock(ObjectTable.class);
+        when(this.mock_user_db_access.pullFromDB(any())).thenReturn(account_table);
+        Assert.assertEquals(account_table, userAccAdministration.getAccount(1));
+        //Real
+        userAccAdministration = new UserAccAdministration(this.user_db_access);
+        ObjectTable returned_table = userAccAdministration.getAccount(1);
+        Assert.assertEquals(10, returned_table.columnCount());
+        Assert.assertEquals(1, returned_table.rowCount());
     }
 
     @Test
     public void getAccount_by_username() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        //Mock
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        ObjectTable account_table = mock(ObjectTable.class);
+        when(this.mock_user_db_access.pullFromDB(any())).thenReturn(account_table);
+        Assert.assertEquals(account_table, userAccAdministration.getAccount("root"));
+        //Real
+        userAccAdministration = new UserAccAdministration(this.user_db_access);
+        ObjectTable returned_table = userAccAdministration.getAccount("root");
+        Assert.assertEquals(10, returned_table.columnCount());
+        Assert.assertEquals(1, returned_table.rowCount());
     }
 
 }

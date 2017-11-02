@@ -7,6 +7,7 @@ import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
+import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
@@ -53,7 +54,7 @@ public class AdminSession implements IAdminSession {
             checkTokenValidity(admin_token);
             this.administration.createNewAccount(account_type, username, password);
         } catch (RecordUpdateException e) {
-            log.log_Fatal("Could not add user account to records.");
+            log.log_Fatal("Could not add user account [id: ", username, "] to records.");
             throw new RuntimeException("Could not add user account to records.", e);
         }
     }
@@ -64,44 +65,84 @@ public class AdminSession implements IAdminSession {
             checkTokenValidity(admin_token);
             this.administration.updateAccountPassword(account_id, password);
         } catch (RecordUpdateException e) {
-            log.log_Fatal("Could not add user account to records.");
-            throw new RuntimeException("Could not add user account to records.", e);
+            log.log_Fatal("Could not update user account [id: ", account_id, "] in records.");
+            throw new RuntimeException("Could not update user account in records.", e);
         }
     }
 
     @Override
-    public void activateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException {
-        //TODO
+    public void activateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException, RuntimeException {
+        try {
+            checkTokenValidity(admin_token);
+            this.administration.activateAccount(account_id);
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not activate user account [id: ", account_id, "] in records.");
+            throw new RuntimeException("Could not activate user account in records.", e);
+        }
     }
 
     @Override
-    public void deactivateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException {
-        //TODO
+    public void deactivateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException, RuntimeException {
+        try {
+            checkTokenValidity(admin_token);
+            this.administration.deactivateAccount(account_id);
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not deactivate user account [id: ", account_id, "] in records.");
+            throw new RuntimeException("Could not deactivate user account in records.", e);
+        }
     }
 
     @Override
-    public void deleteAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException {
-        //TODO
+    public void deleteAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException, RuntimeException {
+        try {
+            checkTokenValidity(admin_token);
+            this.administration.deleteAccount(account_id);
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not delete user account [id: ", account_id, "] from records.");
+            throw new RuntimeException("Could not delete user account from records.", e);
+        }
     }
 
     @Override
-    public ObjectTable getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException {
-        //TODO
-        return null;
+    public ObjectTable getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, RuntimeException {
+        try {
+            checkTokenValidity(admin_token);
+            return this.administration.getAccounts();
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not fetch user accounts from records.");
+            throw new RuntimeException("Could not fetch user accounts from records.", e);
+        }
     }
 
     @Override
-    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException {
-        //TODO
-        return null;
+    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, RuntimeException {
+        try {
+            checkTokenValidity(admin_token);
+            return this.administration.getAccount(account_id);
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not fetch user account [id: ", account_id, "] from records.");
+            throw new RuntimeException("Could not fetch user account from records.", e);
+        }
     }
 
     @Override
-    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, AccountExistenceException {
-        //TODO
-        return null;
+    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, RuntimeException {
+        try {
+            checkTokenValidity(admin_token);
+            return this.administration.getAccount(account_username);
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not fetch user account [u/n: ", account_username, "] from records.");
+            throw new RuntimeException("Could not fetch user account from records.", e);
+        }
     }
 
+    /**
+     * Checks the credential used for the admin session
+     *
+     * @param token Session token
+     * @throws SessionInvalidException when the session is invalid (not logged-in or not admin)
+     * @throws SessionExpiredException when the session is expired
+     */
     private void checkTokenValidity(Token token) throws SessionInvalidException, SessionExpiredException {
         if (token.getExpiry().after(new Date())) {
             log.log_Error("Token [", token.getSessionId(), "] has expired.");

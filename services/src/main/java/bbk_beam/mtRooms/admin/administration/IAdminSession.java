@@ -19,8 +19,9 @@ public interface IAdminSession {
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws AccountExistenceException when account with same name exists already
+     * @throws RuntimeException          when non-standard failure occurred during account creation in records
      */
-    public void createNewAccount(Token admin_token, SessionType account_type, String username, String password) throws SessionInvalidException, SessionExpiredException, AccountExistenceException;
+    public void createNewAccount(Token admin_token, SessionType account_type, String username, String password) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, RuntimeException;
 
     /**
      * Updates existing account's password
@@ -32,8 +33,9 @@ public interface IAdminSession {
      * @throws SessionExpiredException   when current session has expired
      * @throws AccountExistenceException when account does not exist in the records
      * @throws AccountOverrideException  when new password is the same as old one
+     * @throws RuntimeException          when non-standard failure occurred during account creation in records
      */
-    public void updateAccountPassword(Token admin_token, Integer account_id, String password) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException;
+    public void updateAccountPassword(Token admin_token, Integer account_id, String password) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException, RuntimeException;
 
     /**
      * Activates an existing account

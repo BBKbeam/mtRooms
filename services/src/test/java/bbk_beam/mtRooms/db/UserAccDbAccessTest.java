@@ -64,14 +64,15 @@ public class UserAccDbAccessTest {
 
     @org.junit.Test
     public void checkValidity() throws Exception {
+        Date date = new Date();
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkUserAccDB()).thenReturn(true);
         when(mocked_Database.setupUserAccDB()).thenReturn(true);
-        when(mocked_SessionTracker.isValid("0001")).thenReturn(true);
-        when(mocked_SessionTracker.isValid("0002")).thenReturn(false);
+        when(mocked_SessionTracker.isValid("0001", date)).thenReturn(true);
+        when(mocked_SessionTracker.isValid("0002", date)).thenReturn(false);
         UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
-        Assert.assertTrue(userAccDbAccess.checkValidity("0001"));
-        Assert.assertFalse(userAccDbAccess.checkValidity("0002"));
+        Assert.assertTrue(userAccDbAccess.checkValidity("0001", date));
+        Assert.assertFalse(userAccDbAccess.checkValidity("0002", date));
     }
 
     @org.junit.Test

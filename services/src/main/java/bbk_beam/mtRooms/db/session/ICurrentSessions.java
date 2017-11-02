@@ -1,5 +1,6 @@
 package bbk_beam.mtRooms.db.session;
 
+import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 
@@ -59,6 +60,17 @@ public interface ICurrentSessions {
      * @throws SessionInvalidException when ID is not in the sessions tracked
      */
     public boolean isValid(String session_id) throws SessionInvalidException;
+
+    /**
+     * Gets the validity state (not expired) of a session
+     *
+     * @param session_id     Session ID
+     * @param session_expiry Session's expiry timestamp in token
+     * @return Valid state
+     * @throws SessionInvalidException   when ID is not in the sessions tracked
+     * @throws SessionCorruptedException when given expiry does not match expiry tracked.
+     */
+    public boolean isValid(String session_id, Date session_expiry) throws SessionInvalidException, SessionCorruptedException;
 
     /**
      * Gets the type of a session

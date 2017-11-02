@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.db.session;
 
-import bbk_beam.mtRooms.db.ReservationDbAccess;
+import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import eadjlib.logger.Logger;
@@ -48,7 +48,7 @@ public class SessionTracker implements ICurrentSessions {
         }
     }
 
-    private final Logger log = Logger.getLoggerInstance(ReservationDbAccess.class.getName());
+    private final Logger log = Logger.getLoggerInstance(SessionTracker.class.getName());
     private HashMap<String, SessionDetail> tracker;
 
     /**
@@ -96,8 +96,23 @@ public class SessionTracker implements ICurrentSessions {
     @Override
     public boolean isValid(String session_id) throws SessionInvalidException {
         if (this.exists(session_id)) {
-            log.log_Debug("Session [", session_id, "]=", this.tracker.get(session_id));
+            log.log_Debug("Validating ID for session [", session_id, "]=", this.tracker.get(session_id));
             return this.tracker.get(session_id).getDate().compareTo(new Date()) > 0;
+        } else {
+            throw new SessionInvalidException("Session (id: " + session_id + ") is not tracked.");
+        }
+    }
+
+    @Override
+    public boolean isValid(String session_id, Date session_expiry) throws SessionInvalidException, SessionCorruptedException {
+        if (this.exists(session_id)) {
+            log.log_Debug("Validating session [", session_id, "]=", this.tracker.get(session_id));
+            if (!this.tracker.get(session_id).getDate().equals(session_expiry)) {
+                log.log_Error("Session [", session_id, "]=", this.tracker.get(session_id), ": mismatch between tracked and given expiry.");
+                throw new SessionCorruptedException("Mismatching session expiry timestamp found.");
+            } else {
+                return this.tracker.get(session_id).getDate().compareTo(new Date()) > 0;
+            }
         } else {
             throw new SessionInvalidException("Session (id: " + session_id + ") is not tracked.");
         }
@@ -106,7 +121,7 @@ public class SessionTracker implements ICurrentSessions {
     @Override
     public SessionType getSessionType(String session_id) throws SessionInvalidException {
         if (this.exists(session_id)) {
-            log.log_Debug("Session [", session_id, "]=", this.tracker.get(session_id));
+            log.log_Debug("Getting type for session [", session_id, "]=", this.tracker.get(session_id));
             return this.tracker.get(session_id).getSessionType();
         } else {
             throw new SessionInvalidException("Session (id: " + session_id + ") is not tracked.");

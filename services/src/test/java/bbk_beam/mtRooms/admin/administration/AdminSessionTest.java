@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.admin.administration;
 import bbk_beam.mtRooms.admin.authentication.IAuthenticationSystem;
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
+import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
@@ -95,8 +96,48 @@ public class AdminSessionTest {
 
     @Test
     public void updateAccountPassword() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        when(mock_authentication_module.hasValidAccessRights(admin_token, SessionType.ADMIN)).thenReturn(true);
+        adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
+        verify(mock_administration_module, times(1)).updateAccountPassword(1, "new_password");
+    }
+
+    @Test(expected = SessionInvalidException.class)
+    public void updateAccountPassword_invalid_session_fail() throws Exception {
+        doThrow(SessionInvalidException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void updateAccountPassword_expired_session_fail() throws Exception {
+        doThrow(SessionExpiredException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
+    }
+
+    @Test(expected = SessionCorruptedException.class)
+    public void updateAccountPassword_corrupted_session_fail() throws Exception {
+        doThrow(SessionCorruptedException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
+    }
+
+    @Test(expected = AccountExistenceException.class)
+    public void updateAccountPassword_account_fetch_fail() throws Exception {
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        doThrow(AccountExistenceException.class).when(mock_administration_module).updateAccountPassword(1, "new_password");
+        adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
+    }
+
+    @Test(expected = AccountOverrideException.class)
+    public void updateAccountPassword_account_override_fail() throws Exception {
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        doThrow(AccountOverrideException.class).when(mock_administration_module).updateAccountPassword(1, "new_password");
+        adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void updateAccountPassword_runtime_fail() throws Exception {
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        doThrow(RuntimeException.class).when(mock_administration_module).updateAccountPassword(1, "new_password");
+        adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
     }
 
     @Test

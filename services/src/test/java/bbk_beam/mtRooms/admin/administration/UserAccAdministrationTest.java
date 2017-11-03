@@ -311,4 +311,17 @@ public class UserAccAdministrationTest {
         Assert.assertEquals(1, returned_table.rowCount());
     }
 
+    @Test
+    public void optimiseDatabase() throws Exception {
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
+        userAccAdministration.optimiseDatabase();
+        Assert.assertTrue(true); //Optimising does not fail.
+    }
+
+    @Test(expected = DbQueryException.class)
+    public void optimiseDatabase_fail() throws Exception {
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        when(this.mock_user_db_access.pushToDB("VACUUM")).thenThrow(DbQueryException.class);
+        userAccAdministration.optimiseDatabase();
+    }
 }

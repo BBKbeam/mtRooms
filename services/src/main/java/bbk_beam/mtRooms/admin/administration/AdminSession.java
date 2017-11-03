@@ -8,13 +8,12 @@ import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
+import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
-
-import java.util.Date;
 
 public class AdminSession implements IAdminSession {
     private final Logger log = Logger.getLoggerInstance(AdminSession.class.getName());
@@ -49,7 +48,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public void createNewAccount(Token admin_token, SessionType account_type, String username, String password) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, RuntimeException {
+    public void createNewAccount(Token admin_token, SessionType account_type, String username, String password) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             this.administration.createNewAccount(account_type, username, password);
@@ -60,7 +59,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public void updateAccountPassword(Token admin_token, Integer account_id, String password) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException, RuntimeException {
+    public void updateAccountPassword(Token admin_token, Integer account_id, String password) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             this.administration.updateAccountPassword(account_id, password);
@@ -71,7 +70,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public void activateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException, RuntimeException {
+    public void activateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             this.administration.activateAccount(account_id);
@@ -82,7 +81,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public void deactivateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException, RuntimeException {
+    public void deactivateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             this.administration.deactivateAccount(account_id);
@@ -93,7 +92,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public void deleteAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, AccountOverrideException, RuntimeException {
+    public void deleteAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             this.administration.deleteAccount(account_id);
@@ -104,7 +103,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public ObjectTable getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, RuntimeException {
+    public ObjectTable getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             return this.administration.getAccounts();
@@ -115,7 +114,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, RuntimeException {
+    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             return this.administration.getAccount(account_id);
@@ -126,7 +125,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, AccountExistenceException, RuntimeException {
+    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             return this.administration.getAccount(account_username);
@@ -136,17 +135,42 @@ public class AdminSession implements IAdminSession {
         }
     }
 
+    @Override
+    public boolean optimiseReservationDatabase(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException {
+        try {
+            checkTokenValidity(admin_token);
+            this.maintenance.vacuumDatabase(admin_token);
+            return true;
+        } catch (DbQueryException e) {
+            log.log_Error("Problem encountered when trying to optimise the reservation database.");
+        }
+        return false;
+    }
+
+    @Override
+    public boolean optimiseUserAccountDatabase(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException {
+        try {
+            checkTokenValidity(admin_token);
+            this.administration.optimiseDatabase();
+            return true;
+        } catch (DbQueryException e) {
+            log.log_Error("Problem encountered when trying to optimise the user account database.");
+        }
+        return false;
+    }
+
     /**
      * Checks the credential used for the admin session
      *
      * @param token Session token
-     * @throws SessionInvalidException when the session is invalid (not logged-in or not admin)
-     * @throws SessionExpiredException when the session is expired
+     * @throws SessionInvalidException   when the session is invalid (not logged-in or not admin)
+     * @throws SessionExpiredException   when the session is expired
+     * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    private void checkTokenValidity(Token token) throws SessionInvalidException, SessionExpiredException {
-        if (token.getExpiry().after(new Date())) {
-            log.log_Error("Token [", token.getSessionId(), "] has expired.");
-            throw new SessionExpiredException("Token expired.");
+    private void checkTokenValidity(Token token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException {
+        if (!this.administration.isValid(token)) {
+            log.log_Error("Token [", token.getSessionId(), "] could not be validated.");
+            throw new SessionInvalidException("Token [" + token.getSessionId() + "] could not be validated.");
         }
         if (!this.authenticator.hasValidAccessRights(token, SessionType.ADMIN)) {
             log.log_Error("Token [", token.getSessionId(), "] not valid for administrative access.");

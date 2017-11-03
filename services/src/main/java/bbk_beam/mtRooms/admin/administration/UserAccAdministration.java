@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.admin.administration;
 
 import bbk_beam.mtRooms.admin.authentication.PasswordHash;
+import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.AuthenticationHasherException;
@@ -8,6 +9,7 @@ import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
+import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
@@ -25,6 +27,17 @@ public class UserAccAdministration {
      */
     public UserAccAdministration(IUserAccDbAccess db_access) {
         this.db_access = db_access;
+    }
+
+    /**
+     * Checks the validity of a session token
+     *
+     * @param token Session token
+     * @return Valid state
+     * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
+     */
+    public boolean isValid(Token token) throws SessionCorruptedException {
+        return this.db_access.checkValidity(token.getSessionId(), token.getExpiry());
     }
 
     /**
@@ -249,5 +262,20 @@ public class UserAccAdministration {
                 + "LEFT OUTER JOIN AccountType ON UserAccount.account_type_id = AccountType.id "
                 + "WHERE UserAccount.username = \"" + account_username + "\"";
         return db_access.pullFromDB(query);
+    }
+
+    /**
+     * Runs the vacuum command on the connected user account database
+     *
+     * @throws DbQueryException when vacuuming query failed
+     */
+    public void optimiseDatabase() throws DbQueryException {
+        try {
+            this.db_access.pushToDB("VACUUM");
+            log.log("User account database optimised.");
+        } catch (DbQueryException e) {
+            log.log_Error("Vacuuming failed.");
+            throw new DbQueryException("Failed vacuuming of DB schema.", e);
+        }
     }
 }

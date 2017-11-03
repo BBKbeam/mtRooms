@@ -73,7 +73,12 @@ public class AdminSession implements IAdminSession {
     public void activateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
-            this.administration.activateAccount(account_id);
+            if (this.administration.isSameAccount(admin_token, account_id)) {
+                log.log_Warning("Detected attempt to re-activate current session account used for access!");
+                throw new AccountOverrideException("Attempted to re-activate current session account.");
+            } else {
+                this.administration.activateAccount(account_id);
+            }
         } catch (DbQueryException e) {
             log.log_Fatal("Could not activate user account [id: ", account_id, "] in records.");
             throw new RuntimeException("Could not activate user account in records.", e);
@@ -84,7 +89,12 @@ public class AdminSession implements IAdminSession {
     public void deactivateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
-            this.administration.deactivateAccount(account_id);
+            if (this.administration.isSameAccount(admin_token, account_id)) {
+                log.log_Error("Detected attempt to deactivate current session account used for access!");
+                throw new AccountOverrideException("Attempted to deactivate current session account.");
+            } else {
+                this.administration.deactivateAccount(account_id);
+            }
         } catch (DbQueryException e) {
             log.log_Fatal("Could not deactivate user account [id: ", account_id, "] in records.");
             throw new RuntimeException("Could not deactivate user account in records.", e);
@@ -95,7 +105,12 @@ public class AdminSession implements IAdminSession {
     public void deleteAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
-            this.administration.deleteAccount(account_id);
+            if (this.administration.isSameAccount(admin_token, account_id)) {
+                log.log_Error("Detected attempt to delete current session account used for access!");
+                throw new AccountOverrideException("Attempted to delete current session account.");
+            } else {
+                this.administration.deleteAccount(account_id);
+            }
         } catch (DbQueryException e) {
             log.log_Fatal("Could not delete user account [id: ", account_id, "] from records.");
             throw new RuntimeException("Could not delete user account from records.", e);
@@ -185,4 +200,5 @@ public class AdminSession implements IAdminSession {
             throw new SessionInvalidException("Token [" + token.getSessionId() + "] invalid.", e);
         }
     }
+
 }

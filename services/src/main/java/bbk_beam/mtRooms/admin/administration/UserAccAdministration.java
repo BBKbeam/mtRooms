@@ -36,12 +36,26 @@ public class UserAccAdministration {
      * Checks the validity of a session token
      *
      * @param token Session token
-     * @throws SessionExpiredException when session associated with token has expired
+     * @throws SessionExpiredException   when session associated with token has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
-     * @throws SessionInvalidException when no tracked sessions is associated with token
+     * @throws SessionInvalidException   when no tracked sessions is associated with token
      */
     public void checkValidity(Token token) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException {
         this.db_access.checkValidity(token.getSessionId(), token.getExpiry());
+    }
+
+    /**
+     * Checks that the associated account ID of the token is the same as the giver account ID
+     *
+     * @param token      Session token
+     * @param account_id Account ID to verify the token against
+     */
+    public boolean isSameAccount(Token token, Integer account_id) {
+        try {
+            return this.db_access.getSessionAccountID(token.getSessionId()).equals(account_id);
+        } catch (SessionInvalidException e) {
+            return false;
+        }
     }
 
     /**

@@ -51,6 +51,7 @@ public class AdminSessionTest {
 
     @Test
     public void createNewAccount() throws Exception {
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(admin_token, SessionType.ADMIN)).thenReturn(true);
         adminSession.createNewAccount(this.admin_token, SessionType.USER, "user001", "password");
         verify(mock_administration_module, times(1)).createNewAccount(SessionType.USER, "user001", "password");
@@ -82,6 +83,7 @@ public class AdminSessionTest {
 
     @Test(expected = AccountExistenceException.class)
     public void createNewAccount_account_fetch_fail() throws Exception {
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(admin_token, SessionType.ADMIN)).thenReturn(true);
         doThrow(AccountExistenceException.class).when(mock_administration_module).createNewAccount(SessionType.USER, "user001", "password");
         adminSession.createNewAccount(this.admin_token, SessionType.USER, "user001", "password");
@@ -89,6 +91,7 @@ public class AdminSessionTest {
 
     @Test(expected = RuntimeException.class)
     public void createNewAccount_runtime_fail() throws Exception {
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(admin_token, SessionType.ADMIN)).thenReturn(true);
         doThrow(RecordUpdateException.class).when(mock_administration_module).createNewAccount(SessionType.USER, "user001", "password");
         adminSession.createNewAccount(this.admin_token, SessionType.USER, "user001", "password");
@@ -96,6 +99,7 @@ public class AdminSessionTest {
 
     @Test
     public void updateAccountPassword() throws Exception {
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(admin_token, SessionType.ADMIN)).thenReturn(true);
         adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
         verify(mock_administration_module, times(1)).updateAccountPassword(1, "new_password");
@@ -121,6 +125,7 @@ public class AdminSessionTest {
 
     @Test(expected = AccountExistenceException.class)
     public void updateAccountPassword_account_fetch_fail() throws Exception {
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
         doThrow(AccountExistenceException.class).when(mock_administration_module).updateAccountPassword(1, "new_password");
         adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
@@ -128,6 +133,7 @@ public class AdminSessionTest {
 
     @Test(expected = AccountOverrideException.class)
     public void updateAccountPassword_account_override_fail() throws Exception {
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
         doThrow(AccountOverrideException.class).when(mock_administration_module).updateAccountPassword(1, "new_password");
         adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
@@ -135,6 +141,7 @@ public class AdminSessionTest {
 
     @Test(expected = RuntimeException.class)
     public void updateAccountPassword_runtime_fail() throws Exception {
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
         doThrow(RuntimeException.class).when(mock_administration_module).updateAccountPassword(1, "new_password");
         adminSession.updateAccountPassword(this.admin_token, 1, "new_password");
@@ -142,20 +149,114 @@ public class AdminSessionTest {
 
     @Test
     public void activateAccount() throws Exception {
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        adminSession.activateAccount(this.admin_token, 1);
+        verify(mock_administration_module, times(1)).activateAccount(1);
+    }
+
+    @Test(expected = SessionInvalidException.class)
+    public void activateAccount_invalid_session_fail() throws Exception {
         //TODO
-        Assert.assertTrue(false);
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void activateAccount_expired_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionCorruptedException.class)
+    public void activateAccount_corrupted_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = AccountExistenceException.class)
+    public void activateAccount_account_fetch_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = AccountOverrideException.class)
+    public void activateAccount_override_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void activateAccount_runtime_fail() throws Exception {
+        //TODO
     }
 
     @Test
     public void deactivateAccount() throws Exception {
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        adminSession.deactivateAccount(this.admin_token, 1);
+        verify(mock_administration_module, times(1)).deactivateAccount(1);
+    }
+
+    @Test(expected = SessionInvalidException.class)
+    public void deactivateAccount_invalid_session_fail() throws Exception {
         //TODO
-        Assert.assertTrue(false);
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void deactivateAccount_expired_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionCorruptedException.class)
+    public void deactivateAccount_corrupted_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = AccountExistenceException.class)
+    public void deactivateAccount_account_fetch_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = AccountOverrideException.class)
+    public void deactivateAccount_override_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void deactivateAccount_runtime_fail() throws Exception {
+        //TODO
     }
 
     @Test
     public void deleteAccount() throws Exception {
         //TODO
         Assert.assertTrue(false);
+    }
+
+    @Test(expected = SessionInvalidException.class)
+    public void deleteAccount_invalid_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void deleteAccount_expired_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionCorruptedException.class)
+    public void deleteAccount_corrupted_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = AccountExistenceException.class)
+    public void deleteAccount_account_fetch_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = AccountOverrideException.class)
+    public void deleteAccount_account_override_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void deleteAccount_runtime_fail() throws Exception {
+        //TODO
     }
 
     @Test

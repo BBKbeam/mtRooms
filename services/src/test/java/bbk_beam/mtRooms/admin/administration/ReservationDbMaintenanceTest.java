@@ -37,7 +37,7 @@ public class ReservationDbMaintenanceTest {
         this.user_db_access = this.db_bootstrapper.getUserAccDbAccess();
         this.reservation_db_access = this.db_bootstrapper.getReservationDbAccess();
         this.mock_reservation_db_access = mock(IReservationDbAccess.class);
-        this.user_db_access.openSession(this.session_user_id, this.session_expiry, SessionType.ADMIN);
+        this.user_db_access.openSession(this.session_user_id, this.session_expiry, SessionType.ADMIN, 1);
     }
 
     @After
@@ -70,7 +70,7 @@ public class ReservationDbMaintenanceTest {
                 Date.from(Instant.now().minus(1, ChronoUnit.HOURS)),
                 Date.from(Instant.now().minus(10, ChronoUnit.MINUTES))
         );
-        this.user_db_access.openSession(token.getSessionId(), token.getExpiry(), SessionType.ADMIN);
+        this.user_db_access.openSession(token.getSessionId(), token.getExpiry(), SessionType.ADMIN, 1);
         reservationDbMaintenance.vacuumDatabase(token);
     }
 

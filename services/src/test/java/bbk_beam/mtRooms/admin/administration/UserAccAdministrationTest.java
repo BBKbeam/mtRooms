@@ -1,12 +1,14 @@
 package bbk_beam.mtRooms.admin.administration;
 
 import bbk_beam.mtRooms.admin.authentication.PasswordHash;
+import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 import org.junit.After;
@@ -24,8 +26,7 @@ import java.util.HashMap;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class UserAccAdministrationTest {
     private DbSystemBootstrap db_bootstrapper = new DbSystemBootstrap();
@@ -39,7 +40,7 @@ public class UserAccAdministrationTest {
         Files.deleteIfExists(Paths.get("user_acc_test.db"));
         this.db_bootstrapper.init("user_acc_test.db");
         this.user_db_access = this.db_bootstrapper.getUserAccDbAccess();
-        this.user_db_access.openSession(this.session_user_id, this.session_expiry, SessionType.ADMIN);
+        this.user_db_access.openSession(this.session_user_id, this.session_expiry, SessionType.ADMIN, 1);
         this.mock_user_db_access = mock(IUserAccDbAccess.class);
     }
 
@@ -49,6 +50,23 @@ public class UserAccAdministrationTest {
         this.user_db_access = null;
         this.mock_user_db_access = null;
         Files.deleteIfExists(Paths.get("user_acc_test.db"));
+    }
+
+    @Test
+    public void isSameAccount() throws Exception {
+        Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        when(this.mock_user_db_access.getSessionAccountID("00001")).thenReturn(666);
+        Assert.assertTrue(userAccAdministration.isSameAccount(token, 666));
+        Assert.assertFalse(userAccAdministration.isSameAccount(token, 667));
+    }
+
+    @Test
+    public void isSameAccount_not_tracked() throws Exception {
+        Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.user_db_access);
+        doThrow(SessionInvalidException.class).when(this.mock_user_db_access).getSessionAccountID("00001");
+        Assert.assertFalse(userAccAdministration.isSameAccount(token, 666));
     }
 
     @Test
@@ -132,7 +150,7 @@ public class UserAccAdministrationTest {
         when(mocked_type_id_table.isEmpty()).thenReturn(false);
         when(mocked_type_id_table.getInteger(1, 1)).thenReturn(2);
         //New account query
-        when(this.mock_user_db_access.pullFromDB(query_accounts)).thenThrow(RecordUpdateException.class);
+        doThrow(RecordUpdateException.class).when(this.mock_user_db_access).pullFromDB(query_accounts);
         //Method call
         userAccAdministration.createNewAccount(SessionType.USER, "mtRoomUser", "user_password_0000");
     }
@@ -157,7 +175,7 @@ public class UserAccAdministrationTest {
             return this.user_db_access.pushToDB((String) args[0]);
         });
         //Changes
-        when(mock_user_db_access.pullFromDB(query_changes)).thenThrow(RecordUpdateException.class);
+        doThrow(RecordUpdateException.class).when(mock_user_db_access).pullFromDB(query_changes);
         //Method call
         userAccAdministration.createNewAccount(SessionType.USER, "mtRoomUser", "user_password_0000");
     }

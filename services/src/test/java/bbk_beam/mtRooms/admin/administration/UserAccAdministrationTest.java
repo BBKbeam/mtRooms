@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.admin.administration;
 
 import bbk_beam.mtRooms.admin.authentication.PasswordHash;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
+import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
@@ -199,6 +200,22 @@ public class UserAccAdministrationTest {
         when(mock_user_db_access.pullFromDB(query_changes)).thenReturn(changes_table);
         when(changes_table.getInteger(1, 1)).thenReturn(0);
         userAccAdministration.updateAccountPassword(1, "n3w_pa55w0rd");
+    }
+
+    @Test(expected = AccountOverrideException.class)
+    public void updateAccountPassword_fail_override() throws Exception {
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        String old_salt = PasswordHash.createSalt();
+        String old_hash = PasswordHash.createHash("old_password", old_salt);
+        ObjectTable account_table = mock(ObjectTable.class);
+        ObjectTable changes_table = mock(ObjectTable.class);
+        HashMap<String, Object> account_row = new HashMap<>();
+        account_row.put("pwd_hash", old_hash);
+        //Account fetching
+        String query_accounts = "SELECT UserAccount.id, UserAccount.username, UserAccount.pwd_hash, UserAccount.pwd_salt, UserAccount.created, UserAccount.last_pwd_change, UserAccount.last_login, UserAccount.active_state, AccountType.id AS type_id, AccountType.description FROM UserAccount LEFT OUTER JOIN AccountType ON UserAccount.account_type_id = AccountType.id WHERE UserAccount.id = 1";
+        when(mock_user_db_access.pullFromDB(query_accounts)).thenReturn(account_table);
+        when(account_table.getRow(1)).thenReturn(account_row);
+        userAccAdministration.updateAccountPassword(1, "old_password");
     }
 
     @Test(expected = RecordUpdateException.class)

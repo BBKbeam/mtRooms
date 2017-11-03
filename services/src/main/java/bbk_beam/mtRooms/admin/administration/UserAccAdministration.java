@@ -17,6 +17,7 @@ import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
 import java.util.Date;
+import java.util.HashMap;
 
 public class UserAccAdministration {
     private final Logger log = Logger.getLoggerInstance(UserAccAdministration.class.getName());
@@ -111,8 +112,13 @@ public class UserAccAdministration {
         try {
             ObjectTable table = getAccount(account_id);
             if (!table.isEmpty()) {
+                HashMap<String, Object> account_row = table.getRow(1);
                 String salt = PasswordHash.createSalt();
                 String hash = PasswordHash.createHash(password, salt);
+                if (hash.equals(account_row.get("pwd_hash"))) {
+                    log.log_Error("Updated password for account (id: ", account_id, ") is the same as the old one.");
+                    throw new AccountOverrideException("New password is the same as new one given.");
+                }
                 String query = "UPDATE UserAccount SET "
                         + "pwd_hash = \"" + hash + "\", "
                         + "pwd_salt = \"" + salt + "\", "

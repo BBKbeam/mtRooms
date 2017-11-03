@@ -109,9 +109,9 @@ public class UserAccDbAccessTest {
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkUserAccDB()).thenReturn(true);
         when(mocked_Database.setupUserAccDB()).thenReturn(true);
-        doNothing().when(mocked_SessionTracker).addSession("0001", date, SessionType.USER);
+        doNothing().when(mocked_SessionTracker).addSession("0001", date, SessionType.USER, 0);
         UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
-        userAccDbAccess.openSession("0001", date, SessionType.USER);
+        userAccDbAccess.openSession("0001", date, SessionType.USER, 0);
         Assert.assertTrue(true); //No exception thrown if it gets here!
     }
 
@@ -121,9 +121,9 @@ public class UserAccDbAccessTest {
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkUserAccDB()).thenReturn(true);
         when(mocked_Database.setupUserAccDB()).thenReturn(true);
-        doThrow(SessionException.class).when(mocked_SessionTracker).addSession("0001", date, SessionType.USER);
+        doThrow(SessionException.class).when(mocked_SessionTracker).addSession("0001", date, SessionType.USER, 0);
         UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
-        userAccDbAccess.openSession("0001", date, SessionType.USER);
+        userAccDbAccess.openSession("0001", date, SessionType.USER, 0);
     }
 
     @org.junit.Test

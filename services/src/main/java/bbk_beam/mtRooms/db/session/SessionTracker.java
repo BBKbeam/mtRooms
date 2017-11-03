@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.db.session;
 
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionException;
+import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import eadjlib.logger.Logger;
 
@@ -94,27 +95,32 @@ public class SessionTracker implements ICurrentSessions {
     }
 
     @Override
-    public boolean isValid(String session_id) throws SessionInvalidException {
-        if (this.exists(session_id)) {
-            log.log_Debug("Validating ID for session [", session_id, "]=", this.tracker.get(session_id));
-            return this.tracker.get(session_id).getDate().compareTo(new Date()) > 0;
-        } else {
+    public void checkValidity(String session_id) throws SessionExpiredException, SessionInvalidException {
+        log.log_Debug("Internal validation of session [", session_id, "]=", this.tracker.get(session_id));
+        if (!this.exists(session_id)) {
+            log.log_Error("Session [", session_id, "]=", this.tracker.get(session_id), ": session not tracked.");
             throw new SessionInvalidException("Session (id: " + session_id + ") is not tracked.");
+        }
+        if (this.tracker.get(session_id).getDate().compareTo(new Date()) <= 0) {
+            log.log_Error("Session [", session_id, "]=", this.tracker.get(session_id), ": token has expired.");
+            throw new SessionExpiredException("Token expired.");
         }
     }
 
     @Override
-    public boolean isValid(String session_id, Date session_expiry) throws SessionInvalidException, SessionCorruptedException {
-        if (this.exists(session_id)) {
-            log.log_Debug("Validating session [", session_id, "]=", this.tracker.get(session_id));
-            if (!this.tracker.get(session_id).getDate().equals(session_expiry)) {
-                log.log_Error("Session [", session_id, "]=", this.tracker.get(session_id), ": mismatch between tracked and given expiry.");
-                throw new SessionCorruptedException("Mismatching session expiry timestamp found.");
-            } else {
-                return this.tracker.get(session_id).getDate().compareTo(new Date()) > 0;
-            }
-        } else {
+    public void checkValidity(String session_id, Date session_expiry) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException {
+        log.log_Debug("Full validation of session [", session_id, "]=", this.tracker.get(session_id));
+        if (!this.exists(session_id)) {
+            log.log_Error("Session [", session_id, "]=", this.tracker.get(session_id), ": session not tracked.");
             throw new SessionInvalidException("Session (id: " + session_id + ") is not tracked.");
+        }
+        if (!this.tracker.get(session_id).getDate().equals(session_expiry)) {
+            log.log_Error("Session [", session_id, "]=", this.tracker.get(session_id), ": mismatch between tracked and given expiry.");
+            throw new SessionCorruptedException("Mismatching session expiry timestamp found.");
+        }
+        if (this.tracker.get(session_id).getDate().compareTo(new Date()) <= 0) {
+            log.log_Error("Session [", session_id, "]=", this.tracker.get(session_id), ": token has expired.");
+            throw new SessionExpiredException("Token expired.");
         }
     }
 

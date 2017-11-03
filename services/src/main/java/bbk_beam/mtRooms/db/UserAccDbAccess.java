@@ -47,13 +47,8 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
-    public boolean checkValidity(String session_id, Date session_expiry) throws SessionCorruptedException {
-        try {
-            return this.currentSessions.isValid(session_id, session_expiry);
-        } catch (SessionInvalidException e) {
-            log.log_Error("Session [", session_id, "] does not exist in the tracker.");
-            return false;
-        }
+    public void checkValidity(String session_id, Date session_expiry) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException {
+        this.currentSessions.checkValidity(session_id, session_expiry);
     }
 
     @Override

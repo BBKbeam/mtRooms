@@ -10,6 +10,8 @@ import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
+import bbk_beam.mtRooms.db.exception.SessionExpiredException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
@@ -33,11 +35,12 @@ public class UserAccAdministration {
      * Checks the validity of a session token
      *
      * @param token Session token
-     * @return Valid state
+     * @throws SessionExpiredException when session associated with token has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
+     * @throws SessionInvalidException when no tracked sessions is associated with token
      */
-    public boolean isValid(Token token) throws SessionCorruptedException {
-        return this.db_access.checkValidity(token.getSessionId(), token.getExpiry());
+    public void checkValidity(Token token) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException {
+        this.db_access.checkValidity(token.getSessionId(), token.getExpiry());
     }
 
     /**

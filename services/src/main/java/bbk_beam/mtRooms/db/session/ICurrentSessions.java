@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.db.session;
 
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionException;
+import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 
 import java.util.Date;
@@ -56,21 +57,21 @@ public interface ICurrentSessions {
      * Gets the validity state (not expired) of a session
      *
      * @param session_id Session ID
-     * @return Valid state
+     * @throws SessionExpiredException when session is expired
      * @throws SessionInvalidException when ID is not in the sessions tracked
      */
-    public boolean isValid(String session_id) throws SessionInvalidException;
+    public void checkValidity(String session_id) throws SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the validity state (not expired) of a session
      *
      * @param session_id     Session ID
      * @param session_expiry Session's expiry timestamp in token
-     * @return Valid state
-     * @throws SessionInvalidException   when ID is not in the sessions tracked
+     * @throws SessionExpiredException   when session is expired
      * @throws SessionCorruptedException when given expiry does not match expiry tracked.
+     * @throws SessionInvalidException   when ID is not in the sessions tracked
      */
-    public boolean isValid(String session_id, Date session_expiry) throws SessionInvalidException, SessionCorruptedException;
+    public void checkValidity(String session_id, Date session_expiry) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException;
 
     /**
      * Gets the type of a session

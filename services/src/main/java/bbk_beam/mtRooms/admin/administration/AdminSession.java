@@ -163,18 +163,26 @@ public class AdminSession implements IAdminSession {
      * Checks the credential used for the admin session
      *
      * @param token Session token
-     * @throws SessionInvalidException   when the session is invalid (not logged-in or not admin)
      * @throws SessionExpiredException   when the session is expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
+     * @throws SessionInvalidException   when the session is invalid (not logged-in or not admin)
      */
-    private void checkTokenValidity(Token token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException {
-        if (!this.administration.isValid(token)) {
-            log.log_Error("Token [", token.getSessionId(), "] could not be validated.");
-            throw new SessionInvalidException("Token [" + token.getSessionId() + "] could not be validated.");
-        }
-        if (!this.authenticator.hasValidAccessRights(token, SessionType.ADMIN)) {
-            log.log_Error("Token [", token.getSessionId(), "] not valid for administrative access.");
-            throw new SessionInvalidException("Token is not valid for administrative access.");
+    private void checkTokenValidity(Token token) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException {
+        try {
+            this.administration.checkValidity(token);
+            if (!this.authenticator.hasValidAccessRights(token, SessionType.ADMIN)) {
+                log.log_Error("Token [", token.getSessionId(), "] not valid for administrative access.");
+                throw new SessionInvalidException("Token [" + token.getSessionId() + "] not valid for administrative access.");
+            }
+        } catch (SessionExpiredException e) {
+            log.log_Error("Token [", token.getSessionId(), "] could not be validated: EXPIRED.");
+            throw new SessionExpiredException("Token [" + token.getSessionId() + "] expired.", e);
+        } catch (SessionCorruptedException e) {
+            log.log_Error("Token [", token.getSessionId(), "] could not be validated: CORRUPTED.");
+            throw new SessionCorruptedException("Token [" + token.getSessionId() + "] corrupted.", e);
+        } catch (SessionInvalidException e) {
+            log.log_Error("Token [", token.getSessionId(), "] could not be validated: INVALID.");
+            throw new SessionInvalidException("Token [" + token.getSessionId() + "] invalid.", e);
         }
     }
 }

@@ -47,12 +47,8 @@ public class ReservationDbAccess implements IReservationDbAccess {
     @Override
     public boolean pushToDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         try {
-            if (sessions.isValid(session_id)) {
-                return this.db.push(query);
-            } else {
-                log.log_Error("Session [", session_id, "] has expired.");
-                throw new SessionExpiredException("Session (id: " + session_id + ") has expired.");
-            }
+            sessions.checkValidity(session_id);
+            return this.db.push(query);
         } catch (SessionInvalidException e) {
             log.log_Error("Session [", session_id, "] is not valid.");
             throw new SessionInvalidException("Query passed with invalid session.", e);
@@ -62,12 +58,8 @@ public class ReservationDbAccess implements IReservationDbAccess {
     @Override
     public ObjectTable pullFromDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         try {
-            if (sessions.isValid(session_id)) {
-                return this.db.pull(query);
-            } else {
-                log.log_Error("Session [", session_id, "] has expired.");
-                throw new SessionExpiredException("Session (id: " + session_id + ") has expired.");
-            }
+            sessions.checkValidity(session_id);
+            return this.db.pull(query);
         } catch (SessionInvalidException e) {
             log.log_Error("Session [", session_id, "] is not valid.");
             throw new SessionInvalidException("Query passed with invalid session.", e);

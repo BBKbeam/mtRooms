@@ -1,9 +1,6 @@
 package bbk_beam.mtRooms.db;
 
-import bbk_beam.mtRooms.db.exception.DbQueryException;
-import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
-import bbk_beam.mtRooms.db.exception.SessionException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.db.exception.*;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 
@@ -15,10 +12,11 @@ public interface IUserAccDbAccess {
      *
      * @param session_id     Session ID
      * @param session_expiry Session expiry timestamp expected
-     * @return Valid state
+     * @throws SessionExpiredException when session has expired
      * @throws SessionCorruptedException when given expiry does not match expiry tracked.
+     * @throws SessionInvalidException when session is not tracked
      */
-    public boolean checkValidity(String session_id, Date session_expiry) throws SessionCorruptedException;
+    public void checkValidity(String session_id, Date session_expiry) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException;
 
     /**
      * Gets the type of the session

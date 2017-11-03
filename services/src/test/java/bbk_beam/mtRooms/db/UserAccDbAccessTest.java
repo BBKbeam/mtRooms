@@ -1,10 +1,7 @@
 package bbk_beam.mtRooms.db;
 
 import bbk_beam.mtRooms.db.database.Database;
-import bbk_beam.mtRooms.db.exception.DbBuildException;
-import bbk_beam.mtRooms.db.exception.DbEmptyException;
-import bbk_beam.mtRooms.db.exception.SessionException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.db.exception.*;
 import bbk_beam.mtRooms.db.session.SessionTracker;
 import bbk_beam.mtRooms.db.session.SessionType;
 import org.junit.Assert;
@@ -68,11 +65,42 @@ public class UserAccDbAccessTest {
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkUserAccDB()).thenReturn(true);
         when(mocked_Database.setupUserAccDB()).thenReturn(true);
-        when(mocked_SessionTracker.isValid("0001", date)).thenReturn(true);
-        when(mocked_SessionTracker.isValid("0002", date)).thenReturn(false);
         UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
-        Assert.assertTrue(userAccDbAccess.checkValidity("0001", date));
-        Assert.assertFalse(userAccDbAccess.checkValidity("0002", date));
+        userAccDbAccess.checkValidity("0001", date);
+        Assert.assertTrue(true); //No exception thrown
+    }
+
+    @org.junit.Test(expected = SessionExpiredException.class)
+    public void checkValidity_fail_expired() throws Exception {
+        Date date = new Date();
+        when(mocked_Database.connect()).thenReturn(true);
+        when(mocked_Database.checkUserAccDB()).thenReturn(true);
+        when(mocked_Database.setupUserAccDB()).thenReturn(true);
+        doThrow(SessionExpiredException.class).when(mocked_SessionTracker).checkValidity("0001", date);
+        UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
+        userAccDbAccess.checkValidity("0001", date);
+    }
+
+    @org.junit.Test(expected = SessionCorruptedException.class)
+    public void checkValidity_fail_corrupted() throws Exception {
+        Date date = new Date();
+        when(mocked_Database.connect()).thenReturn(true);
+        when(mocked_Database.checkUserAccDB()).thenReturn(true);
+        when(mocked_Database.setupUserAccDB()).thenReturn(true);
+        doThrow(SessionCorruptedException.class).when(mocked_SessionTracker).checkValidity("0001", date);
+        UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
+        userAccDbAccess.checkValidity("0001", date);
+    }
+
+    @org.junit.Test(expected = SessionInvalidException.class)
+    public void checkValidity_fail_invalid() throws Exception {
+        Date date = new Date();
+        when(mocked_Database.connect()).thenReturn(true);
+        when(mocked_Database.checkUserAccDB()).thenReturn(true);
+        when(mocked_Database.setupUserAccDB()).thenReturn(true);
+        doThrow(SessionInvalidException.class).when(mocked_SessionTracker).checkValidity("0001", date);
+        UserAccDbAccess userAccDbAccess = new UserAccDbAccess(mocked_SessionTracker, mocked_Database);
+        userAccDbAccess.checkValidity("0001", date);
     }
 
     @org.junit.Test

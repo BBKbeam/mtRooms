@@ -1,6 +1,8 @@
 package bbk_beam.mtRooms.db.session;
 
+import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionException;
+import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -69,20 +71,62 @@ public class SessionTrackerTest {
     }
 
     @Test
-    public void isValid() throws Exception {
+    public void checkValidity_Internal() throws Exception {
         Date date_valid = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
         Date date_invalid = Date.from(Instant.EPOCH);
         SessionTracker sessionTracker = new SessionTracker();
         sessionTracker.addSession("valid_session", date_valid, SessionType.USER);
         sessionTracker.addSession("invalid_session", date_invalid, SessionType.USER);
-        Assert.assertTrue(sessionTracker.isValid("valid_session"));
-        Assert.assertFalse(sessionTracker.isValid("invalid_session"));
+        sessionTracker.checkValidity("valid_session");
+        Assert.assertTrue(true); //No exception thrown
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void checkValidity_Internal_fail_expired() throws Exception {
+        Date date_invalid = Date.from(Instant.EPOCH);
+        SessionTracker sessionTracker = new SessionTracker();
+        sessionTracker.addSession("invalid_session", date_invalid, SessionType.USER);
+        sessionTracker.checkValidity("invalid_session");
     }
 
     @Test(expected = SessionInvalidException.class)
-    public void isValid_fail() throws Exception {
+    public void checkValidity_Internal_fail_invalid() throws Exception {
         SessionTracker sessionTracker = new SessionTracker();
-        sessionTracker.isValid("0001");
+        sessionTracker.checkValidity("0001");
+    }
+
+    @Test
+    public void checkValidity_Full() throws Exception {
+        Date date_valid = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+        SessionTracker sessionTracker = new SessionTracker();
+        sessionTracker.addSession("valid_session", date_valid, SessionType.USER);
+        sessionTracker.checkValidity("valid_session", date_valid);
+        Assert.assertTrue(true); //No exception thrown
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void checkValidity_Full_fail_expired() throws Exception {
+        Date date_invalid = Date.from(Instant.EPOCH);
+        SessionTracker sessionTracker = new SessionTracker();
+        sessionTracker.addSession("valid_session", date_invalid, SessionType.USER);
+        sessionTracker.checkValidity("valid_session", date_invalid);
+    }
+
+
+    @Test(expected = SessionCorruptedException.class)
+    public void checkValidity_Full_fail_corrupted() throws Exception {
+        Date date_valid = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+        Date date_invalid = Date.from(Instant.EPOCH);
+        SessionTracker sessionTracker = new SessionTracker();
+        sessionTracker.addSession("valid_session", date_valid, SessionType.USER);
+        sessionTracker.checkValidity("valid_session", date_invalid);
+    }
+
+    @Test(expected = SessionInvalidException.class)
+    public void checkValidity_Full_fail_invalid() throws Exception {
+        Date date_valid = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+        SessionTracker sessionTracker = new SessionTracker();
+        sessionTracker.checkValidity("0001", date_valid);
     }
 
     @Test

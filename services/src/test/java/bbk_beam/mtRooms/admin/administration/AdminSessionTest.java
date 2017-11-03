@@ -10,6 +10,7 @@ import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
+import eadjlib.datastructure.ObjectTable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +29,6 @@ public class AdminSessionTest {
     private AdminSession adminSession;
     private Date session_expiry;
     private Token admin_token;
-
 
     @Before
     public void setUp() throws Exception {
@@ -300,131 +300,155 @@ public class AdminSessionTest {
 
     @Test
     public void getAccounts() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        ObjectTable account_table = mock(ObjectTable.class);
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        when(mock_administration_module.getAccounts()).thenReturn(account_table);
+        Assert.assertEquals(account_table, this.adminSession.getAccounts(this.admin_token));
+        verify(mock_administration_module, times(1)).getAccounts();
     }
 
     @Test(expected = SessionInvalidException.class)
     public void getAccounts_invalid_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionInvalidException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccounts(this.admin_token);
     }
 
     @Test(expected = SessionExpiredException.class)
     public void getAccounts_expired_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionExpiredException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccounts(this.admin_token);
     }
 
     @Test(expected = SessionCorruptedException.class)
     public void getAccounts_corrupted_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionCorruptedException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccounts(this.admin_token);
     }
 
     @Test(expected = RuntimeException.class)
     public void getAccounts_runtime_fail() throws Exception {
-        //TODO
+        doThrow(DbQueryException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccounts(this.admin_token);
     }
 
     @Test
     public void getAccount_by_id() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        ObjectTable account_table = mock(ObjectTable.class);
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        when(mock_administration_module.getAccount(1)).thenReturn(account_table);
+        Assert.assertEquals(account_table, this.adminSession.getAccount(this.admin_token, 1));
+        verify(mock_administration_module, times(1)).getAccount(1);
     }
 
     @Test(expected = SessionInvalidException.class)
     public void getAccount_by_id_invalid_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionInvalidException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccount(this.admin_token, 1);
     }
 
     @Test(expected = SessionExpiredException.class)
     public void getAccount_by_id_expired_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionExpiredException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccount(this.admin_token, 1);
     }
 
     @Test(expected = SessionCorruptedException.class)
     public void getAccount_by_id_corrupted_session_fail() throws Exception {
-        //TODO
-    }
-
-    @Test(expected = AccountExistenceException.class)
-    public void getAccount_by_id_account_fetch_fail() throws Exception {
-        //TODO
+        doThrow(SessionCorruptedException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccount(this.admin_token, 1);
     }
 
     @Test(expected = RuntimeException.class)
     public void getAccount_by_id_runtime_fail() throws Exception {
-        //TODO
+        doThrow(DbQueryException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccount(this.admin_token, 1);
     }
 
     @Test
     public void getAccount_by_username() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        ObjectTable account_table = mock(ObjectTable.class);
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        when(mock_administration_module.getAccount("00001")).thenReturn(account_table);
+        Assert.assertEquals(account_table, this.adminSession.getAccount(this.admin_token, "00001"));
+        verify(mock_administration_module, times(1)).getAccount("00001");
     }
 
     @Test(expected = SessionInvalidException.class)
     public void getAccount_by_username_invalid_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionInvalidException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccount(this.admin_token, "00001");
     }
 
     @Test(expected = SessionExpiredException.class)
     public void getAccount_by_username_expired_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionExpiredException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccount(this.admin_token, "00001");
     }
 
     @Test(expected = SessionCorruptedException.class)
     public void getAccount_by_username_corrupted_session_fail() throws Exception {
-        //TODO
-    }
-
-    @Test(expected = AccountExistenceException.class)
-    public void getAccount_by_username_account_fetch_fail() throws Exception {
-        //TODO
+        doThrow(SessionCorruptedException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccount(this.admin_token, "00001");
     }
 
     @Test(expected = RuntimeException.class)
     public void getAccount_by_username_runtime_fail() throws Exception {
-        //TODO
+        doThrow(DbQueryException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.getAccount(this.admin_token, "00001");
     }
 
     @Test
     public void optimiseReservationDatabase() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        adminSession.optimiseReservationDatabase(this.admin_token);
+        verify(mock_maintenance_module, times(1)).vacuumDatabase(this.admin_token);
     }
 
     @Test(expected = SessionInvalidException.class)
     public void optimiseReservationDatabase_invalid_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionInvalidException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.optimiseReservationDatabase(this.admin_token);
     }
 
     @Test(expected = SessionExpiredException.class)
     public void optimiseReservationDatabase_expired_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionExpiredException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.optimiseReservationDatabase(this.admin_token);
     }
 
     @Test(expected = SessionCorruptedException.class)
     public void optimiseReservationDatabase_corrupted_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionCorruptedException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.optimiseReservationDatabase(this.admin_token);
     }
 
     @Test
     public void optimiseUserAccountDatabase() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        adminSession.optimiseUserAccountDatabase(this.admin_token);
+        verify(mock_administration_module, times(1)).optimiseDatabase();
     }
 
     @Test(expected = SessionInvalidException.class)
     public void optimiseUserAccountDatabase_invalid_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionInvalidException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.optimiseUserAccountDatabase(this.admin_token);
     }
 
     @Test(expected = SessionExpiredException.class)
     public void optimiseUserAccountDatabase_expired_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionExpiredException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.optimiseUserAccountDatabase(this.admin_token);
     }
 
     @Test(expected = SessionCorruptedException.class)
     public void optimiseUserAccountDatabase_corrupted_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionCorruptedException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.optimiseUserAccountDatabase(this.admin_token);
     }
 }

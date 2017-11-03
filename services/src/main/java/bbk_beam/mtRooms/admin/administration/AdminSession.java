@@ -129,7 +129,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, RuntimeException {
+    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             return this.administration.getAccount(account_id);
@@ -140,7 +140,7 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, RuntimeException {
+    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
             return this.administration.getAccount(account_username);

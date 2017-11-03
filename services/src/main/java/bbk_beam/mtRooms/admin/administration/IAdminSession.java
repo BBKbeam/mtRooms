@@ -101,10 +101,9 @@ public interface IAdminSession {
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
-     * @throws AccountExistenceException when account does not exist in the records
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, RuntimeException;
+    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
     /**
      * Gets the records for an account
@@ -115,10 +114,9 @@ public interface IAdminSession {
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
-     * @throws AccountExistenceException when account does not exist in the records
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, RuntimeException;
+    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
     /**
      * Optimises the reservation database

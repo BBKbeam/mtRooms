@@ -53,6 +53,14 @@ public class UserAccAdministrationTest {
     }
 
     @Test
+    public void checkValidity() throws Exception {
+        UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
+        Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+        userAccAdministration.checkValidity(token);
+        verify(mock_user_db_access, times(1)).checkValidity(token.getSessionId(), token.getExpiry());
+    }
+
+    @Test
     public void isSameAccount() throws Exception {
         Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);

@@ -5,6 +5,7 @@ import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
+import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
@@ -157,32 +158,44 @@ public class AdminSessionTest {
 
     @Test(expected = SessionInvalidException.class)
     public void activateAccount_invalid_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionInvalidException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.activateAccount(this.admin_token, 1);
     }
 
     @Test(expected = SessionExpiredException.class)
     public void activateAccount_expired_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionExpiredException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.activateAccount(this.admin_token, 1);
     }
 
     @Test(expected = SessionCorruptedException.class)
     public void activateAccount_corrupted_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionCorruptedException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.activateAccount(this.admin_token, 1);
     }
 
     @Test(expected = AccountExistenceException.class)
     public void activateAccount_account_fetch_fail() throws Exception {
-        //TODO
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        doThrow(AccountExistenceException.class).when(mock_administration_module).activateAccount(1);
+        adminSession.activateAccount(this.admin_token, 1);
     }
 
     @Test(expected = AccountOverrideException.class)
     public void activateAccount_override_fail() throws Exception {
-        //TODO
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        when(mock_administration_module.isSameAccount(this.admin_token, 1)).thenReturn(true);
+        adminSession.activateAccount(this.admin_token, 1);
     }
 
     @Test(expected = RuntimeException.class)
     public void activateAccount_runtime_fail() throws Exception {
-        //TODO
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        doThrow(DbQueryException.class).when(mock_administration_module).activateAccount(1);
+        adminSession.activateAccount(this.admin_token, 1);
     }
 
     @Test
@@ -195,68 +208,94 @@ public class AdminSessionTest {
 
     @Test(expected = SessionInvalidException.class)
     public void deactivateAccount_invalid_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionInvalidException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.deactivateAccount(this.admin_token, 1);
     }
 
     @Test(expected = SessionExpiredException.class)
     public void deactivateAccount_expired_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionExpiredException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.deactivateAccount(this.admin_token, 1);
     }
 
     @Test(expected = SessionCorruptedException.class)
     public void deactivateAccount_corrupted_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionCorruptedException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.deactivateAccount(this.admin_token, 1);
     }
 
     @Test(expected = AccountExistenceException.class)
     public void deactivateAccount_account_fetch_fail() throws Exception {
-        //TODO
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        doThrow(AccountExistenceException.class).when(mock_administration_module).deactivateAccount(1);
+        adminSession.deactivateAccount(this.admin_token, 1);
     }
 
     @Test(expected = AccountOverrideException.class)
     public void deactivateAccount_override_fail() throws Exception {
-        //TODO
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        when(mock_administration_module.isSameAccount(this.admin_token, 1)).thenReturn(true);
+        adminSession.deactivateAccount(this.admin_token, 1);
     }
 
     @Test(expected = RuntimeException.class)
     public void deactivateAccount_runtime_fail() throws Exception {
-        //TODO
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        doThrow(DbQueryException.class).when(mock_administration_module).deactivateAccount(1);
+        adminSession.deactivateAccount(this.admin_token, 1);
     }
 
     @Test
     public void deleteAccount() throws Exception {
-        //TODO
-        Assert.assertTrue(false);
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        adminSession.deleteAccount(this.admin_token, 1);
+        verify(mock_administration_module, times(1)).deleteAccount(1);
     }
 
     @Test(expected = SessionInvalidException.class)
     public void deleteAccount_invalid_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionInvalidException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.deleteAccount(this.admin_token, 1);
     }
 
     @Test(expected = SessionExpiredException.class)
     public void deleteAccount_expired_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionExpiredException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.deleteAccount(this.admin_token, 1);
     }
 
     @Test(expected = SessionCorruptedException.class)
     public void deleteAccount_corrupted_session_fail() throws Exception {
-        //TODO
+        doThrow(SessionCorruptedException.class).when(mock_administration_module).checkValidity(this.admin_token);
+        adminSession.deleteAccount(this.admin_token, 1);
     }
 
     @Test(expected = AccountExistenceException.class)
     public void deleteAccount_account_fetch_fail() throws Exception {
-        //TODO
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        doThrow(AccountExistenceException.class).when(mock_administration_module).deleteAccount(1);
+        adminSession.deleteAccount(this.admin_token, 1);
     }
 
     @Test(expected = AccountOverrideException.class)
     public void deleteAccount_account_override_fail() throws Exception {
-        //TODO
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        when(mock_administration_module.isSameAccount(this.admin_token, 1)).thenReturn(true);
+        adminSession.deleteAccount(this.admin_token, 1);
     }
 
     @Test(expected = RuntimeException.class)
     public void deleteAccount_runtime_fail() throws Exception {
-        //TODO
+        doNothing().when(mock_administration_module).checkValidity(this.admin_token);
+        when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
+        doThrow(DbQueryException.class).when(mock_administration_module).deleteAccount(1);
+        adminSession.deleteAccount(this.admin_token, 1);
     }
 
     @Test
@@ -265,10 +304,55 @@ public class AdminSessionTest {
         Assert.assertTrue(false);
     }
 
+    @Test(expected = SessionInvalidException.class)
+    public void getAccounts_invalid_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void getAccounts_expired_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionCorruptedException.class)
+    public void getAccounts_corrupted_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void getAccounts_runtime_fail() throws Exception {
+        //TODO
+    }
+
     @Test
     public void getAccount_by_id() throws Exception {
         //TODO
         Assert.assertTrue(false);
+    }
+
+    @Test(expected = SessionInvalidException.class)
+    public void getAccount_by_id_invalid_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void getAccount_by_id_expired_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionCorruptedException.class)
+    public void getAccount_by_id_corrupted_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = AccountExistenceException.class)
+    public void getAccount_by_id_account_fetch_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void getAccount_by_id_runtime_fail() throws Exception {
+        //TODO
     }
 
     @Test
@@ -277,10 +361,50 @@ public class AdminSessionTest {
         Assert.assertTrue(false);
     }
 
+    @Test(expected = SessionInvalidException.class)
+    public void getAccount_by_username_invalid_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void getAccount_by_username_expired_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionCorruptedException.class)
+    public void getAccount_by_username_corrupted_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = AccountExistenceException.class)
+    public void getAccount_by_username_account_fetch_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void getAccount_by_username_runtime_fail() throws Exception {
+        //TODO
+    }
+
     @Test
     public void optimiseReservationDatabase() throws Exception {
         //TODO
         Assert.assertTrue(false);
+    }
+
+    @Test(expected = SessionInvalidException.class)
+    public void optimiseReservationDatabase_invalid_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void optimiseReservationDatabase_expired_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionCorruptedException.class)
+    public void optimiseReservationDatabase_corrupted_session_fail() throws Exception {
+        //TODO
     }
 
     @Test
@@ -289,4 +413,18 @@ public class AdminSessionTest {
         Assert.assertTrue(false);
     }
 
+    @Test(expected = SessionInvalidException.class)
+    public void optimiseUserAccountDatabase_invalid_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionExpiredException.class)
+    public void optimiseUserAccountDatabase_expired_session_fail() throws Exception {
+        //TODO
+    }
+
+    @Test(expected = SessionCorruptedException.class)
+    public void optimiseUserAccountDatabase_corrupted_session_fail() throws Exception {
+        //TODO
+    }
 }

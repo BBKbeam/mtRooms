@@ -1,5 +1,6 @@
-package bbk_beam.mtRooms.reservation;
+package bbk_beam.mtRooms.reservation.processing;
 
+import bbk_beam.mtRooms.reservation.dto.ICustomer;
 import javafx.util.Pair;
 
 import java.util.Collection;

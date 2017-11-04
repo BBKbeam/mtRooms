@@ -1,7 +1,7 @@
 package bbk_beam.mtRooms.revenue.invoice;
 
-import bbk_beam.mtRooms.reservation.ICustomer;
-import bbk_beam.mtRooms.reservation.ReservationContainer;
+import bbk_beam.mtRooms.reservation.dto.ICustomer;
+import bbk_beam.mtRooms.reservation.dto.ReservationContainer;
 
 public interface IInvoice {
     /**

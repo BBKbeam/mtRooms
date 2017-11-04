@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.reservation;
+package bbk_beam.mtRooms.reservation.dto;
 
 import java.util.Date;
 

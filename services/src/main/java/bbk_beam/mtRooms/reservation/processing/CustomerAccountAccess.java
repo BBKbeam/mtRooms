@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.reservation.processing;
 
-import bbk_beam.mtRooms.reservation.dto.ICustomer;
+import bbk_beam.mtRooms.reservation.dto.CustomerDTO;
 import javafx.util.Pair;
 
 import java.util.Collection;
@@ -12,7 +12,7 @@ public class CustomerAccountAccess {
      * @param customerID Customer ID
      * @return Customer details
      */
-    public ICustomer getCustomerAccount(String customerID) {
+    public CustomerDTO getCustomerAccount(String customerID) {
         return null;
     }
 
@@ -22,7 +22,7 @@ public class CustomerAccountAccess {
      * @param customer Customer container
      * @return Reloaded Customer container
      */
-    public ICustomer getCustomerAccount(ICustomer customer) {
+    public CustomerDTO getCustomerAccount(CustomerDTO customer) {
         return null;
     }
 
@@ -44,7 +44,7 @@ public class CustomerAccountAccess {
      * @param surname Surname of customer
      * @return Customer container
      */
-    public ICustomer createNewCustomer(String title, String name, String surname) {
+    public CustomerDTO createNewCustomer(String title, String name, String surname) {
         return null;
     }
 
@@ -53,7 +53,7 @@ public class CustomerAccountAccess {
      *
      * @param customer Customer container
      */
-    public void saveCustomerChangesToDB(ICustomer customer) {
+    public void saveCustomerChangesToDB(CustomerDTO customer) {
 
     }
 }

@@ -67,8 +67,7 @@ public class ReservationDbAccessTest {
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkReservationDB()).thenReturn(true);
         ReservationDbAccess reservation_access = new ReservationDbAccess(mocked_SessionTracker, mocked_Database);
-        //Session Tracker
-        when(mocked_SessionTracker.isValid("test_session_0001")).thenThrow(new SessionInvalidException(""));
+        doThrow(SessionInvalidException.class).when(mocked_SessionTracker).checkValidity("test_session_0001");
         //Test
         reservation_access.pullFromDB("test_session_0001", "SELECT * FROM sometable;");
     }
@@ -79,8 +78,7 @@ public class ReservationDbAccessTest {
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkReservationDB()).thenReturn(true);
         ReservationDbAccess reservation_access = new ReservationDbAccess(mocked_SessionTracker, mocked_Database);
-        //Session Tracker
-        when(mocked_SessionTracker.isValid("test_session_0001")).thenReturn(false);
+        doThrow(SessionExpiredException.class).when(mocked_SessionTracker).checkValidity("test_session_0001");
         //Test
         reservation_access.pullFromDB("test_session_0001", "SELECT * FROM sometable;");
     }
@@ -91,8 +89,6 @@ public class ReservationDbAccessTest {
         when(mocked_Database.connect()).thenReturn(true);
         when(mocked_Database.checkReservationDB()).thenReturn(true);
         ReservationDbAccess reservation_access = new ReservationDbAccess(mocked_SessionTracker, mocked_Database);
-        //Session Tracker
-        when(mocked_SessionTracker.isValid("test_session_0001")).thenReturn(true);
         //Database
         ObjectTable table = new ObjectTable("Column1");
         doReturn(table).when(mocked_Database).pull("SELECT * FROM sometable");

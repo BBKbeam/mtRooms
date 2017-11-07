@@ -1,8 +1,6 @@
 package bbk_beam.mtRooms.db;
 
-import bbk_beam.mtRooms.db.exception.DbQueryException;
-import bbk_beam.mtRooms.db.exception.SessionException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.db.exception.*;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 
@@ -12,10 +10,13 @@ public interface IUserAccDbAccess {
     /**
      * Checks the validity of a session ID
      *
-     * @param session_id Session ID
-     * @return Valid state
+     * @param session_id     Session ID
+     * @param session_expiry Session expiry timestamp expected
+     * @throws SessionExpiredException   when session has expired
+     * @throws SessionCorruptedException when given expiry does not match expiry tracked.
+     * @throws SessionInvalidException   when session is not tracked
      */
-    public boolean checkValidity(String session_id);
+    public void checkValidity(String session_id, Date session_expiry) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException;
 
     /**
      * Gets the type of the session
@@ -27,13 +28,23 @@ public interface IUserAccDbAccess {
     public SessionType getSessionType(String session_id) throws SessionInvalidException;
 
     /**
+     * Gets the associated account ID of the session
+     *
+     * @param session_id Session ID
+     * @return Session account ID
+     * @throws SessionInvalidException when session ID is not tracked
+     */
+    public Integer getSessionAccountID(String session_id) throws SessionInvalidException;
+
+    /**
      * Opens a session with the database
      *
      * @param session_id Session ID
      * @param expiry     Expiry timestamp
+     * @param account_id Associated account ID
      * @throws SessionException when session ID is already tracked
      */
-    public void openSession(String session_id, Date expiry, SessionType session_type) throws SessionException;
+    public void openSession(String session_id, Date expiry, SessionType session_type, Integer account_id) throws SessionException;
 
     /**
      * Closes a session with the database

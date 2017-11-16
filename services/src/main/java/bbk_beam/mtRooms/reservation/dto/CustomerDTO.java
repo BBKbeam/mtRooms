@@ -71,11 +71,34 @@ public class CustomerDTO {
     }
 
     /**
+     * Copy-Constructor
+     *
+     * @param customerDTO CustomerDTO object to copy
+     */
+    CustomerDTO(CustomerDTO customerDTO) {
+        this.id = customerDTO.id;
+        this.membership_type_id = customerDTO.membership_type_id;
+        this.account_creation = customerDTO.account_creation;
+        this.title = customerDTO.title;
+        this.name = customerDTO.name;
+        this.surname = customerDTO.surname;
+        this.address1 = customerDTO.address1;
+        this.address2 = customerDTO.address2;
+        this.postcode = customerDTO.postcode;
+        this.city = customerDTO.city;
+        this.county = customerDTO.county;
+        this.country = customerDTO.country;
+        this.phone1 = customerDTO.phone1;
+        this.phone2 = customerDTO.phone2;
+        this.email = customerDTO.email;
+    }
+
+    /**
      * Gets the customer's ID
      *
      * @return Customer ID
      */
-    public Integer getCustomerID() {
+    public Integer customerID() {
         return this.id;
     }
 
@@ -84,7 +107,7 @@ public class CustomerDTO {
      *
      * @return Membership type ID
      */
-    public Integer getMembershipTypeID() {
+    public Integer membershipTypeID() {
         return this.membership_type_id;
     }
 
@@ -102,7 +125,7 @@ public class CustomerDTO {
      *
      * @return Creation date
      */
-    public Date getAccountCreationDate() {
+    public Date accountCreationDate() {
         return this.account_creation;
     }
 
@@ -111,7 +134,7 @@ public class CustomerDTO {
      *
      * @return Customer title
      */
-    public String getTitle() {
+    public String title() {
         return this.title;
     }
 
@@ -120,7 +143,7 @@ public class CustomerDTO {
      *
      * @return Customer name
      */
-    public String getName() {
+    public String name() {
         return this.name;
     }
 
@@ -129,7 +152,7 @@ public class CustomerDTO {
      *
      * @return Customer's surname
      */
-    public String getSurname() {
+    public String surname() {
         return this.surname;
     }
 
@@ -138,7 +161,7 @@ public class CustomerDTO {
      *
      * @return Customer's address line #1
      */
-    public String getAddress1() {
+    public String address1() {
         return this.address1;
     }
 
@@ -156,7 +179,7 @@ public class CustomerDTO {
      *
      * @return Customer's address line #2
      */
-    public String getAddress2() {
+    public String address2() {
         return this.address2;
     }
 
@@ -174,7 +197,7 @@ public class CustomerDTO {
      *
      * @return Customer's postcode
      */
-    public String getPostCode() {
+    public String postCode() {
         return this.postcode;
     }
 
@@ -192,7 +215,7 @@ public class CustomerDTO {
      *
      * @return Customer's city
      */
-    public String getCity() {
+    public String city() {
         return this.city;
     }
 
@@ -210,7 +233,7 @@ public class CustomerDTO {
      *
      * @return Customer's county
      */
-    public String getCounty() {
+    public String county() {
         return this.county;
     }
 
@@ -228,7 +251,7 @@ public class CustomerDTO {
      *
      * @return Customer's country
      */
-    public String getCountry() {
+    public String country() {
         return this.country;
     }
 
@@ -246,7 +269,7 @@ public class CustomerDTO {
      *
      * @return Customer's 1st phone number
      */
-    public String getPhone1() {
+    public String phone1() {
         return this.phone1;
     }
 
@@ -264,7 +287,7 @@ public class CustomerDTO {
      *
      * @return Customer's 2nd phone number
      */
-    public String getPhone2() {
+    public String phone2() {
         return this.phone2;
     }
 
@@ -282,7 +305,7 @@ public class CustomerDTO {
      *
      * @return Customer's email
      */
-    public String getEmail() {
+    public String email() {
         return this.email;
     }
 

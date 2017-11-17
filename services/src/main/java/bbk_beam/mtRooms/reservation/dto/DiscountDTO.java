@@ -22,6 +22,18 @@ public class DiscountDTO {
     }
 
     /**
+     * Copy Constructor
+     *
+     * @param discountDTO DiscountDTO object to copy
+     */
+    public DiscountDTO(DiscountDTO discountDTO) {
+        this.id = discountDTO.id;
+        this.rate = discountDTO.rate;
+        this.category_id = discountDTO.category_id;
+        this.category_description = discountDTO.category_description;
+    }
+
+    /**
      * Gets the discount ID
      *
      * @return Discount ID

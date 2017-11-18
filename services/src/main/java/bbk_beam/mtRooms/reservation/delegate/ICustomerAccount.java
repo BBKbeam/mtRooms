@@ -24,19 +24,7 @@ public interface ICustomerAccount {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public CustomerDTO getCustomerAccount(Token session_token, String customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException;
-
-    /**
-     * Reloads the customer info from the DB
-     *
-     * @param session_token Session token
-     * @param customer      Customer container
-     * @return Reloaded Customer container
-     * @throws DbQueryException        when a problem was encountered whilst processing the query
-     * @throws SessionExpiredException When the session for the id provided has expired
-     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
-     */
-    public CustomerDTO getCustomerAccount(Token session_token, CustomerDTO customer) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public CustomerDTO getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Finds the records for customer from their surname

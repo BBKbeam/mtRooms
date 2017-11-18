@@ -35,5 +35,5 @@ public interface IPay {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    ObjectTable getPayementTypes(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    ObjectTable getPaymentTypes(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 }

@@ -700,6 +700,12 @@ class DatabaseChecker {
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
+                if (row.get("name").equals("description")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("DiscountCategory", "description", "TEXT", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
             }
             if (checked != column_count) {
                 log.log_Error("'MembershipType' table does not have the required columns (", checked, "/", column_count, ").'");

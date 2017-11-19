@@ -173,11 +173,13 @@ class DatabaseBuilder {
     }
 
     private boolean buildTable_DiscountCategory(IDatabase db) {
-        String query = "CREATE TABLE DiscountCategory( "
+        String query1 = "CREATE TABLE DiscountCategory( "
                 + "id INTEGER PRIMARY KEY NOT NULL, "
                 + "description VARCHAR(255) NOT NULL "
                 + ")";
-        return pushQuery(db, query);
+        String query2 = "INSERT INTO DiscountCategory( description ) VALUES"
+                + "( \"None\" )";
+        return pushQuery(db, query1) && pushQuery(db, query2);
     }
 
     private boolean buildTable_Discount(IDatabase db) {
@@ -191,19 +193,22 @@ class DatabaseBuilder {
     }
 
     private boolean buildTable_MembershipType(IDatabase db) {
-        String query = " CREATE TABLE MembershipType ( "
-                + "id INTEGER PRIMARY KEY  NOT NULL,"
-                + "discount_category_id INTEGER NOT NULL,"
-                + "FOREIGN KEY(discount_category_id) REFERENCES DiscountCategory(id)"
+        String query1 = " CREATE TABLE MembershipType ( "
+                + "id INTEGER PRIMARY KEY NOT NULL, "
+                + "discount_category_id INTEGER NOT NULL, "
+                + "description TEXT NOT NULL, "
+                + "FOREIGN KEY( discount_category_id ) REFERENCES DiscountCategory( id )"
                 + ")";
-        return pushQuery(db, query);
+        String query2 = "INSERT INTO MembershipType( description, discount_category_id ) VALUES "
+                + "( \"None\", 1 )";
+        return pushQuery(db, query1) && pushQuery(db, query2);
     }
 
     private boolean buildTable_Customer(IDatabase db) {
         String query = " CREATE TABLE Customer ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "membership_type_id INTEGER NOT NULL, "
-                + "customer_since DATE NOT NULL, "
+                + "customer_since TIMESTAMP NOT NULL, "
                 + "title VARCHAR(10) NOT NULL, "
                 + "name VARCHAR(255) NOT NULL, "
                 + "surname VARCHAR(255) NOT NULL, "

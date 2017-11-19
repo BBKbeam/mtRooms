@@ -317,4 +317,23 @@ public class CustomerDTO {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    @Override
+    public String toString() {
+        return "[" + this.id + "]={ "
+                + this.membership_type_id + ", "
+                + this.account_creation + ", "
+                + this.title + ", "
+                + this.name + ", "
+                + this.surname + ", "
+                + this.address1 + ", "
+                + this.address2 + ", "
+                + this.postcode + ", "
+                + this.city + ", "
+                + this.county + ", "
+                + this.country + ", "
+                + this.phone1 + ", "
+                + this.phone2 + ", "
+                + this.email + " }";
+    }
 }

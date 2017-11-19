@@ -42,15 +42,13 @@ public interface ICustomerAccount {
      * Creates a new customer
      *
      * @param session_token Session token
-     * @param title         Title of customer
-     * @param name          Name of customer
-     * @param surname       Surname of customer
-     * @return Customer container
+     * @param customer      Customer details in DTO
+     * @return Customer DTO container
      * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public CustomerDTO createNewCustomer(Token session_token, String title, String name, String surname) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public CustomerDTO createNewCustomer(Token session_token, CustomerDTO customer) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Saves changes of a Customer container to the database

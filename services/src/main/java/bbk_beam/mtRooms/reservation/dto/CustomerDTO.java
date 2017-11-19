@@ -1,5 +1,7 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import bbk_beam.mtRooms.db.TimestampConverter;
+
 import java.util.Date;
 
 public class CustomerDTO {
@@ -335,5 +337,51 @@ public class CustomerDTO {
                 + this.phone1 + ", "
                 + this.phone2 + ", "
                 + this.email + " }";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CustomerDTO that = (CustomerDTO) o;
+
+        if (!id.equals(that.id)) return false;
+        if (!membership_type_id.equals(that.membership_type_id)) return false;
+        String this_account_creation_timestamp = TimestampConverter.getUTCTimestampString(this.account_creation);
+        String that_account_creation_timestamp = TimestampConverter.getUTCTimestampString(that.account_creation);
+        if (!this_account_creation_timestamp.equals(that_account_creation_timestamp)) return false;
+        if (!title.equals(that.title)) return false;
+        if (!name.equals(that.name)) return false;
+        if (!surname.equals(that.surname)) return false;
+        if (!address1.equals(that.address1)) return false;
+        if (address2 != null ? !address2.equals(that.address2) : that.address2 != null) return false;
+        if (!postcode.equals(that.postcode)) return false;
+        if (!city.equals(that.city)) return false;
+        if (county != null ? !county.equals(that.county) : that.county != null) return false;
+        if (!country.equals(that.country)) return false;
+        if (!phone1.equals(that.phone1)) return false;
+        if (phone2 != null ? !phone2.equals(that.phone2) : that.phone2 != null) return false;
+        return email.equals(that.email);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + membership_type_id.hashCode();
+        result = 31 * result + TimestampConverter.getUTCTimestampString(account_creation).hashCode();
+        result = 31 * result + title.hashCode();
+        result = 31 * result + name.hashCode();
+        result = 31 * result + surname.hashCode();
+        result = 31 * result + address1.hashCode();
+        result = 31 * result + (address2 != null ? address2.hashCode() : 0);
+        result = 31 * result + postcode.hashCode();
+        result = 31 * result + city.hashCode();
+        result = 31 * result + (county != null ? county.hashCode() : 0);
+        result = 31 * result + country.hashCode();
+        result = 31 * result + phone1.hashCode();
+        result = 31 * result + (phone2 != null ? phone2.hashCode() : 0);
+        result = 31 * result + email.hashCode();
+        return result;
     }
 }

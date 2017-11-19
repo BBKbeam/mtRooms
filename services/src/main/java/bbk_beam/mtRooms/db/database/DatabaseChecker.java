@@ -676,7 +676,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_MembershipType(IDatabase db) throws DbMissingTableException {
-        final int column_count = 2;
+        final int column_count = 3;
         String query = "PRAGMA table_info( MembershipType )";
         try {
             boolean ok_flag = true;
@@ -746,7 +746,7 @@ class DatabaseChecker {
                 }
                 if (row.get("name").equals("customer_since")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Customer", "customer_since", "DATE", true, null, 0);
+                    ColProperty expected = new ColProperty("Customer", "customer_since", "TIMESTAMP", true, null, 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }

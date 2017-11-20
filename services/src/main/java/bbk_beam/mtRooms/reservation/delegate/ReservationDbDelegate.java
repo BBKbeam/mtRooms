@@ -135,6 +135,12 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 + "email = \"" + customer.email() + "\" "
                 + "WHERE id = " + customer.customerID();
         this.db_access.pushToDB(session_token.getSessionId(), query);
+        //Check if update was made
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), "SELECT CHANGES()");
+        if (table.getInteger(1, 1) == 0) {
+            log.log_Error("Could not update customer [", customer.customerID(), "]'s record.");
+            throw new DbQueryException("Could not update customer [" + customer.customerID() + "]'s record.");
+        }
     }
 
     @Override

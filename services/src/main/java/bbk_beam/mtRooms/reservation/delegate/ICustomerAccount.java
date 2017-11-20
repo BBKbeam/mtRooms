@@ -4,7 +4,7 @@ import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
-import bbk_beam.mtRooms.reservation.dto.CustomerDTO;
+import bbk_beam.mtRooms.reservation.dto.Customer;
 import javafx.util.Pair;
 
 import java.util.Collection;
@@ -24,7 +24,7 @@ public interface ICustomerAccount {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public CustomerDTO getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public Customer getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Finds the records for customer from their surname
@@ -48,7 +48,7 @@ public interface ICustomerAccount {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public CustomerDTO createNewCustomer(Token session_token, CustomerDTO customer) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public Customer createNewCustomer(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Saves changes of a Customer container to the database
@@ -59,5 +59,5 @@ public interface ICustomerAccount {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public void saveCustomerChangesToDB(Token session_token, CustomerDTO customer) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public void saveCustomerChangesToDB(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 }

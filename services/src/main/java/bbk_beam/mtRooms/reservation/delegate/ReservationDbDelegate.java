@@ -6,7 +6,7 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
-import bbk_beam.mtRooms.reservation.dto.CustomerDTO;
+import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.PaymentType;
 import bbk_beam.mtRooms.reservation.exception.InvalidPaymentType;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
@@ -34,7 +34,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public CustomerDTO getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Customer getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT "
                 + "id, "
                 + "membership_type_id, "
@@ -55,7 +55,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
         try {
             HashMap<String, Object> row = table.getRow(1);
-            return new CustomerDTO(
+            return new Customer(
                     (Integer) row.get("id"),
                     (Integer) row.get("membership_type_id"),
                     TimestampConverter.getDateObject((String) row.get("customer_since")),
@@ -83,7 +83,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public CustomerDTO createNewCustomer(Token session_token, CustomerDTO customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Customer createNewCustomer(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "INSERT INTO Customer( "
                 + "membership_type_id, "
                 + "customer_since, "
@@ -120,7 +120,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public void saveCustomerChangesToDB(Token session_token, CustomerDTO customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void saveCustomerChangesToDB(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "UPDATE Customer SET "
                 + "membership_type_id = " + customer.membershipTypeID() + ", "
                 + "customer_since = \"" + TimestampConverter.getUTCTimestampString(customer.accountCreationDate()) + "\", "
@@ -183,7 +183,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    private CustomerDTO getCustomerAccount(Token session_token, CustomerDTO customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    private Customer getCustomerAccount(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT id FROM Customer WHERE "
                 + "membership_type_id = " + customer.membershipTypeID() + " AND "
                 + "customer_since = \"" + TimestampConverter.getUTCTimestampString(customer.accountCreationDate()) + "\" AND "
@@ -202,7 +202,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
         if (!table.isEmpty()) {
             Integer id = table.getInteger(1, 1);
-            return new CustomerDTO(
+            return new Customer(
                     id,
                     customer.membershipTypeID(),
                     customer.accountCreationDate(),
@@ -218,8 +218,9 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                     customer.phone1(),
                     customer.phone2(),
                     customer.email());
-        } else
+        } else {
             log.log_Error("Customer DTO details do not match any record set.");
-        throw new DbQueryException("Customer DTO details do not match any record set.");
+            throw new DbQueryException("Customer DTO details do not match any record set.");
+        }
     }
 }

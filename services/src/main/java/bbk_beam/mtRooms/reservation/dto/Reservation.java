@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-public class ReservationDTO {
-    private CustomerDTO customer;
+public class Reservation {
+    private Customer customer;
     private Integer id;
     private Integer payment_method_id;
-    private DiscountDTO discount;
-    private List<RoomDTO> rooms;
+    private Discount discount;
+    private List<Room> rooms;
 
     /**
      * Constructor
@@ -20,7 +20,7 @@ public class ReservationDTO {
      * @param payment_method_id Payment method ID
      * @param discount          Discount DTO
      */
-    public ReservationDTO(CustomerDTO customer, Integer id, Integer payment_method_id, DiscountDTO discount) {
+    public Reservation(Customer customer, Integer id, Integer payment_method_id, Discount discount) {
         this.customer = customer;
         this.id = id;
         this.payment_method_id = payment_method_id;
@@ -37,7 +37,7 @@ public class ReservationDTO {
      * @param discount          Discount DTO
      * @param rooms             List of reserved rooms
      */
-    public ReservationDTO(CustomerDTO customer, Integer id, Integer payment_method_id, DiscountDTO discount, List<RoomDTO> rooms) {
+    public Reservation(Customer customer, Integer id, Integer payment_method_id, Discount discount, List<Room> rooms) {
         this.customer = customer;
         this.id = id;
         this.payment_method_id = payment_method_id;
@@ -50,8 +50,8 @@ public class ReservationDTO {
      *
      * @return Copy of the Customer DTO
      */
-    public CustomerDTO customer() {
-        return new CustomerDTO(this.customer);
+    public Customer customer() {
+        return new Customer(this.customer);
     }
 
     /**
@@ -86,8 +86,8 @@ public class ReservationDTO {
      *
      * @return Copy of the Discount DTO
      */
-    public DiscountDTO discount() {
-        return new DiscountDTO(this.discount);
+    public Discount discount() {
+        return new Discount(this.discount);
     }
 
     /**
@@ -95,7 +95,7 @@ public class ReservationDTO {
      *
      * @return list of Room DTOs
      */
-    public Collection<RoomDTO> rooms() {
+    public Collection<Room> rooms() {
         return Collections.unmodifiableCollection(this.rooms);
     }
 
@@ -104,7 +104,7 @@ public class ReservationDTO {
      *
      * @param room Room DTO to add
      */
-    public void addRoom(RoomDTO room) {
+    public void addRoom(Room room) {
         this.rooms.add(room);
     }
 }

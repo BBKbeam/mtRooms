@@ -1,7 +1,7 @@
 package bbk_beam.mtRooms.revenue.invoice;
 
-import bbk_beam.mtRooms.reservation.dto.CustomerDTO;
-import bbk_beam.mtRooms.reservation.dto.ReservationDTO;
+import bbk_beam.mtRooms.reservation.dto.Customer;
+import bbk_beam.mtRooms.reservation.dto.Reservation;
 
 public interface IInvoice {
     /**
@@ -10,7 +10,7 @@ public interface IInvoice {
      * @param customerID CustomerID
      *                   return Customer details
      */
-    public CustomerDTO getCustomerAccount(String customerID);
+    public Customer getCustomerAccount(String customerID);
 
     /**
      * Gets details of reservation references
@@ -19,6 +19,6 @@ public interface IInvoice {
      * @return customer reservation number
      */
 
-    public ReservationDTO getReservationRef(Integer getReservationID);
+    public Reservation getReservationRef(Integer getReservationID);
 
 }

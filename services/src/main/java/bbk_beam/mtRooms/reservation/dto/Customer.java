@@ -4,7 +4,7 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 
 import java.util.Date;
 
-public class CustomerDTO {
+public class Customer {
     private Integer id;
     private Integer membership_type_id;
     private Date account_creation;
@@ -40,21 +40,21 @@ public class CustomerDTO {
      * @param phone2             Customer phone 2
      * @param email              Customer email
      */
-    public CustomerDTO(Integer id,
-                       Integer membership_type_id,
-                       Date account_creation,
-                       String title,
-                       String name,
-                       String surname,
-                       String address1,
-                       String address2,
-                       String postcode,
-                       String city,
-                       String county,
-                       String country,
-                       String phone1,
-                       String phone2,
-                       String email) {
+    public Customer(Integer id,
+                    Integer membership_type_id,
+                    Date account_creation,
+                    String title,
+                    String name,
+                    String surname,
+                    String address1,
+                    String address2,
+                    String postcode,
+                    String city,
+                    String county,
+                    String country,
+                    String phone1,
+                    String phone2,
+                    String email) {
         this.id = id;
         this.membership_type_id = membership_type_id;
         this.account_creation = account_creation;
@@ -75,24 +75,24 @@ public class CustomerDTO {
     /**
      * Copy-Constructor
      *
-     * @param customerDTO CustomerDTO object to copy
+     * @param customer Customer object to copy
      */
-    CustomerDTO(CustomerDTO customerDTO) {
-        this.id = customerDTO.id;
-        this.membership_type_id = customerDTO.membership_type_id;
-        this.account_creation = customerDTO.account_creation;
-        this.title = customerDTO.title;
-        this.name = customerDTO.name;
-        this.surname = customerDTO.surname;
-        this.address1 = customerDTO.address1;
-        this.address2 = customerDTO.address2;
-        this.postcode = customerDTO.postcode;
-        this.city = customerDTO.city;
-        this.county = customerDTO.county;
-        this.country = customerDTO.country;
-        this.phone1 = customerDTO.phone1;
-        this.phone2 = customerDTO.phone2;
-        this.email = customerDTO.email;
+    Customer(Customer customer) {
+        this.id = customer.id;
+        this.membership_type_id = customer.membership_type_id;
+        this.account_creation = customer.account_creation;
+        this.title = customer.title;
+        this.name = customer.name;
+        this.surname = customer.surname;
+        this.address1 = customer.address1;
+        this.address2 = customer.address2;
+        this.postcode = customer.postcode;
+        this.city = customer.city;
+        this.county = customer.county;
+        this.country = customer.country;
+        this.phone1 = customer.phone1;
+        this.phone2 = customer.phone2;
+        this.email = customer.email;
     }
 
     /**
@@ -344,7 +344,7 @@ public class CustomerDTO {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CustomerDTO that = (CustomerDTO) o;
+        Customer that = (Customer) o;
 
         if (!id.equals(that.id)) return false;
         if (!membership_type_id.equals(that.membership_type_id)) return false;

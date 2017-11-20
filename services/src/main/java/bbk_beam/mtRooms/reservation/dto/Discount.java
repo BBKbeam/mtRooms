@@ -1,6 +1,6 @@
 package bbk_beam.mtRooms.reservation.dto;
 
-public class DiscountDTO {
+public class Discount {
     private Integer id;
     private Double rate;
     private Integer category_id;
@@ -14,7 +14,7 @@ public class DiscountDTO {
      * @param category_id          Discount category ID
      * @param category_description Discount category description
      */
-    public DiscountDTO(Integer id, Double rate, Integer category_id, String category_description) {
+    public Discount(Integer id, Double rate, Integer category_id, String category_description) {
         this.id = id;
         this.rate = rate;
         this.category_id = category_id;
@@ -24,13 +24,13 @@ public class DiscountDTO {
     /**
      * Copy Constructor
      *
-     * @param discountDTO DiscountDTO object to copy
+     * @param discount Discount object to copy
      */
-    public DiscountDTO(DiscountDTO discountDTO) {
-        this.id = discountDTO.id;
-        this.rate = discountDTO.rate;
-        this.category_id = discountDTO.category_id;
-        this.category_description = discountDTO.category_description;
+    public Discount(Discount discount) {
+        this.id = discount.id;
+        this.rate = discount.rate;
+        this.category_id = discount.category_id;
+        this.category_description = discount.category_description;
     }
 
     /**

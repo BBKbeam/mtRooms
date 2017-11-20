@@ -165,11 +165,15 @@ class DatabaseBuilder {
     }
 
     private boolean buildTable_PaymentMethod(IDatabase db) {
-        String query = "CREATE TABLE PaymentMethod( "
+        String query1 = "CREATE TABLE PaymentMethod( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "description VARCHAR(255) NOT NULL "
                 + ")";
-        return pushQuery(db, query);
+        String query2 = "INSERT INTO PaymentMethod( description ) VALUES "
+                + "( \"Cash\" ), "
+                + "( \"Debit Card\" ), "
+                + "( \"Credit Card\" )";
+        return pushQuery(db, query1) && pushQuery(db, query2);
     }
 
     private boolean buildTable_DiscountCategory(IDatabase db) {
@@ -177,7 +181,7 @@ class DatabaseBuilder {
                 + "id INTEGER PRIMARY KEY NOT NULL, "
                 + "description VARCHAR(255) NOT NULL "
                 + ")";
-        String query2 = "INSERT INTO DiscountCategory( description ) VALUES"
+        String query2 = "INSERT INTO DiscountCategory( description ) VALUES "
                 + "( \"None\" )";
         return pushQuery(db, query1) && pushQuery(db, query2);
     }

@@ -862,7 +862,7 @@ class DatabaseChecker {
                 }
                 if (row.get("name").equals("payment_method_id")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Reservation", "customer_id", "INTEGER", true, null, 3);
+                    ColProperty expected = new ColProperty("Reservation", "payment_method_id", "INTEGER", true, null, 3);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }

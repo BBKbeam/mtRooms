@@ -81,7 +81,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
 
     @Override
     public CustomerDTO createNewCustomer(Token session_token, CustomerDTO customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query1 = "INSERT INTO Customer( "
+        String query = "INSERT INTO Customer( "
                 + "membership_type_id, "
                 + "customer_since, "
                 + "title, "
@@ -112,13 +112,29 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 + (customer.phone2() == null ? null : "\"" + customer.phone2() + "\"") + ", "
                 + "\"" + customer.email() + "\" "
                 + ")";
-        this.db_access.pushToDB(session_token.getSessionId(), query1);
+        this.db_access.pushToDB(session_token.getSessionId(), query);
         return getCustomerAccount(session_token, customer); //Get a fully updated DTO that includes the ID of the new customer
     }
 
     @Override
     public void saveCustomerChangesToDB(Token session_token, CustomerDTO customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-
+        String query = "UPDATE Customer SET "
+                + "membership_type_id = " + customer.membershipTypeID() + ", "
+                + "customer_since = \"" + TimestampConverter.getUTCTimestampString(customer.accountCreationDate()) + "\", "
+                + "title = \"" + customer.title() + "\", "
+                + "name = \"" + customer.name() + "\", "
+                + "surname = \"" + customer.surname() + "\", "
+                + "address_1 = \"" + customer.address1() + "\", "
+                + "address_2 = " + (customer.address2() == null ? null : "\"" + customer.address2() + "\"") + ", "
+                + "city = \"" + customer.city() + "\", "
+                + "county = " + (customer.county() == null ? null : "\"" + customer.county() + "\"") + ", "
+                + "country = \"" + customer.country() + "\", "
+                + "postcode = \"" + customer.postCode() + "\", "
+                + "telephone_1 = \"" + customer.phone1() + "\", "
+                + "telephone_2 = " + (customer.phone2() == null ? null : "\"" + customer.phone2() + "\"") + ", "
+                + "email = \"" + customer.email() + "\" "
+                + "WHERE id = " + customer.customerID();
+        this.db_access.pushToDB(session_token.getSessionId(), query);
     }
 
     @Override

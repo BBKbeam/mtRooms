@@ -7,6 +7,7 @@ import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.CustomerDTO;
+import bbk_beam.mtRooms.reservation.dto.PaymentType;
 import bbk_beam.mtRooms.reservation.exception.InvalidPaymentType;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.reservation.processing.Reservation;
@@ -14,8 +15,10 @@ import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 import javafx.util.Pair;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, ISearch {
     private final Logger log = Logger.getLoggerInstance(ReservationDbDelegate.class.getName());
@@ -149,8 +152,15 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public ObjectTable getPaymentTypes(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        return null;
+    public List<PaymentType> getPaymentTypes(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT * FROM PaymentMethod";
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        List<PaymentType> paymentTypes = new ArrayList<>();
+        for (int i = 1; i <= table.rowCount(); i++) {
+            HashMap<String, Object> row = table.getRow(i);
+            paymentTypes.add(new PaymentType((Integer) row.get("id"), (String) row.get("description")));
+        }
+        return paymentTypes;
     }
 
     @Override

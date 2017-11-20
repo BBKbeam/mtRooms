@@ -4,10 +4,12 @@ import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.reservation.dto.PaymentType;
 import bbk_beam.mtRooms.reservation.exception.InvalidPaymentType;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.reservation.processing.Reservation;
-import eadjlib.datastructure.ObjectTable;
+
+import java.util.List;
 
 public interface IPay {
     /**
@@ -30,10 +32,10 @@ public interface IPay {
      * Gets the available payment types from records
      *
      * @param session_token Session's token
-     * @return ObjectTable of available payment types
+     * @return List of available payment types
      * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    ObjectTable getPaymentTypes(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    List<PaymentType> getPaymentTypes(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 }

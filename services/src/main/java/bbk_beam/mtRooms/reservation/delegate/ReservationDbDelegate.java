@@ -8,6 +8,7 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.PaymentType;
+import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidPaymentType;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.reservation.processing.Reservation;
@@ -29,12 +30,12 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
      *
      * @param reservationDbAccess ReservationDbAccess instance
      */
-    ReservationDbDelegate(IReservationDbAccess reservationDbAccess) {
+    public ReservationDbDelegate(IReservationDbAccess reservationDbAccess) {
         this.db_access = reservationDbAccess;
     }
 
     @Override
-    public Customer getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public ObjectTable getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT "
                 + "id, "
                 + "membership_type_id, "
@@ -52,28 +53,30 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 + "telephone_2, "
                 + "email "
                 + "FROM Customer WHERE id = " + customerID;
-        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
-        try {
-            HashMap<String, Object> row = table.getRow(1);
-            return new Customer(
-                    (Integer) row.get("id"),
-                    (Integer) row.get("membership_type_id"),
-                    TimestampConverter.getDateObject((String) row.get("customer_since")),
-                    (String) row.get("title"),
-                    (String) row.get("name"),
-                    (String) row.get("surname"),
-                    (String) row.get("address_1"),
-                    (String) row.get("address_2"),
-                    (String) row.get("postcode"),
-                    (String) row.get("city"),
-                    (String) row.get("county"),
-                    (String) row.get("country"),
-                    (String) row.get("telephone_1"),
-                    (String) row.get("telephone_2"),
-                    (String) row.get("email"));
-        } catch (IndexOutOfBoundsException e) {
-            log.log_Error("Customer [", customerID, "] does not exist in records.");
-            throw new DbQueryException("Customer [" + customerID + "] does not exist in records.", e);
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    @Override
+    public ObjectTable getCustomerAccount(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        if (customer.customerID() < 1) {
+            String query = "SELECT id FROM Customer WHERE "
+                    + "membership_type_id = " + customer.membershipTypeID() + " AND "
+                    + "customer_since = \"" + TimestampConverter.getUTCTimestampString(customer.accountCreationDate()) + "\" AND "
+                    + "title = \"" + customer.title() + "\" AND "
+                    + "name = \"" + customer.name() + "\" AND "
+                    + "surname = \"" + customer.surname() + "\" AND "
+                    + "address_1 = \"" + customer.address1() + "\" AND "
+                    + "address_2 " + (customer.address2() == null ? "isnull" : "= \"" + customer.address2() + "\"") + " AND "
+                    + "city = \"" + customer.city() + "\" AND "
+                    + "county " + (customer.county() == null ? "isnull" : "= \"" + customer.county() + "\"") + " AND "
+                    + "country = \"" + customer.country() + "\" AND "
+                    + "postcode = \"" + customer.postCode() + "\" AND "
+                    + "telephone_1 = \"" + customer.phone1() + "\" AND "
+                    + "telephone_2 " + (customer.phone2() == null ? "isnull" : "= \"" + customer.phone2() + "\"") + " AND "
+                    + "email = \"" + customer.email() + "\"";
+            return this.db_access.pullFromDB(session_token.getSessionId(), query);
+        } else {
+            return getCustomerAccount(session_token, customer.customerID());
         }
     }
 
@@ -83,7 +86,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public Customer createNewCustomer(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void createNewCustomer(Token session_token, Customer customer) throws FailedDbWrite, DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "INSERT INTO Customer( "
                 + "membership_type_id, "
                 + "customer_since, "
@@ -115,12 +118,17 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 + (customer.phone2() == null ? null : "\"" + customer.phone2() + "\"") + ", "
                 + "\"" + customer.email() + "\" "
                 + ")";
+        //Check if update was made
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), "SELECT CHANGES()");
+        if (table.getInteger(1, 1) == 0) {
+            log.log_Error("Could add customer: ", customer);
+            throw new FailedDbWrite("Could not add customer to record.");
+        }
         this.db_access.pushToDB(session_token.getSessionId(), query);
-        return getCustomerAccount(session_token, customer); //Get a fully updated DTO that includes the ID of the new customer
     }
 
     @Override
-    public void saveCustomerChangesToDB(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void saveCustomerChangesToDB(Token session_token, Customer customer) throws FailedDbWrite, DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "UPDATE Customer SET "
                 + "membership_type_id = " + customer.membershipTypeID() + ", "
                 + "customer_since = \"" + TimestampConverter.getUTCTimestampString(customer.accountCreationDate()) + "\", "
@@ -142,12 +150,13 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), "SELECT CHANGES()");
         if (table.getInteger(1, 1) == 0) {
             log.log_Error("Could not update customer [", customer.customerID(), "]'s record.");
-            throw new DbQueryException("Could not update customer [" + customer.customerID() + "]'s record.");
+            throw new FailedDbWrite("Could not update customer [" + customer.customerID() + "]'s record.");
         }
     }
 
     @Override
     public Integer pay(Token session_token, Reservation reservation, Integer amount, Integer paymentID) throws InvalidReservation, InvalidPaymentType, DbQueryException, SessionExpiredException, SessionInvalidException {
+        //TODO
         return null;
     }
 
@@ -165,62 +174,12 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
 
     @Override
     public void createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-
+        //TODO
     }
 
     @Override
     public Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+        //TODO
         return null;
-    }
-
-    /**
-     * Gets a customer's ID placed in its DTO from the details within
-     *
-     * @param session_token Session token
-     * @param customer      Customer DTO
-     * @return Customer details
-     * @throws DbQueryException        when a problem was encountered whilst processing the query
-     * @throws SessionExpiredException When the session for the id provided has expired
-     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
-     */
-    private Customer getCustomerAccount(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query = "SELECT id FROM Customer WHERE "
-                + "membership_type_id = " + customer.membershipTypeID() + " AND "
-                + "customer_since = \"" + TimestampConverter.getUTCTimestampString(customer.accountCreationDate()) + "\" AND "
-                + "title = \"" + customer.title() + "\" AND "
-                + "name = \"" + customer.name() + "\" AND "
-                + "surname = \"" + customer.surname() + "\" AND "
-                + "address_1 = \"" + customer.address1() + "\" AND "
-                + "address_2 " + (customer.address2() == null ? "isnull" : "= \"" + customer.address2() + "\"") + " AND "
-                + "city = \"" + customer.city() + "\" AND "
-                + "county " + (customer.county() == null ? "isnull" : "= \"" + customer.county() + "\"") + " AND "
-                + "country = \"" + customer.country() + "\" AND "
-                + "postcode = \"" + customer.postCode() + "\" AND "
-                + "telephone_1 = \"" + customer.phone1() + "\" AND "
-                + "telephone_2 " + (customer.phone2() == null ? "isnull" : "= \"" + customer.phone2() + "\"") + " AND "
-                + "email = \"" + customer.email() + "\"";
-        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
-        if (!table.isEmpty()) {
-            Integer id = table.getInteger(1, 1);
-            return new Customer(
-                    id,
-                    customer.membershipTypeID(),
-                    customer.accountCreationDate(),
-                    customer.title(),
-                    customer.name(),
-                    customer.surname(),
-                    customer.address1(),
-                    customer.address2(),
-                    customer.postCode(),
-                    customer.city(),
-                    customer.county(),
-                    customer.country(),
-                    customer.phone1(),
-                    customer.phone2(),
-                    customer.email());
-        } else {
-            log.log_Error("Customer DTO details do not match any record set.");
-            throw new DbQueryException("Customer DTO details do not match any record set.");
-        }
     }
 }

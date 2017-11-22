@@ -5,6 +5,8 @@ import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
+import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
+import eadjlib.datastructure.ObjectTable;
 import javafx.util.Pair;
 
 import java.util.Collection;
@@ -24,7 +26,19 @@ public interface ICustomerAccount {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Customer getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public ObjectTable getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Reloads the customer info from the DB
+     *
+     * @param session_token Session token
+     * @param customer      Customer DTO
+     * @return Customer details
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     */
+    public ObjectTable getCustomerAccount(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Finds the records for customer from their surname
@@ -43,12 +57,11 @@ public interface ICustomerAccount {
      *
      * @param session_token Session token
      * @param customer      Customer details in DTO
-     * @return Customer DTO container
      * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Customer createNewCustomer(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public void createNewCustomer(Token session_token, Customer customer) throws FailedDbWrite, DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Saves changes of a Customer container to the database
@@ -59,5 +72,5 @@ public interface ICustomerAccount {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public void saveCustomerChangesToDB(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public void saveCustomerChangesToDB(Token session_token, Customer customer) throws FailedDbWrite, DbQueryException, SessionExpiredException, SessionInvalidException;
 }

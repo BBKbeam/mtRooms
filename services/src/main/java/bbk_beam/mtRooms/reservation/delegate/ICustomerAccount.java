@@ -7,9 +7,6 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import eadjlib.datastructure.ObjectTable;
-import javafx.util.Pair;
-
-import java.util.Collection;
 
 /**
  * //TODO/NOTES Maybe put a lock on currently accessed customers so that sessions don't corrupt each other?
@@ -50,7 +47,7 @@ public interface ICustomerAccount {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Collection<Pair<Integer, String>> findCustomer(Token session_token, String surname) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public ObjectTable findCustomer(Token session_token, String surname) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Creates a new customer

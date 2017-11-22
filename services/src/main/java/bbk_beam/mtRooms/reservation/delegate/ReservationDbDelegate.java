@@ -14,10 +14,8 @@ import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.reservation.processing.Reservation;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
-import javafx.util.Pair;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -81,8 +79,12 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public Collection<Pair<Integer, String>> findCustomer(Token session_token, String surname) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        return null;
+    public ObjectTable findCustomer(Token session_token, String surname) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT "
+                + "id, name, surname "
+                + "FROM Customer "
+                + "WHERE surname = \"" + surname + "\"";
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 
     @Override

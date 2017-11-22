@@ -14,8 +14,9 @@ import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 import javafx.util.Pair;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class CustomerAccountAccess {
     private final Logger log = Logger.getLoggerInstance(CustomerAccountAccess.class.getName());
@@ -118,9 +119,19 @@ public class CustomerAccountAccess {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Collection<Pair<Integer, String>> findCustomer(Token session_token, String surname) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        //TODO
-        return null;
+    public List<Pair<Integer, String>> findCustomer(Token session_token, String surname) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable table = this.db_delegate.findCustomer(session_token, surname);
+            List<Pair<Integer, String>> list = new ArrayList<>();
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                list.add(new Pair<>((Integer) row.get("id"), (String) row.get("name")));
+            }
+            return list;
+        } catch (DbQueryException e) {
+            log.log_Error("Failed to fetch customers with surname '", surname, "' from records.");
+            throw new FailedDbFetch("Failed to fetch customers with surname '" + surname + "' from records.", e);
+        }
     }
 
     /**

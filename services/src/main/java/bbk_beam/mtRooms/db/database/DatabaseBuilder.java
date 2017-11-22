@@ -10,7 +10,7 @@ import java.util.Date;
 
 class DatabaseBuilder {
     private final Logger log = Logger.getLoggerInstance(DatabaseBuilder.class.getName());
-    private final int reservation_table_count = 15;
+    private final int reservation_table_count = 17;
     private final int user_table_count = 2;
 
     /**
@@ -31,11 +31,13 @@ class DatabaseBuilder {
         if (buildTable_Room_has_RoomPrice(db)) build_count++;
         if (buildTable_Room_has_RoomFixtures(db)) build_count++;
         if (buildTable_PaymentMethod(db)) build_count++;
+        if (buildTable_Payment(db)) build_count++;
         if (buildTable_DiscountCategory(db)) build_count++;
         if (buildTable_Discount(db)) build_count++;
         if (buildTable_MembershipType(db)) build_count++;
         if (buildTable_Customer(db)) build_count++;
         if (buildTable_Reservation(db)) build_count++;
+        if (buildTable_Reservation_has_Payment(db)) build_count++;
         if (buildTable_Room_has_Reservation(db)) build_count++;
         return reservation_table_count == build_count;
     }
@@ -176,6 +178,17 @@ class DatabaseBuilder {
         return pushQuery(db, query1) && pushQuery(db, query2);
     }
 
+    private boolean buildTable_Payment(IDatabase db) {
+        String query = "CREATE TABLE Payment( "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "amount INTEGER NOT NULL, "
+                + "payment_method INTEGER NOT NULL, "
+                + "timestamp TIMESTAMP NOT NULL, "
+                + "FOREIGN KEY( payment_method ) REFERENCES PaymentMethod( id ) "
+                + ")";
+        return pushQuery(db, query);
+    }
+
     private boolean buildTable_DiscountCategory(IDatabase db) {
         String query1 = "CREATE TABLE DiscountCategory( "
                 + "id INTEGER PRIMARY KEY NOT NULL, "
@@ -232,12 +245,22 @@ class DatabaseBuilder {
 
     private boolean buildTable_Reservation(IDatabase db) {
         String query = "CREATE TABLE Reservation( "
-                + "id INTEGER NOT NULL, "
+                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "created_timestamp TIMESTAMP NOT NULL, "
                 + "customer_id INTEGER NOT NULL, "
-                + "payment_method_id INTEGER NOT NULL, "
-                + "PRIMARY KEY( id, customer_id, payment_method_id), "
-                + "FOREIGN KEY( customer_id ) REFERENCES Customer( id ), "
-                + "FOREIGN KEY( payment_method_id ) REFERENCES PaymentMethod( id ) "
+                + "discount_id INTEGER NOT NULL, "
+                + "FOREIGN KEY( discount_id ) REFERENCES Discount( id ) "
+                + ")";
+        return pushQuery(db, query);
+    }
+
+    private boolean buildTable_Reservation_has_Payment(IDatabase db) {
+        String query = "CREATE TABLE Reservation_has_Payment( "
+                + "reservation_id INTEGER NOT NULL, "
+                + "payment_id INTEGER NOT NULL, "
+                + "PRIMARY KEY( reservation_id, payment_id ), "
+                + "FOREIGN KEY( reservation_id ) REFERENCES Reservation( id ), "
+                + "FOREIGN KEY( payment_id ) REFERENCES Payment( id ) "
                 + ")";
         return pushQuery(db, query);
     }
@@ -256,6 +279,7 @@ class DatabaseBuilder {
                 + "timestamp_in TIMESTAMP NOT NULL, "
                 + "timestamp_out TIMESTAMP NOT NULL, "
                 + "notes TEXT, "
+                + "cancelled_flag BOOLEAN NOT NULL DEFAULT 0, "
                 + "PRIMARY KEY( room_id, floor_id, building_id, reservation_id, customer_id, payment_method_id ), "
                 + "FOREIGN KEY( room_id ) REFERENCES Room( id ), "
                 + "FOREIGN KEY( floor_id ) REFERENCES Room( floor_id ), "

@@ -11,7 +11,7 @@ import java.util.HashMap;
 class DatabaseChecker {
     private final Logger log = Logger.getLoggerInstance(DatabaseChecker.class.getName());
     //Update when adding/removing tables from schema
-    private final int reservation_table_count = 15;
+    private final int reservation_table_count = 17;
     private final int user_table_count = 2;
 
     /**
@@ -60,12 +60,17 @@ class DatabaseChecker {
             missing_count++;
         }
         try {
-            if (checkTable_Room_had_RoomFixtures(db)) check_count++;
+            if (checkTable_Room_has_RoomFixtures(db)) check_count++;
         } catch (DbMissingTableException e) {
             missing_count++;
         }
         try {
             if (checkTable_PaymentMethod(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Payment(db)) check_count++;
         } catch (DbMissingTableException e) {
             missing_count++;
         }
@@ -91,6 +96,11 @@ class DatabaseChecker {
         }
         try {
             if (checkTable_Reservation(db)) check_count++;
+        } catch (DbMissingTableException e) {
+            missing_count++;
+        }
+        try {
+            if (checkTable_Reservation_has_Payment(db)) check_count++;
         } catch (DbMissingTableException e) {
             missing_count++;
         }
@@ -143,6 +153,10 @@ class DatabaseChecker {
         boolean ok_flag = true;
         if (!columnMetaData.get("type").equals(colProperty.getType())) {
             log.log_Error(colProperty, " (type): expected '", colProperty.getType(), "', got '", columnMetaData.get("type"), "'");
+            ok_flag = false;
+        }
+        if (!columnMetaData.get("name").equals(colProperty.getName())) {
+            log.log_Error(colProperty, " (name): expected '", colProperty.getName(), "', got '", columnMetaData.get("name"), "'");
             ok_flag = false;
         }
         if (!columnMetaData.get("notnull").equals(colProperty.isNotNull())) {
@@ -517,7 +531,7 @@ class DatabaseChecker {
         }
     }
 
-    private boolean checkTable_Room_had_RoomFixtures(IDatabase db) throws DbMissingTableException {
+    private boolean checkTable_Room_has_RoomFixtures(IDatabase db) throws DbMissingTableException {
         final int column_count = 2;
         String query = "PRAGMA table_info( Room_has_RoomFixtures )";
         try {
@@ -583,6 +597,56 @@ class DatabaseChecker {
             }
             if (checked != column_count) {
                 log.log_Error("'PaymentMethod' table does not have the required columns (", checked, "/", column_count, ").'");
+                ok_flag = false;
+            }
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
+
+    private boolean checkTable_Payment(IDatabase db) throws DbMissingTableException {
+        final int column_count = 4;
+        String query = "PRAGMA table_info( Payment )";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Payment' table not found in DB.");
+                throw new DbMissingTableException("'Payment' table does not exist.");
+            }
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("id")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Payment", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("amount")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Payment", "amount", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("payment_method")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Payment", "payment_method", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("timestamp")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Payment", "timestamp", "TIMESTAMP", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+            }
+            if (checked != column_count) {
+                log.log_Error("'Payment' table does not have the required columns (", checked, "/", column_count, ").'");
                 ok_flag = false;
             }
             return ok_flag;
@@ -734,7 +798,7 @@ class DatabaseChecker {
                 HashMap<String, Object> row = table.getRow(i);
                 if (row.get("name").equals("id")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Customer", "idCustomer", "INTEGER", true, null, 1);
+                    ColProperty expected = new ColProperty("Customer", "id", "INTEGER", true, null, 1);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
@@ -836,7 +900,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_Reservation(IDatabase db) throws DbMissingTableException {
-        final int column_count = 3;
+        final int column_count = 4;
         String query = "PRAGMA table_info( Reservation )";
         try {
             boolean ok_flag = true;
@@ -854,21 +918,65 @@ class DatabaseChecker {
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
-                if (row.get("name").equals("customer_id")) {
+                if (row.get("name").equals("created_timestamp")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Reservation", "customer_id", "INTEGER", true, null, 2);
+                    ColProperty expected = new ColProperty("Reservation", "created_timestamp", "TIMESTAMP", true, null, 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
-                if (row.get("name").equals("payment_method_id")) {
+                if (row.get("name").equals("customer_id")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Reservation", "payment_method_id", "INTEGER", true, null, 3);
+                    ColProperty expected = new ColProperty("Reservation", "customer_id", "INTEGER", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("discount_id")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Reservation", "discount_id", "INTEGER", true, null, 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
             }
             if (checked != column_count) {
-                log.log_Error("'Reservation' table does not have the required columns (\", checked, \"/\", column_count, \").");
+                log.log_Error("'Reservation' table does not have the required columns (", checked, "/", column_count, ").");
+                ok_flag = false;
+            }
+            return ok_flag;
+        } catch (DbQueryException e) {
+            log.log_Error("Issue encountered processing query: ", query);
+            log.log_Exception(e);
+            return false;
+        }
+    }
+
+    private boolean checkTable_Reservation_has_Payment(IDatabase db) throws DbMissingTableException {
+        final int column_count = 2;
+        String query = "PRAGMA table_info( Reservation_has_Payment )";
+        try {
+            boolean ok_flag = true;
+            int checked = 0;
+            ObjectTable table = db.pull(query);
+            if (table.isEmpty()) {
+                log.log_Warning("'Reservation_has_Payment' table not found in DB.");
+                throw new DbMissingTableException("'Reservation_has_Payment' table does not exist.");
+            }
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                if (row.get("name").equals("reservation_id")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Reservation_has_Payment", "reservation_id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("payment_id")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Reservation_has_Payment", "payment_id", "INTEGER", true, null, 2);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+            }
+            if (checked != column_count) {
+                log.log_Error("'Reservation_has_Payment' table does not have the required columns (", checked, "/", column_count, ").");
                 ok_flag = false;
             }
             return ok_flag;
@@ -880,7 +988,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_Room_has_Reservation(IDatabase db) throws DbMissingTableException {
-        final int column_count = 12;
+        final int column_count = 8;
         String query = "PRAGMA table_info( Room_has_Reservation )";
         try {
             boolean ok_flag = true;
@@ -916,36 +1024,6 @@ class DatabaseChecker {
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
-                if (row.get("name").equals("customer_id")) {
-                    checked++;
-                    ColProperty expected = new ColProperty("Room_has_Reservation", "customer_id", "INTEGER", true, null, 5);
-                    if (!checkColumn(expected, row))
-                        ok_flag = false;
-                }
-                if (row.get("name").equals("payment_method_id")) {
-                    checked++;
-                    ColProperty expected = new ColProperty("Room_has_Reservation", "payment_method_id", "INTEGER", true, null, 6);
-                    if (!checkColumn(expected, row))
-                        ok_flag = false;
-                }
-                if (row.get("name").equals("discount_id")) {
-                    checked++;
-                    ColProperty expected = new ColProperty("Room_has_Reservation", "discount_id", "INTEGER", true, null, 0);
-                    if (!checkColumn(expected, row))
-                        ok_flag = false;
-                }
-                if (row.get("name").equals("discount_category_id")) {
-                    checked++;
-                    ColProperty expected = new ColProperty("Room_has_Reservation", "discount_category_id", "INTEGER", true, null, 0);
-                    if (!checkColumn(expected, row))
-                        ok_flag = false;
-                }
-                if (row.get("name").equals("has_room_price_id")) {
-                    checked++;
-                    ColProperty expected = new ColProperty("Room_has_Reservation", "has_room_price_id", "INTEGER", true, null, 0);
-                    if (!checkColumn(expected, row))
-                        ok_flag = false;
-                }
                 if (row.get("name").equals("timestamp_in")) {
                     checked++;
                     ColProperty expected = new ColProperty("Room_has_Reservation", "timestamp_in", "TIMESTAMP", true, null, 0);
@@ -964,9 +1042,15 @@ class DatabaseChecker {
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
+                if (row.get("name").equals("cancelled_flag")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "cancelled_flag", "BOOLEAN", true, "0", 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
             }
             if (checked != column_count) {
-                log.log_Error("'Room_has_Reservation' table does not have the required columns (\", checked, \"/\", column_count, \").");
+                log.log_Error("'Room_has_Reservation' table does not have the required columns (", checked, "/", column_count, ").");
                 ok_flag = false;
             }
             return ok_flag;
@@ -1009,7 +1093,6 @@ class DatabaseChecker {
                 log.log_Error("'AccountType' table does not have the required columns (", checked, "/", column_count, ").'");
                 ok_flag = false;
             }
-            //TODO check there is admin and user types
             return ok_flag;
         } catch (DbQueryException e) {
             log.log_Error("Issue encountered processing query: ", query);
@@ -1091,7 +1174,6 @@ class DatabaseChecker {
                 log.log_Error("'UserAccount' table does not have the required columns (", checked, "/", column_count, ").'");
                 ok_flag = false;
             }
-            //TODO check there is at least 1 admin root account
             return ok_flag;
         } catch (DbQueryException e) {
             log.log_Error("Issue encountered processing query: ", query);

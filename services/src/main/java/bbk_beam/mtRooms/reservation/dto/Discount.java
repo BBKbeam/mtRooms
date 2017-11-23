@@ -68,4 +68,26 @@ public class Discount {
     public String categoryDescription() {
         return category_description;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Discount discount = (Discount) o;
+
+        if (!id.equals(discount.id)) return false;
+        if (!rate.equals(discount.rate)) return false;
+        if (!category_id.equals(discount.category_id)) return false;
+        return category_description.equals(discount.category_description);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + rate.hashCode();
+        result = 31 * result + category_id.hashCode();
+        result = 31 * result + category_description.hashCode();
+        return result;
+    }
 }

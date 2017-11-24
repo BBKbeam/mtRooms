@@ -8,10 +8,11 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.PaymentType;
+import bbk_beam.mtRooms.reservation.dto.Reservation;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
+import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
 import bbk_beam.mtRooms.reservation.exception.InvalidPaymentType;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
-import bbk_beam.mtRooms.reservation.processing.Reservation;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -163,6 +164,12 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
+    public ObjectTable getPayments(Token session_token, Reservation reservation) throws InvalidReservation, SessionExpiredException, SessionInvalidException {
+        //TODO
+        return null;
+    }
+
+    @Override
     public List<PaymentType> getPaymentTypes(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT * FROM PaymentMethod";
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
@@ -182,6 +189,22 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     @Override
     public Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
         //TODO
+        return null;
+    }
+
+    @Override
+    public ObjectTable getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public ObjectTable getReservations(Token session_token, Customer customer) throws InvalidCustomer, SessionExpiredException, SessionInvalidException {
+        return null;
+    }
+
+    @Override
+    public ObjectTable getRooms(Token session_token, Reservation reservation) throws InvalidReservation, SessionExpiredException, SessionInvalidException {
         return null;
     }
 }

@@ -5,7 +5,7 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
-import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
+import bbk_beam.mtRooms.reservation.delegate.ICustomerAccount;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
@@ -20,15 +20,15 @@ import java.util.List;
 
 public class CustomerAccountAccess {
     private final Logger log = Logger.getLoggerInstance(CustomerAccountAccess.class.getName());
-    private ReservationDbDelegate db_delegate;
+    private ICustomerAccount db_delegate;
 
     /**
      * Constructor
      *
-     * @param reservationDbDelegate ReservationDbDelegate instance
+     * @param customer_account_delegate ICustomerAccount instance
      */
-    public CustomerAccountAccess(ReservationDbDelegate reservationDbDelegate) {
-        this.db_delegate = reservationDbDelegate;
+    public CustomerAccountAccess(ICustomerAccount customer_account_delegate) {
+        this.db_delegate = customer_account_delegate;
     }
 
     /**

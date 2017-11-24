@@ -1,39 +1,60 @@
-package bbk_beam.mtRooms.reservation.delegate;
+package bbk_beam.mtRooms.reservation.processing;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.reservation.delegate.IReserve;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
+import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
-import eadjlib.datastructure.ObjectTable;
+import eadjlib.logger.Logger;
 
-public interface IReserve {
+import java.util.List;
+
+public class ReservationProcessing {
+    private final Logger log = Logger.getLoggerInstance(ReservationProcessing.class.getName());
+    private IReserve db_delegate;
+
+    /**
+     * Constructor
+     *
+     * @param reserve_delegate IReserve instance
+     */
+    public ReservationProcessing(IReserve reserve_delegate) {
+        this.db_delegate = reserve_delegate;
+    }
+
     /**
      * Creates a reservation in the records
      *
      * @param session_token Session's token
      * @param reservation   Reservation DTO
-     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws FailedDbWrite           when a problem was encountered whilst processing the query
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    void createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    public void createReservation(Token session_token, Reservation reservation) throws FailedDbWrite, SessionExpiredException, SessionInvalidException {
+        //TODO
+    }
 
     /**
-     * Deletes the record of a reservation
+     * Mark the record of a reservation as cancelled
      *
      * @param session_token Session's token
      * @param reservation   Reservation DTO
      * @return Balance to reimburse on reservation
      * @throws InvalidReservation      when Reservation cannot be validated with the records
-     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws FailedDbWrite           when a problem was encountered whilst processing the query
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
+    public Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
+        //TODO
+        return null;
+    }
 
     /**
      * Gets a reservation's details
@@ -46,7 +67,11 @@ public interface IReserve {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    ObjectTable getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
+    public Reservation getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+
+        //TODO
+        return null;
+    }
 
     /**
      * Gets the reservations associated with a customer
@@ -58,17 +83,10 @@ public interface IReserve {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    ObjectTable getReservations(Token session_token, Customer customer) throws InvalidCustomer, SessionExpiredException, SessionInvalidException;
+    public List<Reservation> getReservations(Token session_token, Customer customer) throws InvalidCustomer, SessionExpiredException, SessionInvalidException {
 
-    /**
-     * Gets the rooms listed for a reservation
-     *
-     * @param session_token Session's token
-     * @param reservation   Reservation
-     * @return List or rooms for the reservation
-     * @throws InvalidReservation      when the reservation ID does not match any within the records
-     * @throws SessionExpiredException when the session for the id provided has expired
-     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
-     */
-    ObjectTable getRooms(Token session_token, Reservation reservation) throws InvalidReservation, SessionExpiredException, SessionInvalidException;
+        //TODO
+        return null;
+    }
+
 }

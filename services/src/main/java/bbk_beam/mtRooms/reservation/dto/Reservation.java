@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 
 public class Reservation {
-    private Customer customer;
     private Integer id;
+    private Integer customer_id;
     private Integer payment_method_id;
     private Discount discount;
     private List<Room> rooms;
@@ -15,14 +15,14 @@ public class Reservation {
     /**
      * Constructor
      *
-     * @param customer          Customer DTO
      * @param id                Reservation ID
+     * @param customer_id       Customer ID
      * @param payment_method_id Payment method ID
      * @param discount          Discount DTO
      */
-    public Reservation(Customer customer, Integer id, Integer payment_method_id, Discount discount) {
-        this.customer = customer;
+    public Reservation(Integer id, Integer customer_id, Integer payment_method_id, Discount discount) {
         this.id = id;
+        this.customer_id = customer_id;
         this.payment_method_id = payment_method_id;
         this.discount = discount;
         this.rooms = new ArrayList<>();
@@ -31,27 +31,27 @@ public class Reservation {
     /**
      * Constructor
      *
-     * @param customer          Customer DTO
      * @param id                Reservation ID
+     * @param customer_id       Customer ID
      * @param payment_method_id Payment method ID
      * @param discount          Discount DTO
      * @param rooms             List of reserved rooms
      */
-    public Reservation(Customer customer, Integer id, Integer payment_method_id, Discount discount, List<Room> rooms) {
-        this.customer = customer;
+    public Reservation(Integer id, Integer customer_id, Integer payment_method_id, Discount discount, List<Room> rooms) {
         this.id = id;
+        this.customer_id = customer_id;
         this.payment_method_id = payment_method_id;
         this.discount = discount;
         this.rooms = rooms;
     }
 
     /**
-     * Gets the customer DTO
+     * Gets the customer ID
      *
-     * @return Copy of the Customer DTO
+     * @return Customer's ID
      */
-    public Customer customer() {
-        return new Customer(this.customer);
+    public Integer customerID() {
+        return this.customer_id;
     }
 
     /**

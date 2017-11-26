@@ -145,12 +145,16 @@ class DatabaseBuilder {
 
     private boolean buildTable_Room_has_RoomPrice(IDatabase db) {
         String query = "CREATE TABLE Room_has_RoomPrice( "
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "id INTEGER PRIMARY KEY NOT NULL, "
                 + "room_id INTEGER NOT NULL, "
+                + "floor_id INTEGER NOT NULL, "
+                + "building_id INTEGER NOT NULL, "
                 + "price_id INTEGER NOT NULL, "
                 + "FOREIGN KEY( room_id ) REFERENCES Room( id ), "
+                + "FOREIGN KEY( floor_id ) REFERENCES Room( floor_id ), "
+                + "FOREIGN KEY( building_id ) REFERENCES Room( building_id ), "
                 + "FOREIGN KEY( price_id ) REFERENCES RoomPrice( id ), "
-                + "UNIQUE( room_id, price_id ) "
+                + "UNIQUE( room_id, floor_id, building_id, price_id ) "
                 + ")";
         return pushQuery(db, query);
     }

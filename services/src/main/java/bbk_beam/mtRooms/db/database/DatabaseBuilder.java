@@ -135,8 +135,7 @@ class DatabaseBuilder {
                 + "building_id INTEGER NOT NULL, "
                 + "room_category_id INTEGER NOT NULL, "
                 + "description VARCHAR(255) NOT NULL, "
-                + "FOREIGN KEY( floor_id ) REFERENCES Floor( id ), "
-                + "FOREIGN KEY( building_id ) REFERENCES Floor( building_id ), "
+                + "FOREIGN KEY ( floor_id, building_id ) REFERENCES Floor( id, building_id ), "
                 + "FOREIGN KEY( room_category_id ) REFERENCES RoomCategory( id ), "
                 + "PRIMARY KEY( id, floor_id, building_id ) "
                 + ")";

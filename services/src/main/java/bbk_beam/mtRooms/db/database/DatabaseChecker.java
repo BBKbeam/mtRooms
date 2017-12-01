@@ -1038,7 +1038,7 @@ class DatabaseChecker {
                 }
                 if (row.get("name").equals("timestamp_in")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Room_has_Reservation", "timestamp_in", "TIMESTAMP", true, null, 0);
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "timestamp_in", "TIMESTAMP", true, null, 5);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }

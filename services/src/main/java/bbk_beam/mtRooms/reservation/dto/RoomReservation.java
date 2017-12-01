@@ -123,6 +123,7 @@ public class RoomReservation {
                 ", timestamp_out: " + timestamp_out +
                 ", note: '" + note + '\'' +
                 ", price: " + price +
+                ", cancelled: " + (cancelled_flag ? "true" : "false") +
                 " }";
     }
 }

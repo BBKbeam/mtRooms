@@ -51,6 +51,7 @@ public class TestDBGenerator {
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.discountCategories);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.membershipTypes);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.discounts);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.customers);
         //Close access session
         userAccDbAccess.closeSession(token.getSessionId());
     }

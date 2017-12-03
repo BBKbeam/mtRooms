@@ -92,17 +92,20 @@ public class TestDataDBQueries {
             //( 0., 1 )         //id = 1 ->already hardcoded in DB build code
             + "( 25., 2 ), "    //id = 2
             + "( 10., 3 )";     //id = 3
+    //Customer table
+    public static String customers = "INSERT INTO Customer( membership_type_id, customer_since, title, name, surname, "
+            + "address_1, address_2, city, county, country, postcode, telephone_1, telephone_2, email ) VALUES "
+            + "( 1, \"2015-10-15 16:15:12\", \"Mrs\", \"Joanne\", \"Bouvier\", "
+            + "\"Flat 4\", \"21 big road\", \"London\", \"London\", \"UK\", \"W1 4AQ\", \"+44 9876 532 123\", null, \"jbouvier@mail.com\" ), "
+            + "( 2, \"2016-03-26 12:42:03\", \"Mr\", \"John\", \"Dagart\", "
+            + "\"26 main road\", null, \"Norwich\", \"Norfolk\", \"UK\", \"NR2 18D\", \"+44 1234 567 765\", null, \"jd445@netmail.com\" ), "
+            + "( 3, \"2017-06-05 10:36:41\", \"Miss\", \"Alice\", \"Beniccio\", "
+            + "\"5 Highbury road\", null, \"London\", \"London\", \"UK\", \"N4 6SW\", \"+44 1020 304 050\", \"+44 9080 706 050\", \"aliceb01@othermail.com\" )";
     //Payment table //TODO
     public static String payments = "INSERT INTO PaymentMethod( amount, payment_method, timestamp ) VALUES "
             + "(), "
             + "()";
-    //Customer table //TODO
-    public static String customers = "INSERT INTO Customer( membership_type_id, customer_since, title, name, surname, "
-            + "address_1, address_2, city, county, country, postcode, telephone_1, telephone_2, email ) VALUES "
-            + "(), "
-            + "(), "
-            + "()";
-    //Payment table //TODO
+    //Reservation_has_Payment table //TODO
     public static String reservation_has_payments = "INSERT INTO Reservation_has_Payment( reservation_id, payment_id ) VALUES "
             + "(), "
             + "()";

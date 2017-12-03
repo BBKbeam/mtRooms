@@ -95,10 +95,13 @@ public class TestDataDBQueries {
     //Customer table
     public static String customers = "INSERT INTO Customer( membership_type_id, customer_since, title, name, surname, "
             + "address_1, address_2, city, county, country, postcode, telephone_1, telephone_2, email ) VALUES "
+            //Customer id = 1
             + "( 1, \"2015-10-15 16:15:12\", \"Mrs\", \"Joanne\", \"Bouvier\", "
             + "\"Flat 4\", \"21 big road\", \"London\", \"London\", \"UK\", \"W1 4AQ\", \"+44 9876 532 123\", null, \"jbouvier@mail.com\" ), "
+            //Customer id = 2
             + "( 2, \"2016-03-26 12:42:03\", \"Mr\", \"John\", \"Dagart\", "
             + "\"26 main road\", null, \"Norwich\", \"Norfolk\", \"UK\", \"NR2 18D\", \"+44 1234 567 765\", null, \"jd445@netmail.com\" ), "
+            //Customer id = 3
             + "( 3, \"2017-06-05 10:36:41\", \"Miss\", \"Alice\", \"Beniccio\", "
             + "\"5 Highbury road\", null, \"London\", \"London\", \"UK\", \"N4 6SW\", \"+44 1020 304 050\", \"+44 9080 706 050\", \"aliceb01@othermail.com\" )";
     //Payment table //TODO

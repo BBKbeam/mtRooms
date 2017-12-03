@@ -5,6 +5,7 @@ import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.session.SessionType;
+import eadjlib.logger.Logger;
 import org.junit.Test;
 
 import java.nio.file.Files;
@@ -14,6 +15,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class TestDBGenerator {
+    private final Logger log = Logger.getLoggerInstance(TestDBGenerator.class.getName());
+
     /**
      * Run this test to create a database with test data
      *
@@ -40,6 +43,7 @@ public class TestDBGenerator {
         userAccDbAccess.openSession(token.getSessionId(), token.getExpiry(), SessionType.ADMIN, 1);
         //Create test data entries in all tables
         IReservationDbAccess reservationDbAccess = DbBootstrapper.getReservationDbAccess();
+        log.log("Adding dummy test data in '", file_name, "'.");
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.building);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.floors);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.roomCategories);

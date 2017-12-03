@@ -203,13 +203,15 @@ class DatabaseBuilder {
     }
 
     private boolean buildTable_Discount(IDatabase db) {
-        String query = "CREATE TABLE Discount( "
+        String query1 = "CREATE TABLE Discount( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "discount_rate DOUBLE NOT NULL, "
                 + "discount_category_id INTEGER NOT NULL, "
                 + "FOREIGN KEY( discount_category_id ) REFERENCES DiscountCategory( id ) "
                 + ")";
-        return pushQuery(db, query);
+        String query2 = "INSERT INTO Discount( discount_rate, discount_category_id ) VALUES "
+                + "( 0., 1 )";
+        return pushQuery(db, query1) && pushQuery(db, query2);
     }
 
     private boolean buildTable_MembershipType(IDatabase db) {

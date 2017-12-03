@@ -77,18 +77,21 @@ public class TestDataDBQueries {
             + "( 6, 2, 1, 4 ), " //Large room 2 with catering space, projector
             + "( 7, 3, 1, 4 ), " //Large room 2 with catering space, projector
             + "( 8, 3, 1, 5 )";  //Theatre with fixed chairs, projector
-    //DiscountCategory table //TODO
+    //DiscountCategory table
     public static String discountCategories = "INSERT INTO DiscountCategory( description ) VALUES "
-            + "(), "
-            + "()";
-    //MembershipType table //TODO
+            //( "None" )            //id = 1 -> already hardcoded in DB build code
+            + "( \"Student\" ), "   //id = 2
+            + "( \"Member\" )";     //id = 3
+    //MembershipType table
     public static String membershipTypes = "INSERT INTO MembershipType( description, discount_category_id ) VALUES "
-            + "(), "
-            + "()";
-    //Discount table //TODO
+            //( "None", 1 )                 //id = 1 -> already hardcoded in DB build code
+            + "( \"Student\", 2 ), "        //id = 2
+            + "( \"Full Member\", 3 )";     //id = 3
+    //Discount table
     public static String discounts = "INSERT INTO Discount( discount_rate, discount_category_id ) VALUES "
-            + "(), "
-            + "()";
+            //( 0., 1 )         //id = 1 ->already hardcoded in DB build code
+            + "( 25., 2 ), "    //id = 2
+            + "( 10., 3 )";     //id = 3
     //Payment table //TODO
     public static String payments = "INSERT INTO PaymentMethod( amount, payment_method, timestamp ) VALUES "
             + "(), "
@@ -98,14 +101,20 @@ public class TestDataDBQueries {
             + "address_1, address_2, city, county, country, postcode, telephone_1, telephone_2, email ) VALUES "
             + "(), "
             + "(), "
-            + "(), "
             + "()";
     //Payment table //TODO
-    public static String reservation_has_payments = "INSERT INTO Reservation_has_Payment(  ) VALUES "
+    public static String reservation_has_payments = "INSERT INTO Reservation_has_Payment( reservation_id, payment_id ) VALUES "
             + "(), "
             + "()";
     //Reservation table //TODO
-    public static String reservations = "INSERT INTO Reservation(  ) VALUES "
+    public static String reservations = "INSERT INTO Reservation( created_timestamp, customer_id, discount_id ) VALUES "
+            + "(), "
+            + "()";
+    //Room_has_Reservation table //TODO
+    public static String room_has_reservation = "INSERT INTO Room_has_Reservation( room_id, floor_id, building_id, "
+            + "reservation_id, timestamp_in, timestamp_out, note, cancelled_flag ) VALUES "
+            + "(), "
+            + "(), "
             + "(), "
             + "()";
 }

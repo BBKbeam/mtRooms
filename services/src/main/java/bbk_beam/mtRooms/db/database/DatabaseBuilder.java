@@ -112,7 +112,8 @@ class DatabaseBuilder {
         String query = "CREATE TABLE RoomPrice( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "price INTEGER NOT NULL, "
-                + "year INTEGER NOT NULL "
+                + "year INTEGER NOT NULL, "
+                + "UNIQUE( price, year ) "
                 + ")";
         return pushQuery(db, query);
     }
@@ -144,16 +145,13 @@ class DatabaseBuilder {
 
     private boolean buildTable_Room_has_RoomPrice(IDatabase db) {
         String query = "CREATE TABLE Room_has_RoomPrice( "
-                + "id INTEGER PRIMARY KEY NOT NULL, "
                 + "room_id INTEGER NOT NULL, "
                 + "floor_id INTEGER NOT NULL, "
                 + "building_id INTEGER NOT NULL, "
                 + "price_id INTEGER NOT NULL, "
-                + "FOREIGN KEY( room_id ) REFERENCES Room( id ), "
-                + "FOREIGN KEY( floor_id ) REFERENCES Room( floor_id ), "
-                + "FOREIGN KEY( building_id ) REFERENCES Room( building_id ), "
+                + "FOREIGN KEY( room_id, floor_id, building_id ) REFERENCES Room( id, floor_id, building_id ), "
                 + "FOREIGN KEY( price_id ) REFERENCES RoomPrice( id ), "
-                + "UNIQUE( room_id, floor_id, building_id, price_id ) "
+                + "PRIMARY KEY( room_id, floor_id, building_id, price_id ) "
                 + ")";
         return pushQuery(db, query);
     }
@@ -161,10 +159,12 @@ class DatabaseBuilder {
     private boolean buildTable_Room_has_RoomFixtures(IDatabase db) {
         String query = "CREATE TABLE Room_has_RoomFixtures( "
                 + "room_id INTEGER NOT NULL, "
+                + "floor_id INTEGER NOT NULL, "
+                + "building_id INTEGER NOT NULL, "
                 + "room_fixture_id INTEGER NOT NULL, "
-                + "FOREIGN KEY( room_id ) REFERENCES Room( id ), "
-                + "FOREIGN KEY( room_fixture_id ) REFERENCES RoomFixture( id ), "
-                + "PRIMARY KEY( room_id, room_fixture_id ) "
+                + "FOREIGN KEY( room_id, floor_id, building_id ) REFERENCES Room( id, floor_id, building_id ), "
+                + "FOREIGN KEY( room_fixture_id ) REFERENCES RoomFixtures( id ), "
+                + "PRIMARY KEY( room_id, floor_id, building_id, room_fixture_id ) "
                 + ")";
         return pushQuery(db, query);
     }
@@ -279,9 +279,7 @@ class DatabaseBuilder {
                 + "notes TEXT, "
                 + "cancelled_flag BOOLEAN NOT NULL DEFAULT 0, "
                 + "PRIMARY KEY( room_id, floor_id, building_id, reservation_id, timestamp_in ), "
-                + "FOREIGN KEY( room_id ) REFERENCES Room( id ), "
-                + "FOREIGN KEY( floor_id ) REFERENCES Room( floor_id ), "
-                + "FOREIGN KEY( building_id ) REFERENCES Room( building_id ), "
+                + "FOREIGN KEY( room_id, floor_id, building_id ) REFERENCES Room( id, floor_id, building_id ), "
                 + "FOREIGN KEY( reservation_id ) REFERENCES Reservation( id ) "
                 + ")";
         return pushQuery(db, query);

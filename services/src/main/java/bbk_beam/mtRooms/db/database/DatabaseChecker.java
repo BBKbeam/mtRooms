@@ -488,7 +488,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_Room_has_RoomPrice(IDatabase db) throws DbMissingTableException {
-        final int column_count = 5;
+        final int column_count = 4;
         String query = "PRAGMA table_info( Room_has_RoomPrice )";
         try {
             boolean ok_flag = true;
@@ -500,33 +500,27 @@ class DatabaseChecker {
             }
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
-                if (row.get("name").equals("id")) {
-                    checked++;
-                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "id", "INTEGER", true, null, 1);
-                    if (!checkColumn(expected, row))
-                        ok_flag = false;
-                }
                 if (row.get("name").equals("room_id")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "room_id", "INTEGER", true, null, 0);
+                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "room_id", "INTEGER", true, null, 1);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
                 if (row.get("name").equals("floor_id")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "floor_id", "INTEGER", true, null, 0);
+                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "floor_id", "INTEGER", true, null, 2);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
                 if (row.get("name").equals("building_id")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "building_id", "INTEGER", true, null, 0);
+                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "building_id", "INTEGER", true, null, 3);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
                 if (row.get("name").equals("price_id")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "price_id", "INTEGER", true, null, 0);
+                    ColProperty expected = new ColProperty("Room_has_RoomPrice", "price_id", "INTEGER", true, null, 4);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
@@ -544,7 +538,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_Room_has_RoomFixtures(IDatabase db) throws DbMissingTableException {
-        final int column_count = 2;
+        final int column_count = 4;
         String query = "PRAGMA table_info( Room_has_RoomFixtures )";
         try {
             boolean ok_flag = true;
@@ -562,9 +556,21 @@ class DatabaseChecker {
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
+                if (row.get("name").equals("floor_id")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Room_has_RoomFixtures", "floor_id", "INTEGER", true, null, 2);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("building_id")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Room_has_RoomFixtures", "building_id", "INTEGER", true, null, 3);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
                 if (row.get("name").equals("room_fixture_id")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Room_has_RoomFixtures", "room_fixture_id", "INTEGER", true, null, 2);
+                    ColProperty expected = new ColProperty("Room_has_RoomFixtures", "room_fixture_id", "INTEGER", true, null, 4);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }

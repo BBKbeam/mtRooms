@@ -21,14 +21,19 @@ public class TestDBGenerator {
         DbBootstrapper.init("mtRoomsTestData.db");
         //Open access
         IUserAccDbAccess userAccDbAccess = DbBootstrapper.getUserAccDbAccess();
-        ;
         Token token = new Token("TestGenerator", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
         userAccDbAccess.openSession(token.getSessionId(), token.getExpiry(), SessionType.ADMIN, 1);
-        //Create test data entries
+        //Create test data entries in all tables
         IReservationDbAccess reservationDbAccess = DbBootstrapper.getReservationDbAccess();
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.building);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.floors);
-
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.roomCategories);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.rooms);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.roomFixtures);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.room_has_RoomFixtures);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.roomPrices);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.room_has_RoomPrice);
+        //Close access session
         userAccDbAccess.closeSession(token.getSessionId());
     }
 }

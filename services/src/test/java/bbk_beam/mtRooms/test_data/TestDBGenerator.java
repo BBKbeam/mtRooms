@@ -56,6 +56,13 @@ public class TestDBGenerator {
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.membershipTypes);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.discounts);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.customers);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.reservations);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.room_has_reservation);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.payments);
+        //reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.payment_method);
+        reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.reservation_has_payments);
+
+
         //Close access session
         userAccDbAccess.closeSession(token.getSessionId());
     }

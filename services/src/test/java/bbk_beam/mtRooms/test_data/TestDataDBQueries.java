@@ -14,7 +14,7 @@ public class TestDataDBQueries {
             + "( 10, 10 ), "    //id = 1
             + "( 20, 20 ), "    //id = 2
             + "( 30, 30 ), "    //id = 3
-            + "( 30, 30 ), "    //id = 4
+            + "( 40, 40 ), "    //id = 4
             + "( 50, 50 ), "    //id = 5
             + "( 100, 100 )";   //id = 6
     //RoomPrice table
@@ -31,7 +31,7 @@ public class TestDataDBQueries {
             + "( 70, 2008 ), "  //id = 10
             + "( 85, 2008 ), "  //id = 11
             + "( 110, 2008 )";  //id = 12
-    //RoomFixtures table //TODO
+    //RoomFixtures table
     public static String roomFixtures = "INSERT INTO RoomFixtures( fixed_chairs, catering_space, whiteboard, projector ) VALUES "
             + "( 0, 0, 1, 0 ), " //id = 1 (whiteboard)
             + "( 0, 0, 1, 1 ), " //id = 2 (whiteboard, projector)
@@ -65,9 +65,9 @@ public class TestDataDBQueries {
             + "( 4, 2, 1, 9 ), "    //2008, Medium room 2 @65
             + "( 5, 2, 1, 10 ), "   //2008, Medium room 3 @70
             + "( 6, 2, 1, 10 ), "   //2008, Large room 1 @70
-            + "( 7, 3, 1, 11 ), "   //2008, Large room 1 @85
+            + "( 7, 3, 1, 11 ), "   //2008, Large room 2 @85
             + "( 8, 3, 1, 12 )";    //2008, Theatre @110
-    //Room_has_RoomFixtures table //TODO
+    //Room_has_RoomFixtures table
     public static String room_has_RoomFixtures = "INSERT INTO Room_has_RoomFixtures( room_id, floor_id, building_id, room_fixture_id ) VALUES "
             + "( 1, 1, 1, 6 ), " //Small room 1 with catering space
             + "( 2, 1, 1, 1 ), " //Small room 2 with whiteboard
@@ -104,23 +104,30 @@ public class TestDataDBQueries {
             //Customer id = 3
             + "( 3, \"2017-06-05 10:36:41\", \"Miss\", \"Alice\", \"Beniccio\", "
             + "\"5 Highbury road\", null, \"London\", \"London\", \"UK\", \"N4 6SW\", \"+44 1020 304 050\", \"+44 9080 706 050\", \"aliceb01@othermail.com\" )";
-    //Payment table //TODO
-    public static String payments = "INSERT INTO PaymentMethod( amount, payment_method, timestamp ) VALUES "
-            + "(), "
-            + "()";
-    //Reservation_has_Payment table //TODO
+
+    //Payment table
+    public static String payments = "INSERT INTO Payment( id, amount, payment_method, timestamp ) VALUES "
+            + "(1, 77, 2, \"2018-02-02 19:00:00\" ),"               //@ 85*.90 credit c. Room L2
+            + "(2, 34, 1, \"2018-02-09 09:00:00\" ) ";              //@ 45*.75 cash Room S1
+
+
+    //Reservation_has_Payment table
     public static String reservation_has_payments = "INSERT INTO Reservation_has_Payment( reservation_id, payment_id ) VALUES "
-            + "(), "
-            + "()";
-    //Reservation table //TODO
-    public static String reservations = "INSERT INTO Reservation( created_timestamp, customer_id, discount_id ) VALUES "
-            + "(), "
-            + "()";
-    //Room_has_Reservation table //TODO
+            + "(1, 1), "    // reservation 1 cash
+            + "(2, 2)";     // reservation 2 credit c.
+
+    //Reservation table
+    public static String reservations = "INSERT INTO Reservation(id, created_timestamp, customer_id, discount_id ) VALUES "
+            + "(1, \"2018-02-09 10:00:00\", 3, 3 ),"    // Reservation id = 1
+            + "(2, \"2018-02-09 10:00:00\", 1, 2 ),"    // Reservation id = 2
+            + "(3, \"2018-06-13 15:00:00\", 3, 3 ),"    // Reservation id = 3
+            + "(4, \"2015-01-22 14:00:00\", 2, 1 )";    // Reservation id = 4
+
+    //Room_has_Reservation table
     public static String room_has_reservation = "INSERT INTO Room_has_Reservation( room_id, floor_id, building_id, "
-            + "reservation_id, timestamp_in, timestamp_out, note, cancelled_flag ) VALUES "
-            + "(), "
-            + "(), "
-            + "(), "
-            + "()";
+            + "reservation_id, timestamp_in, timestamp_out, notes, cancelled_flag ) VALUES "
+            + "(7, 3, 1, 1, \"2018-02-09 10:05:00\" , \"2018-02-09 11:00:00\", \"nothing to note\" ,0 ),"   // Room L2, Floor 2,Building 1, Reservation 1, Member 10%
+            + "(1, 1, 1, 2, \"2018-02-09 10:15:00\" , \"2018-02-09 12:30:00\", \"\" , 0 ), "                // Room S1 Floor 0, Building 1, Reservation 2, Student 25%
+            + "(5, 2, 1, 3, \"2018-06-13 15:00:59\" , \"2018-06-13 16:00:00\", \" some text\" , 0 ),"       // Room M3, Floor 1,Building 1, Reservation 3, Member 10%
+            + "(1, 1, 1, 4,\"2015-01-22 14:00:00\" , \"2015-01-22 18:00:00\", \"\", 1 )";                   // Room S1 Floor 0, Building 1, Reservation 4, Non-member 0%
 }

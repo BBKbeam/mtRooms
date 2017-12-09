@@ -2,8 +2,6 @@ package bbk_beam.mtRooms.revenue.revenue;
 
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
-import bbk_beam.mtRooms.revenue.exception.NothingToReportException;
-import eadjlib.datastructure.ObjectTable;
 
 import java.util.Date;
 
@@ -18,29 +16,21 @@ public interface IRevenueReporter {
      */
 
 // TODO invalidPeriodException
-    void reportingPeriod(Date from, Date to) throws InvalidPeriodException;
+    void getRevenueReport(Date from, Date to) throws InvalidPeriodException;
 
     /**
-     * Filter reporting by building, floor, room
+     * Filter by building, floor, room
      *
-     * @param buildingName     filter on building
-     * @param floorDescription filter on floor
-     * @param roomDescription  filter on room
-     * @throws .... when ...
+     * @param buildingId filter on building
+     * @param floorId filter on floor
+     * @param room filter on room
+     * @throws InvalidPeriodException when from higher than to
      */
 
-    void filterBy(Building buildingName, Floor floorDescription, Room roomDescription);
+    void getRevenueReport(Integer buildingId, Date from, Date to) throws InvalidPeriodException;
 
+    void getRevenueReport(Integer buildingId, Integer floorId, Date from, Date to) throws InvalidPeriodException;
 
-    /**
-     * Output  reservations, cancellations, revenue
-     *
-     * @param reservations  filter  number of reservations
-     * @param cancellations filter cancellations
-     * @param revenue       filter by net amount
-     * @throws NothingToReportException when no data exists
-     */
-// TODO NothingToReportException
-    ObjectTable getResults(Integer reservations, Integer cancellations, Integer revenue) throws NothingToReportException;
+    void getRevenueReport(Room room, Date from, Date to) throws InvalidPeriodException;
 
 }

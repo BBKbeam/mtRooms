@@ -47,7 +47,7 @@ public class Database implements IDatabase, IUserAccDb, IReservationDb {
     }
 
     @Override
-    public boolean disconnect() throws SQLException {
+    public boolean disconnect() {
         try {
             if (connection == null) {
                 log.log_Error("Trying to disconnect from null connection.");

@@ -11,7 +11,7 @@ public interface IReservationDb extends IDatabase {
      *
      * @return Success
      */
-    public boolean setupReservationDB();
+    boolean setupReservationDB();
 
     /**
      * Checks the structure of the reservation database
@@ -19,5 +19,5 @@ public interface IReservationDb extends IDatabase {
      * @return Success
      * @throws DbEmptyException when non of the required reservation tables exist
      */
-    public boolean checkReservationDB() throws DbEmptyException;
+    boolean checkReservationDB() throws DbEmptyException;
 }

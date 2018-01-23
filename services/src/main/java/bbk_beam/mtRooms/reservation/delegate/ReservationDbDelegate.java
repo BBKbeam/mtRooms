@@ -10,9 +10,6 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.PaymentType;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
-import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
-import bbk_beam.mtRooms.reservation.exception.InvalidPaymentType;
-import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -158,13 +155,13 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public Integer pay(Token session_token, Reservation reservation, Integer amount, Integer paymentID) throws InvalidReservation, InvalidPaymentType, DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Integer pay(Token session_token, Reservation reservation, Integer amount, Integer paymentID) {
         //TODO
         return null;
     }
 
     @Override
-    public ObjectTable getPayments(Token session_token, Reservation reservation) throws InvalidReservation, SessionExpiredException, SessionInvalidException {
+    public ObjectTable getPayments(Token session_token, Reservation reservation) {
         //TODO
         return null;
     }
@@ -182,29 +179,29 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public void createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void createReservation(Token session_token, Reservation reservation) {
         //TODO
     }
 
     @Override
-    public Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO
-        return null;
-    }
-
-    @Override
-    public ObjectTable getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Integer cancelReservation(Token session_token, Reservation reservation) {
         //TODO
         return null;
     }
 
     @Override
-    public ObjectTable getReservations(Token session_token, Customer customer) throws InvalidCustomer, SessionExpiredException, SessionInvalidException {
+    public ObjectTable getReservation(Token session_token, Integer reservation_id) {
+        //TODO
         return null;
     }
 
     @Override
-    public ObjectTable getRooms(Token session_token, Reservation reservation) throws InvalidReservation, SessionExpiredException, SessionInvalidException {
+    public ObjectTable getReservations(Token session_token, Customer customer) {
+        return null;
+    }
+
+    @Override
+    public ObjectTable getRooms(Token session_token, Reservation reservation) {
         return null;
     }
 }

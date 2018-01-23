@@ -10,7 +10,7 @@ public interface IInvoice {
      * @param customerID CustomerID
      *                   return Customer details
      */
-    public Customer getCustomerAccount(String customerID);
+    Customer getCustomerAccount(String customerID);
 
     /**
      * Gets details of reservation references
@@ -19,6 +19,6 @@ public interface IInvoice {
      * @return customer reservation number
      */
 
-    public Reservation getReservationRef(Integer getReservationID);
+    Reservation getReservationRef(Integer getReservationID);
 
 }

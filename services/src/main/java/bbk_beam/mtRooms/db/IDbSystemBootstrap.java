@@ -12,7 +12,7 @@ public interface IDbSystemBootstrap {
      * @param database File name for the database
      * @throws DbBootstrapException when error occurs during bootstrapping
      */
-    public void init(String database) throws DbBootstrapException;
+    void init(String database) throws DbBootstrapException;
 
     /**
      * Gets the running instance of the UserAccDbAccess
@@ -20,7 +20,7 @@ public interface IDbSystemBootstrap {
      * @return UserAccDbAccess instance
      * @throws DbBootstrapException when bootstrap was not initiated
      */
-    public IUserAccDbAccess getUserAccDbAccess() throws DbBootstrapException;
+    IUserAccDbAccess getUserAccDbAccess() throws DbBootstrapException;
 
     /**
      * Gets the running instance of the ReservationDbAccess
@@ -28,5 +28,5 @@ public interface IDbSystemBootstrap {
      * @return ReservationDbAccess instance
      * @throws DbBootstrapException when bootstrap was not initiated
      */
-    public IReservationDbAccess getReservationDbAccess() throws DbBootstrapException;
+    IReservationDbAccess getReservationDbAccess() throws DbBootstrapException;
 }

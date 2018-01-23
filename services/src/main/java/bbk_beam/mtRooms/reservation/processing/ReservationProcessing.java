@@ -36,7 +36,7 @@ public class ReservationProcessing {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public void createReservation(Token session_token, Reservation reservation) throws FailedDbWrite, SessionExpiredException, SessionInvalidException {
+    public void createReservation(Token session_token, Reservation reservation) {
         //TODO
     }
 
@@ -51,7 +51,7 @@ public class ReservationProcessing {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
+    public Integer cancelReservation(Token session_token, Reservation reservation) {
         //TODO
         return null;
     }
@@ -67,7 +67,7 @@ public class ReservationProcessing {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public Reservation getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Reservation getReservation(Token session_token, Integer reservation_id) {
 
         //TODO
         return null;
@@ -83,7 +83,7 @@ public class ReservationProcessing {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public List<Reservation> getReservations(Token session_token, Customer customer) throws InvalidCustomer, SessionExpiredException, SessionInvalidException {
+    public List<Reservation> getReservations(Token session_token, Customer customer) {
 
         //TODO
         return null;

@@ -9,10 +9,7 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.PaymentType;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
-import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
-import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
-import bbk_beam.mtRooms.reservation.exception.InvalidPaymentType;
-import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
+import bbk_beam.mtRooms.reservation.exception.*;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -194,8 +191,14 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
 
     @Override
     public ObjectTable getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO
-        return null;
+        String query = "SELECT * FROM Reservation WHERE id = " + reservation_id;
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (!table.isEmpty()) {
+            return table;
+        } else {
+            log.log_Error("Reservation [", reservation_id, "] does not exist in records.");
+            throw new InvalidReservation("Reservation [" + reservation_id + "] does not exist in records.");
+        }
     }
 
     @Override
@@ -204,7 +207,57 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public ObjectTable getRooms(Token session_token, Reservation reservation) throws InvalidReservation, SessionExpiredException, SessionInvalidException {
-        return null;
+    public ObjectTable getReservedRooms(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "Room_has_Reservation.room_id, " +
+                "Room_has_Reservation.floor_id, " +
+                "Room_has_Reservation.building_id, " +
+                "Room_has_Reservation.timestamp_in, " +
+                "Room_has_Reservation.timestamp_out, " +
+                "Room_has_Reservation.notes, " +
+                "Room_has_Reservation.cancelled_flag, " +
+                "Room.description, " +
+                "RoomPrice.id AS price_id, " +
+                "RoomPrice.price, " +
+                "RoomPrice.year " +
+                "FROM Room_has_Reservation " +
+                "LEFT OUTER JOIN Room " +
+                "ON Room_has_Reservation.room_id = Room.id " +
+                "AND Room_has_Reservation.floor_id = Room.floor_id " +
+                "AND Room_has_Reservation.building_id = Room.building_id " +
+                "LEFT OUTER JOIN Room_has_RoomPrice " +
+                "ON Room_has_Reservation.room_id = Room_has_RoomPrice.room_id " +
+                "AND Room_has_Reservation.floor_id = Room_has_RoomPrice.floor_id " +
+                "AND Room_has_Reservation.building_id = Room_has_RoomPrice.building_id " +
+                "INNER JOIN RoomPrice " +
+                "ON Room_has_RoomPrice.price_id = RoomPrice.id AND RoomPrice.year " +
+                "IN ( SELECT MAX( RoomPrice.year) FROM RoomPrice WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in) ) " +
+                "WHERE reservation_id = 1";
+        ObjectTable table = null;
+        table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.isEmpty()) {
+            log.log_Error("No rooms were found for Reservation [", reservation.id(), "] in records.");
+        }
+        return table;
+    }
+
+    @Override
+    public ObjectTable getDiscount(Token session_token, Integer discount_id) throws InvalidDiscount, DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT "
+                + "Discount.id, "
+                + "Discount.discount_rate, "
+                + "DiscountCategory.id AS category_id, "
+                + "DiscountCategory.description AS category_description "
+                + "FROM Discount "
+                + "LEFT OUTER JOIN DiscountCategory "
+                + "ON Discount.discount_category = DiscountCategory.id"
+                + "WHERE Discount.id = " + discount_id;
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (!table.isEmpty()) {
+            return table;
+        } else {
+            log.log_Error("Discount [", discount_id, "] does not exist in records.");
+            throw new InvalidDiscount("Discount [" + discount_id + "] does not exist in records.");
+        }
     }
 }

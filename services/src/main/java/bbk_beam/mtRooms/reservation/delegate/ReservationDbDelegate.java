@@ -282,7 +282,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 + "DiscountCategory.description AS category_description "
                 + "FROM Discount "
                 + "LEFT OUTER JOIN DiscountCategory "
-                + "ON Discount.discount_category = DiscountCategory.id"
+                + "ON Discount.discount_category_id = DiscountCategory.id "
                 + "WHERE Discount.id = " + discount_id;
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
         if (table.isEmpty()) {

@@ -8,6 +8,7 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
 import bbk_beam.mtRooms.reservation.exception.InvalidDiscount;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
+import bbk_beam.mtRooms.reservation.exception.InvalidRoomCategory;
 import eadjlib.datastructure.ObjectTable;
 
 public interface IReserve {
@@ -66,12 +67,11 @@ public interface IReserve {
      * @param session_token Session's token
      * @param reservation   Reservation
      * @return List or rooms for the reservation
-     * @throws InvalidReservation      when the reservation has no record of rooms booked
      * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    ObjectTable getReservedRooms(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
+    ObjectTable getReservedRooms(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
 
     /**
@@ -86,4 +86,17 @@ public interface IReserve {
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     public ObjectTable getDiscount(Token session_token, Integer discount_id) throws InvalidDiscount, DbQueryException, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Gets a Room Category's details
+     *
+     * @param session_token Session's token
+     * @param category_id   RoomCategory's ID
+     * @return Details of the room's category from the records
+     * @throws InvalidRoomCategory     when the room category ID does not match any within the records
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    public ObjectTable getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, DbQueryException, SessionExpiredException, SessionInvalidException;
 }

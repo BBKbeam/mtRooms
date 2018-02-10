@@ -92,7 +92,7 @@ public class Reservation {
      *
      * @param roomReservation RoomReservation DTO to add
      */
-    public void addRoom(RoomReservation roomReservation) {
+    public void addRoomReservation(RoomReservation roomReservation) {
         this.rooms_reserved.add(roomReservation);
     }
 
@@ -123,7 +123,6 @@ public class Reservation {
     @Override
     public String toString() {
         return "[" + id + "]={ "
-
                 + "created_timestamp: " + created_timestamp
                 + ", customer_id: " + customer_id
                 + ", discount: " + discount

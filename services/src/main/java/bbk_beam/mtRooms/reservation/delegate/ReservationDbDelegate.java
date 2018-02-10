@@ -9,10 +9,7 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.PaymentType;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
-import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
-import bbk_beam.mtRooms.reservation.exception.InvalidDiscount;
-import bbk_beam.mtRooms.reservation.exception.InvalidPaymentType;
-import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
+import bbk_beam.mtRooms.reservation.exception.*;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -197,68 +194,15 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         String query = "SELECT " +
                 "Reservation.id, " +
                 "Reservation.created_timestamp, " +
-                "Confirmed_Rooms.room_count AS confirmed_count, " +
-                "Confirmed_Rooms.room_subtotal AS confirmed_subtotal, " +
-                "Cancelled_Rooms.room_count AS cancelled_count, " +
-                "Cancelled_Rooms.room_subtotal AS cancelled_subtotal, " +
-                "Payments.pay_count AS payment_count, " +
-                "Payments.credit AS payment_total, " +
-                "Discount.discount_rate " +
+                "Reservation.customer_id, " +
+                "Discount.id, " +
+                "Discount.discount_rate, " +
+                "Discount.discount_category_id, " +
+                "DiscountCategory.description " +
                 "FROM Reservation " +
                 "LEFT OUTER JOIN Discount ON Reservation.discount_id = Discount.id " +
-                "LEFT OUTER JOIN ( " +
-                "SELECT " +
-                "COUNT( * ) AS room_count, " +
-                "SUM( RoomPrice.price ) as room_subtotal " +
-                "FROM Room_has_Reservation " +
-                "INNER JOIN Room " +
-                "ON Room_has_Reservation.room_id = Room.id " +
-                "AND Room_has_Reservation.floor_id = Room.floor_id " +
-                "AND Room_has_Reservation.building_id = Room.building_id " +
-                "INNER JOIN Room_has_RoomPrice " +
-                "ON Room_has_Reservation.room_id = Room_has_RoomPrice.room_id " +
-                "AND Room_has_Reservation.floor_id = Room_has_RoomPrice.floor_id " +
-                "AND Room_has_Reservation.building_id = Room_has_RoomPrice.building_id " +
-                "INNER JOIN RoomPrice " +
-                "ON Room_has_RoomPrice.price_id = RoomPrice.id AND RoomPrice.year " +
-                "IN ( " +
-                "SELECT MAX( RoomPrice.year) " +
-                "FROM RoomPrice " +
-                "WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in) " +
-                ") " +
-                "WHERE Room_has_Reservation.cancelled_flag = 0 AND Room_has_Reservation.reservation_id = " + reservation_id + " " +
-                ") AS Confirmed_Rooms " +
-                "LEFT OUTER JOIN ( " +
-                "SELECT " +
-                "SUM( RoomPrice.price ) AS room_subtotal, " +
-                "SUM( Room_has_Reservation.cancelled_flag ) AS room_count " +
-                "FROM Room_has_Reservation " +
-                "INNER JOIN Room " +
-                "ON Room_has_Reservation.room_id = Room.id " +
-                "AND Room_has_Reservation.floor_id = Room.floor_id " +
-                "AND Room_has_Reservation.building_id = Room.building_id " +
-                "INNER JOIN Room_has_RoomPrice " +
-                "ON Room_has_Reservation.room_id = Room_has_RoomPrice.room_id " +
-                "AND Room_has_Reservation.floor_id = Room_has_RoomPrice.floor_id " +
-                "AND Room_has_Reservation.building_id = Room_has_RoomPrice.building_id " +
-                "INNER JOIN RoomPrice " +
-                "ON Room_has_RoomPrice.price_id = RoomPrice.id AND RoomPrice.year " +
-                "IN ( " +
-                "SELECT MAX( RoomPrice.year) " +
-                "FROM RoomPrice " +
-                "WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in) " +
-                ") " +
-                "WHERE Room_has_Reservation.cancelled_flag = 1 AND Room_has_Reservation.reservation_id = " + reservation_id + " " +
-                ") AS Cancelled_Rooms " +
-                "LEFT OUTER JOIN ( " +
-                "SELECT " +
-                "COUNT( * ) AS pay_count, " +
-                "SUM( Payment.amount ) AS credit " +
-                "FROM Reservation_has_Payment " +
-                "INNER JOIN Payment ON Reservation_has_Payment.payment_id = Payment.id " +
-                "WHERE Reservation_has_Payment.reservation_id = " + reservation_id + " " +
-                ") AS Payments " +
-                "WHERE Reservation.id = 1";
+                "LEFT OUTER JOIN DiscountCategory ON Discount.discount_category_id = DiscountCategory.id " +
+                "WHERE Reservation.id = " + reservation_id;
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
         if (!table.isEmpty()) {
             return table;
@@ -270,7 +214,18 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
 
     @Override
     public ObjectTable getReservations(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query = "SELECT * FROM Reservation WHERE customer_id = " + customer.customerID();
+        String query = "SELECT " +
+                "Reservation.id, " +
+                "Reservation.created_timestamp, " +
+                "Reservation.customer_id, " +
+                "Discount.id, " +
+                "Discount.discount_rate, " +
+                "Discount.discount_category_id, " +
+                "DiscountCategory.description " +
+                "FROM Reservation " +
+                "LEFT OUTER JOIN Discount ON Reservation.discount_id = Discount.id " +
+                "LEFT OUTER JOIN DiscountCategory ON Discount.discount_category_id = DiscountCategory.id " +
+                "WHERE Reservation.customer_id = " + customer.customerID();
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
         if (table.isEmpty()) {
             log.log_Debug("No reservations found for Customer \"", customer.name(), " ", customer.surname(), "\" [", customer.customerID(), "] in records.");
@@ -279,7 +234,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public ObjectTable getReservedRooms(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+    public ObjectTable getReservedRooms(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT " +
                 "Room_has_Reservation.room_id, " +
                 "Room_has_Reservation.floor_id, " +
@@ -289,9 +244,10 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Room_has_Reservation.notes, " +
                 "Room_has_Reservation.cancelled_flag, " +
                 "Room.description, " +
+                "Room.room_category_id, " +
                 "RoomPrice.id AS price_id, " +
                 "RoomPrice.price, " +
-                "RoomPrice.year " +
+                "RoomPrice.year AS price_year " +
                 "FROM Room_has_Reservation " +
                 "LEFT OUTER JOIN Room " +
                 "ON Room_has_Reservation.room_id = Room.id " +
@@ -329,11 +285,26 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 + "ON Discount.discount_category = DiscountCategory.id"
                 + "WHERE Discount.id = " + discount_id;
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
-        if (!table.isEmpty()) {
-            return table;
-        } else {
+        if (table.isEmpty()) {
             log.log_Error("Discount [", discount_id, "] does not exist in records.");
             throw new InvalidDiscount("Discount [" + discount_id + "] does not exist in records.");
         }
+        return table;
+    }
+
+    @Override
+    public ObjectTable getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "RoomCategory.id, " +
+                "RoomCategory.capacity, " +
+                "RoomCategory.dimension " +
+                "FROM RoomCategory " +
+                "WHERE RoomCategory.id = " + category_id;
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.isEmpty()) {
+            log.log_Error("RoomCategory [", category_id, "] does not exist in records.");
+            throw new InvalidRoomCategory("RoomCategory [" + category_id + "] does not exist in records.");
+        }
+        return table;
     }
 }

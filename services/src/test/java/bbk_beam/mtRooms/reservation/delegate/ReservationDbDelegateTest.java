@@ -7,6 +7,7 @@ import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.ReservationDbAccess;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.session.SessionType;
+import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Discount;
 import bbk_beam.mtRooms.reservation.dto.PaymentType;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
@@ -25,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ReservationDbDelegateTest {
     private DbSystemBootstrap db_bootstrapper = new DbSystemBootstrap();
@@ -127,6 +129,10 @@ public class ReservationDbDelegateTest {
 
     @Test
     public void getReservations() throws Exception {
+        Customer mock_customer = mock(Customer.class);
+        when(mock_customer.customerID()).thenReturn(3);
+        ObjectTable table = this.reservationDbDelegate.getReservations(this.token, mock_customer);
+        System.out.println(table);
         Assert.assertTrue(false);
         //TODO
     }
@@ -142,6 +148,16 @@ public class ReservationDbDelegateTest {
 
     @Test
     public void getDiscount() throws Exception {
+        ObjectTable table = this.reservationDbDelegate.getDiscount(this.token, 1);
+        System.out.println(table);
+        Assert.assertTrue(false);
+        //TODO
+    }
+
+    @Test
+    public void getRoomCategory() throws Exception {
+        ObjectTable table = this.reservationDbDelegate.getRoomCategory(this.token, 1);
+        System.out.println(table);
         Assert.assertTrue(false);
         //TODO
     }

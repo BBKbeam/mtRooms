@@ -195,10 +195,10 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Reservation.id, " +
                 "Reservation.created_timestamp, " +
                 "Reservation.customer_id, " +
-                "Discount.id, " +
+                "Discount.id AS discount_id, " +
                 "Discount.discount_rate, " +
                 "Discount.discount_category_id, " +
-                "DiscountCategory.description " +
+                "DiscountCategory.description AS discount_category_description " +
                 "FROM Reservation " +
                 "LEFT OUTER JOIN Discount ON Reservation.discount_id = Discount.id " +
                 "LEFT OUTER JOIN DiscountCategory ON Discount.discount_category_id = DiscountCategory.id " +
@@ -218,10 +218,10 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Reservation.id, " +
                 "Reservation.created_timestamp, " +
                 "Reservation.customer_id, " +
-                "Discount.id, " +
+                "Discount.id AS discount_id, " +
                 "Discount.discount_rate, " +
                 "Discount.discount_category_id, " +
-                "DiscountCategory.description " +
+                "DiscountCategory.description AS discount_category_description " +
                 "FROM Reservation " +
                 "LEFT OUTER JOIN Discount ON Reservation.discount_id = Discount.id " +
                 "LEFT OUTER JOIN DiscountCategory ON Discount.discount_category_id = DiscountCategory.id " +

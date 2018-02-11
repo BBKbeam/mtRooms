@@ -1,5 +1,7 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import java.util.Objects;
+
 public class Discount {
     private Integer id;
     private Double rate;
@@ -69,25 +71,29 @@ public class Discount {
         return category_description;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Discount discount = (Discount) o;
-
-        if (!id.equals(discount.id)) return false;
-        if (!rate.equals(discount.rate)) return false;
-        if (!category_id.equals(discount.category_id)) return false;
-        return category_description.equals(discount.category_description);
+        return Objects.equals(id, discount.id) &&
+                Objects.equals(rate, discount.rate) &&
+                Objects.equals(category_id, discount.category_id) &&
+                Objects.equals(category_description, discount.category_description);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + rate.hashCode();
-        result = 31 * result + category_id.hashCode();
-        result = 31 * result + category_description.hashCode();
-        return result;
+        return Objects.hash(id, rate, category_id, category_description);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + id + "]={ "
+                + "rate: " + rate
+                + ", category_id: " + category_id
+                + ", category_description: " + category_description
+                + " }";
     }
 }

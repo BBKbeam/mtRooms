@@ -9,11 +9,11 @@ import bbk_beam.mtRooms.reservation.delegate.IReserve;
 import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
-import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -81,8 +81,8 @@ public class ReservationProcessing {
             Discount discount = new Discount(
                     (Integer) reservation_row.get("discount_id"),
                     (Double) reservation_row.get("discount_rate"),
-                    (Integer) reservation_row.get("category_id"),
-                    (String) reservation_row.get("category_description")
+                    (Integer) reservation_row.get("discount_category_id"),
+                    (String) reservation_row.get("discount_category_description")
             );
             Reservation reservation = new Reservation(
                     (Integer) reservation_row.get("id"),
@@ -109,7 +109,7 @@ public class ReservationProcessing {
                                 (Integer) reserved_room_row.get("price"),
                                 (Integer) reserved_room_row.get("price_year")
                         ),
-                        (boolean) reserved_room_row.get("cancelled_flag")
+                        ((Integer) reserved_room_row.get("cancelled_flag") != 0)
                 ));
             }
             return reservation;
@@ -125,14 +125,25 @@ public class ReservationProcessing {
      * @param session_token Session's token
      * @param customer      Customer
      * @return List of customer's reservation
-     * @throws InvalidCustomer         when customer is not in records
+     * @throws FailedDbFetch           when a problem was encountered whilst processing the query
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public List<Reservation> getReservations(Token session_token, Customer customer) throws InvalidCustomer, SessionExpiredException, SessionInvalidException {
-
-        //TODO
-        return null;
+    public List<Reservation> getReservations(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable table = this.db_delegate.getReservations(session_token, customer);
+            List<Reservation> reservations = new ArrayList<>();
+            for (int i = 1; i <= table.rowCount(); i++) {
+                Integer reservation_id = table.getInteger(1, i);
+                reservations.add(getReservation(session_token, reservation_id));
+            }
+            return reservations;
+        } catch (DbQueryException e) {
+            log.log_Error("Fetching of reservations for customer \"", customer.name(), " ", customer.surname(), "\" [" + customer.customerID() + "]'s details unsuccessful: SQL Query issue.");
+            throw new FailedDbFetch("Fetching of reservations for customer \"" + customer.name() + " " + customer.surname() + "\" [" + customer.customerID() + "]'s details unsuccessful: SQL Query issue.");
+        } catch (InvalidReservation invalidReservation) {
+            log.log_Error("Fetching of reservations for customer \"", customer.name(), " ", customer.surname(), "\" [" + customer.customerID() + "]'s details unsuccessful: Invalid reservation ID.");
+            throw new FailedDbFetch("Fetching of reservations for customer \"" + customer.name() + " " + customer.surname() + "\" [" + customer.customerID() + "]'s details unsuccessful: Invalid reservation ID.");
+        }
     }
-
 }

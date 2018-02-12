@@ -70,6 +70,8 @@ public class ReservationProcessingTest {
 
     @Test
     public void getReservation() throws Exception {
+        Reservation reservation = reservationProcessing.getReservation(this.token, 1);
+        System.out.println(reservation);
         Assert.assertTrue(false);
         //TODO
     }

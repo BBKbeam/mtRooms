@@ -58,7 +58,26 @@ public class ReservationProcessing {
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     public Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
-        //TODO
+        //TODO iterate through all reserved rooms and set cancelled flag to false
+        //TODO get and sum prices for all reserved rooms then return total
+        return null;
+    }
+
+    /**
+     * Mark the record of a room inside a reservation as cancelled
+     *
+     * @param session_token    Session's token
+     * @param reservation      Reservation DTO
+     * @param room_reservation RoomReservation DTO
+     * @return Balance to reimburse on reservation
+     * @throws InvalidReservation      when Reservation cannot be validated with the records
+     * @throws FailedDbWrite           when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    public Integer cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
+        //TODO set cancelled flag to false on reserved room to cancel
+        //TODO return price for reserved room
         return null;
     }
 
@@ -114,8 +133,8 @@ public class ReservationProcessing {
             }
             return reservation;
         } catch (DbQueryException e) {
-            log.log_Error("Fetching of Reservation [", reservation_id, "]'s details unsuccessful: SQL Query issue.");
-            throw new FailedDbFetch("Fetching of Reservation [" + reservation_id + "]'s details unsuccessful: SQL Query issue.");
+            log.log_Error("Fetching of Reservation [", reservation_id, "]'s details unsuccessful: SQL Query issue.", e);
+            throw new FailedDbFetch("Fetching of Reservation [" + reservation_id + "]'s details unsuccessful: SQL Query issue.", e);
         }
     }
 
@@ -140,10 +159,10 @@ public class ReservationProcessing {
             return reservations;
         } catch (DbQueryException e) {
             log.log_Error("Fetching of reservations for customer \"", customer.name(), " ", customer.surname(), "\" [" + customer.customerID() + "]'s details unsuccessful: SQL Query issue.");
-            throw new FailedDbFetch("Fetching of reservations for customer \"" + customer.name() + " " + customer.surname() + "\" [" + customer.customerID() + "]'s details unsuccessful: SQL Query issue.");
-        } catch (InvalidReservation invalidReservation) {
+            throw new FailedDbFetch("Fetching of reservations for customer \"" + customer.name() + " " + customer.surname() + "\" [" + customer.customerID() + "]'s details unsuccessful: SQL Query issue.", e);
+        } catch (InvalidReservation e) {
             log.log_Error("Fetching of reservations for customer \"", customer.name(), " ", customer.surname(), "\" [" + customer.customerID() + "]'s details unsuccessful: Invalid reservation ID.");
-            throw new FailedDbFetch("Fetching of reservations for customer \"" + customer.name() + " " + customer.surname() + "\" [" + customer.customerID() + "]'s details unsuccessful: Invalid reservation ID.");
+            throw new FailedDbFetch("Fetching of reservations for customer \"" + customer.name() + " " + customer.surname() + "\" [" + customer.customerID() + "]'s details unsuccessful: Invalid reservation ID.", e);
         }
     }
 }

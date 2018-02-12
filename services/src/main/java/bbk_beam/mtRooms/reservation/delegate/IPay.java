@@ -35,11 +35,11 @@ public interface IPay {
      * @param session_token Session's token
      * @param reservation   Reservation
      * @return List of all payments
-     * @throws InvalidReservation      when Reservation cannot be validated with the records
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    ObjectTable getPayments(Token session_token, Reservation reservation) throws InvalidReservation, SessionExpiredException, SessionInvalidException;
+    ObjectTable getPayments(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the available payment types from records

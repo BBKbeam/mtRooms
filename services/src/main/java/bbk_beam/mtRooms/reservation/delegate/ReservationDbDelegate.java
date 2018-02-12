@@ -161,9 +161,22 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public ObjectTable getPayments(Token session_token, Reservation reservation) throws InvalidReservation, SessionExpiredException, SessionInvalidException {
-        //TODO
-        return null;
+    public ObjectTable getPayments(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "Payment.id, " +
+                "Payment.amount, " +
+                "Payment.payment_method AS method_id, " +
+                "PaymentMethod.description AS method_description, " +
+                "Payment.timestamp " +
+                "FROM Reservation_has_Payment " +
+                "LEFT OUTER JOIN Payment ON Reservation_has_Payment.payment_id = Payment.id " +
+                "LEFT OUTER JOIN PaymentMethod ON Payment.payment_method = PaymentMethod.id " +
+                "WHERE Reservation_has_Payment.reservation_id = " + reservation.id();
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.isEmpty()) {
+            log.log_Debug("No payments found for reservation [", reservation.id(), "] in records.");
+        }
+        return table;
     }
 
     @Override

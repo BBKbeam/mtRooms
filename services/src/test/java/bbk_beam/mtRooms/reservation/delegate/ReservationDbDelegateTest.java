@@ -102,6 +102,14 @@ public class ReservationDbDelegateTest {
     }
 
     @Test
+    public void getPayments() throws Exception {
+        Reservation mock_reservation = mock(Reservation.class);
+        when(mock_reservation.id()).thenReturn(1);
+        ObjectTable table = this.reservationDbDelegate.getPayments(this.token, mock_reservation);
+        System.out.println(table);
+    }
+
+    @Test
     public void getPaymentTypes() throws Exception {
         List<PaymentType> list = this.reservationDbDelegate.getPaymentTypes(this.token);
         Assert.assertEquals(3, list.size());

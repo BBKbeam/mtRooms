@@ -9,7 +9,6 @@ import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Discount;
-import bbk_beam.mtRooms.reservation.dto.PaymentType;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import eadjlib.datastructure.ObjectTable;
@@ -23,7 +22,6 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -111,8 +109,8 @@ public class ReservationDbDelegateTest {
 
     @Test
     public void getPaymentTypes() throws Exception {
-        List<PaymentType> list = this.reservationDbDelegate.getPaymentTypes(this.token);
-        Assert.assertEquals(3, list.size());
+        ObjectTable table = this.reservationDbDelegate.getPaymentTypes(this.token);
+        Assert.assertEquals(3, table.rowCount());
     }
 
     @Test

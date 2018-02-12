@@ -6,6 +6,7 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
+import bbk_beam.mtRooms.reservation.dto.RoomReservation;
 import bbk_beam.mtRooms.reservation.exception.InvalidDiscount;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.reservation.exception.InvalidRoomCategory;
@@ -24,7 +25,7 @@ public interface IReserve {
     void createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
-     * Deletes the record of a reservation
+     * Cancels an entire reservation in the records
      *
      * @param session_token Session's token
      * @param reservation   Reservation DTO
@@ -35,6 +36,20 @@ public interface IReserve {
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Cancels a reserved room inside a reservation from the records
+     *
+     * @param session_token Session's token
+     * @param reservation   Reservation DTO
+     * @param reserved_room RoomReservation DTO
+     * @return Price of the reserved room
+     * @throws InvalidReservation      when Reservation cannot be validated with the records
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    Integer cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation reserved_room) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets a reservation's details

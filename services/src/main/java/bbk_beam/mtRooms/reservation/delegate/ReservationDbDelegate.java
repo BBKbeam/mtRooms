@@ -8,6 +8,7 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
+import bbk_beam.mtRooms.reservation.dto.RoomReservation;
 import bbk_beam.mtRooms.reservation.exception.*;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
@@ -191,6 +192,12 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
 
     @Override
     public Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public Integer cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation reserved_room) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
         //TODO
         return null;
     }

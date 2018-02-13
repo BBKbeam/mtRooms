@@ -187,7 +187,49 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
 
     @Override
     public void createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO
+        String query1 = "INSERT INTO Reservation " +
+                "( created_timestamp, customer_id, discount_id ) " +
+                "VALUES ( " +
+                "\"" + TimestampConverter.getUTCTimestampString(reservation.createdTimestamp()) + "\", " +
+                reservation.customerID() + ", " +
+                reservation.discount().id() + " )";
+        if (!this.db_access.pushToDB(session_token.getSessionId(), query1)) {
+            log.log_Error("Could not add Reservation to records: ", reservation);
+            throw new DbQueryException("Could not add Reservation to records: " + reservation);
+        }
+        String query2 = "SELECT id FROM Reservation " +
+                "WHERE created_timestamp = \"" + TimestampConverter.getUTCTimestampString(reservation.createdTimestamp()) + "\"" +
+                " AND customer_id = " + reservation.customerID() +
+                " AND discount_id = " + reservation.discount().id();
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query2);
+        if (!table.isEmpty()) {
+            Integer reservation_id = table.getInteger(1, 1);
+            for (RoomReservation reserved_room : reservation.rooms()) {
+                createRoomReservation(session_token, reservation_id, reserved_room);
+            }
+        } else {
+            log.log_Error("Could not retrieve ID of created Reservation from records: ", reservation);
+            throw new DbQueryException("Could not retrieve ID of created Reservation from records: " + reservation);
+        }
+    }
+
+    @Override
+    public void createRoomReservation(Token session_token, Integer reservation_id, RoomReservation room_reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "INSERT INTO Room_has_Reservation " +
+                "( room_id, floor_id, building_id, reservation_id, timestamp_in, timestamp_out, notes ) " +
+                "VALUES ( " +
+                room_reservation.room().id() + ", " +
+                room_reservation.room().floorID() + ", " +
+                room_reservation.room().buildingID() + ", " +
+                reservation_id + ", " +
+                "\"" + TimestampConverter.getUTCTimestampString(room_reservation.reservationStart()) + "\", " +
+                "\"" + TimestampConverter.getUTCTimestampString(room_reservation.reservationEnd()) + "\", " +
+                (room_reservation.note().isEmpty() ? null : "\"" + room_reservation.note() + "\" ") +
+                ")";
+        if (!this.db_access.pushToDB(session_token.getSessionId(), query)) {
+            log.log_Error("Could not add RoomReservation to records: ", room_reservation);
+            throw new DbQueryException("Could not add RoomReservation to records: " + room_reservation);
+        }
     }
 
     @Override

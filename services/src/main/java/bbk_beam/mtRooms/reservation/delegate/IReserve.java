@@ -25,6 +25,18 @@ public interface IReserve {
     void createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
+     * Creates a room reservation in the records
+     *
+     * @param session_token    Session's token
+     * @param reservation_id   Reservation ID
+     * @param room_reservation RoomReservation DTO
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     */
+    void createRoomReservation(Token session_token, Integer reservation_id, RoomReservation room_reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+
+    /**
      * Cancels an entire reservation in the records
      *
      * @param session_token Session's token

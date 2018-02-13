@@ -1,15 +1,10 @@
 package bbk_beam.mtRooms.reservation.delegate;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
-import bbk_beam.mtRooms.db.DbSystemBootstrap;
-import bbk_beam.mtRooms.db.IReservationDbAccess;
-import bbk_beam.mtRooms.db.IUserAccDbAccess;
-import bbk_beam.mtRooms.db.ReservationDbAccess;
+import bbk_beam.mtRooms.db.*;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.session.SessionType;
-import bbk_beam.mtRooms.reservation.dto.Customer;
-import bbk_beam.mtRooms.reservation.dto.Discount;
-import bbk_beam.mtRooms.reservation.dto.Reservation;
+import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import eadjlib.datastructure.ObjectTable;
 import org.junit.After;
@@ -22,6 +17,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashMap;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -31,7 +27,7 @@ public class ReservationDbDelegateTest {
     private IReservationDbAccess reservationDbAccess;
     private IReservationDbAccess mock_reservationDbAccess;
     private IUserAccDbAccess userAccDbAccess;
-    Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+    private Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
     private ReservationDbDelegate reservationDbDelegate;
 
     @Before
@@ -115,8 +111,69 @@ public class ReservationDbDelegateTest {
 
     @Test
     public void createReservation() throws Exception {
-        Assert.assertTrue(false);
-        //TODO
+        Room room = new Room(8, 3, 1, 6);
+        Discount discount = new Discount(1, .0, 1, "None");
+        Date reservation_start = new Date();
+        Date reservation_end = Date.from(Instant.now().plus(2, ChronoUnit.HOURS));
+        String note = "Note 1";
+        RoomPrice mock_price = mock(RoomPrice.class);
+        RoomReservation roomReservation = new RoomReservation(
+                room,
+                reservation_start,
+                reservation_end,
+                note,
+                mock_price,
+                false
+        );
+        Reservation reservation = new Reservation(
+                -1,
+                reservation_start,
+                1,
+                discount
+        );
+        reservation.addRoomReservation(roomReservation);
+        //Testing
+        this.reservationDbDelegate.createReservation(this.token, reservation);
+        ObjectTable table = this.reservationDbAccess.pullFromDB(
+                this.token.getSessionId(),
+                "SELECT * FROM Reservation " +
+                        "LEFT OUTER JOIN Room_has_Reservation ON Reservation.id = Room_has_Reservation.reservation_id " +
+                        "WHERE created_timestamp = \"" + TimestampConverter.getUTCTimestampString(reservation_start) + "\" " +
+                        "AND customer_id = 1"
+        );
+        Assert.assertEquals(1, table.rowCount());
+        HashMap<String, Object> row = table.getRow(1);
+        Assert.assertEquals(5, row.get("id"));
+        Assert.assertEquals(TimestampConverter.getUTCTimestampString(reservation_start), row.get("created_timestamp"));
+        Assert.assertEquals(1, row.get("customer_id"));
+        Assert.assertEquals(1, row.get("discount_id"));
+        Assert.assertEquals(8, row.get("room_id"));
+        Assert.assertEquals(3, row.get("floor_id"));
+        Assert.assertEquals(1, row.get("building_id"));
+        Assert.assertEquals(TimestampConverter.getUTCTimestampString(reservation_start), row.get("timestamp_in"));
+        Assert.assertEquals(TimestampConverter.getUTCTimestampString(reservation_end), row.get("timestamp_out"));
+        Assert.assertEquals("Note 1", row.get("notes"));
+        Assert.assertEquals(0, row.get("cancelled_flag"));
+    }
+
+    @Test
+    public void createRoomReservation() throws Exception {
+        String check_query = "SELECT * FROM Room_has_Reservation WHERE room_id = 8 AND floor_id = 3 AND building_id = 1 AND reservation_id = 4";
+        Assert.assertFalse(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+
+        Room room = new Room(8, 3, 1, 6);
+        RoomReservation mock_roomReservation = mock(RoomReservation.class);
+        Date reservation_start = new Date();
+        Date reservation_end = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
+        String note = "New booking of a theatre room.";
+
+        when(mock_roomReservation.room()).thenReturn(room);
+        when(mock_roomReservation.reservationStart()).thenReturn(reservation_start);
+        when(mock_roomReservation.reservationEnd()).thenReturn(reservation_end);
+        when(mock_roomReservation.note()).thenReturn(note);
+
+        this.reservationDbDelegate.createRoomReservation(this.token, 4, mock_roomReservation);
+        Assert.assertTrue(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
     }
 
     @Test

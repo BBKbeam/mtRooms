@@ -238,9 +238,26 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO
-        return null;
+    public Integer cancelReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query1 = "UPDATE " +
+                "Room_has_Reservation " +
+                "SET cancelled_flag = 1 " +
+                "WHERE reservation_id = " + reservation.id();
+        if (!this.db_access.pushToDB(session_token.getSessionId(), query1)) {
+            log.log_Error("Could not cancel ReservedRooms in Reservation [", reservation.id(), "].");
+            throw new DbQueryException("Could not cancel ReservedRooms in Reservation [" + reservation.id() + "].");
+        }
+        String query2 = "SELECT " +
+                "SUM( Payment.amount ) AS total_paid " +
+                "FROM Reservation_has_Payment " +
+                "INNER JOIN Payment ON Reservation_has_Payment.payment_id = Payment.id " +
+                "WHERE Reservation_has_Payment.reservation_id = " + reservation.id();
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query2);
+        if (table.isEmpty()) {
+            log.log_Error("Could not get total paid on Reservation [", reservation.id(), "].");
+            throw new DbQueryException("Could not get total paid on Reservation [" + reservation.id() + "].");
+        }
+        return table.getInteger(1, 1);
     }
 
     @Override

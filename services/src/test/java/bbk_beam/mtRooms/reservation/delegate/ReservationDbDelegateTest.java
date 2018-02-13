@@ -182,8 +182,18 @@ public class ReservationDbDelegateTest {
 
     @Test
     public void cancelReservation() throws Exception {
-        Assert.assertTrue(false);
-        //TODO
+        Reservation mock_reservation = mock(Reservation.class);
+        when(mock_reservation.id()).thenReturn(1);
+        //Test
+        Assert.assertEquals(new Integer(77), this.reservationDbDelegate.cancelReservation(this.token, mock_reservation));
+        //Check cancelled_flag has been set for all room reserved
+        String query = "SELECT cancelled_flag FROM Room_has_Reservation WHERE reservation_id = 1";
+        ObjectTable table = this.reservationDbAccess.pullFromDB(this.token.getSessionId(), query);
+        Assert.assertFalse(table.isEmpty());
+        for (int i = 1; i <= table.rowCount(); i++) {
+            HashMap<String, Object> row = table.getRow(i);
+            Assert.assertEquals(1, row.get("cancelled_flag"));
+        }
     }
 
     @Test

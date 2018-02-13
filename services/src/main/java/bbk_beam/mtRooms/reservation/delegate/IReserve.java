@@ -42,12 +42,11 @@ public interface IReserve {
      * @param session_token Session's token
      * @param reservation   Reservation DTO
      * @return Balance to reimburse on reservation
-     * @throws InvalidReservation      when Reservation cannot be validated with the records
      * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
+    Integer cancelReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Cancels a reserved room inside a reservation from the records

@@ -28,7 +28,7 @@ public class ReservationProcessingTest {
     private DbSystemBootstrap db_bootstrapper = new DbSystemBootstrap();
     private IReservationDbAccess reservationDbAccess;
     private IUserAccDbAccess userAccDbAccess;
-    Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+    private Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
     private ReservationDbDelegate reservationDbDelegate;
     private ReservationProcessing reservationProcessing;
     private Customer mock_customer = mock(Customer.class);

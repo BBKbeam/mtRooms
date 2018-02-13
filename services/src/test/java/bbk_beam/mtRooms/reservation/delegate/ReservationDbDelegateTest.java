@@ -133,7 +133,10 @@ public class ReservationDbDelegateTest {
         );
         reservation.addRoomReservation(roomReservation);
         //Testing
+        Assert.assertTrue(reservation.id() < 1);
         this.reservationDbDelegate.createReservation(this.token, reservation);
+        Assert.assertTrue(reservation.id() > 0);
+
         ObjectTable table = this.reservationDbAccess.pullFromDB(
                 this.token.getSessionId(),
                 "SELECT * FROM Reservation " +
@@ -141,6 +144,7 @@ public class ReservationDbDelegateTest {
                         "WHERE created_timestamp = \"" + TimestampConverter.getUTCTimestampString(reservation_start) + "\" " +
                         "AND customer_id = 1"
         );
+
         Assert.assertEquals(1, table.rowCount());
         HashMap<String, Object> row = table.getRow(1);
         Assert.assertEquals(5, row.get("id"));

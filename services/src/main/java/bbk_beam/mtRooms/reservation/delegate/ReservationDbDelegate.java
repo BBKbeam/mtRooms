@@ -204,6 +204,11 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query2);
         if (!table.isEmpty()) {
             Integer reservation_id = table.getInteger(1, 1);
+            try {
+                reservation.setID(reservation_id);
+            } catch (InvalidOperation invalidOperation) {
+                log.log_Error("Failed to apply new ID [", reservation_id, "] to Reservation object.");
+            }
             for (RoomReservation reserved_room : reservation.rooms()) {
                 createRoomReservation(session_token, reservation_id, reserved_room);
             }

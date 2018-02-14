@@ -261,9 +261,47 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public Integer cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation reserved_room) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO
-        return null;
+    public Integer cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query1 = "UPDATE " +
+                "Room_has_Reservation " +
+                "SET cancelled_flag = 1 " +
+                "WHERE room_id = " + reserved_room.room().id() +
+                " AND floor_id = " + reserved_room.room().floorID() +
+                " AND building_id = " + reserved_room.room().buildingID() +
+                " AND reservation_id = " + reservation_id +
+                " AND timestamp_in = \"" + TimestampConverter.getUTCTimestampString(reserved_room.reservationStart()) + "\"";
+        if (!this.db_access.pushToDB(session_token.getSessionId(), query1)) {
+            log.log_Error("Could not cancel RoomReservation: ", reserved_room);
+            throw new DbQueryException("Could not cancel RoomReservation: : " + reserved_room);
+        }
+        String query2 = "SELECT " +
+                "RoomPrice.price AS room_price " +
+                "FROM Room_has_Reservation " +
+                "LEFT OUTER JOIN Room " +
+                "ON Room_has_Reservation.room_id = Room.id" +
+                " AND Room_has_Reservation.floor_id = Room.floor_id" +
+                " AND Room_has_Reservation.building_id = Room.building_id " +
+                "LEFT OUTER JOIN Room_has_RoomPrice " +
+                "ON Room_has_Reservation.room_id = Room_has_RoomPrice.room_id" +
+                " AND Room_has_Reservation.floor_id = Room_has_RoomPrice.floor_id" +
+                " AND Room_has_Reservation.building_id = Room_has_RoomPrice.building_id " +
+                "INNER JOIN RoomPrice " +
+                "ON Room_has_RoomPrice.price_id = RoomPrice.id AND RoomPrice.year " +
+                "IN (" +
+                " SELECT MAX( RoomPrice.year)" +
+                " FROM RoomPrice" +
+                " WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in) " +
+                ") " +
+                "WHERE reservation_id = " + reservation_id +
+                " AND Room.id = " + reserved_room.room().id() +
+                " AND Room.floor_id = " + reserved_room.room().floorID() +
+                " AND Room.building_id = " + reserved_room.room().buildingID();
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query2);
+        if (table.isEmpty()) {
+            log.log_Error("Could not get cost on RoomReservation:  ", reserved_room);
+            throw new DbQueryException("Could not get cost on RoomReservation:  " + reserved_room);
+        }
+        return table.getInteger(1, 1);
     }
 
     @Override
@@ -327,19 +365,19 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "RoomPrice.year AS price_year " +
                 "FROM Room_has_Reservation " +
                 "LEFT OUTER JOIN Room " +
-                "ON Room_has_Reservation.room_id = Room.id " +
-                "AND Room_has_Reservation.floor_id = Room.floor_id " +
-                "AND Room_has_Reservation.building_id = Room.building_id " +
+                "ON Room_has_Reservation.room_id = Room.id" +
+                " AND Room_has_Reservation.floor_id = Room.floor_id" +
+                " AND Room_has_Reservation.building_id = Room.building_id " +
                 "LEFT OUTER JOIN Room_has_RoomPrice " +
-                "ON Room_has_Reservation.room_id = Room_has_RoomPrice.room_id " +
-                "AND Room_has_Reservation.floor_id = Room_has_RoomPrice.floor_id " +
-                "AND Room_has_Reservation.building_id = Room_has_RoomPrice.building_id " +
+                "ON Room_has_Reservation.room_id = Room_has_RoomPrice.room_id" +
+                " AND Room_has_Reservation.floor_id = Room_has_RoomPrice.floor_id" +
+                " AND Room_has_Reservation.building_id = Room_has_RoomPrice.building_id " +
                 "INNER JOIN RoomPrice " +
                 "ON Room_has_RoomPrice.price_id = RoomPrice.id AND RoomPrice.year " +
                 "IN ( " +
-                "SELECT MAX( RoomPrice.year) " +
-                "FROM RoomPrice " +
-                "WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in) " +
+                " SELECT MAX( RoomPrice.year)" +
+                " FROM RoomPrice" +
+                " WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in)" +
                 ") " +
                 "WHERE reservation_id = 1";
         ObjectTable table = null;

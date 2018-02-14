@@ -51,16 +51,16 @@ public interface IReserve {
     /**
      * Cancels a reserved room inside a reservation from the records
      *
-     * @param session_token Session's token
-     * @param reservation   Reservation DTO
-     * @param reserved_room RoomReservation DTO
+     * @param session_token  Session's token
+     * @param reservation_id Reservation ID
+     * @param reserved_room  RoomReservation DTO
      * @return Price of the reserved room
      * @throws InvalidReservation      when Reservation cannot be validated with the records
      * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    Integer cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation reserved_room) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
+    Integer cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets a reservation's details

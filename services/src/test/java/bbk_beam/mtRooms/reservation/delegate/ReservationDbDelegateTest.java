@@ -197,6 +197,29 @@ public class ReservationDbDelegateTest {
     }
 
     @Test
+    public void cancelReservedRoom() throws Exception {
+        RoomReservation mock_roomReservation = mock(RoomReservation.class);
+        Room mock_room = mock(Room.class);
+        when(mock_roomReservation.room()).thenReturn(mock_room);
+        when(mock_roomReservation.reservationStart()).thenReturn(TimestampConverter.getDateObject("2018-02-09 10:05:00"));
+        when(mock_room.id()).thenReturn(7);
+        when(mock_room.floorID()).thenReturn(3);
+        when(mock_room.buildingID()).thenReturn(1);
+
+        String check_query = "SELECT cancelled_flag FROM Room_has_Reservation " +
+                "WHERE reservation_id = 1" +
+                " AND room_id = 7" +
+                " AND floor_id = 3" +
+                " AND building_id = 1" +
+                " AND timestamp_in = \"2018-02-09 10:05:00\"" +
+                " AND cancelled_flag = 1";
+        //Test
+        Assert.assertFalse(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+        Assert.assertEquals(new Integer(85), this.reservationDbDelegate.cancelReservedRoom(this.token, 1, mock_roomReservation));
+        Assert.assertTrue(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+    }
+
+    @Test
     public void getReservation() throws Exception {
         ObjectTable table = this.reservationDbDelegate.getReservation(this.token, 1);
         System.out.println(table);

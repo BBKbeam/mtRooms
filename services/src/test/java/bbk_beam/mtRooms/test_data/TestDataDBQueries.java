@@ -106,9 +106,9 @@ public class TestDataDBQueries {
             + "\"5 Highbury road\", null, \"London\", \"London\", \"UK\", \"N4 6SW\", \"+44 1020 304 050\", \"+44 9080 706 050\", \"aliceb01@othermail.com\" )";
 
     //Payment table
-    public static String payments = "INSERT INTO Payment( id, amount, payment_method, timestamp ) VALUES "
-            + "(1, 77, 2, \"2018-02-02 19:00:00\" ),"               //@ 85*.90 credit c. Room L2
-            + "(2, 34, 1, \"2018-02-09 09:00:00\" ) ";              //@ 45*.75 cash Room S1
+    public static String payments = "INSERT INTO Payment( id, hash_id, amount, payment_method, timestamp, note ) VALUES "
+            + "(1, \"TestHashID0000001\", 77, 2, \"2018-02-02 19:00:00\", \"85*.90 credit c. Room L2\" ), "  //@ 85*.90 credit c. Room L2
+            + "(2, \"TestHashID0000002\", 34, 1, \"2018-02-09 09:00:00\", \"45*.75 cash Room S1\" ) ";      //@ 45*.75 cash Room S1
 
 
     //Reservation_has_Payment table

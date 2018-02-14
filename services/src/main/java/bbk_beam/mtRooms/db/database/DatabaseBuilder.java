@@ -184,9 +184,11 @@ class DatabaseBuilder {
     private boolean buildTable_Payment(IDatabase db) {
         String query = "CREATE TABLE Payment( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+                + "hash_id TEXT NOT NULL UNIQUE, "
                 + "amount INTEGER NOT NULL, "
                 + "payment_method INTEGER NOT NULL, "
                 + "timestamp TIMESTAMP NOT NULL, "
+                + "note TEXT, "
                 + "FOREIGN KEY( payment_method ) REFERENCES PaymentMethod( id ) "
                 + ")";
         return pushQuery(db, query);

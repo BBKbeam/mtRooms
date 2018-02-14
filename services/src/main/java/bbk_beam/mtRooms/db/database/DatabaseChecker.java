@@ -626,7 +626,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_Payment(IDatabase db) throws DbMissingTableException {
-        final int column_count = 4;
+        final int column_count = 6;
         String query = "PRAGMA table_info( Payment )";
         try {
             boolean ok_flag = true;
@@ -641,6 +641,12 @@ class DatabaseChecker {
                 if (row.get("name").equals("id")) {
                     checked++;
                     ColProperty expected = new ColProperty("Payment", "id", "INTEGER", true, null, 1);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("hash_id")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Payment", "hash_id", "TEXT", true, null, 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
@@ -659,6 +665,12 @@ class DatabaseChecker {
                 if (row.get("name").equals("timestamp")) {
                     checked++;
                     ColProperty expected = new ColProperty("Payment", "timestamp", "TIMESTAMP", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("note")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Payment", "note", "TEXT", false, null, 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }

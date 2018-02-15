@@ -92,7 +92,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     @Override
     public ObjectTable findCustomer(Token session_token, String surname) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT "
-                + "id, name, surname "
+                + "id, title, name, surname "
                 + "FROM Customer "
                 + "WHERE surname = \"" + surname + "\"";
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
@@ -131,13 +131,16 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 + (customer.phone2() == null ? null : "\"" + customer.phone2() + "\"") + ", "
                 + "\"" + customer.email() + "\" "
                 + ")";
+        if (!this.db_access.pushToDB(session_token.getSessionId(), query)) {
+            log.log_Error("Could not add customer: ", customer);
+            throw new DbQueryException("Could not add customer to record.");
+        }
         //Check if update was made
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), "SELECT CHANGES()");
         if (table.getInteger(1, 1) == 0) {
-            log.log_Error("Could add customer: ", customer);
-            throw new FailedDbWrite("Could not add customer to record.");
+            log.log_Error("Customer was not added: ", customer);
+            throw new FailedDbWrite("Customer was not added to record.");
         }
-        this.db_access.pushToDB(session_token.getSessionId(), query);
     }
 
     @Override

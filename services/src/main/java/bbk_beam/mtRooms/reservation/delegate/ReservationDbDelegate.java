@@ -407,7 +407,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 " FROM RoomPrice" +
                 " WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in)" +
                 ") " +
-                "WHERE reservation_id = 1";
+                "WHERE reservation_id = " + reservation.id();
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
         if (table.isEmpty()) {
             log.log_Debug("No rooms were found for Reservation [", reservation.id(), "] in records.");

@@ -105,7 +105,7 @@ public class ReservationDbDelegateTest {
 
     @Test
     public void getPaymentTypes() throws Exception {
-        ObjectTable table = this.reservationDbDelegate.getPaymentTypes(this.token);
+        ObjectTable table = this.reservationDbDelegate.getPaymentMethods(this.token);
         Assert.assertEquals(3, table.rowCount());
     }
 

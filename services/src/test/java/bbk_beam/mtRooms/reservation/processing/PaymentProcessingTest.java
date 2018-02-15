@@ -7,7 +7,7 @@ import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
 import bbk_beam.mtRooms.reservation.dto.Payment;
-import bbk_beam.mtRooms.reservation.dto.PaymentType;
+import bbk_beam.mtRooms.reservation.dto.PaymentMethod;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import org.junit.After;
@@ -70,8 +70,8 @@ public class PaymentProcessingTest {
 
     @Test
     public void getPaymentTypes() throws Exception {
-        List<PaymentType> paymentTypes = paymentProcessing.getPaymentTypes(this.token);
-        for (PaymentType t : paymentTypes) {
+        List<PaymentMethod> paymentMethods = paymentProcessing.getPaymentMethods(this.token);
+        for (PaymentMethod t : paymentMethods) {
             System.out.println(t);
         }
         Assert.assertTrue(false);

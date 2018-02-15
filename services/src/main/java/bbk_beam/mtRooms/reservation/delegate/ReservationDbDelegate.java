@@ -7,6 +7,7 @@ import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
+import bbk_beam.mtRooms.reservation.dto.Payment;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
 import bbk_beam.mtRooms.reservation.exception.*;
@@ -151,19 +152,46 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public Integer pay(Token session_token, Reservation reservation, Integer amount, Integer paymentID) throws InvalidReservation, InvalidPaymentType, DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO
-        return null;
+    public void pay(Token session_token, Reservation reservation, Payment payment) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        //Adding Payment entry
+        String query1 = "INSERT INTO Payment( hash_id, amount, payment_method, timestamp, note ) VALUES ( " +
+                "\"" + payment.hashID() + "\", " +
+                payment.amount() + ", " +
+                payment.paymentMethod().id() + ", " +
+                "\"" + TimestampConverter.getUTCTimestampString(payment.timestamp()) + "\", " +
+                (payment.note().isEmpty() ? null : "\"" + payment.note() + "\" ") +
+                ")";
+        if (!this.db_access.pushToDB(session_token.getSessionId(), query1)) {
+            log.log_Error("Could not add payment (method=", payment.paymentMethod(), ", amount=", payment.amount(), ") for Reservation: ", reservation);
+            throw new DbQueryException("Could not add payment (method=" + payment.paymentMethod() + ", amount=" + payment.amount() + ") for Reservation: " + reservation);
+        }
+        //Getting the row_id for Payment added
+        String query2 = "SELECT id FROM Payment WHERE hash_id = \"" + payment.hashID() + "\"";
+        ObjectTable row_id_table = this.db_access.pullFromDB(session_token.getSessionId(), query2);
+        if (row_id_table.isEmpty()) {
+            log.log_Fatal("Could not get the ID for the added Payment (hash_id=", payment.hashID(), ") for Reservation [", reservation.id(), "] in records.");
+            throw new DbQueryException("Could not get the ID for the added Payment (hash_id=" + payment.hashID() + ") for Reservation [" + reservation.id() + "] in records.");
+        }
+        Integer payment_id = row_id_table.getInteger(1, 1);
+        //Adding entry to Reservation_has_Payment for the Payment
+        String query3 = "Insert INTO Reservation_has_Payment( reservation_id, payment_id ) VALUES ( " +
+                reservation.id() + ", " + payment_id + " )";
+        if (!this.db_access.pushToDB(session_token.getSessionId(), query3)) {
+            log.log_Error("Could not add link between Payment [", payment_id, "]=(", payment.hashID(), ") and Reservation [", reservation.id(), "]");
+            throw new DbQueryException("Could not add link between Payment [" + payment_id + "]=(" + payment.hashID() + ") and Reservation [" + reservation.id() + "]");
+        }
     }
 
     @Override
     public ObjectTable getPayments(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT " +
                 "Payment.id, " +
+                "Payment.hash_id, " +
                 "Payment.amount, " +
                 "Payment.payment_method AS method_id, " +
                 "PaymentMethod.description AS method_description, " +
-                "Payment.timestamp " +
+                "Payment.timestamp, " +
+                "Payment.note " +
                 "FROM Reservation_has_Payment " +
                 "LEFT OUTER JOIN Payment ON Reservation_has_Payment.payment_id = Payment.id " +
                 "LEFT OUTER JOIN PaymentMethod ON Payment.payment_method = PaymentMethod.id " +
@@ -176,7 +204,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public ObjectTable getPaymentTypes(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public ObjectTable getPaymentMethods(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT * FROM PaymentMethod";
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
         if (table.isEmpty()) {
@@ -380,8 +408,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 " WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in)" +
                 ") " +
                 "WHERE reservation_id = 1";
-        ObjectTable table = null;
-        table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
         if (table.isEmpty()) {
             log.log_Debug("No rooms were found for Reservation [", reservation.id(), "] in records.");
         }

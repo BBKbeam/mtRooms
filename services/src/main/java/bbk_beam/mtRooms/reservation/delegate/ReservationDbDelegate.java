@@ -52,21 +52,37 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     @Override
     public ObjectTable getCustomerAccount(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         if (customer.customerID() < 1) {
-            String query = "SELECT id FROM Customer WHERE "
-                    + "membership_type_id = " + customer.membershipTypeID() + " AND "
-                    + "customer_since = \"" + TimestampConverter.getUTCTimestampString(customer.accountCreationDate()) + "\" AND "
-                    + "title = \"" + customer.title() + "\" AND "
-                    + "name = \"" + customer.name() + "\" AND "
-                    + "surname = \"" + customer.surname() + "\" AND "
-                    + "address_1 = \"" + customer.address1() + "\" AND "
-                    + "address_2 " + (customer.address2() == null ? "isnull" : "= \"" + customer.address2() + "\"") + " AND "
-                    + "city = \"" + customer.city() + "\" AND "
-                    + "county " + (customer.county() == null ? "isnull" : "= \"" + customer.county() + "\"") + " AND "
-                    + "country = \"" + customer.country() + "\" AND "
-                    + "postcode = \"" + customer.postCode() + "\" AND "
-                    + "telephone_1 = \"" + customer.phone1() + "\" AND "
-                    + "telephone_2 " + (customer.phone2() == null ? "isnull" : "= \"" + customer.phone2() + "\"") + " AND "
-                    + "email = \"" + customer.email() + "\"";
+            String query = "SELECT " +
+                    "id, " +
+                    "membership_type_id, " +
+                    "customer_since, " +
+                    "title, " +
+                    "name, " +
+                    "surname, " +
+                    "address_1, " +
+                    "address_2, " +
+                    "city, " +
+                    "county, " +
+                    "country, " +
+                    "postcode, " +
+                    "telephone_1, " +
+                    "telephone_2, " +
+                    "email " +
+                    "FROM Customer " +
+                    "WHERE membership_type_id = " + customer.membershipTypeID() +
+                    " AND customer_since = \"" + TimestampConverter.getUTCTimestampString(customer.accountCreationDate()) + "\"" +
+                    " AND title = \"" + customer.title() + "\"" +
+                    " AND name = \"" + customer.name() + "\"" +
+                    " AND surname = \"" + customer.surname() + "\"" +
+                    " AND address_1 = \"" + customer.address1() + "\"" +
+                    " AND address_2 " + (customer.address2() == null ? "isnull" : "= \"" + customer.address2() + "\"") + "" +
+                    " AND city = \"" + customer.city() + "\"" +
+                    " AND county " + (customer.county() == null ? "isnull" : "= \"" + customer.county() + "\"") + "" +
+                    " AND country = \"" + customer.country() + "\"" +
+                    " AND postcode = \"" + customer.postCode() + "\"" +
+                    " AND telephone_1 = \"" + customer.phone1() + "\"" +
+                    " AND telephone_2 " + (customer.phone2() == null ? "isnull" : "= \"" + customer.phone2() + "\"") + "" +
+                    " AND email = \"" + customer.email() + "\"";
             return this.db_access.pullFromDB(session_token.getSessionId(), query);
         } else {
             return getCustomerAccount(session_token, customer.customerID());

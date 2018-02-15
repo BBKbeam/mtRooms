@@ -1,10 +1,13 @@
 package bbk_beam.mtRooms.reservation.dto;
 
 import bbk_beam.mtRooms.db.TimestampConverter;
+import bbk_beam.mtRooms.reservation.exception.InvalidOperation;
+import eadjlib.logger.Logger;
 
 import java.util.Date;
 
 public class Customer {
+    private final Logger log = Logger.getLoggerInstance(Customer.class.getName());
     private Integer id;
     private Integer membership_type_id;
     private Date account_creation;
@@ -73,6 +76,55 @@ public class Customer {
     }
 
     /**
+     * Constructor
+     *
+     * @param membership_type_id Membership type ID
+     * @param account_creation   Customer account creation date
+     * @param title              Customer title
+     * @param name               Customer name
+     * @param surname            Customer  surname
+     * @param address1           Customer address line 1
+     * @param address2           Customer address line 2
+     * @param postcode           Customer postcode
+     * @param city               Customer city
+     * @param county             Customer county
+     * @param country            Customer country
+     * @param phone1             Customer phone 1
+     * @param phone2             Customer phone 2
+     * @param email              Customer email
+     */
+    public Customer(Integer membership_type_id,
+                    Date account_creation,
+                    String title,
+                    String name,
+                    String surname,
+                    String address1,
+                    String address2,
+                    String postcode,
+                    String city,
+                    String county,
+                    String country,
+                    String phone1,
+                    String phone2,
+                    String email) {
+        this.id = -1;
+        this.membership_type_id = membership_type_id;
+        this.account_creation = account_creation;
+        this.title = title;
+        this.name = name;
+        this.surname = surname;
+        this.address1 = address1;
+        this.address2 = address2;
+        this.postcode = postcode;
+        this.city = city;
+        this.county = county;
+        this.country = country;
+        this.phone1 = phone1;
+        this.phone2 = phone2;
+        this.email = email;
+    }
+
+    /**
      * Copy-Constructor
      *
      * @param customer Customer object to copy
@@ -93,6 +145,21 @@ public class Customer {
         this.phone1 = customer.phone1;
         this.phone2 = customer.phone2;
         this.email = customer.email;
+    }
+
+    /**
+     * Sets the Customer's ID
+     *
+     * @param id ID
+     * @throws InvalidOperation when trying to override a valid ID (>0)
+     */
+    public void setID(Integer id) throws InvalidOperation {
+        if (this.id < 1) {
+            this.id = id;
+        } else {
+            log.log_Error("Trying to override valid Customer ID [", this.id, "] with [", id, "]");
+            throw new InvalidOperation("Trying to override valid Customer ID [" + this.id + "] with [" + id + "]");
+        }
     }
 
     /**

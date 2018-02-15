@@ -65,6 +65,7 @@ public class Payment {
         this.id = -1;
         this.amount = amount;
         this.timestamp = timestamp;
+        this.note = note;
         this.paymentMethod = paymentMethod;
         this.hashID = Payment.generateHashID(reservation, amount, timestamp, paymentMethod);
     }

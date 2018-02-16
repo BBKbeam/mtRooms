@@ -1,5 +1,6 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.reservation.exception.InvalidOperation;
 import eadjlib.logger.Logger;
 
@@ -154,7 +155,9 @@ public class Reservation {
         Reservation that = (Reservation) o;
 
         if (!id.equals(that.id)) return false;
-        if (!created_timestamp.equals(that.created_timestamp)) return false;
+        String thisTimestamp = TimestampConverter.getUTCTimestampString(created_timestamp);
+        String thatTimestamp = TimestampConverter.getUTCTimestampString(that.created_timestamp);
+        if (thisTimestamp.compareTo(thatTimestamp) != 0) return false;
         if (!customer_id.equals(that.customer_id)) return false;
         if (!discount.equals(that.discount)) return false;
         return rooms_reserved.equals(that.rooms_reserved);
@@ -163,7 +166,7 @@ public class Reservation {
     @Override
     public int hashCode() {
         int result = id.hashCode();
-        result = 31 * result + created_timestamp.hashCode();
+        result = 31 * result + TimestampConverter.getUTCTimestampString(created_timestamp).hashCode();
         result = 31 * result + customer_id.hashCode();
         result = 31 * result + discount.hashCode();
         result = 31 * result + rooms_reserved.hashCode();

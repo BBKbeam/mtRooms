@@ -1,5 +1,7 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import bbk_beam.mtRooms.db.TimestampConverter;
+
 import java.util.Date;
 
 public class RoomReservation {
@@ -98,8 +100,12 @@ public class RoomReservation {
 
         if (cancelled_flag != that.cancelled_flag) return false;
         if (!room.equals(that.room)) return false;
-        if (!timestamp_in.equals(that.timestamp_in)) return false;
-        if (!timestamp_out.equals(that.timestamp_out)) return false;
+        String thisTimestampIN = TimestampConverter.getUTCTimestampString(timestamp_in);
+        String thatTimestampIN = TimestampConverter.getUTCTimestampString(that.timestamp_in);
+        if (thisTimestampIN.compareTo(thatTimestampIN) != 0) return false;
+        String thisTimestampOUT = TimestampConverter.getUTCTimestampString(timestamp_out);
+        String thatTimestampOUT = TimestampConverter.getUTCTimestampString(that.timestamp_out);
+        if (thisTimestampOUT.compareTo(thatTimestampOUT) != 0) return false;
         if (!note.equals(that.note)) return false;
         return price.equals(that.price);
     }
@@ -107,8 +113,8 @@ public class RoomReservation {
     @Override
     public int hashCode() {
         int result = room.hashCode();
-        result = 31 * result + timestamp_in.hashCode();
-        result = 31 * result + timestamp_out.hashCode();
+        result = 31 * result + TimestampConverter.getUTCTimestampString(timestamp_in).hashCode();
+        result = 31 * result + TimestampConverter.getUTCTimestampString(timestamp_out).hashCode();
         result = 31 * result + note.hashCode();
         result = 31 * result + price.hashCode();
         result = 31 * result + (cancelled_flag ? 1 : 0);

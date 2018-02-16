@@ -293,51 +293,22 @@ public class ReservationDbDelegateTest {
     public void createReservation() throws Exception {
         Room room = new Room(8, 3, 1, 6);
         Discount discount = new Discount(1, .0, 1, "None");
-        Date reservation_start = new Date();
-        Date reservation_end = Date.from(Instant.now().plus(2, ChronoUnit.HOURS));
-        String note = "Note 1";
-        RoomPrice mock_price = mock(RoomPrice.class);
-        RoomReservation roomReservation = new RoomReservation(
-                room,
-                reservation_start,
-                reservation_end,
-                note,
-                mock_price,
-                false
-        );
-        Reservation reservation = new Reservation(
-                -1,
-                reservation_start,
-                1,
-                discount
-        );
-        reservation.addRoomReservation(roomReservation);
+        Date created_date = new Date();
+        Reservation reservation = new Reservation(-1, created_date, 1, discount);
         //Testing
-        Assert.assertTrue(reservation.id() < 1);
         this.reservationDbDelegate.createReservation(this.token, reservation);
-        Assert.assertTrue(reservation.id() > 0);
-
         ObjectTable table = this.reservationDbAccess.pullFromDB(
                 this.token.getSessionId(),
                 "SELECT * FROM Reservation " +
-                        "LEFT OUTER JOIN Room_has_Reservation ON Reservation.id = Room_has_Reservation.reservation_id " +
-                        "WHERE created_timestamp = \"" + TimestampConverter.getUTCTimestampString(reservation_start) + "\" " +
+                        "WHERE created_timestamp = \"" + TimestampConverter.getUTCTimestampString(created_date) + "\" " +
                         "AND customer_id = 1"
         );
-
         Assert.assertEquals(1, table.rowCount());
         HashMap<String, Object> row = table.getRow(1);
         Assert.assertEquals(5, row.get("id"));
-        Assert.assertEquals(TimestampConverter.getUTCTimestampString(reservation_start), row.get("created_timestamp"));
+        Assert.assertEquals(TimestampConverter.getUTCTimestampString(created_date), row.get("created_timestamp"));
         Assert.assertEquals(1, row.get("customer_id"));
         Assert.assertEquals(1, row.get("discount_id"));
-        Assert.assertEquals(8, row.get("room_id"));
-        Assert.assertEquals(3, row.get("floor_id"));
-        Assert.assertEquals(1, row.get("building_id"));
-        Assert.assertEquals(TimestampConverter.getUTCTimestampString(reservation_start), row.get("timestamp_in"));
-        Assert.assertEquals(TimestampConverter.getUTCTimestampString(reservation_end), row.get("timestamp_out"));
-        Assert.assertEquals("Note 1", row.get("notes"));
-        Assert.assertEquals(0, row.get("cancelled_flag"));
     }
 
     @Test

@@ -103,7 +103,10 @@ public class TestDataDBQueries {
             + "\"26 main road\", null, \"Norwich\", \"Norfolk\", \"UK\", \"NR2 18D\", \"+44 1234 567 765\", null, \"jd445@netmail.com\" ), "
             //Customer id = 3
             + "( 3, \"2017-06-05 10:36:41\", \"Miss\", \"Alice\", \"Beniccio\", "
-            + "\"5 Highbury road\", null, \"London\", \"London\", \"UK\", \"N4 6SW\", \"+44 1020 304 050\", \"+44 9080 706 050\", \"aliceb01@othermail.com\" )";
+            + "\"5 Highbury road\", null, \"London\", \"London\", \"UK\", \"N4 6SW\", \"+44 1020 304 050\", \"+44 9080 706 050\", \"aliceb01@othermail.com\" ), "
+            //Customer id = 4
+            + "( 1, \"2018-01-01 00:01:00\", \"Mr\", \"Nicholas\", \"Cage\", "
+            + "\"1 Epic road\", null, \"Bruteville\", \"Bruteshire\", \"Kingdom of Epicness\", \"EP1C\", \"+1337 11111 11\", null, \"nickcage@awseome.com\" )";
 
     //Payment table
     public static String payments = "INSERT INTO Payment( id, hash_id, amount, payment_method, timestamp, note ) VALUES "

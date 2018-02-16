@@ -6,8 +6,7 @@ import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
-import bbk_beam.mtRooms.reservation.dto.Customer;
-import bbk_beam.mtRooms.reservation.dto.Reservation;
+import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import org.junit.After;
 import org.junit.Assert;
@@ -31,7 +30,6 @@ public class ReservationProcessingTest {
     private Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
     private ReservationDbDelegate reservationDbDelegate;
     private ReservationProcessing reservationProcessing;
-    private Customer mock_customer = mock(Customer.class);
 
     @Before
     public void setUp() throws Exception {
@@ -58,8 +56,20 @@ public class ReservationProcessingTest {
 
     @Test
     public void createReservation() throws Exception {
-        Assert.assertTrue(false);
-        //TODO
+        //Setting up dummy test Reservation
+        Room room = new Room(8, 3, 1, 6);
+        Discount discount = new Discount(1, .0, 1, "None");
+        Date reservation_start = new Date();
+        Date reservation_end = Date.from(Instant.now().plus(2, ChronoUnit.HOURS));
+        String note = "Note 1";
+        RoomPrice room_price = new RoomPrice(12, 110, 2008);
+        RoomReservation roomReservation = new RoomReservation(room, reservation_start, reservation_end, note, room_price, false);
+        Reservation test_reservation = new Reservation(reservation_start, 1, discount);
+        test_reservation.addRoomReservation(roomReservation);
+        //Testing
+        Reservation fetched_reservation = this.reservationProcessing.createReservation(this.token, test_reservation);
+        test_reservation.setID(fetched_reservation.id());
+        Assert.assertTrue(test_reservation.equals(fetched_reservation));
     }
 
     @Test
@@ -78,6 +88,7 @@ public class ReservationProcessingTest {
 
     @Test
     public void getReservations() throws Exception {
+        Customer mock_customer = mock(Customer.class);
         when(mock_customer.customerID()).thenReturn(1);
         List<Reservation> reservations = reservationProcessing.getReservations(this.token, mock_customer);
         for (Reservation r : reservations) {

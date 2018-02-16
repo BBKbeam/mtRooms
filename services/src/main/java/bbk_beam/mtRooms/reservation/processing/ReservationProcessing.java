@@ -37,13 +37,25 @@ public class ReservationProcessing {
      * @param reservation   Reservation DTO
      * @return Reservation object with the ID of the record created
      * @throws FailedDbWrite           when a problem was encountered whilst processing the query
+     * @throws FailedDbFetch           when a problem was encountered whilst processing the query
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Reservation createReservation(Token session_token, Reservation reservation) throws FailedDbWrite, SessionExpiredException, SessionInvalidException {
-
-        //TODO
-        return null;
+    public Reservation createReservation(Token session_token, Reservation reservation) throws FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            Integer reservation_id = this.db_delegate.createReservation(session_token, reservation);
+            log.log_Debug("Created reservation in records. Given Reservation.id: ", reservation_id);
+            for (RoomReservation reserved_room : reservation.rooms()) {
+                this.db_delegate.createRoomReservation(session_token, reservation_id, reserved_room);
+            }
+            return getReservation(session_token, reservation_id);
+        } catch (DbQueryException e) {
+            log.log_Error("Failed to save reservation in records: ", reservation);
+            throw new FailedDbWrite("Failed to save reservation in records: " + reservation, e);
+        } catch (InvalidReservation e) {
+            log.log_Error("Could not fetch back created Reservation from records: ", reservation);
+            throw new FailedDbFetch("Could not fetch back created Reservation from records: " + reservation, e);
+        }
     }
 
     /**

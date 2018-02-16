@@ -10,6 +10,7 @@ import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
+import bbk_beam.mtRooms.reservation.exception.InvalidRoomCategory;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -59,6 +60,31 @@ public class ReservationProcessing {
     }
 
     /**
+     * Creates a RoomReservation in the records
+     *
+     * @param session_token Session's token
+     * @param reservation   Reservation DTO
+     * @param reserved_room RoomReservation DTO
+     * @throws InvalidReservation      when Reservation cannot be validated with the records
+     * @throws FailedDbWrite           when a problem was encountered whilst processing the query
+     * @throws FailedDbFetch           when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     */
+    public void createRoomReservation(Token session_token, Reservation reservation, RoomReservation reserved_room) throws InvalidReservation, FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            Reservation temp_reservation = getReservation(session_token, reservation.id());
+            this.db_delegate.createRoomReservation(session_token, temp_reservation.id(), reserved_room);
+        } catch (InvalidReservation e) {
+            log.log_Error("Trying to create a RoomReservation in the records before Reservation.");
+            throw new InvalidReservation("Trying to create a RoomReservation in the records before Reservation.", e);
+        } catch (DbQueryException e) {
+            log.log_Error("Could not create record of RoomReservation: ", reserved_room);
+            throw new FailedDbWrite("Could not create record of RoomReservation: " + reserved_room, e);
+        }
+    }
+
+    /**
      * Mark the record of a reservation as cancelled
      *
      * @param session_token Session's token
@@ -70,9 +96,12 @@ public class ReservationProcessing {
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     public Integer cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
-        //TODO iterate through all reserved rooms and set cancelled flag to false
-        //TODO get and sum prices for all reserved rooms then return total
-        return null;
+        try {
+            return this.db_delegate.cancelReservation(session_token, reservation);
+        } catch (DbQueryException e) {
+            log.log_Error("Could not cancel reservation: ", reservation);
+            throw new FailedDbWrite("Could not cancel reservation: " + reservation, e);
+        }
     }
 
     /**
@@ -81,16 +110,19 @@ public class ReservationProcessing {
      * @param session_token    Session's token
      * @param reservation      Reservation DTO
      * @param room_reservation RoomReservation DTO
-     * @return Balance to reimburse on reservation
+     * @return Pre-discount balance to reimburse on reservation
      * @throws InvalidReservation      when Reservation cannot be validated with the records
      * @throws FailedDbWrite           when a problem was encountered whilst processing the query
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     public Integer cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
-        //TODO set cancelled flag to false on reserved room to cancel
-        //TODO return price for reserved room
-        return null;
+        try {
+            return this.db_delegate.cancelReservedRoom(session_token, reservation.id(), room_reservation);
+        } catch (DbQueryException e) {
+            log.log_Error("Could not cancel RoomReservation: ", room_reservation);
+            throw new FailedDbWrite("Could not cancel RoomReservation: " + room_reservation);
+        }
     }
 
     /**
@@ -175,6 +207,36 @@ public class ReservationProcessing {
         } catch (InvalidReservation e) {
             log.log_Error("Fetching of reservations for customer \"", customer.name(), " ", customer.surname(), "\" [" + customer.customerID() + "]'s details unsuccessful: Invalid reservation ID.");
             throw new FailedDbFetch("Fetching of reservations for customer \"" + customer.name() + " " + customer.surname() + "\" [" + customer.customerID() + "]'s details unsuccessful: Invalid reservation ID.", e);
+        }
+    }
+
+    /**
+     * Gets the RoomCategory DTO from an ID
+     *
+     * @param session_token Session's token
+     * @param category_id   RoomCategory ID
+     * @return RoomCategory DTO
+     * @throws InvalidRoomCategory     when the ID does not match any RoomCategory in the records
+     * @throws FailedDbFetch           when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    public RoomCategory getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable table = this.db_delegate.getRoomCategory(session_token, category_id);
+            if (table.isEmpty()) {
+                log.log_Error("RoomCategory [", category_id, "] does not exists in records.");
+                throw new InvalidRoomCategory("RoomCategory [" + category_id + "] does not exists in records.");
+            }
+            HashMap<String, Object> row = table.getRow(1);
+            return new RoomCategory(
+                    (Integer) row.get("id"),
+                    (Integer) row.get("capacity"),
+                    (Integer) row.get("dimension")
+            );
+        } catch (DbQueryException e) {
+            log.log_Error("Could not get RoomCategory [", category_id, "]");
+            throw new FailedDbFetch("Could not get RoomCategory [" + category_id + "]", e);
         }
     }
 }

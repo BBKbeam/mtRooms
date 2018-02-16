@@ -300,7 +300,9 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
             log.log_Error("Could not get total paid on Reservation [", reservation.id(), "].");
             throw new DbQueryException("Could not get total paid on Reservation [" + reservation.id() + "].");
         }
-        return table.getInteger(1, 1);
+        return table.getObject(1, 1) == null
+                ? 0
+                : table.getInteger(1, 1);
     }
 
     @Override

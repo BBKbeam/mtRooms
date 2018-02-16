@@ -8,6 +8,7 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
+import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import eadjlib.datastructure.ObjectTable;
 import org.junit.After;
@@ -399,6 +400,25 @@ public class ReservationDbDelegateTest {
     }
 
     @Test
+    public void deleteReservation() throws Exception {
+        String test_query1 = "SELECT * FROM Reservation WHERE id = 1";
+        String test_query2 = "SELECT * FROM Room_has_Reservation WHERE reservation_id = 1";
+        //Pre-Delete test
+        Assert.assertEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), test_query1).rowCount());
+        Assert.assertEquals(3, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), test_query2).rowCount());
+        //Deletion
+        this.reservationDbDelegate.deleteReservation(this.token, 1);
+        //Post-Delete test
+        Assert.assertEquals(0, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), test_query1).rowCount());
+        Assert.assertEquals(0, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), test_query2).rowCount());
+    }
+
+    @Test(expected = InvalidReservation.class)
+    public void deleteReservation_with_invalid_reservation() throws Exception {
+        this.reservationDbDelegate.deleteReservation(this.token, 99999);
+    }
+
+    @Test
     public void getReservation() throws Exception {
         ObjectTable table = this.reservationDbDelegate.getReservation(this.token, 1);
         HashMap<String, Object> row = table.getRow(1);
@@ -499,4 +519,6 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals(10, row.get("capacity"));
         Assert.assertEquals(10, row.get("dimension"));
     }
+
+
 }

@@ -10,9 +10,14 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Payment;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
-import bbk_beam.mtRooms.reservation.exception.*;
+import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
+import bbk_beam.mtRooms.reservation.exception.InvalidDiscount;
+import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
+import bbk_beam.mtRooms.reservation.exception.InvalidRoomCategory;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
+
+import java.util.HashMap;
 
 public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, ISearch {
     private final Logger log = Logger.getLoggerInstance(ReservationDbDelegate.class.getName());
@@ -233,7 +238,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public void createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Integer createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query1 = "INSERT INTO Reservation " +
                 "( created_timestamp, customer_id, discount_id ) " +
                 "VALUES ( " +
@@ -249,20 +254,11 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 " AND customer_id = " + reservation.customerID() +
                 " AND discount_id = " + reservation.discount().id();
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query2);
-        if (!table.isEmpty()) {
-            Integer reservation_id = table.getInteger(1, 1);
-            try {
-                reservation.setID(reservation_id);
-            } catch (InvalidOperation invalidOperation) {
-                log.log_Error("Failed to apply new ID [", reservation_id, "] to Reservation object.");
-            }
-            for (RoomReservation reserved_room : reservation.rooms()) {
-                createRoomReservation(session_token, reservation_id, reserved_room);
-            }
-        } else {
+        if (table.isEmpty()) {
             log.log_Error("Could not retrieve ID of created Reservation from records: ", reservation);
             throw new DbQueryException("Could not retrieve ID of created Reservation from records: " + reservation);
         }
+        return table.getInteger(1, 1);
     }
 
     @Override
@@ -349,6 +345,62 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
             throw new DbQueryException("Could not get cost on RoomReservation:  " + reserved_room);
         }
         return table.getInteger(1, 1);
+    }
+
+    /**
+     * Deletes the record of a RoomReservation
+     *
+     * @param session_token  Session's token
+     * @param reservation_id Reservation ID
+     * @param room_id        RoomReservation room ID
+     * @param floor_id       RoomReservation floor ID
+     * @param building_id    RoomReservation building ID
+     * @param timestamp_in   RoomReservation start timestamp
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    private void deleteReservedRoom(Token session_token,
+                                    Integer reservation_id,
+                                    Integer room_id,
+                                    Integer floor_id,
+                                    Integer building_id,
+                                    String timestamp_in) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "DELETE FROM Room_has_Reservation " +
+                "WHERE reservation_id = " + reservation_id +
+                " AND room_id = " + room_id +
+                " AND floor_id = " + floor_id +
+                " AND building_id = " + building_id +
+                " AND timestamp_in = \"" + timestamp_in + "\"";
+        this.db_access.pushToDB(session_token.getSessionId(), query);
+    }
+
+    @Override
+    public void deleteReservation(Token session_token, Integer reservation_id) throws DbQueryException, InvalidReservation, SessionExpiredException, SessionInvalidException {
+        String query1 = "SELECT id FROM Reservation WHERE id = " + reservation_id;
+        if (this.db_access.pullFromDB(session_token.getSessionId(), query1).isEmpty()) {
+            log.log_Error("Reservation [", reservation_id, "] to delete does not exist in records.");
+            throw new InvalidReservation("Reservation [" + reservation_id + "] to delete does not exist in records.");
+        }
+        //Delete ReservedRooms in Reservation
+        String query2 = "SELECT " +
+                "room_id, floor_id, building_id, timestamp_in " +
+                "FROM Room_has_Reservation " +
+                "WHERE reservation_id = " + reservation_id;
+        ObjectTable reserved_rooms = this.db_access.pullFromDB(session_token.getSessionId(), query2);
+        if (!reserved_rooms.isEmpty()) {
+            for (int i = 1; i <= reserved_rooms.rowCount(); i++) {
+                HashMap<String, Object> row = reserved_rooms.getRow(i);
+                Integer room_id = (Integer) row.get("room_id");
+                Integer floor_id = (Integer) row.get("floor_id");
+                Integer building_id = (Integer) row.get("building_id");
+                String timestamp_in = (String) row.get("timestamp_in");
+                deleteReservedRoom(session_token, reservation_id, room_id, floor_id, building_id, timestamp_in);
+            }
+        }
+        //Delete Reservation entry
+        String query3 = "DELETE FROM Reservation WHERE id = " + reservation_id;
+        this.db_access.pushToDB(session_token.getSessionId(), query3);
     }
 
     @Override

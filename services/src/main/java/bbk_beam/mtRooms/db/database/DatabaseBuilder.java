@@ -266,7 +266,7 @@ class DatabaseBuilder {
                 + "reservation_id INTEGER NOT NULL, "
                 + "payment_id INTEGER NOT NULL, "
                 + "PRIMARY KEY( reservation_id, payment_id ), "
-                + "FOREIGN KEY( reservation_id ) REFERENCES Reservation( id ), "
+                + "FOREIGN KEY( reservation_id ) REFERENCES Reservation( id ) ON DELETE CASCADE, "
                 + "FOREIGN KEY( payment_id ) REFERENCES Payment( id ) "
                 + ")";
         return pushQuery(db, query);

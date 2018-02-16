@@ -18,11 +18,12 @@ public interface IReserve {
      *
      * @param session_token Session's token
      * @param reservation   Reservation DTO
+     * @return ID of the created reservation
      * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    void createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    Integer createReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Creates a room reservation in the records
@@ -61,6 +62,19 @@ public interface IReserve {
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     Integer cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Deletes the record of a reservation and its reserved rooms
+     * WARNING: This will orphan payments made for the reservation! Use at own discretion for cleaning.
+     *
+     * @param session_token  Session's token
+     * @param reservation_id Reservation ID
+     * @throws InvalidReservation      when Reservation cannot be validated with the records
+     * @throws DbQueryException
+     * @throws SessionExpiredException
+     * @throws SessionExpiredException
+     */
+    void deleteReservation(Token session_token, Integer reservation_id) throws DbQueryException, InvalidReservation, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets a reservation's details

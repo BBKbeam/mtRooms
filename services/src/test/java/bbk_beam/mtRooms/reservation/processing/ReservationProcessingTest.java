@@ -4,6 +4,7 @@ import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
 import bbk_beam.mtRooms.reservation.dto.*;
@@ -51,7 +52,7 @@ public class ReservationProcessingTest {
         this.reservationDbAccess = null;
         this.reservationDbDelegate = null;
         this.reservationProcessing = null;
-        //Files.deleteIfExists(Paths.get("reservation_processing_test.db"));
+        Files.deleteIfExists(Paths.get("reservation_processing_test.db"));
     }
 
     @Test
@@ -62,7 +63,7 @@ public class ReservationProcessingTest {
         Date reservation_start = new Date();
         Date reservation_end = Date.from(Instant.now().plus(2, ChronoUnit.HOURS));
         String note = "Note 1";
-        RoomPrice room_price = new RoomPrice(12, 110, 2008);
+        RoomPrice room_price = new RoomPrice(12, 11000, 2008);
         RoomReservation roomReservation = new RoomReservation(room, reservation_start, reservation_end, note, room_price, false);
         Reservation test_reservation = new Reservation(reservation_start, 1, discount);
         test_reservation.addRoomReservation(roomReservation);
@@ -73,28 +74,69 @@ public class ReservationProcessingTest {
     }
 
     @Test
+    public void createRoomReservation() throws Exception {
+        //Setting up dummy test Reservation and RoomReservation
+        Reservation mock_reservation = mock(Reservation.class);
+        when(mock_reservation.id()).thenReturn(5);
+        RoomReservation roomReservation = new RoomReservation(
+                new Room(8, 3, 1, 6),
+                new Date(),
+                Date.from(Instant.now().plus(2, ChronoUnit.HOURS)),
+                "Note 1",
+                new RoomPrice(12, 110, 2008),
+                false
+        );
+        //Testing
+        Assert.assertEquals(1, this.reservationDbDelegate.getReservedRooms(this.token, mock_reservation).rowCount());
+        this.reservationProcessing.createRoomReservation(this.token, mock_reservation, roomReservation);
+        Assert.assertEquals(2, this.reservationDbDelegate.getReservedRooms(this.token, mock_reservation).rowCount());
+    }
+
+    @Test
     public void cancelReservation() throws Exception {
-        Assert.assertTrue(false);
-        //TODO
+        Reservation mock_reservation = mock(Reservation.class);
+        //Testing
+        when(mock_reservation.id()).thenReturn(5);
+        Assert.assertEquals(new Integer(0), this.reservationProcessing.cancelReservation(this.token, mock_reservation));
+        when(mock_reservation.id()).thenReturn(4);
+        Assert.assertEquals(new Integer(6300), this.reservationProcessing.cancelReservation(this.token, mock_reservation));
+    }
+
+    @Test
+    public void cancelReservedRoom() throws Exception {
+        Reservation mock_reservation = mock(Reservation.class);
+        when(mock_reservation.id()).thenReturn(5);
+        RoomReservation mock_roomReservation = mock(RoomReservation.class);
+        Room mock_room = mock(Room.class);
+        when(mock_roomReservation.room()).thenReturn(mock_room);
+        when(mock_roomReservation.reservationStart()).thenReturn(TimestampConverter.getDateObject("2015-01-25 09:00:00"));
+        when(mock_room.id()).thenReturn(5);
+        when(mock_room.floorID()).thenReturn(2);
+        when(mock_room.buildingID()).thenReturn(1);
+        //Testing
+        Assert.assertEquals(new Integer(7000), this.reservationProcessing.cancelReservedRoom(this.token, mock_reservation, mock_roomReservation));
     }
 
     @Test
     public void getReservation() throws Exception {
         Reservation reservation = reservationProcessing.getReservation(this.token, 1);
-        System.out.println(reservation);
-        Assert.assertTrue(false);
-        //TODO
+        Assert.assertEquals(new Integer(1), reservation.id());
+        Assert.assertEquals(new Integer(3), reservation.customerID());
+        Assert.assertEquals(new Integer(3), reservation.discount().id());
+        Assert.assertEquals(3, reservation.rooms().size());
     }
 
     @Test
     public void getReservations() throws Exception {
         Customer mock_customer = mock(Customer.class);
-        when(mock_customer.customerID()).thenReturn(1);
+        when(mock_customer.customerID()).thenReturn(3);
         List<Reservation> reservations = reservationProcessing.getReservations(this.token, mock_customer);
-        for (Reservation r : reservations) {
-            System.out.println(r);
-        }
-        Assert.assertTrue(false);
-        //TODO
+        Assert.assertEquals(2, reservations.size());
+    }
+
+    @Test
+    public void getRoomCategory() throws Exception {
+        RoomCategory roomCategory = this.reservationProcessing.getRoomCategory(this.token, 1);
+        Assert.assertEquals(new RoomCategory(1, 10, 10), roomCategory);
     }
 }

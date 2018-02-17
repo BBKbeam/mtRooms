@@ -5,6 +5,7 @@ import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
+import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
@@ -290,6 +291,29 @@ public class ReservationDbDelegateTest {
     }
 
     @Test
+    public void getFinancialSummary() throws Exception {
+        Reservation mock_reservation = mock(Reservation.class);
+        when(mock_reservation.id()).thenReturn(1);
+        ObjectTable table = this.reservationDbDelegate.getFinancialSummary(this.token, mock_reservation);
+        Assert.assertFalse(table.isEmpty());
+        HashMap<String, Object> row = table.getRow(1);
+        Assert.assertEquals(2, row.get("confirmed_count"));
+        Assert.assertEquals(15000, row.get("confirmed_subtotal"));
+        Assert.assertEquals(1, row.get("cancelled_count"));
+        Assert.assertEquals(4500, row.get("cancelled_subtotal"));
+        Assert.assertEquals(1, row.get("payment_count"));
+        Assert.assertEquals(7700, row.get("payment_total"));
+        Assert.assertEquals(10.0, row.get("discount_rate"));
+    }
+
+    @Test(expected = DbQueryException.class)
+    public void getFinancialSummary_fail() throws Exception {
+        Reservation mock_reservation = mock(Reservation.class);
+        when(mock_reservation.id()).thenReturn(99999);
+        this.reservationDbDelegate.getFinancialSummary(this.token, mock_reservation);
+    }
+
+    @Test
     public void createReservation() throws Exception {
         Room room = new Room(8, 3, 1, 6);
         Discount discount = new Discount(1, .0, 1, "None");
@@ -490,6 +514,4 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals(10, row.get("capacity"));
         Assert.assertEquals(10, row.get("dimension"));
     }
-
-
 }

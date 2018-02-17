@@ -10,10 +10,7 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Payment;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
-import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
-import bbk_beam.mtRooms.reservation.exception.InvalidDiscount;
-import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
-import bbk_beam.mtRooms.reservation.exception.InvalidRoomCategory;
+import bbk_beam.mtRooms.reservation.exception.*;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -176,7 +173,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public void pay(Token session_token, Reservation reservation, Payment payment) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void pay(Token session_token, Reservation reservation, Payment payment) throws DbQueryException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
         //Adding Payment entry
         String query1 = "INSERT INTO Payment( hash_id, amount, payment_method, timestamp, note ) VALUES ( " +
                 "\"" + payment.hashID() + "\", " +
@@ -194,7 +191,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         ObjectTable row_id_table = this.db_access.pullFromDB(session_token.getSessionId(), query2);
         if (row_id_table.isEmpty()) {
             log.log_Fatal("Could not get the ID for the added Payment (hash_id=", payment.hashID(), ") for Reservation [", reservation.id(), "] in records.");
-            throw new DbQueryException("Could not get the ID for the added Payment (hash_id=" + payment.hashID() + ") for Reservation [" + reservation.id() + "] in records.");
+            throw new FailedDbFetch("Could not get the ID for the added Payment (hash_id=" + payment.hashID() + ") for Reservation [" + reservation.id() + "] in records.");
         }
         Integer payment_id = row_id_table.getInteger(1, 1);
         //Adding entry to Reservation_has_Payment for the Payment
@@ -233,6 +230,76 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
         if (table.isEmpty()) {
             log.log_Debug("No payments methods found in records.");
+        }
+        return table;
+    }
+
+    @Override
+    public ObjectTable getFinancialSummary(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "Confirmed_Rooms.room_count AS confirmed_count, " +
+                "Confirmed_Rooms.room_subtotal AS confirmed_subtotal, " +
+                "Cancelled_Rooms.room_count AS cancelled_count, " +
+                "Cancelled_Rooms.room_subtotal AS cancelled_subtotal, " +
+                "Payments.pay_count AS payment_count, " +
+                "Payments.credit AS payment_total, " +
+                "Discount.discount_rate " +
+                "FROM Reservation " +
+                "LEFT OUTER JOIN Discount ON Reservation.discount_id = Discount.id " +
+                "LEFT OUTER JOIN (" +
+                " SELECT" +
+                " COUNT( * ) AS room_count," +
+                " SUM( RoomPrice.price ) as room_subtotal" +
+                " FROM Room_has_Reservation" +
+                " INNER JOIN Room" +
+                " ON Room_has_Reservation.room_id = Room.id" +
+                " AND Room_has_Reservation.floor_id = Room.floor_id" +
+                " AND Room_has_Reservation.building_id = Room.building_id" +
+                " INNER JOIN Room_has_RoomPrice" +
+                " ON Room_has_Reservation.room_id = Room_has_RoomPrice.room_id" +
+                " AND Room_has_Reservation.floor_id = Room_has_RoomPrice.floor_id" +
+                " AND Room_has_Reservation.building_id = Room_has_RoomPrice.building_id" +
+                " INNER JOIN RoomPrice" +
+                " ON Room_has_RoomPrice.price_id = RoomPrice.id AND RoomPrice.year" +
+                " IN (" +
+                " SELECT MAX( RoomPrice.year)" +
+                " FROM RoomPrice" +
+                " WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in)" +
+                " )" +
+                " WHERE Room_has_Reservation.cancelled_flag = 0 AND Room_has_Reservation.reservation_id = " + reservation.id() + " " +
+                ") AS Confirmed_Rooms " +
+                "LEFT OUTER JOIN (" +
+                " SELECT" +
+                " SUM( RoomPrice.price ) AS room_subtotal," +
+                " SUM( Room_has_Reservation.cancelled_flag ) AS room_count" +
+                " FROM Room_has_Reservation" +
+                " INNER JOIN Room ON Room_has_Reservation.room_id = Room.id" +
+                " AND Room_has_Reservation.floor_id = Room.floor_id" +
+                " AND Room_has_Reservation.building_id = Room.building_id" +
+                " INNER JOIN Room_has_RoomPrice ON Room_has_Reservation.room_id = Room_has_RoomPrice.room_id" +
+                " AND Room_has_Reservation.floor_id = Room_has_RoomPrice.floor_id" +
+                " AND Room_has_Reservation.building_id = Room_has_RoomPrice.building_id" +
+                " INNER JOIN RoomPrice ON Room_has_RoomPrice.price_id = RoomPrice.id AND RoomPrice.year" +
+                " IN (" +
+                " SELECT MAX( RoomPrice.year)" +
+                " FROM RoomPrice" +
+                " WHERE RoomPrice.year <= strftime(\"%Y\", Room_has_Reservation.timestamp_in)" +
+                " )" +
+                " WHERE Room_has_Reservation.cancelled_flag = 1 AND Room_has_Reservation.reservation_id = " + reservation.id() + " " +
+                ") AS Cancelled_Rooms " +
+                "LEFT OUTER JOIN ( " +
+                " SELECT" +
+                " COUNT( * ) AS pay_count," +
+                " SUM( Payment.amount ) AS credit" +
+                " FROM Reservation_has_Payment" +
+                " INNER JOIN Payment ON Reservation_has_Payment.payment_id = Payment.id" +
+                " WHERE Reservation_has_Payment.reservation_id = " + reservation.id() + " " +
+                ") AS Payments " +
+                "WHERE Reservation.id = " + reservation.id();
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.isEmpty()) {
+            log.log_Error("Could not fetch financial summary for Reservation [", reservation.id(), "] from records.");
+            throw new DbQueryException("Could not fetch financial summary for Reservation [" + reservation.id() + "] from records.");
         }
         return table;
     }

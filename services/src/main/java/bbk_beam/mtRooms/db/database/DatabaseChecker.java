@@ -352,7 +352,7 @@ class DatabaseChecker {
                 }
                 if (row.get("name").equals("price")) {
                     checked++;
-                    ColProperty expected = new ColProperty("RoomPrice", "price", "INTEGER", true, null, 0);
+                    ColProperty expected = new ColProperty("RoomPrice", "price", "DOUBLE", true, null, 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }
@@ -652,7 +652,7 @@ class DatabaseChecker {
                 }
                 if (row.get("name").equals("amount")) {
                     checked++;
-                    ColProperty expected = new ColProperty("Payment", "amount", "INTEGER", true, null, 0);
+                    ColProperty expected = new ColProperty("Payment", "amount", "DOUBLE", true, null, 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }

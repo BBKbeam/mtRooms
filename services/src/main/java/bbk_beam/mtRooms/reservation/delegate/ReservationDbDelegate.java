@@ -348,7 +348,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public Integer cancelReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Double cancelReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query1 = "UPDATE " +
                 "Room_has_Reservation " +
                 "SET cancelled_flag = 1 " +
@@ -369,11 +369,11 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         }
         return table.getObject(1, 1) == null
                 ? 0
-                : table.getInteger(1, 1);
+                : table.getDouble(1, 1);
     }
 
     @Override
-    public Integer cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Double cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query1 = "UPDATE " +
                 "Room_has_Reservation " +
                 "SET cancelled_flag = 1 " +
@@ -413,7 +413,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
             log.log_Error("Could not get cost on RoomReservation:  ", reserved_room);
             throw new DbQueryException("Could not get cost on RoomReservation:  " + reserved_room);
         }
-        return table.getInteger(1, 1);
+        return table.getDouble(1, 1);
     }
 
     /**

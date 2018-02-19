@@ -111,7 +111,7 @@ class DatabaseBuilder {
     private boolean buildTable_RoomPrice(IDatabase db) {
         String query = "CREATE TABLE RoomPrice( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                + "price INTEGER NOT NULL, "
+                + "price DOUBLE NOT NULL, "
                 + "year INTEGER NOT NULL, "
                 + "UNIQUE( price, year ) "
                 + ")";
@@ -185,7 +185,7 @@ class DatabaseBuilder {
         String query = "CREATE TABLE Payment( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "hash_id TEXT NOT NULL UNIQUE, "
-                + "amount INTEGER NOT NULL, "
+                + "amount DOUBLE NOT NULL, "
                 + "payment_method INTEGER NOT NULL, "
                 + "timestamp TIMESTAMP NOT NULL, "
                 + "note TEXT, "

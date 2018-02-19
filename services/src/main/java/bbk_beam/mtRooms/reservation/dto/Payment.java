@@ -14,7 +14,7 @@ import java.util.Objects;
 
 public class Payment {
     private Integer id;
-    private Integer amount;
+    private Double amount;
     private Date timestamp;
     private PaymentMethod paymentMethod;
     private String hashID;
@@ -30,7 +30,7 @@ public class Payment {
      * @return HashID generated
      * @throws FailedPaymentHashing when hashing encountered an internal exception
      */
-    static String generateHashID(Reservation reservation, Integer amount, Date timestamp, PaymentMethod paymentMethod) throws FailedPaymentHashing {
+    static String generateHashID(Reservation reservation, Double amount, Date timestamp, PaymentMethod paymentMethod) throws FailedPaymentHashing {
         final int SALT_BYTES = 512;
         final int ITERATIONS = 65536;
         final String PBKDF2_ALGO = "PBEWithHmacSHA512AndAES_256";
@@ -61,7 +61,7 @@ public class Payment {
      * @param paymentMethod Method used for payment
      * @throw FailedPaymentHashing when failure occurs during HashID generation
      */
-    public Payment(Reservation reservation, Integer amount, Date timestamp, String note, PaymentMethod paymentMethod) throws FailedPaymentHashing {
+    public Payment(Reservation reservation, Double amount, Date timestamp, String note, PaymentMethod paymentMethod) throws FailedPaymentHashing {
         this.id = -1;
         this.amount = amount;
         this.timestamp = timestamp;
@@ -72,15 +72,14 @@ public class Payment {
 
     /**
      * Constructor
-     *
-     * @param id            ID
+     *  @param id            ID
      * @param hashID        HashID for the payment
      * @param amount        Amount
      * @param timestamp     Transaction timestamp
      * @param note          Note
      * @param paymentMethod Method used for payment
      */
-    public Payment(Integer id, String hashID, Integer amount, Date timestamp, String note, PaymentMethod paymentMethod) {
+    public Payment(Integer id, String hashID, Double amount, Date timestamp, String note, PaymentMethod paymentMethod) {
         this.id = id;
         this.hashID = hashID;
         this.amount = amount;
@@ -112,7 +111,7 @@ public class Payment {
      *
      * @return Amount
      */
-    public Integer amount() {
+    public Double amount() {
         return this.amount;
     }
 

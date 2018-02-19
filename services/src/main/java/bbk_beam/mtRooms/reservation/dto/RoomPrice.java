@@ -2,17 +2,16 @@ package bbk_beam.mtRooms.reservation.dto;
 
 public class RoomPrice {
     private Integer id;
-    private Integer price;
+    private Double price;
     private Integer year;
 
     /**
      * Constructor
-     *
-     * @param id    ID
+     *  @param id    ID
      * @param price Price of room
      * @param year  Year of price
      */
-    public RoomPrice(Integer id, Integer price, Integer year) {
+    public RoomPrice(Integer id, Double price, Integer year) {
         this.id = id;
         this.price = price;
         this.year = year;
@@ -32,7 +31,7 @@ public class RoomPrice {
      *
      * @return Price
      */
-    public Integer price() {
+    public Double price() {
         return price;
     }
 

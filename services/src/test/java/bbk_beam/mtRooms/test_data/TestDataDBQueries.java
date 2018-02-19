@@ -19,18 +19,18 @@ public class TestDataDBQueries {
             + "( 100, 100 )";   //id = 6
     //RoomPrice table
     public static String roomPrices = "INSERT INTO RoomPrice( price, year ) VALUES "
-            + "( 4000, 2007 ), "  //id = 1
-            + "( 4500, 2007 ), "  //id = 2
-            + "( 6000, 2007 ), "  //id = 3
-            + "( 6500, 2007 ), "  //id = 4
-            + "( 8000, 2007 ), "  //id = 5
-            + "( 10000, 2007 ), " //id = 6
-            + "( 4500, 2008 ), "  //id = 7
-            + "( 5000, 2008 ), "  //id = 8
-            + "( 6500, 2008 ), "  //id = 9
-            + "( 7000, 2008 ), "  //id = 10
-            + "( 8500, 2008 ), "  //id = 11
-            + "( 11000, 2008 )";  //id = 12
+            + "( 40.00, 2007 ), "  //id = 1
+            + "( 45.00, 2007 ), "  //id = 2
+            + "( 60.00, 2007 ), "  //id = 3
+            + "( 65.00, 2007 ), "  //id = 4
+            + "( 80.00, 2007 ), "  //id = 5
+            + "( 100.00, 2007 ), " //id = 6
+            + "( 45.00, 2008 ), "  //id = 7
+            + "( 50.00, 2008 ), "  //id = 8
+            + "( 65.00, 2008 ), "  //id = 9
+            + "( 70.00, 2008 ), "  //id = 10
+            + "( 85.00, 2008 ), "  //id = 11
+            + "( 110.00, 2008 )";  //id = 12
     //RoomFixtures table
     public static String roomFixtures = "INSERT INTO RoomFixtures( fixed_chairs, catering_space, whiteboard, projector ) VALUES "
             + "( 0, 0, 1, 0 ), " //id = 1 (whiteboard)
@@ -110,10 +110,10 @@ public class TestDataDBQueries {
 
     //Payment table
     public static String payments = "INSERT INTO Payment( id, hash_id, amount, payment_method, timestamp, note ) VALUES "
-            + "(1, \"TestHashID0000001\", 7700, 2, \"2018-02-02 19:00:00\", \"85*.90 credit c. Room L2\" ), " //@ 85*.90 credit c. Room L2
-            + "(2, \"TestHashID0000002\", 3400, 1, \"2018-02-09 09:00:00\", \"45*.75 cash Room S1\" ), "      //@ 45*.75 cash Room S1
-            + "(3, \"TestHashID0000003\", 4050, 2, \"2018-02-10 01:58:00\", \"65*.90 credit.c Room M3\" ), "  //@ pt.1 of 70*.90 credit.c Room M3
-            + "(4, \"TestHashID0000004\", 2250, 2, \"2018-02-11 13:12:50\", \"65*.90 credit.c Room M3\" ) ";  //@ pt.2 of 70*.90 credit.c Room M3
+            + "(1, \"TestHashID0000001\", 77.00, 2, \"2018-02-02 19:00:00\", \"85*.90 credit c. Room L2\" ), " //@ 85*.90 credit c. Room L2
+            + "(2, \"TestHashID0000002\", 34.00, 1, \"2018-02-09 09:00:00\", \"45*.75 cash Room S1\" ), "      //@ 45*.75 cash Room S1
+            + "(3, \"TestHashID0000003\", 40.50, 2, \"2018-02-10 01:58:00\", \"65*.90 credit.c Room M3\" ), "  //@ pt.1 of 70*.90 credit.c Room M3
+            + "(4, \"TestHashID0000004\", 22.50, 2, \"2018-02-11 13:12:50\", \"65*.90 credit.c Room M3\" ) ";  //@ pt.2 of 70*.90 credit.c Room M3
 
     //Reservation_has_Payment table
     public static String reservation_has_payments = "INSERT INTO Reservation_has_Payment( reservation_id, payment_id ) VALUES "

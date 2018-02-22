@@ -125,7 +125,12 @@ public class CustomerAccountAccess {
             List<Pair<Integer, String>> list = new ArrayList<>();
             for (int i = 1; i <= table.rowCount(); i++) {
                 HashMap<String, Object> row = table.getRow(i);
-                list.add(new Pair<>((Integer) row.get("id"), (String) row.get("name")));
+                list.add(
+                        new Pair<>(
+                                (Integer) row.get("id"),
+                                row.get("title") + " " + row.get("name") + " " + row.get("surname")
+                        )
+                );
             }
             return list;
         } catch (DbQueryException e) {

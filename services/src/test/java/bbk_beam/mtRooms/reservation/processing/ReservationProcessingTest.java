@@ -63,7 +63,7 @@ public class ReservationProcessingTest {
         Date reservation_start = new Date();
         Date reservation_end = Date.from(Instant.now().plus(2, ChronoUnit.HOURS));
         String note = "Note 1";
-        RoomPrice room_price = new RoomPrice(12, 11000, 2008);
+        RoomPrice room_price = new RoomPrice(12, 110.00, 2008);
         RoomReservation roomReservation = new RoomReservation(room, reservation_start, reservation_end, note, room_price, false);
         Reservation test_reservation = new Reservation(reservation_start, 1, discount);
         test_reservation.addRoomReservation(roomReservation);
@@ -83,7 +83,7 @@ public class ReservationProcessingTest {
                 new Date(),
                 Date.from(Instant.now().plus(2, ChronoUnit.HOURS)),
                 "Note 1",
-                new RoomPrice(12, 110, 2008),
+                new RoomPrice(12, 110., 2008),
                 false
         );
         //Testing
@@ -97,9 +97,9 @@ public class ReservationProcessingTest {
         Reservation mock_reservation = mock(Reservation.class);
         //Testing
         when(mock_reservation.id()).thenReturn(5);
-        Assert.assertEquals(new Integer(0), this.reservationProcessing.cancelReservation(this.token, mock_reservation));
+        Assert.assertEquals(new Double(0), this.reservationProcessing.cancelReservation(this.token, mock_reservation));
         when(mock_reservation.id()).thenReturn(4);
-        Assert.assertEquals(new Integer(6300), this.reservationProcessing.cancelReservation(this.token, mock_reservation));
+        Assert.assertEquals(new Double(63.00), this.reservationProcessing.cancelReservation(this.token, mock_reservation));
     }
 
     @Test
@@ -114,7 +114,7 @@ public class ReservationProcessingTest {
         when(mock_room.floorID()).thenReturn(2);
         when(mock_room.buildingID()).thenReturn(1);
         //Testing
-        Assert.assertEquals(new Integer(7000), this.reservationProcessing.cancelReservedRoom(this.token, mock_reservation, mock_roomReservation));
+        Assert.assertEquals(new Double(70.00), this.reservationProcessing.cancelReservedRoom(this.token, mock_reservation, mock_roomReservation));
     }
 
     @Test

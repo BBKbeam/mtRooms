@@ -37,15 +37,34 @@ public class PaymentProcessing {
      * @param session_token Session's token
      * @param reservation   Reservation subject to payment
      * @param payment       Amount payed
-     * @return New balance pre-discount on the reservation
+     * @return New balance post-discount on the reservation
      * @throws FailedDbWrite           when a problem was encountered whilst processing the query
      * @throws FailedDbFetch           when a problem was encountered whilst processing the query
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public Integer pay(Token session_token, Reservation reservation, Payment payment) throws FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        //TODO
-        return null;
+    public Double pay(Token session_token, Reservation reservation, Payment payment) throws FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            log.log_Trace("Reservation [", reservation.id(), "]: attempting to pay with ", payment);
+            this.db_delegate.pay(session_token, reservation, payment);
+            ObjectTable table = this.db_delegate.getFinancialSummary(session_token, reservation);
+            if (table.isEmpty()) {
+                log.log_Error("Could not get financial summary for Reservation [", reservation.id(), "].");
+                throw new FailedDbFetch("Could not get financial summary for Reservation [" + reservation.id() + "].");
+            }
+            HashMap<String, Object> row = table.getRow(1);
+            Double room_total = (Double) row.get("confirmed_subtotal");
+            Double payed_total = (Double) row.get("payment_total");
+            Double discount = (Double) row.get("discount_rate");
+            log.log_Debug("Reservation [", reservation.id(), "]: confirmed rooms subtotal = ", room_total, ", paid = ", payed_total, ", discount rate = ", discount, ".");
+            Double sub_total = room_total * (100 - discount) / 100;
+            Double total = sub_total - payed_total;
+            log.log_Debug("Reservation [", reservation.id(), "]: left to pay = ", total);
+            return total;
+        } catch (DbQueryException e) {
+            log.log_Error("Could not complete adding Payment to records: ", payment);
+            throw new FailedDbWrite("Could not complete adding Payment to records: " + payment, e);
+        }
     }
 
     /**
@@ -68,7 +87,7 @@ public class PaymentProcessing {
                         new Payment(
                                 (Integer) row.get("id"),
                                 (String) row.get("hash_id"),
-                                (Integer) row.get("amount"),
+                                (Double) row.get("amount"),
                                 TimestampConverter.getDateObject((String) row.get("timestamp")),
                                 (String) row.get("notes"),
                                 new PaymentMethod(

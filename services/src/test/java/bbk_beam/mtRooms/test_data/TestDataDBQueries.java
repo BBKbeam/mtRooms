@@ -110,17 +110,17 @@ public class TestDataDBQueries {
 
     //Payment table
     public static String payments = "INSERT INTO Payment( id, hash_id, amount, payment_method, timestamp, note ) VALUES "
-            + "(1, \"TestHashID0000001\", 77.00, 2, \"2018-02-02 19:00:00\", \"85*.90 credit c. Room L2\" ), " //@ 85*.90 credit c. Room L2
+            + "(1, \"TestHashID0000001\", 77.00, 2, \"2018-02-02 19:00:00\", \"85*.90 credit c. Room L2\" ), " //@ 85*.90 debit c. Room L2
             + "(2, \"TestHashID0000002\", 34.00, 1, \"2018-02-09 09:00:00\", \"45*.75 cash Room S1\" ), "      //@ 45*.75 cash Room S1
-            + "(3, \"TestHashID0000003\", 40.50, 2, \"2018-02-10 01:58:00\", \"65*.90 credit.c Room M3\" ), "  //@ pt.1 of 70*.90 credit.c Room M3
-            + "(4, \"TestHashID0000004\", 22.50, 2, \"2018-02-11 13:12:50\", \"65*.90 credit.c Room M3\" ) ";  //@ pt.2 of 70*.90 credit.c Room M3
+            + "(3, \"TestHashID0000003\", 40.50, 2, \"2018-02-10 01:58:00\", \"65*.90 credit.c Room M3\" ), "  //@ pt.1 of 70*.90 debit.c Room M3
+            + "(4, \"TestHashID0000004\", 22.50, 2, \"2018-02-11 13:12:50\", \"65*.90 credit.c Room M3\" ) ";  //@ pt.2 of 70*.90 debit.c Room M3
 
     //Reservation_has_Payment table
     public static String reservation_has_payments = "INSERT INTO Reservation_has_Payment( reservation_id, payment_id ) VALUES "
             + "(1, 1), "    // reservation 1 cash
-            + "(2, 2), "    // reservation 2 credit c.
-            + "(4, 3), "    // reservation 3 credit c.
-            + "(4, 4)";     // reservation 3 credit c.
+            + "(2, 2), "    // reservation 2 debit c.
+            + "(4, 3), "    // reservation 4 debit c.
+            + "(4, 4)";     // reservation 4 debit c.
 
     //Reservation table
     public static String reservations = "INSERT INTO Reservation(id, created_timestamp, customer_id, discount_id ) VALUES "

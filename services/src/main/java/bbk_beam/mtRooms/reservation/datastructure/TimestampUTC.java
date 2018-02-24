@@ -4,7 +4,7 @@ import eadjlib.logger.Logger;
 
 import java.util.Objects;
 
-public class TimestampUTC {
+public class TimestampUTC implements Comparable<TimestampUTC> {
     private final Logger log = Logger.getLoggerInstance(TimestampUTC.class.getName());
     private String timestamp;
 

@@ -1,13 +1,33 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import bbk_beam.mtRooms.db.TimestampConverter;
+import bbk_beam.mtRooms.reservation.exception.InvalidOperation;
+import eadjlib.logger.Logger;
+
 import java.util.*;
 
 public class Reservation {
+    private final Logger log = Logger.getLoggerInstance(Reservation.class.getName());
     private Integer id;
     private Date created_timestamp;
     private Integer customer_id;
     private Discount discount;
     private List<RoomReservation> rooms_reserved;
+
+    /**
+     * Constructor
+     *
+     * @param created_timestamp Creation timestamp
+     * @param customer_id       Customer ID
+     * @param discount          Discount DTO
+     */
+    public Reservation(Date created_timestamp, Integer customer_id, Discount discount) {
+        this.id = -1;
+        this.created_timestamp = created_timestamp;
+        this.customer_id = customer_id;
+        this.discount = discount;
+        this.rooms_reserved = new ArrayList<>();
+    }
 
     /**
      * Constructor
@@ -43,6 +63,22 @@ public class Reservation {
     }
 
     /**
+     * Constructor
+     *
+     * @param created_timestamp Creation timestamp
+     * @param customer_id       Customer ID
+     * @param discount          Discount DTO
+     * @param roomReservations  List of reserved rooms
+     */
+    public Reservation(Date created_timestamp, Integer customer_id, Discount discount, List<RoomReservation> roomReservations) {
+        this.id = -1;
+        this.created_timestamp = created_timestamp;
+        this.customer_id = customer_id;
+        this.discount = discount;
+        this.rooms_reserved = roomReservations;
+    }
+
+    /**
      * Gets the customer ID
      *
      * @return Customer's ID
@@ -58,6 +94,21 @@ public class Reservation {
      */
     public Integer id() {
         return this.id;
+    }
+
+    /**
+     * Sets the reservation's ID
+     *
+     * @param id ID
+     * @throws InvalidOperation when trying to override a valid ID (>0)
+     */
+    public void setID(Integer id) throws InvalidOperation {
+        if (this.id < 1) {
+            this.id = id;
+        } else {
+            log.log_Error("Trying to override valid Reservation ID [", this.id, "] with [", id, "]");
+            throw new InvalidOperation("Trying to override valid Reservation ID [" + this.id + "] with [" + id + "]");
+        }
     }
 
     /**
@@ -92,7 +143,7 @@ public class Reservation {
      *
      * @param roomReservation RoomReservation DTO to add
      */
-    public void addRoom(RoomReservation roomReservation) {
+    public void addRoomReservation(RoomReservation roomReservation) {
         this.rooms_reserved.add(roomReservation);
     }
 
@@ -104,7 +155,9 @@ public class Reservation {
         Reservation that = (Reservation) o;
 
         if (!id.equals(that.id)) return false;
-        if (!created_timestamp.equals(that.created_timestamp)) return false;
+        String thisTimestamp = TimestampConverter.getUTCTimestampString(created_timestamp);
+        String thatTimestamp = TimestampConverter.getUTCTimestampString(that.created_timestamp);
+        if (thisTimestamp.compareTo(thatTimestamp) != 0) return false;
         if (!customer_id.equals(that.customer_id)) return false;
         if (!discount.equals(that.discount)) return false;
         return rooms_reserved.equals(that.rooms_reserved);
@@ -113,7 +166,7 @@ public class Reservation {
     @Override
     public int hashCode() {
         int result = id.hashCode();
-        result = 31 * result + created_timestamp.hashCode();
+        result = 31 * result + TimestampConverter.getUTCTimestampString(created_timestamp).hashCode();
         result = 31 * result + customer_id.hashCode();
         result = 31 * result + discount.hashCode();
         result = 31 * result + rooms_reserved.hashCode();
@@ -123,7 +176,6 @@ public class Reservation {
     @Override
     public String toString() {
         return "[" + id + "]={ "
-
                 + "created_timestamp: " + created_timestamp
                 + ", customer_id: " + customer_id
                 + ", discount: " + discount

@@ -1,27 +1,29 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import java.util.Objects;
+
 public class Room {
     private Integer id;
     private Integer flood_id;
     private Integer building_id;
-    private RoomCategory category;
+    private Integer category_id;
 
     /**
      * Constructor
      *
-     * @param room_id      Room ID
-     * @param floor_id     Room's floor ID
-     * @param building_id  Room's buidling ID
-     * @param roomCategory Price for the reservation of the room
+     * @param room_id     Room ID
+     * @param floor_id    Room's floor ID
+     * @param building_id Room's building ID
+     * @param category_id Room category ID
      */
     public Room(Integer room_id,
                 Integer floor_id,
                 Integer building_id,
-                RoomCategory roomCategory) {
+                Integer category_id) {
         this.id = room_id;
         this.flood_id = floor_id;
         this.building_id = building_id;
-        this.category = roomCategory;
+        this.category_id = category_id;
     }
 
     /**
@@ -52,34 +54,29 @@ public class Room {
     }
 
     /**
-     * Gets the room's category properties
+     * Gets the room's category ID
      *
-     * @return Room category
+     * @return Room category ID
      */
-    public RoomCategory category() {
-        return this.category;
+    public Integer category() {
+        return this.category_id;
     }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Room room = (Room) o;
-
-        if (!id.equals(room.id)) return false;
-        if (!flood_id.equals(room.flood_id)) return false;
-        if (!building_id.equals(room.building_id)) return false;
-        return category.equals(room.category);
+        return Objects.equals(id, room.id) &&
+                Objects.equals(flood_id, room.flood_id) &&
+                Objects.equals(building_id, room.building_id) &&
+                Objects.equals(category_id, room.category_id);
     }
 
     @Override
     public int hashCode() {
-        int result = id.hashCode();
-        result = 31 * result + flood_id.hashCode();
-        result = 31 * result + building_id.hashCode();
-        result = 31 * result + category.hashCode();
-        return result;
+        return Objects.hash(id, flood_id, building_id, category_id);
     }
 
     @Override
@@ -87,7 +84,7 @@ public class Room {
         return "[" + id + "]={ "
                 + "flood_id: " + flood_id
                 + ", building_id: " + building_id
-                + ", category: " + category
+                + ", category_id: " + category_id
                 + " }";
     }
 }

@@ -111,7 +111,7 @@ class DatabaseBuilder {
     private boolean buildTable_RoomPrice(IDatabase db) {
         String query = "CREATE TABLE RoomPrice( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                + "price INTEGER NOT NULL, "
+                + "price DOUBLE NOT NULL, "
                 + "year INTEGER NOT NULL, "
                 + "UNIQUE( price, year ) "
                 + ")";
@@ -184,9 +184,11 @@ class DatabaseBuilder {
     private boolean buildTable_Payment(IDatabase db) {
         String query = "CREATE TABLE Payment( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
-                + "amount INTEGER NOT NULL, "
+                + "hash_id TEXT NOT NULL UNIQUE, "
+                + "amount DOUBLE NOT NULL, "
                 + "payment_method INTEGER NOT NULL, "
                 + "timestamp TIMESTAMP NOT NULL, "
+                + "note TEXT, "
                 + "FOREIGN KEY( payment_method ) REFERENCES PaymentMethod( id ) "
                 + ")";
         return pushQuery(db, query);
@@ -264,7 +266,7 @@ class DatabaseBuilder {
                 + "reservation_id INTEGER NOT NULL, "
                 + "payment_id INTEGER NOT NULL, "
                 + "PRIMARY KEY( reservation_id, payment_id ), "
-                + "FOREIGN KEY( reservation_id ) REFERENCES Reservation( id ), "
+                + "FOREIGN KEY( reservation_id ) REFERENCES Reservation( id ) ON DELETE CASCADE, "
                 + "FOREIGN KEY( payment_id ) REFERENCES Payment( id ) "
                 + ")";
         return pushQuery(db, query);

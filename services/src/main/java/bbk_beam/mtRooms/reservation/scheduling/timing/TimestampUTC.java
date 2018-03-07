@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.reservation.datastructure;
+package bbk_beam.mtRooms.reservation.scheduling.timing;
 
 import eadjlib.logger.Logger;
 
@@ -33,7 +33,6 @@ public class TimestampUTC implements Comparable<TimestampUTC> {
      * @return (- 1) for less than, (0) for equal, (+1) for larger than
      */
     public int compareTo(TimestampUTC that) {
-        log.log_Trace("Comparing '", this.timestamp, "' to '", that.timestamp, "'.");
         Integer this_YYYY = Integer.parseInt(this.timestamp.substring(0, 4));
         Integer that_YYYY = Integer.parseInt(that.timestamp.substring(0, 4));
         if (this_YYYY < that_YYYY)

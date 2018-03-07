@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.reservation.datastructure;
+package bbk_beam.mtRooms.reservation.scheduling.timing;
 
 import org.junit.Assert;
 import org.junit.Test;

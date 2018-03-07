@@ -1,8 +1,11 @@
-package bbk_beam.mtRooms.reservation.datastructure;
+package bbk_beam.mtRooms.reservation.scheduling.datastructure;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.reservation.scheduling.timing.TimestampUTC;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -16,6 +19,18 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
     /**
      * Constructor
      *
+     * @param start Start timestamp string (UTC)
+     * @param end   End timestamp string (UTC)
+     */
+    public ScheduleSlot(String start, String end) {
+        this.start = new TimestampUTC(start);
+        this.end = new TimestampUTC(end);
+        this.watchers = new ArrayList<>();
+    }
+
+    /**
+     * Constructor
+     *
      * @param watcher_token Watcher's session ID
      * @param start         Start timestamp string (UTC)
      * @param end           End timestamp string (UTC)
@@ -25,18 +40,6 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
         this.end = new TimestampUTC(end);
         this.watchers = new ArrayList<>();
         this.watchers.add(watcher_token);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param start Start timestamp string (UTC)
-     * @param end   End timestamp string (UTC)
-     */
-    public ScheduleSlot(String start, String end) {
-        this.start = new TimestampUTC(start);
-        this.end = new TimestampUTC(end);
-        this.watchers = new ArrayList<>();
     }
 
     /**
@@ -87,6 +90,15 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
     }
 
     /**
+     * Gets a read-only view of the watchers
+     *
+     * @return List of watchers on the schedule slot
+     */
+    public Collection<Token> watchers() {
+        return Collections.unmodifiableList(this.watchers);
+    }
+
+    /**
      * Compares the ScheduleSlot against another
      *
      * @param that ScheduleSlot to compare against
@@ -99,5 +111,10 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
         if (this.start().compareTo(that.end()) > 0)
             return 1;
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        return "ScheduleSlot={ start: " + start + ", end: " + end + ", watchers=" + watchers + " }";
     }
 }

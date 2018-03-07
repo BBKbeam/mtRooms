@@ -1,10 +1,11 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import java.util.Comparator;
 import java.util.Objects;
 
-public class Room {
+public class Room implements Comparable<Room> {
     private Integer id;
-    private Integer flood_id;
+    private Integer floor_id;
     private Integer building_id;
     private Integer category_id;
 
@@ -21,7 +22,7 @@ public class Room {
                 Integer building_id,
                 Integer category_id) {
         this.id = room_id;
-        this.flood_id = floor_id;
+        this.floor_id = floor_id;
         this.building_id = building_id;
         this.category_id = category_id;
     }
@@ -41,7 +42,7 @@ public class Room {
      * @return floor ID
      */
     public Integer floorID() {
-        return this.flood_id;
+        return this.floor_id;
     }
 
     /**
@@ -69,22 +70,30 @@ public class Room {
         if (o == null || getClass() != o.getClass()) return false;
         Room room = (Room) o;
         return Objects.equals(id, room.id) &&
-                Objects.equals(flood_id, room.flood_id) &&
+                Objects.equals(floor_id, room.floor_id) &&
                 Objects.equals(building_id, room.building_id) &&
                 Objects.equals(category_id, room.category_id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, flood_id, building_id, category_id);
+        return Objects.hash(id, floor_id, building_id, category_id);
     }
 
     @Override
     public String toString() {
         return "[" + id + "]={ "
-                + "flood_id: " + flood_id
+                + "floor_id: " + floor_id
                 + ", building_id: " + building_id
                 + ", category_id: " + category_id
                 + " }";
+    }
+
+    @Override
+    public int compareTo(Room that) {
+        return Comparator.comparing(Room::buildingID)
+                .thenComparing(Room::floorID)
+                .thenComparingInt(Room::id)
+                .compare(this, that);
     }
 }

@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Schedule {
     private final Logger log = Logger.getLoggerInstance(Schedule.class.getName());
-    HashMap<Room, AVLTree<TimestampUTC, ScheduleSlot>> cache = new HashMap<>();
+    private HashMap<Room, AVLTree<TimestampUTC, ScheduleSlot>> cache = new HashMap<>();
     private ScheduleSlotInterval timeSlot_increment;
 
     /**
@@ -59,22 +59,7 @@ public class Schedule {
             slot_start = slot_end;
             slot_end = new Date(slot_start.getTime() + TimeUnit.MINUTES.toMillis(this.timeSlot_increment.mns()));
         }
-
-
-        //TODO do time increment slot creation
-        //TODO work out logic of time boundaries
         return slots;
-    }
-
-    private Integer intervalCount(String utc_from, String utc_to) {
-//        Integer this_YYYY = Integer.parseInt(this.timestamp.substring(0, 4));
-//        Integer this_MM = Integer.parseInt(this.timestamp.substring(5, 7));
-//        Integer this_dd = Integer.parseInt(this.timestamp.substring(8, 10));
-//        Integer this_hh = Integer.parseInt(this.timestamp.substring(11, 13));
-//        Integer this_mm = Integer.parseInt(this.timestamp.substring(14, 16));
-//        Integer this_ss = Integer.parseInt(this.timestamp.substring(17, 19));
-//        Integer that_ss = Integer.parseInt(that.timestamp.substring(17, 19));
-        return null;
     }
 
     /**
@@ -109,7 +94,7 @@ public class Schedule {
                 if (!room_exists)
                     this.cache.putIfAbsent(room, new AVLTree<>());
                 if (this.cache.get(room).search(slot.start())) {
-                    log.log_Debug("Adding watcher for ", room, ": ", slot);
+                    log.log_Debug("Adding watcher [", watcher_token, "] to ", room, ": ", slot);
                     ScheduleSlot new_slot = this.cache.get(room).apply(slot.start(), (ScheduleSlot s) -> {
                         s.addWatcher(watcher_token);
                         return s;
@@ -133,13 +118,18 @@ public class Schedule {
      * @return Number of overlapping views on the slot
      */
     Integer getSlotOverlapCount(Room room, Date from, Date to) {
-        //TODO work out slot intervals, then check overlaps (unique token ids)
         ScheduleSlot slot = new ScheduleSlot(
                 TimestampConverter.getUTCTimestampString(from),
                 TimestampConverter.getUTCTimestampString(to)
         );
         if (!this.cache.containsKey(room)) return 0;
-        return cache.get(room).searchValues((ScheduleSlot t) -> (t.compareTo(slot) == 0)).size();
+        Collection<ScheduleSlot> slots = cache.get(room).searchValues((ScheduleSlot t) -> (t.compareTo(slot) == 0));
+        HashMap<String, Token> watchers = new HashMap<>();
+        for (ScheduleSlot s : slots) {
+            for (Token t : s.watchers())
+                watchers.putIfAbsent(t.getSessionId(), t);
+        }
+        return watchers.size();
     }
 
     /**

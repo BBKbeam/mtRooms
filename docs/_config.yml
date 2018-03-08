@@ -1,0 +1,6 @@
+theme: jekyll-theme-slate
+name: mtRooms
+github_username: bbk_beam
+title: mtRooms
+description: Desktop software to manage room bookings.
+show_downloads: false

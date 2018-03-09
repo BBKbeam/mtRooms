@@ -15,4 +15,6 @@ public class OptimisedSearch {
     public OptimisedSearch(ISearch search_delegate) {
         this.db_delegate = search_delegate;
     }
+
+    //TODO
 }

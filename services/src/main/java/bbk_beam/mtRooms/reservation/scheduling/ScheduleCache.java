@@ -8,6 +8,7 @@ import java.util.Observer;
 //-> reservation cart's timetable slots should probably be packaged into a container object
 
 public class ScheduleCache extends Observable {
+
     //TODO
 
 

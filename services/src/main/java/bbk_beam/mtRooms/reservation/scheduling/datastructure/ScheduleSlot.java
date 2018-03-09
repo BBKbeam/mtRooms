@@ -106,9 +106,9 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
      */
     @Override
     public int compareTo(ScheduleSlot that) {
-        if (this.end().compareTo(that.start()) < 0)
+        if (this.end().compareTo(that.start()) <= 0)
             return -1;
-        if (this.start().compareTo(that.end()) > 0)
+        if (this.start().compareTo(that.end()) >= 0)
             return 1;
         return 0;
     }

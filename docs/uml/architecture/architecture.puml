@@ -2,6 +2,7 @@
 
 'skinparam linetype ortho
 skinparam linetype polyline
+'skinparam monochrome true
 
 skinparam package {
     backgroundColor lightgrey

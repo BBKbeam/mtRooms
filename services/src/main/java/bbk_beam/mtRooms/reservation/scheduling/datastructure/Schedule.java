@@ -65,7 +65,7 @@ public class Schedule {
     /**
      * Constructor
      */
-    Schedule() {
+    public Schedule() {
         this(ScheduleSlotInterval.HALF_HOUR); //Default
     }
 
@@ -74,7 +74,7 @@ public class Schedule {
      *
      * @param timeSlot_increment TimeSlot increment in size
      */
-    Schedule(ScheduleSlotInterval timeSlot_increment) {
+    public Schedule(ScheduleSlotInterval timeSlot_increment) {
         this.timeSlot_increment = timeSlot_increment;
     }
 
@@ -86,7 +86,7 @@ public class Schedule {
      * @param from          Start timestamp of the time slot
      * @param to            End timestamp of the time stamp
      */
-    void addSlot(Token watcher_token, Room room, Date from, Date to) {
+    public void addSlot(Token watcher_token, Room room, Date from, Date to) {
         try {
             log.log_Debug("Adding schedule slot for ", watcher_token, " between ", from, " -> ", to, " for ", room);
             for (ScheduleSlot slot : convertToUTCSlotIntervals(watcher_token, from, to)) {
@@ -117,7 +117,7 @@ public class Schedule {
      * @param to   End timestamp of the time slot
      * @return Number of overlapping views on the slot
      */
-    Integer getSlotOverlapCount(Room room, Date from, Date to) {
+    public Integer getSlotOverlapCount(Room room, Date from, Date to) {
         ScheduleSlot slot = new ScheduleSlot(
                 TimestampConverter.getUTCTimestampString(from),
                 TimestampConverter.getUTCTimestampString(to)
@@ -140,7 +140,7 @@ public class Schedule {
      * @param to   End timestamp of the time slot
      * @return List of watcher tokens
      */
-    Collection<Token> getWatchers(Room room, Date from, Date to) {
+    public Collection<Token> getWatchers(Room room, Date from, Date to) {
         ScheduleSlot slot = new ScheduleSlot(
                 TimestampConverter.getUTCTimestampString(this.timeSlot_increment.floorToInterval(from)),
                 TimestampConverter.getUTCTimestampString(this.timeSlot_increment.ceilToInterval(to))
@@ -155,34 +155,85 @@ public class Schedule {
     }
 
     /**
+     * Clears watcher from a room
+     *
+     * @param token Watcher session token
+     * @param room  Room
+     */
+    public void clearWatcherCache(Token token, Room room) {
+        List<ScheduleSlot> toDelete = new LinkedList<>();
+        AVLTree.AVLTreeIterator it = (AVLTree.AVLTreeIterator) this.cache.get(room).iterator();
+        while (it.hasNext()) { //Going through slots for Room looking for any matching token
+            ScheduleSlot slot = ((ScheduleSlot) it.next().value());
+            if (slot.removeWatcher(token))
+                log.log_Trace("Cleared watcher ", token, " from cache in ", slot, " from ", room);
+            if (slot.watcherCount() == 0) {
+                toDelete.add(slot);
+            }
+        }
+        for (ScheduleSlot slot : toDelete) {
+            try {
+                this.cache.get(room).remove(slot.start());
+                log.log_Trace("Cleared ", slot, " from cache as no more watchers on it.");
+            } catch (UndefinedException e) {
+                log.log_Error("Tried to remove a non-existent slot (", slot, ") in cache for Room: ", room);
+                log.log_Exception(e);
+            }
+        }
+        if (this.cache.get(room).isEmpty()) {
+            this.cache.remove(room);
+            log.log_Trace("Cleared room ", room, " from cache as no more slots on it.");
+        }
+    }
+
+    /**
      * Clears watcher and any items subsequently unwatched from the cache
      *
      * @param token Watcher session token
      */
-    void clearWatcherCache(Token token) {
-        List<Room> toDelete = new LinkedList<>();
+    public void clearWatcherCache(Token token) {
         for (Map.Entry<Room, AVLTree<TimestampUTC, ScheduleSlot>> entry : cache.entrySet()) {
-            AVLTree.AVLTreeIterator it = (AVLTree.AVLTreeIterator) entry.getValue().iterator();
-            while (it.hasNext()) {
-                ScheduleSlot slot = ((ScheduleSlot) it.next().value());
-                if (slot.removeWatcher(token))
-                    log.log_Trace("Removed watcher ", token, " from cache in ", slot, " from ", entry.getKey());
-                if (slot.watcherCount() == 0) {
-                    toDelete.add(entry.getKey());
-                }
-            }
-        }
-        for (Room room : toDelete) {
-            this.cache.remove(room);
+            clearWatcherCache(token, entry.getKey());
         }
     }
 
     /**
      * Clears all items in the cache
      */
-    void clearCache() {
+    public void clearCache() {
+        log.log("Clearing schedule cache...");
         this.cache.clear();
     }
 
+    /**
+     * Gets the empty state of the cache
+     *
+     * @return Empty state
+     */
+    public boolean cacheIsEmpty() {
+        return this.cache.isEmpty();
+    }
+
+    /**
+     * Gets the number of rooms cached
+     *
+     * @return Cached room count
+     */
+    public int cacheSize() {
+        return this.cache.size();
+    }
+
+    /**
+     * Gets the number of slots cached for a room
+     *
+     * @param room Room
+     * @return Cached slots count
+     */
+    public int cachedSlotsCount(Room room) {
+        if (this.cache.containsKey(room))
+            return this.cache.get(room).size();
+        else
+            return 0;
+    }
 
 }

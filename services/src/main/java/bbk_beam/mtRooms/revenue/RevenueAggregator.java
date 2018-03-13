@@ -1,138 +1,164 @@
 package bbk_beam.mtRooms.revenue;
 
-import bbk_beam.mtRooms.reservation.dto.Room;
+
+import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.db.IReservationDbAccess;
+import bbk_beam.mtRooms.db.exception.DbQueryException;
+import bbk_beam.mtRooms.db.exception.SessionExpiredException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
+import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
 import java.util.Date;
 
-public class RevenueAggregator implements IRevenueReporter {
+
+/**
+ * queries data layer for details on actual revenue, pending revenue and lost revenue
+ */
+
+public class RevenueAggregator implements IRevenueAggregator {
     private final Logger log = Logger.getLoggerInstance(RevenueAggregator.class.getName());
-    private Date from;
-    private Date to;
+    String query = new String();
+    private IReservationDbAccess db_access;
 
+    /**
+     * @param reservationDbAccess
+     */
+    public RevenueAggregator(IReservationDbAccess reservationDbAccess) {
+        this.db_access = reservationDbAccess;
+    }//.constructor
 
-// create a Connection and check that the mtRooms.db exists
-// create an instance of the Statement class
-// create an instance of the ResultSet class by calling Statement.executeQuery() > accepts SELECT statement
-// output the ResultSet.next().getString()
-
-
-    @Override
-    public void getRevenueReport(Date from, Date to) {
+    private boolean checkDate(Date from, Date to) {
         try {
             if (to.after(from)) {
-                this.from = from;
-                this.to = to;
             }
-            throw new InvalidPeriodException("Date TO should be after date FROM");
+            throw new InvalidPeriodException("Check date, from should be an earlier date than to");
         } catch (InvalidPeriodException e) {
-            log.log("Date TO should be after date FROM ");
+            log.log("Check date, from should be an earlier date than to");
+        }
+        return true;
+    }
+
+    /**
+     * @param session_token
+     * @param buildingID
+     * @param from          date from the reporting period starts
+     * @param to            date to the reporting period ends
+     * @return object table for revenues by buildingID
+     * @throws DbQueryException
+     * @throws SessionExpiredException
+     * @throws SessionInvalidException
+     */
+    public ObjectTable getRevenueReport(Token session_token, Integer buildingID, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+
+        if (checkDate(from, to)) {
+            query = ("SELECT " +
+                    "Room_has_Reservation.reservation_id," +
+                    "Room_has_Reservation.cancelled_flag," +
+                    "Room_has_Reservation.building_id," +
+                    "Reservation_has_Payment.payment_id," +
+                    "Payment.amount," +
+                    "strftime('%m', Payment.timestamp) as month," +
+                    "strftime('%Y', Payment.timestamp) as year" +
+                    "FROM Room_has_Reservation" +
+                    "LEFT OUTER JOIN Reservation_has_Payment ON Room_has_Reservation.reservation_id = Reservation_has_Payment.reservation_id" +
+                    "LEFT OUTER JOIN Payment on Payment.id = Reservation_has_Payment.payment_id" +
+                    "WHERE Room_has_Reservation.cancelled_flag=0 and Payment.amount NOTNULL"
+            );
+        }
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.rowCount() == 0) {
+            log.log_Warning("No details exist for revenues by buildingID");
+            throw new DbQueryException("No details exist for revenues by buildingID");
+        }
+        return table;
+    }
+
+    /**
+     * @param session_token
+     * @param buildingID
+     * @param floorID
+     * @param from          date from the reporting period starts
+     * @param to            date to the reporting period ends
+     * @throws DbQueryException
+     * @throws SessionExpiredException
+     * @throws SessionInvalidException
+     * @returno object table for revenues by floorID
+     */
+    public ObjectTable getRevenueReport(Token session_token, Integer buildingID, Integer floorID, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+
+        if (checkDate(from, to)) {
+            query = ("SELECT " +
+                    "Room_has_Reservation.reservation_id," +
+                    "Room_has_Reservation.cancelled_flag," +
+                    "Room_has_Reservation.building_id," +
+                    "Room_has_Reservation.floor_id," +
+                    "Reservation_has_Payment.payment_id," +
+                    "strftime('%m', Payment.timestamp) as month," +
+                    "strftime('%Y', Payment.timestamp) as year" +
+                    "FROM Room_has_Reservation" +
+                    "LEFT OUTER JOIN Reservation_has_Payment ON Room_has_Reservation.reservation_id = Reservation_has_Payment.reservation_id" +
+                    "LEFT OUTER JOIN Payment on Payment.id = Reservation_has_Payment.payment_id" +
+                    "WHERE Room_has_Reservation.cancelled_flag=0 and Payment.amount NOTNULL"
+            );
         }
 
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.rowCount() == 0) {
+            log.log_Warning("No details exist for revenues by floorID");
+            throw new DbQueryException("No details exist for revenues by buildingID");
+        }
+        return table;
     }
 
-    // lists payments
+    /**
+     * @param session_token
+     * @param buildingID
+     * @param floorID
+     * @param roomID
+     * @param from          date from the reporting period starts
+     * @param to            date to the reporting period ends
+     * @return object table for revenues by roomID
+     * @throws DbQueryException
+     * @throws SessionExpiredException
+     * @throws SessionInvalidException
+     */
+    public ObjectTable getRevenueReport(Token session_token, Integer buildingID, Integer floorID, Integer roomID, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        if (checkDate(from, to)) {
+            query = ("SELECT " +
+                    "Room_has_Reservation.reservation_id," +
+                    "Room_has_Reservation.cancelled_flag," +
+                    "Room_has_Reservation.building_id," +
+                    "Room_has_Reservation.floor_id," +
+                    "Room_has_Reservation.room_id," +
+                    "Reservation_has_Payment.payment_id," +
+                    "strftime('%m', Payment.timestamp) as month," +
+                    "strftime('%Y', Payment.timestamp) as year" +
+                    "FROM Room_has_Reservation" +
+                    "LEFT OUTER JOIN Reservation_has_Payment ON Room_has_Reservation.reservation_id = Reservation_has_Payment.reservation_id" +
+                    "LEFT OUTER JOIN Payment on Payment.id = Reservation_has_Payment.payment_id" +
+                    "WHERE Room_has_Reservation.cancelled_flag=0 and Payment.amount NOTNULL"
+            );
+        }
 
-
-    @Override
-    public void getRevenueReport(Integer buildingId, Date from, Date to) {
-
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.rowCount() == 0) {
+            log.log_Warning("No details exist for revenues by floorID");
+            throw new DbQueryException("No details exist for revenues by floorID");
+        }
+        return table;
     }
 
-    @Override
-    public void getRevenueReport(Integer buildingId, Integer floorId, Date from, Date to) {
-
-    }
-
-    @Override
-    public void getRevenueReport(Room room, Date from, Date to) {
-
-        /**
-         SELECT
-         Room_has_Reservation.reservation_id ,
-         Room_has_Reservation.room_id,
-         Room_has_Reservation.floor_id,
-         Room_has_Reservation.building_id,
-         Reservation_has_Payment.payment_id,
-         Payment.amount,
-         strftime('%m', Payment.timestamp) AS month,
-         strftime('%Y', Payment.timestamp) AS year
-
-         FROM Room_has_Reservation
-         LEFT OUTER JOIN Reservation_has_Payment
-         ON Room_has_Reservation.reservation_id = Reservation_has_Payment.reservation_id
-         LEFT OUTER JOIN Payment
-         ON Reservation_has_Payment.payment_id = Payment.id
-         WHERE Room_has_Reservation.cancelled_flag = 0 and Payment.amount notnull;
-
-         */
-    }
-
-    // lists pending payments
-
-    @Override
-    public void getPendingRevenueReport(Integer buildingId, Date from, Date to) {
-
-    }
-
-    @Override
-    public void getPendingRevenueReport(Integer buildingId, Integer floorId, Date from, Date to) {
-
-    }
-
-    @Override
-    public void getPendingRevenueReport(Room room, Date from, Date to) {
-
-        // WHERE Room_has_Reservation.cancelled_flag = 0 and Payment.amount is null;
-
-    }
-
-
-    // lists cancelled reservations
-    @Override
-    public void getLostRevenueReport(Integer buildingId, Date from, Date to) {
-
-    }
-
-    @Override
-    public void getLostRevenueReport(Integer buildingId, Integer floorId, Date from, Date to) {
-
-    }
-
-    @Override
-    public void getLostRevenueReport(Room room, Date from, Date to) {
-
-        /**
-         SELECT
-         Room_has_Reservation.reservation_id,
-         Room_has_Reservation.room_id,
-         Room_has_Reservation.floor_id,
-         Room_has_Reservation.building_id,
-         Room_has_Reservation.timestamp_in,
-         Room_has_Reservation.timestamp_out,
-         Room_has_Reservation.cancelled_flag,
-         RoomPrice.price,
-         RoomPrice.year
-
-         FROM Room_has_Reservation
-
-         LEFT OUTER JOIN Room_has_RoomPrice
-         ON Room_has_RoomPrice.room_id = Room_has_Reservation.room_id
-         LEFT OUTER JOIN RoomPrice
-         ON Room_has_RoomPrice.price_id = RoomPrice.id
-
-         WHERE Room_has_Reservation.cancelled_flag=1 AND RoomPrice.year = strftime('%Y',Room_has_Reservation.timestamp_in)
-         ;
-         */
-
-        // TODO
-        /**
-         * query should throw an error if Room_has_Reservation year (at the time of reservation > timestamp_in)
-         * can not be found in RoomPrice year
-         */
-
+    public ObjectTable getRevenueSummary(Token session_token, Date from, Date to) throws DbQueryException, SessionInvalidException, SessionExpiredException {
+        //total by month and by year
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.isEmpty()) {
+            log.log_Warning("No revenues listed for the chosen period");
+            throw new DbQueryException("No revenues listed for the chosen period");
+        }
+        return table;
     }
 
 
-}
+}//.class

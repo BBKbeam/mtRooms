@@ -162,28 +162,30 @@ public class Schedule {
      * @param room  Room
      */
     public void clearWatcherCache(Token token, Room room) {
-        List<ScheduleSlot> toDelete = new LinkedList<>();
-        AVLTree.AVLTreeIterator it = (AVLTree.AVLTreeIterator) this.cache.get(room).iterator();
-        while (it.hasNext()) { //Going through slots for Room looking for any matching token
-            ScheduleSlot slot = ((ScheduleSlot) it.next().value());
-            if (slot.removeWatcher(token))
-                log.log_Trace("Cleared watcher ", token, " from cache in ", slot, " from ", room);
-            if (slot.watcherCount() == 0) {
-                toDelete.add(slot);
+        if (this.cache.containsKey(room)) {
+            List<ScheduleSlot> toDelete = new LinkedList<>();
+            AVLTree.AVLTreeIterator it = (AVLTree.AVLTreeIterator) this.cache.get(room).iterator();
+            while (it.hasNext()) { //Going through slots for Room looking for any matching token
+                ScheduleSlot slot = ((ScheduleSlot) it.next().value());
+                if (slot.removeWatcher(token))
+                    log.log_Trace("Cleared watcher ", token, " from cache in ", slot, " from ", room);
+                if (slot.watcherCount() == 0) {
+                    toDelete.add(slot);
+                }
             }
-        }
-        for (ScheduleSlot slot : toDelete) {
-            try {
-                this.cache.get(room).remove(slot.start());
-                log.log_Trace("Cleared ", slot, " from cache as no more watchers on it.");
-            } catch (UndefinedException e) {
-                log.log_Error("Tried to remove a non-existent slot (", slot, ") in cache for Room: ", room);
-                log.log_Exception(e);
+            for (ScheduleSlot slot : toDelete) {
+                try {
+                    this.cache.get(room).remove(slot.start());
+                    log.log_Trace("Cleared ", slot, " from cache as no more watchers on it.");
+                } catch (UndefinedException e) {
+                    log.log_Error("Tried to remove a non-existent slot (", slot, ") in cache for Room: ", room);
+                    log.log_Exception(e);
+                }
             }
-        }
-        if (this.cache.get(room).isEmpty()) {
-            this.cache.remove(room);
-            log.log_Trace("Cleared room ", room, " from cache as no more slots on it.");
+            if (this.cache.get(room).isEmpty()) {
+                this.cache.remove(room);
+                log.log_Trace("Cleared room ", room, " from cache as no more slots on it.");
+            }
         }
     }
 

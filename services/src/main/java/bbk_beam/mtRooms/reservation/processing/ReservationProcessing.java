@@ -11,6 +11,7 @@ import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.reservation.exception.InvalidRoomCategory;
+import bbk_beam.mtRooms.reservation.scheduling.ScheduleCache;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -21,14 +22,16 @@ import java.util.List;
 public class ReservationProcessing {
     private final Logger log = Logger.getLoggerInstance(ReservationProcessing.class.getName());
     private IReserve db_delegate;
+    private ScheduleCache schedule_cache;
 
     /**
      * Constructor
      *
      * @param reserve_delegate IReserve instance
      */
-    public ReservationProcessing(IReserve reserve_delegate) {
+    public ReservationProcessing(IReserve reserve_delegate, ScheduleCache scheduleCache) {
         this.db_delegate = reserve_delegate;
+        this.schedule_cache = scheduleCache;
     }
 
     /**
@@ -47,6 +50,7 @@ public class ReservationProcessing {
             Integer reservation_id = this.db_delegate.createReservation(session_token, reservation);
             log.log_Debug("Created reservation in records. Given Reservation.id: ", reservation_id);
             for (RoomReservation reserved_room : reservation.rooms()) {
+                this.schedule_cache.add(session_token, reserved_room); //adds to the cache if not already there
                 this.db_delegate.createRoomReservation(session_token, reservation_id, reserved_room);
             }
             return getReservation(session_token, reservation_id);
@@ -75,6 +79,7 @@ public class ReservationProcessing {
         try {
             Reservation temp_reservation = getReservation(session_token, reservation.id());
             this.db_delegate.createRoomReservation(session_token, temp_reservation.id(), reserved_room);
+            this.schedule_cache.clearWatcherCache(session_token, reserved_room.room()); //remove watcher from cache as room transaction is completed
         } catch (InvalidReservation e) {
             log.log_Error("Trying to create a RoomReservation in the records before Reservation.");
             throw new InvalidReservation("Trying to create a RoomReservation in the records before Reservation.", e);

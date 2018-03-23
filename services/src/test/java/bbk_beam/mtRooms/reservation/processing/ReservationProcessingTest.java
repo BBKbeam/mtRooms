@@ -8,6 +8,7 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
 import bbk_beam.mtRooms.reservation.dto.*;
+import bbk_beam.mtRooms.reservation.scheduling.ScheduleCache;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import org.junit.After;
 import org.junit.Assert;
@@ -42,7 +43,7 @@ public class ReservationProcessingTest {
         this.reservationDbAccess = this.db_bootstrapper.getReservationDbAccess();
         this.userAccDbAccess.openSession(this.token.getSessionId(), this.token.getExpiry(), SessionType.ADMIN, 1);
         this.reservationDbDelegate = new ReservationDbDelegate(reservationDbAccess);
-        this.reservationProcessing = new ReservationProcessing(this.reservationDbDelegate);
+        this.reservationProcessing = new ReservationProcessing(this.reservationDbDelegate, new ScheduleCache());
     }
 
     @After

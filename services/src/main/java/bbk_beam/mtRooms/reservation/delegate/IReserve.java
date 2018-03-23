@@ -43,11 +43,12 @@ public interface IReserve {
      * @param session_token Session's token
      * @param reservation   Reservation DTO
      * @return Balance to reimburse on reservation
+     * @throws InvalidReservation      when Reservation cannot be validated with the records
      * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    Double cancelReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    Double cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Cancels a reserved room inside a reservation from the records
@@ -61,7 +62,7 @@ public interface IReserve {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    Double cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    Double cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Deletes the record of a reservation and its reserved rooms
@@ -70,9 +71,9 @@ public interface IReserve {
      * @param session_token  Session's token
      * @param reservation_id Reservation ID
      * @throws InvalidReservation      when Reservation cannot be validated with the records
-     * @throws DbQueryException
-     * @throws SessionExpiredException
-     * @throws SessionExpiredException
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     void deleteReservation(Token session_token, Integer reservation_id) throws DbQueryException, InvalidReservation, SessionExpiredException, SessionInvalidException;
 

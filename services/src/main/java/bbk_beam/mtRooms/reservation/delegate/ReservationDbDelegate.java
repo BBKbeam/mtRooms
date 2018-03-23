@@ -348,7 +348,15 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public Double cancelReservation(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Double cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+        //Checking Reservation exists
+        ObjectTable check = this.db_access.pullFromDB(
+                session_token.getSessionId(),
+                "SELECT COUNT(*) FROM Reservation WHERE id = " + reservation.id()
+        );
+        if (check.isEmpty())
+            throw new InvalidReservation("Reservation [" + reservation.id() + "] does not exists in records.");
+        //Setting all Room_has_Reservation entries linked the the Reservation as cancelled in records
         String query1 = "UPDATE " +
                 "Room_has_Reservation " +
                 "SET cancelled_flag = 1 " +
@@ -357,6 +365,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
             log.log_Error("Could not cancel ReservedRooms in Reservation [", reservation.id(), "].");
             throw new DbQueryException("Could not cancel ReservedRooms in Reservation [" + reservation.id() + "].");
         }
+        //Getting total of payments linked to Reservation
         String query2 = "SELECT " +
                 "SUM( Payment.amount ) AS total_paid " +
                 "FROM Reservation_has_Payment " +
@@ -373,7 +382,15 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public Double cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public Double cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+        //Checking Reservation exists
+        ObjectTable check = this.db_access.pullFromDB(
+                session_token.getSessionId(),
+                "SELECT COUNT(*) FROM Reservation WHERE id = " + reservation_id
+        );
+        if (check.isEmpty())
+            throw new InvalidReservation("Reservation [" + reservation_id + "] does not exists in records.");
+        //Setting Room_has_Reservation entry as cancelled in records
         String query1 = "UPDATE " +
                 "Room_has_Reservation " +
                 "SET cancelled_flag = 1 " +
@@ -386,6 +403,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
             log.log_Error("Could not cancel RoomReservation: ", reserved_room);
             throw new DbQueryException("Could not cancel RoomReservation: : " + reserved_room);
         }
+        //Getting the cancelled room's price
         String query2 = "SELECT " +
                 "RoomPrice.price AS room_price " +
                 "FROM Room_has_Reservation " +

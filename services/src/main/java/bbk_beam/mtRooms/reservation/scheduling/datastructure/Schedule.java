@@ -96,7 +96,8 @@ public class Schedule {
                 if (this.cache.get(room).search(slot.start())) {
                     log.log_Debug("Adding watcher [", watcher_token, "] to ", room, ": ", slot);
                     ScheduleSlot new_slot = this.cache.get(room).apply(slot.start(), (ScheduleSlot s) -> {
-                        s.addWatcher(watcher_token);
+                        if (!s.watchers().contains(watcher_token))
+                            s.addWatcher(watcher_token);
                         return s;
                     });
                 } else {

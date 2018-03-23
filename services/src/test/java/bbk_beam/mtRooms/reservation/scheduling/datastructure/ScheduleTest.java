@@ -43,6 +43,7 @@ public class ScheduleTest {
         Date date2to = Date.from(Instant.now().plus(90, ChronoUnit.MINUTES));
         this.schedule.addSlot(token1, room1, date1from, date1to);
         this.schedule.addSlot(token2, room1, date2from, date2to);
+        this.schedule.addSlot(token2, room1, date2from, date2to); //duplicates should not be added
         Collection<Token> watchers = this.schedule.getWatchers(room1, date1from, date2to);
         Assert.assertEquals(2, watchers.size());
     }

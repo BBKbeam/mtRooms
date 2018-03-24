@@ -201,7 +201,57 @@ public class ScheduleTest {
     }
 
     @Test
-    public void clearWatcherCache() {
+    public void clearWatcherCache1() { //Room in a time frame
+        Date start1 = TimestampConverter.getDateObject("2018-01-01 00:00:00");
+        Date end1 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
+        Date start2 = TimestampConverter.getDateObject("2018-01-01 00:30:00");
+        Date end2 = TimestampConverter.getDateObject("2018-01-01 01:30:00");
+        Date start3 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
+        Date end3 = TimestampConverter.getDateObject("2018-01-01 02:00:00");
+        //Sanity check
+        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
+        //Room1
+        this.schedule.addSlot(token1, room1, start1, end1); //00:00:00 - 01:00:00
+        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        this.schedule.addSlot(token2, room1, start2, end2); //00:30:00 - 01:30:00
+        Assert.assertEquals(3, this.schedule.cachedSlotsCount(room1));
+        this.schedule.addSlot(token3, room1, start3, end3); //00:30:00 - 01:30:00
+        Assert.assertEquals(4, this.schedule.cachedSlotsCount(room1));
+        //Testing
+        Assert.assertEquals(
+                2,
+                this.schedule.getWatchers(
+                        room1,
+                        TimestampConverter.getDateObject("2018-01-01 00:30:00"),
+                        TimestampConverter.getDateObject("2018-01-01 01:00:00")
+                ).size()
+        );
+        this.schedule.clearWatcherCache(
+                token1,
+                room1,
+                TimestampConverter.getDateObject("2018-01-01 00:30:00"),
+                TimestampConverter.getDateObject("2018-01-01 01:00:00")
+        );
+        Assert.assertEquals(
+                1,
+                this.schedule.getWatchers(
+                        room1,
+                        TimestampConverter.getDateObject("2018-01-01 00:00:00"),
+                        TimestampConverter.getDateObject("2018-01-01 00:30:00")
+                ).size()
+        );
+        Assert.assertEquals(
+                1,
+                this.schedule.getWatchers(
+                        room1,
+                        TimestampConverter.getDateObject("2018-01-01 00:30:00"),
+                        TimestampConverter.getDateObject("2018-01-01 01:00:00")
+                ).size()
+        );
+    }
+
+    @Test
+    public void clearWatcherCache2() { //All slots for a room
         Date start1 = TimestampConverter.getDateObject("2018-01-01 00:00:00");
         Date end1 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
         //Sanity check

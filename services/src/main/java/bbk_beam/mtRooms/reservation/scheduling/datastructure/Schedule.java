@@ -190,6 +190,31 @@ public class Schedule {
     }
 
     /**
+     * Clears watcher from a room's slots in a time frame
+     *
+     * @param token Watcher session token
+     * @param room  Room DTO
+     * @param from  Beginning of the time frame
+     * @param to    End of the time frame
+     */
+    public void clearWatcherCache(Token token, Room room, Date from, Date to) {
+        if (this.cache.containsKey(room)) {
+            ScheduleSlot slot = new ScheduleSlot(
+                    TimestampConverter.getUTCTimestampString(from),
+                    TimestampConverter.getUTCTimestampString(to)
+            );
+
+            Collection<ScheduleSlot> slots = cache.get(room).searchValues((ScheduleSlot t) -> (t.compareTo(slot) == 0));
+            for (ScheduleSlot scheduleSlot : slots) {
+                this.cache.get(room).apply(scheduleSlot.start(), (ScheduleSlot s) -> {
+                    s.removeWatcher(token);
+                    return s;
+                });
+            }
+        }
+    }
+
+    /**
      * Clears watcher and any items subsequently unwatched from the cache
      *
      * @param token Watcher session token

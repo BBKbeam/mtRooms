@@ -79,7 +79,7 @@ public class ReservationProcessing {
         try {
             Reservation temp_reservation = getReservation(session_token, reservation.id());
             this.db_delegate.createRoomReservation(session_token, temp_reservation.id(), reserved_room);
-            this.schedule_cache.clearWatcherCache(session_token, reserved_room.room()); //remove watcher from cache as room transaction is completed
+            this.schedule_cache.broadcastRoomReservation(session_token, reserved_room);
         } catch (InvalidReservation e) {
             log.log_Error("Trying to create a RoomReservation in the records before Reservation.");
             throw new InvalidReservation("Trying to create a RoomReservation in the records before Reservation.", e);

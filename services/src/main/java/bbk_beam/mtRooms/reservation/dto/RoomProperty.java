@@ -6,33 +6,45 @@ import java.util.Objects;
  * RoomProperty DTO
  * <p>
  * Container class for the properties of a room for evaluation purposes
- * Boolean flags that are set to false on the instance used for evaluation are non-required
- * Values set to negative (-1) on the instance used for evaluation are non-required
- * Other values mean that properties are required and need to be evaluated as such during comparisons
+ * Values set to negative (-1) on the instance used for evaluation are non-required,
+ * positives will be evaluated as a "minimum requirement"
+ * </p>
  */
 public class RoomProperty implements Comparable<RoomProperty> {
-    private boolean has_fixed_chairs;
-    private boolean has_catering_space;
-    private boolean has_whiteboard;
-    private boolean has_projector;
+    /**
+     * Trilean  (3-state logic)
+     * <p>
+     * Requirement levels that model the state (TRUE/FALSE) or the needed requirements (TRUE/UNDEFINED/FALSE)
+     * </p>
+     */
+    enum Trilean {
+        TRUE,
+        UNDEFINED,
+        FALSE
+    }
+
+    private Trilean has_fixed_chairs;
+    private Trilean has_catering_space;
+    private Trilean has_whiteboard;
+    private Trilean has_projector;
     private Integer capacity;
     private Integer dimension;
 
     /**
      * Constructor
      *
-     * @param has_fixed_chairs   Fixed chairs flag
-     * @param has_catering_space Catering space flag
-     * @param has_whiteboard     Whiteboard flag
-     * @param has_projector      Projector flag
+     * @param has_fixed_chairs   Fixed chairs state or requirement level
+     * @param has_catering_space Catering space state or requirement level
+     * @param has_whiteboard     Whiteboard state or requirement level
+     * @param has_projector      Projector state or requirement level
      * @param capacity           Number of people room can hold
      * @param dimension          Dimension of room in square metres
      */
     public RoomProperty(
-            boolean has_fixed_chairs,
-            boolean has_catering_space,
-            boolean has_whiteboard,
-            boolean has_projector,
+            Trilean has_fixed_chairs,
+            Trilean has_catering_space,
+            Trilean has_whiteboard,
+            Trilean has_projector,
             Integer capacity,
             Integer dimension) {
         this.has_fixed_chairs = has_fixed_chairs;
@@ -46,17 +58,17 @@ public class RoomProperty implements Comparable<RoomProperty> {
     /**
      * Constructor
      *
-     * @param has_fixed_chairs   Fixed chairs flag
-     * @param has_catering_space Catering space flag
-     * @param has_whiteboard     Whiteboard flag
-     * @param has_projector      Projector flag
+     * @param has_fixed_chairs   Fixed chairs state or requirement level
+     * @param has_catering_space Catering space state or requirement level
+     * @param has_whiteboard     Whiteboard state or requirement level
+     * @param has_projector      Projector state or requirement level
      * @param capacity           Number of people room can hold
      */
     public RoomProperty(
-            boolean has_fixed_chairs,
-            boolean has_catering_space,
-            boolean has_whiteboard,
-            boolean has_projector,
+            Trilean has_fixed_chairs,
+            Trilean has_catering_space,
+            Trilean has_whiteboard,
+            Trilean has_projector,
             Integer capacity) {
         this.has_fixed_chairs = has_fixed_chairs;
         this.has_catering_space = has_catering_space;
@@ -69,36 +81,36 @@ public class RoomProperty implements Comparable<RoomProperty> {
     /**
      * Gets fixed chair the flag
      *
-     * @return Fixed chair flag
+     * @return Fixed chair state or requirement level
      */
-    public boolean hasFixedChairs() {
+    public Trilean hasFixedChairs() {
         return this.has_fixed_chairs;
     }
 
     /**
      * Gets the catering space flag
      *
-     * @return Catering space flag
+     * @return Catering space state or requirement level
      */
-    public boolean hasCateringSpace() {
+    public Trilean hasCateringSpace() {
         return this.has_catering_space;
     }
 
     /**
      * Gets the whiteboard flag
      *
-     * @return Whiteboard flag
+     * @return Whiteboard  state or requirement level
      */
-    public boolean hasWhiteboard() {
+    public Trilean hasWhiteboard() {
         return this.has_whiteboard;
     }
 
     /**
      * Gets the projector flag
      *
-     * @return Projector flag
+     * @return Projector state or requirement level
      */
-    public boolean hasProjector() {
+    public Trilean hasProjector() {
         return this.has_projector;
     }
 
@@ -121,35 +133,40 @@ public class RoomProperty implements Comparable<RoomProperty> {
     }
 
     /**
-     * Compares a flag requirement with a given flag
+     * Compares requirement levels with a given state
      *
-     * @param required   Required flag
-     * @param other_flag Flag to compare to
-     * @return (- 1) when requirement is not met, (0) when equal, (+1) when not required but given anyway
+     * @param requirement Requirement
+     * @param given       Given state
+     * @return (- 1) when requirement is not met, (0) when requirement is met, (1) when requirement is exceeded
      */
-    private int compareFlags(boolean required, boolean other_flag) {
-        if (required)
-            return other_flag ? 0 : -1;
-        else
-            return other_flag ? 1 : 0;
+    private int compareRequirementState(Trilean requirement, Trilean given) {
+        switch (requirement) {
+            case TRUE:
+                return given == Trilean.TRUE ? 0 : -1;
+            case FALSE:
+                return given == Trilean.FALSE ? 0 : -1;
+            case UNDEFINED:
+                return given == Trilean.TRUE ? 1 : 0;
+        }
+        throw new RuntimeException("RoomProperty.compareRequirementState( " + requirement + ", " + given + " ) encountered a state not catered for in the switch statement.");
     }
 
     @Override
     public int compareTo(RoomProperty that) {
         int tally = 0, result;
-        if ((result = compareFlags(this.hasFixedChairs(), that.hasFixedChairs())) < 0)
+        if ((result = compareRequirementState(this.hasFixedChairs(), that.hasFixedChairs())) < 0)
             return -1;
         else
             tally += result;
-        if ((result = compareFlags(this.hasCateringSpace(), that.hasCateringSpace())) < 0)
+        if ((result = compareRequirementState(this.hasCateringSpace(), that.hasCateringSpace())) < 0)
             return -1;
         else
             tally += result;
-        if ((result = compareFlags(this.hasWhiteboard(), that.hasWhiteboard())) < 0)
+        if ((result = compareRequirementState(this.hasWhiteboard(), that.hasWhiteboard())) < 0)
             return -1;
         else
             tally += result;
-        if ((result = compareFlags(this.hasProjector(), that.hasProjector())) < 0)
+        if ((result = compareRequirementState(this.hasProjector(), that.hasProjector())) < 0)
             return -1;
         else
             tally += result;
@@ -175,8 +192,8 @@ public class RoomProperty implements Comparable<RoomProperty> {
                 has_catering_space == that.has_catering_space &&
                 has_whiteboard == that.has_whiteboard &&
                 has_projector == that.has_projector &&
-                capacity == that.capacity &&
-                dimension == that.dimension;
+                capacity.equals(that.capacity) &&
+                dimension.equals(that.dimension);
     }
 
     @Override

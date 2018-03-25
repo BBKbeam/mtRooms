@@ -8,18 +8,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_1() { //All crap requirements/don't care
         RoomProperty a = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
                 -1,
                 -1
         );
         RoomProperty b = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
                 -1,
                 -1
         );
@@ -29,18 +29,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_2() { //All requirements met exactly
         RoomProperty a = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
                 3,
                 5
         );
         RoomProperty b = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
                 3,
                 5
         );
@@ -50,18 +50,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_3() { //All requirements are better than needed
         RoomProperty a = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
                 3,
                 5
         );
         RoomProperty b = new RoomProperty(
-                true,
-                true,
-                true,
-                true,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
                 10,
                 10
         );
@@ -71,18 +71,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_4() { //Don't care apart from 1 requirement (dimension)
         RoomProperty a = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
                 -1,
                 5
         );
         RoomProperty b = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
                 10,
                 10
         );
@@ -92,18 +92,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_5() { //Dimension requirement fails
         RoomProperty a = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
                 3,
                 5
         );
         RoomProperty b = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
                 3,
                 4
         );
@@ -113,18 +113,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_6() { //Capacity requirement fails
         RoomProperty a = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
                 3,
                 5
         );
         RoomProperty b = new RoomProperty(
-                false,
-                false,
-                false,
-                false,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.FALSE,
                 2,
                 5
         );
@@ -134,18 +134,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_7() { //Projector requirement fails
         RoomProperty a = new RoomProperty(
-                true,
-                true,
-                true,
-                true,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
                 3,
                 5
         );
         RoomProperty b = new RoomProperty(
-                true,
-                true,
-                true,
-                false,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.FALSE,
                 3,
                 5
         );
@@ -155,18 +155,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_8() { //Whiteboard requirement fails
         RoomProperty a = new RoomProperty(
-                true,
-                true,
-                true,
-                true,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
                 3,
                 5
         );
         RoomProperty b = new RoomProperty(
-                true,
-                true,
-                false,
-                true,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.TRUE,
                 3,
                 5
         );
@@ -176,18 +176,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_9() { //Catering space requirement fails
         RoomProperty a = new RoomProperty(
-                true,
-                true,
-                true,
-                true,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
                 3,
                 5
         );
         RoomProperty b = new RoomProperty(
-                true,
-                false,
-                true,
-                true,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
                 3,
                 5
         );
@@ -197,18 +197,18 @@ public class RoomPropertyTest {
     @Test
     public void compareTo_10() { //Fixed chairs requirement fails
         RoomProperty a = new RoomProperty(
-                true,
-                true,
-                true,
-                true,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
                 3,
                 5
         );
         RoomProperty b = new RoomProperty(
-                false,
-                true,
-                true,
-                true,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.TRUE,
                 3,
                 5
         );

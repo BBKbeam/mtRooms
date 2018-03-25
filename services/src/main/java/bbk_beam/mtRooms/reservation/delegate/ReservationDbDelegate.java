@@ -607,26 +607,30 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public ObjectTable search(Room room, Date from, Date to, RoomProperty property) {
+    public ObjectTable search(Token session_token, Room room, Date from, Date to, RoomProperty property) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "";
         //TODO
-        return null;
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 
     @Override
-    public ObjectTable search(Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) {
+    public ObjectTable search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "";
         //TODO
-        return null;
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 
     @Override
-    public ObjectTable search(Integer building_id, Date from, Date to, RoomProperty property) {
+    public ObjectTable search(Token session_token, Integer building_id, Date from, Date to, RoomProperty property) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "";
         //TODO
-        return null;
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 
     @Override
-    public ObjectTable search(Date from, Date to, RoomProperty property) {
+    public ObjectTable search(Token session_token, Date from, Date to, RoomProperty property) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "";
         //TODO
-        return null;
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 }

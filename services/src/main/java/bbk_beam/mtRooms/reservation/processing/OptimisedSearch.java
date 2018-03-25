@@ -1,8 +1,12 @@
 package bbk_beam.mtRooms.reservation.processing;
 
+import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.db.exception.SessionExpiredException;
+import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.delegate.ISearch;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomProperty;
+import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
 import eadjlib.logger.Logger;
 
@@ -28,13 +32,17 @@ public class OptimisedSearch {
     /**
      * Searches for available times for a Room
      *
-     * @param room     Room DTO
-     * @param from     Beginning timestamp to search from
-     * @param to       End timestamp to search up to
-     * @param property Minimum requirements for the room
+     * @param session_token Session token
+     * @param room          Room DTO
+     * @param from          Beginning timestamp to search from
+     * @param to            End timestamp to search up to
+     * @param property      Minimum requirements for the room
      * @return Availability as a list of time spans where the room is free
+     * @throws FailedDbFetch           when an error occurred getting the record
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    List<TimeSpan> search(Room room, Date from, Date to, RoomProperty property) {
+    List<TimeSpan> search(Token session_token, Room room, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         //TODO
         return null;
     }
@@ -42,14 +50,18 @@ public class OptimisedSearch {
     /**
      * Searches for available rooms on a floor within a time frame
      *
-     * @param building_id ID of building where the floor is
-     * @param floor_id    ID of the floor to search in
-     * @param from        Beginning timestamp to search from
-     * @param to          End timestamp to search up to
-     * @param property    Minimum requirements for the room
+     * @param session_token Session token
+     * @param building_id   ID of building where the floor is
+     * @param floor_id      ID of the floor to search in
+     * @param from          Beginning timestamp to search from
+     * @param to            End timestamp to search up to
+     * @param property      Minimum requirements for the room
      * @return Availability as a Map of the free rooms with their associated list of time spans where the room is free
+     * @throws FailedDbFetch           when an error occurred getting the record
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    HashMap<Room, List<TimeSpan>> search(Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) {
+    HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         //TODO
         return null;
     }
@@ -57,13 +69,17 @@ public class OptimisedSearch {
     /**
      * Searches for available rooms on a floor within a time frame
      *
-     * @param building_id ID of building to search in
-     * @param from        Beginning timestamp to search from
-     * @param to          End timestamp to search up to
-     * @param property    Minimum requirements for the room
+     * @param session_token Session token
+     * @param building_id   ID of building to search in
+     * @param from          Beginning timestamp to search from
+     * @param to            End timestamp to search up to
+     * @param property      Minimum requirements for the room
      * @return Availability as a Map of the free rooms with their associated list of time spans where the room is free
+     * @throws FailedDbFetch           when an error occurred getting the record
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    HashMap<Room, List<TimeSpan>> search(Integer building_id, Date from, Date to, RoomProperty property) {
+    HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         //TODO
         return null;
     }
@@ -71,12 +87,16 @@ public class OptimisedSearch {
     /**
      * Searches for available rooms anywhere
      *
-     * @param from     Beginning timestamp to search from
-     * @param to       End timestamp to search up to
-     * @param property Minimum requirements for the room
+     * @param session_token Session token
+     * @param from          Beginning timestamp to search from
+     * @param to            End timestamp to search up to
+     * @param property      Minimum requirements for the room
      * @return Availability as a Map of the free rooms with their associated list of time spans where the room is free
+     * @throws FailedDbFetch           when an error occurred getting the record
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    HashMap<Room, List<TimeSpan>> search(Date from, Date to, RoomProperty property) {
+    HashMap<Room, List<TimeSpan>> search(Token session_token, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         //TODO
         return null;
     }

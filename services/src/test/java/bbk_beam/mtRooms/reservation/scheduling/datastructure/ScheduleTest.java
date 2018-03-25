@@ -176,6 +176,23 @@ public class ScheduleTest {
     }
 
     @Test
+    public void setBooked() {
+        Date start1 = TimestampConverter.getDateObject("2018-01-01 00:00:00");
+        Date mid1 = TimestampConverter.getDateObject("2018-01-01 00:30:00");
+        Date mid2 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
+        Date end1 = TimestampConverter.getDateObject("2018-01-01 01:30:00");
+        //Sanity check
+        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
+        //Testing
+        this.schedule.addSlot(token1, room1, start1, end1);
+        this.schedule.setBooked(room1, mid1, mid2);
+        Assert.assertTrue(this.schedule.isBooked(room1, start1, end1));
+        Assert.assertTrue(this.schedule.isBooked(room1, mid1, mid2));
+        Assert.assertFalse(this.schedule.isBooked(room1, start1, mid1));
+        Assert.assertFalse(this.schedule.isBooked(room1, mid2, end1));
+    }
+
+    @Test
     public void getWatchers() {
         Date start1 = TimestampConverter.getDateObject("2018-01-01 00:00:00");
         Date end1 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
@@ -215,7 +232,7 @@ public class ScheduleTest {
         Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
         this.schedule.addSlot(token2, room1, start2, end2); //00:30:00 - 01:30:00
         Assert.assertEquals(3, this.schedule.cachedSlotsCount(room1));
-        this.schedule.addSlot(token3, room1, start3, end3); //00:30:00 - 01:30:00
+        this.schedule.addSlot(token3, room1, start3, end3); //01:00:00 - 02:00:00
         Assert.assertEquals(4, this.schedule.cachedSlotsCount(room1));
         //Testing
         Assert.assertEquals(
@@ -234,6 +251,29 @@ public class ScheduleTest {
         );
         Assert.assertEquals(
                 1,
+                this.schedule.getWatchers(
+                        room1,
+                        TimestampConverter.getDateObject("2018-01-01 00:00:00"),
+                        TimestampConverter.getDateObject("2018-01-01 00:30:00")
+                ).size()
+        );
+        Assert.assertEquals(
+                1,
+                this.schedule.getWatchers(
+                        room1,
+                        TimestampConverter.getDateObject("2018-01-01 00:30:00"),
+                        TimestampConverter.getDateObject("2018-01-01 01:00:00")
+                ).size()
+        );
+
+        this.schedule.clearWatcherCache(
+                token1,
+                room1,
+                TimestampConverter.getDateObject("2018-01-01 00:00:00"),
+                TimestampConverter.getDateObject("2018-01-01 00:30:00")
+        );
+        Assert.assertEquals(
+                0,
                 this.schedule.getWatchers(
                         room1,
                         TimestampConverter.getDateObject("2018-01-01 00:00:00"),
@@ -284,6 +324,32 @@ public class ScheduleTest {
         Assert.assertTrue(this.schedule.getWatchers(room2, start1, end1).isEmpty());
         this.schedule.clearWatcherCache(token3);
         Assert.assertTrue(this.schedule.cacheIsEmpty());
+    }
+
+    @Test
+    public void clearUnwatchedBookedSlots() {
+        Date start1 = TimestampConverter.getDateObject("2018-01-01 00:00:00");
+        Date mid1 = TimestampConverter.getDateObject("2018-01-01 00:30:00");
+        Date mid2 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
+        Date end1 = TimestampConverter.getDateObject("2018-01-01 01:30:00");
+        //Sanity check
+        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
+        //Testing
+        this.schedule.addSlot(token1, room1, start1, end1);
+        this.schedule.addSlot(token2, room1, mid2, end1);
+        this.schedule.setBooked(room1, mid1, mid2);
+        Assert.assertTrue(this.schedule.isBooked(room1, mid1, mid2));
+        Assert.assertEquals(2, this.schedule.getWatchers(room1, start1, end1).size());
+        this.schedule.clearWatcherCache(token2, room1, mid1, mid2);
+        this.schedule.setBooked(room1, mid1, mid2);
+        Assert.assertTrue(this.schedule.isBooked(room1, mid1, mid2));
+        //Should remove all watched unbooked slots from the room's schedule tree
+        this.schedule.clearWatcherCache(token1);
+        this.schedule.clearWatcherCache(token2);
+        //Testing
+        Assert.assertEquals(1, this.schedule.cachedSlotsCount(room1));
+        this.schedule.clearUnwatchedBookedSlots();
+        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
     }
 
     @Test

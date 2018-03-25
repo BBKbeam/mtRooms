@@ -13,6 +13,7 @@ import java.util.List;
  */
 class ScheduleSlot extends TimeSpan {
     private List<Token> watchers;
+    private boolean is_booked;
 
     /**
      * Constructor
@@ -22,6 +23,7 @@ class ScheduleSlot extends TimeSpan {
      */
     public ScheduleSlot(String start, String end) {
         super(start, end);
+        this.is_booked = false;
         this.watchers = new ArrayList<>();
     }
 
@@ -34,6 +36,7 @@ class ScheduleSlot extends TimeSpan {
      */
     public ScheduleSlot(Token watcher_token, String start, String end) {
         super(start, end);
+        this.is_booked = false;
         this.watchers = new ArrayList<>();
         this.watchers.add(watcher_token);
     }
@@ -94,8 +97,29 @@ class ScheduleSlot extends TimeSpan {
         return Collections.unmodifiableList(this.watchers);
     }
 
+    /**
+     * Gets the booked state of the slot
+     *
+     * @return Booked state
+     */
+    public boolean isBooked() {
+        return is_booked;
+    }
+
+    /**
+     * Sets the slot as booked
+     */
+    public void setAsBooked() {
+        this.is_booked = true;
+    }
+
     @Override
     public String toString() {
-        return "ScheduleSlot={ start: " + super.start() + ", end: " + super.end() + ", watchers=" + watchers + " }";
+        return "ScheduleSlot={ " +
+                (isBooked() ? "(Booked) " : "(Free) ") +
+                "start: " + super.start() +
+                ", end: " + super.end() +
+                ", watchers=" + watchers +
+                " }";
     }
 }

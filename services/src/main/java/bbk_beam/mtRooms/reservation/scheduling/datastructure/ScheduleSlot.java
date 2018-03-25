@@ -11,9 +11,7 @@ import java.util.List;
 /**
  * Schedule-slot holder class
  */
-class ScheduleSlot implements Comparable<ScheduleSlot> {
-    private TimestampUTC start;
-    private TimestampUTC end;
+class ScheduleSlot extends TimeSpan {
     private List<Token> watchers;
 
     /**
@@ -23,8 +21,7 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
      * @param end   End timestamp string (UTC)
      */
     public ScheduleSlot(String start, String end) {
-        this.start = new TimestampUTC(start);
-        this.end = new TimestampUTC(end);
+        super(start, end);
         this.watchers = new ArrayList<>();
     }
 
@@ -36,8 +33,7 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
      * @param end           End timestamp string (UTC)
      */
     public ScheduleSlot(Token watcher_token, String start, String end) {
-        this.start = new TimestampUTC(start);
-        this.end = new TimestampUTC(end);
+        super(start, end);
         this.watchers = new ArrayList<>();
         this.watchers.add(watcher_token);
     }
@@ -48,7 +44,7 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
      * @return Start TimestampUTC
      */
     public TimestampUTC start() {
-        return this.start;
+        return super.start();
     }
 
     /**
@@ -57,7 +53,7 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
      * @return End TimestampUTC
      */
     public TimestampUTC end() {
-        return this.end;
+        return super.end();
     }
 
     /**
@@ -98,23 +94,8 @@ class ScheduleSlot implements Comparable<ScheduleSlot> {
         return Collections.unmodifiableList(this.watchers);
     }
 
-    /**
-     * Compares the ScheduleSlot against another
-     *
-     * @param that ScheduleSlot to compare against
-     * @return (- 1) when slot ends before the other, (0) when slot overlaps with other, (1) when slot starts after the other
-     */
-    @Override
-    public int compareTo(ScheduleSlot that) {
-        if (this.end().compareTo(that.start()) <= 0)
-            return -1;
-        if (this.start().compareTo(that.end()) >= 0)
-            return 1;
-        return 0;
-    }
-
     @Override
     public String toString() {
-        return "ScheduleSlot={ start: " + start + ", end: " + end + ", watchers=" + watchers + " }";
+        return "ScheduleSlot={ start: " + super.start() + ", end: " + super.end() + ", watchers=" + watchers + " }";
     }
 }

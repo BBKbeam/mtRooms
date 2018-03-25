@@ -6,14 +6,12 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
-import bbk_beam.mtRooms.reservation.dto.Customer;
-import bbk_beam.mtRooms.reservation.dto.Payment;
-import bbk_beam.mtRooms.reservation.dto.Reservation;
-import bbk_beam.mtRooms.reservation.dto.RoomReservation;
+import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.reservation.exception.*;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
+import java.util.Date;
 import java.util.HashMap;
 
 public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, ISearch {
@@ -606,5 +604,29 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
             throw new InvalidRoomCategory("RoomCategory [" + category_id + "] does not exist in records.");
         }
         return table;
+    }
+
+    @Override
+    public ObjectTable search(Room room, Date from, Date to, RoomProperty property) {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public ObjectTable search(Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public ObjectTable search(Integer building_id, Date from, Date to, RoomProperty property) {
+        //TODO
+        return null;
+    }
+
+    @Override
+    public ObjectTable search(Date from, Date to, RoomProperty property) {
+        //TODO
+        return null;
     }
 }

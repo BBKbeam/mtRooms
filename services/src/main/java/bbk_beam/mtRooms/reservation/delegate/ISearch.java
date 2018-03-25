@@ -2,11 +2,9 @@ package bbk_beam.mtRooms.reservation.delegate;
 
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomProperty;
-import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
+import eadjlib.datastructure.ObjectTable;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 public interface ISearch {
     /**
@@ -16,9 +14,9 @@ public interface ISearch {
      * @param from     Beginning timestamp to search from
      * @param to       End timestamp to search up to
      * @param property Minimum requirements for the room
-     * @return Availability as a list of time spans where the room is free
+     * @return ObjectTable
      */
-    List<TimeSpan> search(Room room, Date from, Date to, RoomProperty property);
+    ObjectTable search(Room room, Date from, Date to, RoomProperty property);
 
     /**
      * Searches for available rooms on a floor within a time frame
@@ -28,9 +26,9 @@ public interface ISearch {
      * @param from        Beginning timestamp to search from
      * @param to          End timestamp to search up to
      * @param property    Minimum requirements for the room
-     * @return Availability as a Map of the free rooms with their associated list of time spans where the room is free
+     * @return ObjectTable
      */
-    HashMap<Room, List<TimeSpan>> search(Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property);
+    ObjectTable search(Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property);
 
     /**
      * Searches for available rooms on a floor within a time frame
@@ -39,9 +37,9 @@ public interface ISearch {
      * @param from        Beginning timestamp to search from
      * @param to          End timestamp to search up to
      * @param property    Minimum requirements for the room
-     * @return Availability as a Map of the free rooms with their associated list of time spans where the room is free
+     * @return ObjectTable
      */
-    HashMap<Room, List<TimeSpan>> search(Integer building_id, Date from, Date to, RoomProperty property);
+    ObjectTable search(Integer building_id, Date from, Date to, RoomProperty property);
 
     /**
      * Searches for available rooms anywhere
@@ -49,7 +47,7 @@ public interface ISearch {
      * @param from     Beginning timestamp to search from
      * @param to       End timestamp to search up to
      * @param property Minimum requirements for the room
-     * @return Availability as a Map of the free rooms with their associated list of time spans where the room is free
+     * @return ObjectTable
      */
-    HashMap<Room, List<TimeSpan>> search(Date from, Date to, RoomProperty property);
+    ObjectTable search(Date from, Date to, RoomProperty property);
 }

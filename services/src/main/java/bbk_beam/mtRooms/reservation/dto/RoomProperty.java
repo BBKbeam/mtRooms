@@ -17,7 +17,7 @@ public class RoomProperty implements Comparable<RoomProperty> {
      * Requirement levels that model the state (TRUE/FALSE) or the needed requirements (TRUE/UNDEFINED/FALSE)
      * </p>
      */
-    enum Trilean {
+    public enum Trilean {
         TRUE,
         UNDEFINED,
         FALSE

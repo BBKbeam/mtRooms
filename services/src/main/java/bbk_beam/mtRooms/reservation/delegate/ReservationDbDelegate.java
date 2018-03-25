@@ -13,10 +13,56 @@ import eadjlib.logger.Logger;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, ISearch {
     private final Logger log = Logger.getLoggerInstance(ReservationDbDelegate.class.getName());
     private IReservationDbAccess db_access;
+
+    /**
+     * RoomProperty filter query builder
+     *
+     * @param property RoomProperty DTO
+     * @return Filter query built from the RoomProperty object
+     */
+    private String buildFilterQueryString(RoomProperty property) {
+        LinkedList<String> filters = new LinkedList<>();
+        //Fixed chairs
+        if (property.hasFixedChairs() == RoomProperty.Trilean.TRUE)
+            filters.addLast("RoomFixtures.fixed_chairs == 1");
+        if (property.hasFixedChairs() == RoomProperty.Trilean.FALSE)
+            filters.addLast("RoomFixtures.fixed_chairs == 0");
+        //Catering space
+        if (property.hasCateringSpace() == RoomProperty.Trilean.TRUE)
+            filters.addLast("RoomFixtures.catering_space == 1");
+        if (property.hasCateringSpace() == RoomProperty.Trilean.FALSE)
+            filters.addLast("RoomFixtures.catering_space == 0");
+        //Whiteboard
+        if (property.hasWhiteboard() == RoomProperty.Trilean.TRUE)
+            filters.addLast("RoomFixtures.whiteboard == 1");
+        if (property.hasWhiteboard() == RoomProperty.Trilean.FALSE)
+            filters.addLast("RoomFixtures.whiteboard == 0");
+        //Projector
+        if (property.hasProjector() == RoomProperty.Trilean.TRUE)
+            filters.addLast("RoomFixtures.projector == 1");
+        if (property.hasProjector() == RoomProperty.Trilean.FALSE)
+            filters.addLast("RoomFixtures.projector == 0");
+        //Capacity
+        if (property.capacity() > 0)
+            filters.addLast("RoomCategory.capacity >= " + property.capacity());
+        //Dimension
+        if (property.dimension() > 0)
+            filters.addLast("RoomCategory.dimension >= " + property.dimension());
+
+        StringBuilder sb = new StringBuilder();
+        int i = filters.size();
+        for (String filter : filters) {
+            sb.append(filter);
+            if ((i--) > 0)
+                sb.append(" AND ");
+        }
+        return sb.toString();
+    }
 
     /**
      * Constructor
@@ -607,30 +653,189 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
-    public ObjectTable search(Token session_token, Room room, Date from, Date to, RoomProperty property) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query = "";
-        //TODO
+    public ObjectTable search(Token session_token, Room room, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "Room_has_Reservation.timestamp_in, " +
+                "Room_has_Reservation.timestamp_out, " +
+                "RoomFixtures.fixed_chairs, " +
+                "RoomFixtures.catering_space, " +
+                "RoomFixtures.whiteboard, " +
+                "RoomFixtures.projector, " +
+                "RoomCategory.capacity, " +
+                "RoomCategory.dimension " +
+                "FROM Room " +
+                "NATURAL JOIN Room_has_Reservation " +
+                "NATURAL JOIN Room_has_RoomFixtures " +
+                "NATURAL JOIN RoomFixtures " +
+                "NATURAL JOIN RoomCategory " +
+                "WHERE Room_has_Reservation.timestamp_in < \"" + TimestampConverter.getUTCTimestampString(to) + "\"" +
+                " AND Room_has_Reservation.timestamp_out > \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
+                " AND Room.id = " + room.id() +
+                " AND Room.floor_id = " + room.floorID() +
+                " AND Room.building_id = " + room.buildingID() +
+                " AND Room_has_Reservation.cancelled_flag = 0";
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 
     @Override
-    public ObjectTable search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query = "";
-        //TODO
+    public ObjectTable search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "Room.building_id, " +
+                "Room.floor_id, " +
+                "Room.id, " +
+                "Room_has_Reservation.timestamp_in, " +
+                "Room_has_Reservation.timestamp_out, " +
+                "RoomFixtures.fixed_chairs, " +
+                "RoomFixtures.catering_space, " +
+                "RoomFixtures.whiteboard, " +
+                "RoomFixtures.projector, " +
+                "RoomCategory.capacity, " +
+                "RoomCategory.dimension " +
+                "FROM Room " +
+                "NATURAL JOIN Room_has_Reservation " +
+                "NATURAL JOIN Room_has_RoomFixtures " +
+                "NATURAL JOIN RoomFixtures " +
+                "NATURAL JOIN RoomCategory " +
+                "WHERE Room_has_Reservation.timestamp_in < \"" + TimestampConverter.getUTCTimestampString(to) + "\"" +
+                " AND Room_has_Reservation.timestamp_out > \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
+                " AND Room.floor_id = " + floor_id +
+                " AND Room.building_id = " + building_id +
+                " AND Room_has_Reservation.cancelled_flag = 0";
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 
     @Override
-    public ObjectTable search(Token session_token, Integer building_id, Date from, Date to, RoomProperty property) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query = "";
-        //TODO
+    public ObjectTable search(Token session_token, Integer building_id, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "Room.building_id, " +
+                "Room.floor_id, " +
+                "Room.id, " +
+                "Room_has_Reservation.timestamp_in, " +
+                "Room_has_Reservation.timestamp_out, " +
+                "RoomFixtures.fixed_chairs, " +
+                "RoomFixtures.catering_space, " +
+                "RoomFixtures.whiteboard, " +
+                "RoomFixtures.projector, " +
+                "RoomCategory.capacity, " +
+                "RoomCategory.dimension " +
+                "FROM Room " +
+                "NATURAL JOIN Room_has_Reservation " +
+                "NATURAL JOIN Room_has_RoomFixtures " +
+                "NATURAL JOIN RoomFixtures " +
+                "NATURAL JOIN RoomCategory " +
+                "WHERE Room_has_Reservation.timestamp_in < \"" + TimestampConverter.getUTCTimestampString(to) + "\"" +
+                " AND Room_has_Reservation.timestamp_out > \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
+                " AND Room.building_id = " + building_id +
+                " AND Room_has_Reservation.cancelled_flag = 0";
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 
     @Override
-    public ObjectTable search(Token session_token, Date from, Date to, RoomProperty property) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query = "";
-        //TODO
+    public ObjectTable search(Token session_token, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "Room.building_id, " +
+                "Room.floor_id, " +
+                "Room.id, " +
+                "Room_has_Reservation.timestamp_in, " +
+                "Room_has_Reservation.timestamp_out, " +
+                "RoomFixtures.fixed_chairs, " +
+                "RoomFixtures.catering_space, " +
+                "RoomFixtures.whiteboard, " +
+                "RoomFixtures.projector, " +
+                "RoomCategory.capacity, " +
+                "RoomCategory.dimension " +
+                "FROM Room " +
+                "NATURAL JOIN Room_has_Reservation " +
+                "NATURAL JOIN Room_has_RoomFixtures " +
+                "NATURAL JOIN RoomFixtures " +
+                "NATURAL JOIN RoomCategory " +
+                "WHERE Room_has_Reservation.timestamp_in < \"" + TimestampConverter.getUTCTimestampString(to) + "\"" +
+                " AND Room_has_Reservation.timestamp_out > \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
+                " AND Room_has_Reservation.cancelled_flag = 0";
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    @Override
+    public ObjectTable search(Token session_token, RoomProperty properties) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String filter = buildFilterQueryString(properties);
+        String query = " SELECT " +
+                "Room.building_id, " +
+                "Room.floor_id, " +
+                "Room.id, " +
+                "Room.room_category_id, " +
+                "RoomFixtures.fixed_chairs, " +
+                "RoomFixtures.catering_space, " +
+                "RoomFixtures.whiteboard, " +
+                "RoomFixtures.projector, " +
+                "RoomCategory.capacity, " +
+                "RoomCategory.dimension " +
+                "FROM Room " +
+                "LEFT OUTER JOIN Room_has_RoomFixtures " +
+                "ON Room.id = Room_has_RoomFixtures.room_id" +
+                " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
+                " AND Room.building_id = Room_has_RoomFixtures.building_id " +
+                "LEFT OUTER JOIN RoomFixtures " +
+                "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
+                "LEFT OUTER JOIN RoomCategory " +
+                "ON Room.room_category_id = RoomCategory.id " +
+                (!filter.isEmpty() ? "WHERE " + filter : "");
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    @Override
+    public ObjectTable search(Token session_token, Integer building_id, RoomProperty properties) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String filter = buildFilterQueryString(properties);
+        String query = " SELECT " +
+                "Room.building_id, " +
+                "Room.floor_id, " +
+                "Room.id, " +
+                "Room.room_category_id, " +
+                "RoomFixtures.fixed_chairs, " +
+                "RoomFixtures.catering_space, " +
+                "RoomFixtures.whiteboard, " +
+                "RoomFixtures.projector, " +
+                "RoomCategory.capacity, " +
+                "RoomCategory.dimension " +
+                "FROM Room " +
+                "LEFT OUTER JOIN Room_has_RoomFixtures " +
+                "ON Room.id = Room_has_RoomFixtures.room_id" +
+                " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
+                " AND Room.building_id = Room_has_RoomFixtures.building_id " +
+                "LEFT OUTER JOIN RoomFixtures " +
+                "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
+                "LEFT OUTER JOIN RoomCategory " +
+                "ON Room.room_category_id = RoomCategory.id " +
+                "WHERE Room.building_id = " + building_id +
+                (!filter.isEmpty() ? " AND " + filter : "");
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    @Override
+    public ObjectTable search(Token session_token, Integer building_id, Integer floor_id, RoomProperty properties) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String filter = buildFilterQueryString(properties);
+        String query = " SELECT " +
+                "Room.building_id, " +
+                "Room.floor_id, " +
+                "Room.id, " +
+                "Room.room_category_id, " +
+                "RoomFixtures.fixed_chairs, " +
+                "RoomFixtures.catering_space, " +
+                "RoomFixtures.whiteboard, " +
+                "RoomFixtures.projector, " +
+                "RoomCategory.capacity, " +
+                "RoomCategory.dimension " +
+                "FROM Room " +
+                "LEFT OUTER JOIN Room_has_RoomFixtures " +
+                "ON Room.id = Room_has_RoomFixtures.room_id" +
+                " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
+                " AND Room.building_id = Room_has_RoomFixtures.building_id " +
+                "LEFT OUTER JOIN RoomFixtures " +
+                "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
+                "LEFT OUTER JOIN RoomCategory " +
+                "ON Room.room_category_id = RoomCategory.id " +
+                "WHERE Room.building_id = " + building_id +
+                " AND Room.floor_id = " + floor_id +
+                (!filter.isEmpty() ? " AND " + filter : "");
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 }

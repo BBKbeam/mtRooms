@@ -75,7 +75,7 @@ package mtRooms {
             component ReservationSystem #white {
                 [<u>:ReservationSession] <<Observer>> as ReservationSession
                 [ScheduleCache] <<Observable>> as ScheduleCache
-                [Schedule]
+                [Schedule] <<Datastructure>> as Schedule
 
                 IReservationSession -- [ReservationSession]
                 IReservationPayment -- [ReservationSession]

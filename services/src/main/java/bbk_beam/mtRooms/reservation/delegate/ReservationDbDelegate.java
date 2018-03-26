@@ -664,10 +664,18 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "RoomCategory.capacity, " +
                 "RoomCategory.dimension " +
                 "FROM Room " +
-                "NATURAL JOIN Room_has_Reservation " +
-                "NATURAL JOIN Room_has_RoomFixtures " +
-                "NATURAL JOIN RoomFixtures " +
-                "NATURAL JOIN RoomCategory " +
+                "INNER JOIN Room_has_Reservation " +
+                "ON Room.id = Room_has_Reservation.room_id" +
+                " AND Room.floor_id = Room_has_Reservation.floor_id" +
+                " AND Room.building_id = Room_has_Reservation.building_id " +
+                "INNER JOIN Room_has_RoomFixtures " +
+                "ON Room.id = Room_has_RoomFixtures.room_id" +
+                " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
+                " AND Room.building_id = Room_has_RoomFixtures.building_id " +
+                "INNER JOIN RoomFixtures " +
+                "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
+                "INNER JOIN RoomCategory " +
+                "ON Room.room_category_id = RoomCategory.id " +
                 "WHERE Room_has_Reservation.timestamp_in < \"" + TimestampConverter.getUTCTimestampString(to) + "\"" +
                 " AND Room_has_Reservation.timestamp_out > \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
                 " AND Room.id = " + room.id() +
@@ -692,10 +700,18 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "RoomCategory.capacity, " +
                 "RoomCategory.dimension " +
                 "FROM Room " +
-                "NATURAL JOIN Room_has_Reservation " +
-                "NATURAL JOIN Room_has_RoomFixtures " +
-                "NATURAL JOIN RoomFixtures " +
-                "NATURAL JOIN RoomCategory " +
+                "INNER JOIN Room_has_Reservation " +
+                "ON Room.id = Room_has_Reservation.room_id" +
+                " AND Room.floor_id = Room_has_Reservation.floor_id" +
+                " AND Room.building_id = Room_has_Reservation.building_id " +
+                "INNER JOIN Room_has_RoomFixtures " +
+                "ON Room.id = Room_has_RoomFixtures.room_id" +
+                " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
+                " AND Room.building_id = Room_has_RoomFixtures.building_id " +
+                "INNER JOIN RoomFixtures " +
+                "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
+                "INNER JOIN RoomCategory " +
+                "ON Room.room_category_id = RoomCategory.id " +
                 "WHERE Room_has_Reservation.timestamp_in < \"" + TimestampConverter.getUTCTimestampString(to) + "\"" +
                 " AND Room_has_Reservation.timestamp_out > \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
                 " AND Room.floor_id = " + floor_id +
@@ -719,10 +735,18 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "RoomCategory.capacity, " +
                 "RoomCategory.dimension " +
                 "FROM Room " +
-                "NATURAL JOIN Room_has_Reservation " +
-                "NATURAL JOIN Room_has_RoomFixtures " +
-                "NATURAL JOIN RoomFixtures " +
-                "NATURAL JOIN RoomCategory " +
+                "INNER JOIN Room_has_Reservation " +
+                "ON Room.id = Room_has_Reservation.room_id" +
+                " AND Room.floor_id = Room_has_Reservation.floor_id" +
+                " AND Room.building_id = Room_has_Reservation.building_id " +
+                "INNER JOIN Room_has_RoomFixtures " +
+                "ON Room.id = Room_has_RoomFixtures.room_id" +
+                " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
+                " AND Room.building_id = Room_has_RoomFixtures.building_id " +
+                "INNER JOIN RoomFixtures " +
+                "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
+                "INNER JOIN RoomCategory " +
+                "ON Room.room_category_id = RoomCategory.id " +
                 "WHERE Room_has_Reservation.timestamp_in < \"" + TimestampConverter.getUTCTimestampString(to) + "\"" +
                 " AND Room_has_Reservation.timestamp_out > \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
                 " AND Room.building_id = " + building_id +
@@ -745,10 +769,18 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "RoomCategory.capacity, " +
                 "RoomCategory.dimension " +
                 "FROM Room " +
-                "NATURAL JOIN Room_has_Reservation " +
-                "NATURAL JOIN Room_has_RoomFixtures " +
-                "NATURAL JOIN RoomFixtures " +
-                "NATURAL JOIN RoomCategory " +
+                "INNER JOIN Room_has_Reservation " +
+                "ON Room.id = Room_has_Reservation.room_id" +
+                " AND Room.floor_id = Room_has_Reservation.floor_id" +
+                " AND Room.building_id = Room_has_Reservation.building_id " +
+                "INNER JOIN Room_has_RoomFixtures " +
+                "ON Room.id = Room_has_RoomFixtures.room_id" +
+                " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
+                " AND Room.building_id = Room_has_RoomFixtures.building_id " +
+                "INNER JOIN RoomFixtures " +
+                "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
+                "INNER JOIN RoomCategory " +
+                "ON Room.room_category_id = RoomCategory.id " +
                 "WHERE Room_has_Reservation.timestamp_in < \"" + TimestampConverter.getUTCTimestampString(to) + "\"" +
                 " AND Room_has_Reservation.timestamp_out > \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
                 " AND Room_has_Reservation.cancelled_flag = 0";
@@ -770,13 +802,13 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "RoomCategory.capacity, " +
                 "RoomCategory.dimension " +
                 "FROM Room " +
-                "LEFT OUTER JOIN Room_has_RoomFixtures " +
+                "INNER JOIN Room_has_RoomFixtures " +
                 "ON Room.id = Room_has_RoomFixtures.room_id" +
                 " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
                 " AND Room.building_id = Room_has_RoomFixtures.building_id " +
-                "LEFT OUTER JOIN RoomFixtures " +
+                "INNER JOIN RoomFixtures " +
                 "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
-                "LEFT OUTER JOIN RoomCategory " +
+                "INNER JOIN RoomCategory " +
                 "ON Room.room_category_id = RoomCategory.id " +
                 (!filter.isEmpty() ? "WHERE " + filter : "");
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
@@ -797,13 +829,13 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "RoomCategory.capacity, " +
                 "RoomCategory.dimension " +
                 "FROM Room " +
-                "LEFT OUTER JOIN Room_has_RoomFixtures " +
+                "INNER JOIN Room_has_RoomFixtures " +
                 "ON Room.id = Room_has_RoomFixtures.room_id" +
                 " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
                 " AND Room.building_id = Room_has_RoomFixtures.building_id " +
-                "LEFT OUTER JOIN RoomFixtures " +
+                "INNER JOIN RoomFixtures " +
                 "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
-                "LEFT OUTER JOIN RoomCategory " +
+                "INNER JOIN RoomCategory " +
                 "ON Room.room_category_id = RoomCategory.id " +
                 "WHERE Room.building_id = " + building_id +
                 (!filter.isEmpty() ? " AND " + filter : "");
@@ -825,13 +857,13 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "RoomCategory.capacity, " +
                 "RoomCategory.dimension " +
                 "FROM Room " +
-                "LEFT OUTER JOIN Room_has_RoomFixtures " +
+                "INNER JOIN Room_has_RoomFixtures " +
                 "ON Room.id = Room_has_RoomFixtures.room_id" +
                 " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
                 " AND Room.building_id = Room_has_RoomFixtures.building_id " +
-                "LEFT OUTER JOIN RoomFixtures " +
+                "INNER JOIN RoomFixtures " +
                 "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
-                "LEFT OUTER JOIN RoomCategory " +
+                "INNER JOIN RoomCategory " +
                 "ON Room.room_category_id = RoomCategory.id " +
                 "WHERE Room.building_id = " + building_id +
                 " AND Room.floor_id = " + floor_id +

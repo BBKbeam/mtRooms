@@ -106,38 +106,49 @@ public class TestDataDBQueries {
             + "\"5 Highbury road\", null, \"London\", \"London\", \"UK\", \"N4 6SW\", \"+44 1020 304 050\", \"+44 9080 706 050\", \"aliceb01@othermail.com\" ), "
             //Customer id = 4
             + "( 1, \"2018-01-01 00:01:00\", \"Mr\", \"Nicholas\", \"Cage\", "
-            + "\"1 Epic road\", null, \"Bruteville\", \"Bruteshire\", \"Kingdom of Epicness\", \"EP1C\", \"+1337 11111 11\", null, \"nickcage@awseome.com\" )";
-
+            + "\"1 Epic road\", null, \"Bruteville\", \"Bruteshire\", \"Kingdom of Epicness\", \"EP1C\", \"+1337 11111 11\", null, \"nickcage@awseome.com\" ), "
+            //Customer id = 5
+            + "( 1, \"2018-03-01 11:56:00\", \"Mr\", \"Peter\", \"Smith\", "
+            + "\"23 Eccles road\", \"Apartment 12\", \"London\", \"London\", \"UK\", \"N1 1DD\", \"+44 8700 123 123\", null, \"ps8@dasmail.com\" )";
     //Payment table
     public static String payments = "INSERT INTO Payment( id, hash_id, amount, payment_method, timestamp, note ) VALUES "
-            + "(1, \"TestHashID0000001\", 77.00, 2, \"2018-02-02 19:00:00\", \"85*.90 credit c. Room L2\" ), " //@ 85*.90 debit c. Room L2
-            + "(2, \"TestHashID0000002\", 34.00, 1, \"2018-02-09 09:00:00\", \"45*.75 cash Room S1\" ), "      //@ 45*.75 cash Room S1
-            + "(3, \"TestHashID0000003\", 40.50, 2, \"2018-02-10 01:58:00\", \"65*.90 credit.c Room M3\" ), "  //@ pt.1 of 70*.90 debit.c Room M3
-            + "(4, \"TestHashID0000004\", 22.50, 2, \"2018-02-11 13:12:50\", \"65*.90 credit.c Room M3\" ) ";  //@ pt.2 of 70*.90 debit.c Room M3
+            + "( 1, \"TestHashID0000001\", 77.00, 2, \"2018-02-02 19:00:00\", \"85*.90 credit c. Room L2\" ), " //@ 85*.90 debit c. Room L2
+            + "( 2, \"TestHashID0000002\", 34.00, 1, \"2018-02-09 09:00:00\", \"45*.75 cash Room S1\" ), "      //@ 45*.75 cash Room S1
+            + "( 3, \"TestHashID0000003\", 40.50, 2, \"2018-02-10 01:58:00\", \"65*.90 credit.c Room M3\" ), "  //@ pt.1 of 70*.90 debit.c Room M3
+            + "( 4, \"TestHashID0000004\", 22.50, 2, \"2018-02-11 13:12:50\", \"65*.90 credit.c Room M3\" ) ";  //@ pt.2 of 70*.90 debit.c Room M3
 
     //Reservation_has_Payment table
     public static String reservation_has_payments = "INSERT INTO Reservation_has_Payment( reservation_id, payment_id ) VALUES "
-            + "(1, 1), "    // reservation 1 cash
-            + "(2, 2), "    // reservation 2 debit c.
-            + "(4, 3), "    // reservation 4 debit c.
-            + "(4, 4)";     // reservation 4 debit c.
+            + "( 1, 1 ), "    // reservation 1 cash
+            + "( 2, 2 ), "    // reservation 2 debit c.
+            + "( 4, 3 ), "    // reservation 4 debit c.
+            + "( 4, 4 )";     // reservation 4 debit c.
 
     //Reservation table
     public static String reservations = "INSERT INTO Reservation(id, created_timestamp, customer_id, discount_id ) VALUES "
-            + "(1, \"2018-02-09 10:00:00\", 3, 3 ), "   // Reservation id = 1
-            + "(2, \"2018-02-09 10:00:00\", 1, 2 ), "   // Reservation id = 2
-            + "(3, \"2018-06-13 15:00:00\", 3, 3 ), "   // Reservation id = 3
-            + "(4, \"2015-01-22 14:00:00\", 2, 1 ), "   // Reservation id = 4
-            + "(5, \"2016-05-15 16:59:01\", 4, 3 )";    // Reservation id = 5
+            + "( 1, \"2018-02-09 10:00:00\", 3, 3 ), "   // Reservation id = 1
+            + "( 2, \"2018-02-09 10:00:00\", 1, 2 ), "   // Reservation id = 2
+            + "( 3, \"2018-06-13 15:00:00\", 3, 3 ), "   // Reservation id = 3
+            + "( 4, \"2015-01-22 14:00:00\", 2, 1 ), "   // Reservation id = 4
+            + "( 5, \"2016-05-15 16:59:01\", 4, 3 ), "   // Reservation id = 5
+            + "( 6, \"2018-03-01 12:00:00\", 5, 1 )";    // Reservation id = 6
 
     //Room_has_Reservation table
     public static String room_has_reservation = "INSERT INTO Room_has_Reservation( room_id, floor_id, building_id, "
             + "reservation_id, timestamp_in, timestamp_out, notes, cancelled_flag ) VALUES "
-            + "(7, 3, 1, 1, \"2018-02-09 10:05:00\" , \"2018-02-09 11:00:00\", \"nothing to note\" , 0 ), " // Room L2, Floor 3, Building 1, Reservation 1, Member 10%
-            + "(4, 2, 1, 1, \"2018-02-09 11:00:00\" , \"2018-02-09 12:00:00\", \"nothing to note\" , 0 ), " // Room M2, Floor 2, Building 1, Reservation 1, Member 10%
-            + "(1, 1, 1, 1, \"2018-02-09 11:00:00\" , \"2018-02-09 12:00:00\", \"nothing to note\" , 1 ), " // Room S1, Floor 0, Building 1, Reservation 1, Member 10%
-            + "(1, 1, 1, 2, \"2018-02-09 10:15:00\" , \"2018-02-09 12:30:00\", \"\" , 0 ), "                // Room S1, Floor 0, Building 1, Reservation 2, Student 25%
-            + "(5, 2, 1, 3, \"2018-06-13 15:00:59\" , \"2018-06-13 16:00:00\", \" some text\" , 0 ), "      // Room M3, Floor 1, Building 1, Reservation 3, Member 10%
-            + "(1, 1, 1, 4, \"2015-01-22 14:00:00\" , \"2015-01-22 18:00:00\", \"\", 1 ), "                 // Room S1, Floor 0, Building 1, Reservation 4, Non-member 0%
-            + "(5, 2, 1, 5, \"2015-01-25 09:00:00\" , \"2015-01-25 10:00:00\", \"\", 0 )";                  // Room M3, Floor 2, Building 1, Reservation 5, Member 10%
+            + "( 7, 3, 1, 1, \"2018-02-09 10:05:00\" , \"2018-02-09 11:00:00\", \"nothing to note\" , 0 ), " // Room L2, Floor 3, Building 1, Reservation 1, Member 10%
+            + "( 4, 2, 1, 1, \"2018-02-09 11:00:00\" , \"2018-02-09 12:00:00\", \"nothing to note\" , 0 ), " // Room M2, Floor 2, Building 1, Reservation 1, Member 10%
+            + "( 1, 1, 1, 1, \"2018-02-09 11:00:00\" , \"2018-02-09 12:00:00\", \"nothing to note\" , 1 ), " // Room S1, Floor 0, Building 1, Reservation 1, Member 10%
+            + "( 1, 1, 1, 2, \"2018-02-09 10:15:00\" , \"2018-02-09 12:30:00\", \"\" , 0 ), "                // Room S1, Floor 0, Building 1, Reservation 2, Student 25%
+            + "( 5, 2, 1, 3, \"2018-06-13 15:00:59\" , \"2018-06-13 16:00:00\", \" some text\" , 0 ), "      // Room M3, Floor 1, Building 1, Reservation 3, Member 10%
+            + "( 1, 1, 1, 4, \"2015-01-22 14:00:00\" , \"2015-01-22 18:00:00\", \"\", 1 ), "                 // Room S1, Floor 0, Building 1, Reservation 4, Non-member 0%
+            + "( 5, 2, 1, 5, \"2015-01-25 09:00:00\" , \"2015-01-25 10:00:00\", \"\", 0 ), "                 // Room M3, Floor 2, Building 1, Reservation 5, Member 10%
+            + "( 1, 1, 1, 6, \"2018-03-10 09:00:00\" , \"2018-03-10 10:00:00\", \"\", 0 ), "
+            + "( 1, 1, 1, 6, \"2018-03-10 14:00:00\" , \"2018-03-10 17:00:00\", \"\", 0 ), "
+            + "( 3, 1, 1, 6, \"2018-03-10 09:00:00\" , \"2018-03-10 10:00:00\", \"\", 0 ), "
+            + "( 3, 1, 1, 6, \"2018-03-10 14:00:00\" , \"2018-03-10 17:00:00\", \"\", 0 ), "
+            + "( 4, 2, 1, 6, \"2018-03-10 09:00:00\" , \"2018-03-10 12:00:00\", \"\", 0 ), "
+            + "( 4, 2, 1, 6, \"2018-03-10 14:00:00\" , \"2018-03-10 17:00:00\", \"\", 0 ), "
+            + "( 7, 3, 1, 6, \"2018-03-10 14:00:00\" , \"2018-03-10 18:00:00\", \"\", 0 ), "
+            + "( 8, 3, 1, 6, \"2018-03-10 14:00:00\" , \"2018-03-10 18:00:00\", \"\", 0 )";
 }

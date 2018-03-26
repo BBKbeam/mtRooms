@@ -28,10 +28,11 @@ public class ReservationProcessing {
      * Constructor
      *
      * @param reserve_delegate IReserve instance
+     * @param schedule_cache   ScheduleCache instance
      */
-    public ReservationProcessing(IReserve reserve_delegate, ScheduleCache scheduleCache) {
+    public ReservationProcessing(IReserve reserve_delegate, ScheduleCache schedule_cache) {
         this.db_delegate = reserve_delegate;
-        this.schedule_cache = scheduleCache;
+        this.schedule_cache = schedule_cache;
     }
 
     /**

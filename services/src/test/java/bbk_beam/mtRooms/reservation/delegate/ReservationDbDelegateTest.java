@@ -329,7 +329,7 @@ public class ReservationDbDelegateTest {
         );
         Assert.assertEquals(1, table.rowCount());
         HashMap<String, Object> row = table.getRow(1);
-        Assert.assertEquals(6, row.get("id"));
+        Assert.assertEquals(7, row.get("id"));
         Assert.assertEquals(TimestampConverter.getUTCTimestampString(created_date), row.get("created_timestamp"));
         Assert.assertEquals(1, row.get("customer_id"));
         Assert.assertEquals(1, row.get("discount_id"));
@@ -513,5 +513,174 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals(1, row.get("id"));
         Assert.assertEquals(10, row.get("capacity"));
         Assert.assertEquals(10, row.get("dimension"));
+    }
+
+    @Test
+    public void search_for_booked_room() throws Exception {
+        Room mocked_room = mock(Room.class);
+        when(mocked_room.id()).thenReturn(8);
+        when(mocked_room.floorID()).thenReturn(3);
+        when(mocked_room.buildingID()).thenReturn(1);
+        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
+        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
+        ObjectTable table = this.reservationDbDelegate.search(this.token, mocked_room, from, to);
+        System.out.println(table);
+        //Testing
+        Assert.assertEquals(1, table.rowCount());
+        HashMap<String, Object> row = table.getRow(1);
+        Assert.assertEquals("timestamp_in fail", "2018-03-10 14:00:00", row.get("timestamp_in"));
+        Assert.assertEquals("timestamp_out fail", "2018-03-10 18:00:00", row.get("timestamp_out"));
+    }
+
+    @Test
+    public void search_booked_rooms_in_floor() throws Exception {
+        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
+        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
+        ObjectTable table = this.reservationDbDelegate.search(this.token, 1, 3, from, to);
+        System.out.println(table);
+        //Testing
+        Assert.assertEquals(2, table.rowCount());
+        HashMap<String, Object> row1 = table.getRow(1);
+        Assert.assertEquals("1st row building_id fail", 1, row1.get("building_id"));
+        Assert.assertEquals("1st row floor_id fail", 3, row1.get("floor_id"));
+        Assert.assertEquals("1st row room_id fail", 7, row1.get("room_id"));
+        Assert.assertEquals("1st row timestamp_in fail", "2018-03-10 14:00:00", row1.get("timestamp_in"));
+        Assert.assertEquals("1st row timestamp_out fail", "2018-03-10 18:00:00", row1.get("timestamp_out"));
+        HashMap<String, Object> row2 = table.getRow(2);
+        Assert.assertEquals("2nd row building_id fail", 1, row2.get("building_id"));
+        Assert.assertEquals("2nd row floor_id fail", 3, row2.get("floor_id"));
+        Assert.assertEquals("2nd row room_id fail", 8, row2.get("room_id"));
+        Assert.assertEquals("2nd row timestamp_in fail", "2018-03-10 14:00:00", row2.get("timestamp_in"));
+        Assert.assertEquals("2nd row timestamp_out fail", "2018-03-10 18:00:00", row2.get("timestamp_out"));
+    }
+
+    @Test
+    public void search_booked_rooms_in_building() throws Exception {
+        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
+        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
+        ObjectTable table = this.reservationDbDelegate.search(this.token, 1, from, to);
+        System.out.println(table);
+        //Testing
+        Assert.assertEquals(8, table.rowCount());
+        HashMap<String, Object> row1 = table.getRow(1);
+        Assert.assertEquals("1st row building_id fail", 1, row1.get("building_id"));
+        Assert.assertEquals("1st row floor_id fail", 1, row1.get("floor_id"));
+        Assert.assertEquals("1st row room_id fail", 1, row1.get("room_id"));
+        Assert.assertEquals("1st row timestamp_in fail", "2018-03-10 09:00:00", row1.get("timestamp_in"));
+        Assert.assertEquals("1st row timestamp_out fail", "2018-03-10 10:00:00", row1.get("timestamp_out"));
+        HashMap<String, Object> row2 = table.getRow(2);
+        Assert.assertEquals("2nd row building_id fail", 1, row2.get("building_id"));
+        Assert.assertEquals("2nd row floor_id fail", 1, row2.get("floor_id"));
+        Assert.assertEquals("2nd row room_id fail", 1, row2.get("room_id"));
+        Assert.assertEquals("2nd row timestamp_in fail", "2018-03-10 14:00:00", row2.get("timestamp_in"));
+        Assert.assertEquals("2nd row timestamp_out fail", "2018-03-10 17:00:00", row2.get("timestamp_out"));
+        HashMap<String, Object> row3 = table.getRow(3);
+        Assert.assertEquals("3rd row building_id fail", 1, row3.get("building_id"));
+        Assert.assertEquals("3rd row floor_id fail", 1, row3.get("floor_id"));
+        Assert.assertEquals("3rd row room_id fail", 3, row3.get("room_id"));
+        Assert.assertEquals("3rd row timestamp_in fail", "2018-03-10 09:00:00", row3.get("timestamp_in"));
+        Assert.assertEquals("3rd row timestamp_out fail", "2018-03-10 10:00:00", row3.get("timestamp_out"));
+        HashMap<String, Object> row4 = table.getRow(4);
+        Assert.assertEquals("4th row building_id fail", 1, row4.get("building_id"));
+        Assert.assertEquals("4th row floor_id fail", 1, row4.get("floor_id"));
+        Assert.assertEquals("4th row room_id fail", 3, row4.get("room_id"));
+        Assert.assertEquals("4th row timestamp_in fail", "2018-03-10 14:00:00", row4.get("timestamp_in"));
+        Assert.assertEquals("4th row timestamp_out fail", "2018-03-10 17:00:00", row4.get("timestamp_out"));
+        HashMap<String, Object> row5 = table.getRow(5);
+        Assert.assertEquals("5th row building_id fail", 1, row5.get("building_id"));
+        Assert.assertEquals("5th row floor_id fail", 2, row5.get("floor_id"));
+        Assert.assertEquals("5th row room_id fail", 4, row5.get("room_id"));
+        Assert.assertEquals("5th row timestamp_in fail", "2018-03-10 09:00:00", row5.get("timestamp_in"));
+        Assert.assertEquals("5th row timestamp_out fail", "2018-03-10 12:00:00", row5.get("timestamp_out"));
+        HashMap<String, Object> row6 = table.getRow(6);
+        Assert.assertEquals("6th row building_id fail", 1, row6.get("building_id"));
+        Assert.assertEquals("6th row floor_id fail", 2, row6.get("floor_id"));
+        Assert.assertEquals("6th row room_id fail", 4, row6.get("room_id"));
+        Assert.assertEquals("6th row timestamp_in fail", "2018-03-10 14:00:00", row6.get("timestamp_in"));
+        Assert.assertEquals("6th row timestamp_out fail", "2018-03-10 17:00:00", row6.get("timestamp_out"));
+        HashMap<String, Object> row7 = table.getRow(7);
+        Assert.assertEquals("7th row building_id fail", 1, row7.get("building_id"));
+        Assert.assertEquals("7th row floor_id fail", 3, row7.get("floor_id"));
+        Assert.assertEquals("7th row room_id fail", 7, row7.get("room_id"));
+        Assert.assertEquals("7th row timestamp_in fail", "2018-03-10 14:00:00", row7.get("timestamp_in"));
+        Assert.assertEquals("7th row timestamp_out fail", "2018-03-10 18:00:00", row7.get("timestamp_out"));
+        HashMap<String, Object> row8 = table.getRow(8);
+        Assert.assertEquals("8th row building_id fail", 1, row8.get("building_id"));
+        Assert.assertEquals("8th row floor_id fail", 3, row8.get("floor_id"));
+        Assert.assertEquals("8th row room_id fail", 8, row8.get("room_id"));
+        Assert.assertEquals("8th row timestamp_in fail", "2018-03-10 14:00:00", row8.get("timestamp_in"));
+        Assert.assertEquals("8th row timestamp_out fail", "2018-03-10 18:00:00", row8.get("timestamp_out"));
+    }
+
+    @Test
+    public void search_for_rooms_in_floor() throws Exception {
+        RoomProperty property = new RoomProperty(
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                -1,
+                -1
+        );
+        ObjectTable table = this.reservationDbDelegate.search(this.token, 1, 3, property);
+        System.out.println(table);
+        Assert.assertEquals("Failed to get all rooms on 3rd floor", 2, table.rowCount());
+        property = new RoomProperty(
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.TRUE, //projector
+                80,
+                -1
+        );
+        table = this.reservationDbDelegate.search(this.token, 1, 3, property);
+        System.out.println(table);
+        Assert.assertEquals("Failed to get a room with at least 80 capacity on 3rd floor", 1, table.rowCount());
+    }
+
+    @Test
+    public void search_for_rooms_in_building() throws Exception {
+        RoomProperty property = new RoomProperty(
+                RoomProperty.Trilean.UNDEFINED, //fixed chairs
+                RoomProperty.Trilean.UNDEFINED, //catering space
+                RoomProperty.Trilean.FALSE, //whiteboard
+                RoomProperty.Trilean.TRUE, //projector
+                50,
+                -1
+        );
+        ObjectTable table = this.reservationDbDelegate.search(this.token, 1, property);
+        System.out.println(table);
+        Assert.assertEquals(2, table.rowCount());
+        HashMap<String, Object> row1 = table.getRow(1);
+        Assert.assertEquals("1st row building_id fail", 1, row1.get("building_id"));
+        Assert.assertEquals("1st row floor_id fail", 3, row1.get("floor_id"));
+        Assert.assertEquals("1st row room_id fail", 7, row1.get("room_id"));
+        HashMap<String, Object> row2 = table.getRow(2);
+        Assert.assertEquals("2nd row building_id fail", 1, row2.get("building_id"));
+        Assert.assertEquals("2nd row floor_id fail", 3, row2.get("floor_id"));
+        Assert.assertEquals("2nd row room_id fail", 8, row2.get("room_id"));
+    }
+
+    @Test
+    public void search_for_rooms_globally() throws Exception {
+        RoomProperty property = new RoomProperty(
+                RoomProperty.Trilean.TRUE, //fixed chairs
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.UNDEFINED,
+                -1,
+                -1
+        );
+        ObjectTable table = this.reservationDbDelegate.search(this.token, property);
+        System.out.println(table);
+        Assert.assertEquals(2, table.rowCount());
+        HashMap<String, Object> row1 = table.getRow(1);
+        Assert.assertEquals("1st row building_id fail", 1, row1.get("building_id"));
+        Assert.assertEquals("1st row floor_id fail", 1, row1.get("floor_id"));
+        Assert.assertEquals("1st row room_id fail", 1, row1.get("room_id"));
+        HashMap<String, Object> row2 = table.getRow(2);
+        Assert.assertEquals("2nd row building_id fail", 1, row2.get("building_id"));
+        Assert.assertEquals("2nd row floor_id fail", 3, row2.get("floor_id"));
+        Assert.assertEquals("2nd row room_id fail", 8, row2.get("room_id"));
     }
 }

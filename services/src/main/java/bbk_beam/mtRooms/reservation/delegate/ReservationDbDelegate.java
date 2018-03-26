@@ -58,7 +58,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         int i = filters.size();
         for (String filter : filters) {
             sb.append(filter);
-            if ((i--) > 0)
+            if ((--i) > 0)
                 sb.append(" AND ");
         }
         return sb.toString();

@@ -690,7 +690,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         String query = "SELECT " +
                 "Room.building_id, " +
                 "Room.floor_id, " +
-                "Room.id, " +
+                "Room.id AS room_id, " +
                 "Room_has_Reservation.timestamp_in, " +
                 "Room_has_Reservation.timestamp_out, " +
                 "RoomFixtures.fixed_chairs, " +
@@ -725,7 +725,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         String query = "SELECT " +
                 "Room.building_id, " +
                 "Room.floor_id, " +
-                "Room.id, " +
+                "Room.id AS room_id, " +
                 "Room_has_Reservation.timestamp_in, " +
                 "Room_has_Reservation.timestamp_out, " +
                 "RoomFixtures.fixed_chairs, " +
@@ -759,7 +759,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         String query = "SELECT " +
                 "Room.building_id, " +
                 "Room.floor_id, " +
-                "Room.id, " +
+                "Room.id AS room_id, " +
                 "Room_has_Reservation.timestamp_in, " +
                 "Room_has_Reservation.timestamp_out, " +
                 "RoomFixtures.fixed_chairs, " +
@@ -793,7 +793,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         String query = " SELECT " +
                 "Room.building_id, " +
                 "Room.floor_id, " +
-                "Room.id, " +
+                "Room.id AS room_id, " +
                 "Room.room_category_id, " +
                 "RoomFixtures.fixed_chairs, " +
                 "RoomFixtures.catering_space, " +
@@ -820,7 +820,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         String query = " SELECT " +
                 "Room.building_id, " +
                 "Room.floor_id, " +
-                "Room.id, " +
+                "Room.id AS room_id, " +
                 "Room.room_category_id, " +
                 "RoomFixtures.fixed_chairs, " +
                 "RoomFixtures.catering_space, " +
@@ -848,7 +848,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         String query = " SELECT " +
                 "Room.building_id, " +
                 "Room.floor_id, " +
-                "Room.id, " +
+                "Room.id AS room_id, " +
                 "Room.room_category_id, " +
                 "RoomFixtures.fixed_chairs, " +
                 "RoomFixtures.catering_space, " +

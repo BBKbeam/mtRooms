@@ -105,8 +105,8 @@ public class CustomerAccountAccessTest {
                 "jsmith@mail.com"
         );
         Customer post_commit_DTO = this.customerAccountAccess.createNewCustomer(this.token, pre_commit_DTO);
-        Customer record_DTO = this.customerAccountAccess.getCustomerAccount(this.token, 5);
-        Assert.assertEquals((Integer) 5, post_commit_DTO.customerID());
+        Customer record_DTO = this.customerAccountAccess.getCustomerAccount(this.token, 6);
+        Assert.assertEquals((Integer) 6, post_commit_DTO.customerID());
         Assert.assertTrue(post_commit_DTO.equals(record_DTO));
     }
 

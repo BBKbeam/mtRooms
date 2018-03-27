@@ -126,7 +126,7 @@ public interface IReserve {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public ObjectTable getDiscount(Token session_token, Integer discount_id) throws InvalidDiscount, DbQueryException, SessionExpiredException, SessionInvalidException;
+    ObjectTable getDiscount(Token session_token, Integer discount_id) throws InvalidDiscount, DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets a Room Category's details
@@ -139,5 +139,5 @@ public interface IReserve {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public ObjectTable getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, DbQueryException, SessionExpiredException, SessionInvalidException;
+    ObjectTable getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, DbQueryException, SessionExpiredException, SessionInvalidException;
 }

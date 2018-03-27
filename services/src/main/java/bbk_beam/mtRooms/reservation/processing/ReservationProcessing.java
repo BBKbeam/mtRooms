@@ -101,7 +101,7 @@ public class ReservationProcessing {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public Double cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
+    public Double cancelReservation(Token session_token, Reservation reservation) throws FailedDbWrite, SessionExpiredException, SessionInvalidException {
         try {
             return this.db_delegate.cancelReservation(session_token, reservation);
         } catch (DbQueryException e) {
@@ -122,7 +122,7 @@ public class ReservationProcessing {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public Double cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
+    public Double cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation room_reservation) throws FailedDbWrite, SessionExpiredException, SessionInvalidException {
         try {
             return this.db_delegate.cancelReservedRoom(session_token, reservation.id(), room_reservation);
         } catch (DbQueryException e) {

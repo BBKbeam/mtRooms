@@ -10,7 +10,7 @@ public interface ILogisticReportGenerator {
      * @param date Date
      * @return Logistics information
      */
-    public Collection getInfo(Date date);
+    Collection getInfo(Date date);
 
     /**
      * Gets logistical information
@@ -19,5 +19,5 @@ public interface ILogisticReportGenerator {
      * @param toDate   To date
      * @return Logistics information
      */
-    public Collection getInfo(Date fromDate, Date toDate);
+    Collection getInfo(Date fromDate, Date toDate);
 }

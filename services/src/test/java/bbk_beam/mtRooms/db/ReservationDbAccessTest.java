@@ -21,13 +21,13 @@ public class ReservationDbAccessTest {
     private SessionTracker mocked_SessionTracker;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mocked_Database = mock(Database.class);
         mocked_SessionTracker = mock(SessionTracker.class);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mocked_Database = null;
         mocked_SessionTracker = null;
     }

@@ -23,7 +23,7 @@ public interface IAdminSession {
      * @throws AccountExistenceException when account with same name exists already
      * @throws RuntimeException          when non-standard failure occurred during account creation in records
      */
-    public void createNewAccount(Token admin_token, SessionType account_type, String username, String password) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, RuntimeException;
+    void createNewAccount(Token admin_token, SessionType account_type, String username, String password) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, RuntimeException;
 
     /**
      * Updates existing account's password
@@ -38,7 +38,7 @@ public interface IAdminSession {
      * @throws AccountOverrideException  when new password is the same as old one
      * @throws RuntimeException          when non-standard failure occurred during account creation in records
      */
-    public void updateAccountPassword(Token admin_token, Integer account_id, String password) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException;
+    void updateAccountPassword(Token admin_token, Integer account_id, String password) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException;
 
     /**
      * Activates an existing account
@@ -52,7 +52,7 @@ public interface IAdminSession {
      * @throws AccountOverrideException  when account to activate is the current logged-in administrator's
      * @throws RuntimeException          when non-standard failure occurred during account activation
      */
-    public void activateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException;
+    void activateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException;
 
     /**
      * Deactivates an existing account
@@ -66,7 +66,7 @@ public interface IAdminSession {
      * @throws AccountOverrideException  when account to deactivates is the current logged-in administrator's
      * @throws RuntimeException          when non-standard failure occurred during account deactivation
      */
-    public void deactivateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException;
+    void deactivateAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException;
 
     /**
      * Deletes an existing  account record
@@ -80,7 +80,7 @@ public interface IAdminSession {
      * @throws AccountOverrideException  when account to delete is the current logged-in administrator's
      * @throws RuntimeException          when non-standard failure occurred during account removal from records
      */
-    public void deleteAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException;
+    void deleteAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, AccountExistenceException, AccountOverrideException, RuntimeException;
 
     /**
      * @param admin_token Administrator session token
@@ -90,7 +90,7 @@ public interface IAdminSession {
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    public ObjectTable getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
+    ObjectTable getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
     /**
      * Gets the records for an account
@@ -103,7 +103,7 @@ public interface IAdminSession {
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
+    ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
     /**
      * Gets the records for an account
@@ -116,7 +116,7 @@ public interface IAdminSession {
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
+    ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
     /**
      * Optimises the reservation database
@@ -127,7 +127,7 @@ public interface IAdminSession {
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    public boolean optimiseReservationDatabase(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException;
+    boolean optimiseReservationDatabase(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException;
 
     /**
      * Optimises the user account database
@@ -138,5 +138,5 @@ public interface IAdminSession {
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    public boolean optimiseUserAccountDatabase(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException;
+    boolean optimiseUserAccountDatabase(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException;
 }

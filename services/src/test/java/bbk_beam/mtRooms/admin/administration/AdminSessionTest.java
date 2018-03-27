@@ -31,7 +31,7 @@ public class AdminSessionTest {
     private Token admin_token;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mock_administration_module = mock(UserAccAdministration.class);
         mock_maintenance_module = mock(ReservationDbMaintenance.class);
         mock_authentication_module = mock(IAuthenticationSystem.class);
@@ -41,7 +41,7 @@ public class AdminSessionTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mock_administration_module = null;
         mock_maintenance_module = null;
         mock_authentication_module = null;

@@ -14,7 +14,7 @@ public interface IDatabase {
      *
      * @return Success
      */
-    public boolean connect();
+    boolean connect();
 
     /**
      * Disconnect from the connected Database
@@ -22,7 +22,7 @@ public interface IDatabase {
      * @return Success
      * @throws SQLException when attempting to disconnect nothing
      */
-    public boolean disconnect() throws SQLException;
+    boolean disconnect() throws SQLException;
 
     /**
      * Query the Database
@@ -31,7 +31,7 @@ public interface IDatabase {
      * @return Success
      * @throws DbQueryException when querying the DB fails
      */
-    public boolean push(String query) throws DbQueryException;
+    boolean push(String query) throws DbQueryException;
 
     /**
      * Query the Database
@@ -40,12 +40,12 @@ public interface IDatabase {
      * @return ObjectTable containing the result set
      * @throws DbQueryException when querying the DB fails
      */
-    public ObjectTable pull(String query) throws DbQueryException;
+    ObjectTable pull(String query) throws DbQueryException;
 
     /**
      * Checks if the connected flag is raised
      *
      * @return Connection to DB flag
      */
-    public boolean isConnected();
+    boolean isConnected();
 }

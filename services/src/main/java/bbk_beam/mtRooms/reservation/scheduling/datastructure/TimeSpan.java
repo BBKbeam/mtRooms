@@ -31,6 +31,17 @@ public class TimeSpan implements Comparable<TimeSpan> {
     }
 
     /**
+     * Constructor
+     *
+     * @param start Start TimeStampUTC
+     * @param end   End TimeStampUTC
+     */
+    public TimeSpan(TimestampUTC start, TimestampUTC end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    /**
      * Gets the start TimestampUTC of the schedule slot
      *
      * @return Start TimestampUTC

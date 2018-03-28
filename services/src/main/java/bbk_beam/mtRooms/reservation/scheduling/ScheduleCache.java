@@ -1,10 +1,12 @@
 package bbk_beam.mtRooms.reservation.scheduling;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.reservation.ReservationSession;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
 import bbk_beam.mtRooms.reservation.scheduling.datastructure.Schedule;
+import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
 import eadjlib.logger.Logger;
 
 import java.util.*;
@@ -61,6 +63,22 @@ public class ScheduleCache extends Observable {
                 room,
                 from,
                 to
+        );
+    }
+
+    /**
+     * Adds a Room + time frame to the schedule cache
+     *
+     * @param watcher_token Watcher DTO
+     * @param room          Room DTO
+     * @param time_span     Time frame span
+     */
+    public synchronized void add(Token watcher_token, Room room, TimeSpan time_span) {
+        this.cached_schedule.addSlot(
+                watcher_token,
+                room,
+                TimestampConverter.getDateObject(time_span.start().get()),
+                TimestampConverter.getDateObject(time_span.end().get())
         );
     }
 

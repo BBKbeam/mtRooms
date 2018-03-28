@@ -27,6 +27,60 @@ public class TimestampUTC implements Comparable<TimestampUTC> {
     }
 
     /**
+     * Gets the year on the timestamp
+     *
+     * @return YYYY
+     */
+    public Integer year() {
+        return Integer.parseInt(this.timestamp.substring(0, 4));
+    }
+
+    /**
+     * Gets the month on the timestamp
+     *
+     * @return MM
+     */
+    public Integer month() {
+        return Integer.parseInt(this.timestamp.substring(5, 7));
+    }
+
+    /**
+     * Gets the day on the timestamp
+     *
+     * @return DD
+     */
+    public Integer day() {
+        return Integer.parseInt(this.timestamp.substring(8, 10));
+    }
+
+    /**
+     * Get the hours on the timestamp
+     *
+     * @return hh
+     */
+    public Integer hours() {
+        return Integer.parseInt(this.timestamp.substring(11, 13));
+    }
+
+    /**
+     * Gets the minutes on the timestamp
+     *
+     * @return mm
+     */
+    public Integer minutes() {
+        return Integer.parseInt(this.timestamp.substring(14, 16));
+    }
+
+    /**
+     * Gets the seconds on the timestamp
+     *
+     * @return ss
+     */
+    public Integer seconds() {
+        return Integer.parseInt(this.timestamp.substring(17, 19));
+    }
+
+    /**
      * Comparison method
      *
      * @param that TimestampUTC to compare to

@@ -39,9 +39,10 @@ public class ScheduleCache extends Observable {
      *
      * @param watcher_token    Watcher token
      * @param room_reservation RoomReservation DTO
+     * @return List of the room's free slots as time spans
      */
-    public synchronized void add(Token watcher_token, RoomReservation room_reservation) {
-        this.cached_schedule.addSlot(
+    public synchronized List<TimeSpan> add(Token watcher_token, RoomReservation room_reservation) {
+        return this.cached_schedule.addSlot(
                 watcher_token,
                 room_reservation.room(),
                 room_reservation.reservationStart(),
@@ -56,9 +57,10 @@ public class ScheduleCache extends Observable {
      * @param room          Room DTO
      * @param from          Start timestamp of the time frame
      * @param to            End timestamp of the time frame
+     * @return List of the room's free slots as time spans
      */
-    public synchronized void add(Token watcher_token, Room room, Date from, Date to) {
-        this.cached_schedule.addSlot(
+    public synchronized List<TimeSpan> add(Token watcher_token, Room room, Date from, Date to) {
+        return this.cached_schedule.addSlot(
                 watcher_token,
                 room,
                 from,
@@ -72,9 +74,10 @@ public class ScheduleCache extends Observable {
      * @param watcher_token Watcher DTO
      * @param room          Room DTO
      * @param time_span     Time frame span
+     * @return List of the room's free slots as time spans
      */
-    public synchronized void add(Token watcher_token, Room room, TimeSpan time_span) {
-        this.cached_schedule.addSlot(
+    public synchronized List<TimeSpan> add(Token watcher_token, Room room, TimeSpan time_span) {
+        return this.cached_schedule.addSlot(
                 watcher_token,
                 room,
                 TimestampConverter.getDateObject(time_span.start().get()),

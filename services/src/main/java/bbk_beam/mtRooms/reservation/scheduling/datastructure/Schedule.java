@@ -112,8 +112,10 @@ public class Schedule {
      * @param room          Room DTO
      * @param from          Start timestamp of the time slot
      * @param to            End timestamp of the time stamp
+     * @return List of the room's free slots as time spans
      */
-    public void addSlot(Token watcher_token, Room room, Date from, Date to) {
+    public List<TimeSpan> addSlot(Token watcher_token, Room room, Date from, Date to) {
+        List<TimeSpan> free_slots = new LinkedList<>();
         try {
             log.log_Debug("Adding schedule slot for ", watcher_token, " between ", from, " -> ", to, " for ", room);
             for (ScheduleSlot slot : convertToUTCSlotIntervals(watcher_token, from, to)) {
@@ -127,14 +129,18 @@ public class Schedule {
                             s.addWatcher(watcher_token);
                         return s;
                     });
+                    if (!new_slot.isBooked())
+                        free_slots.add(new TimeSpan(slot.start(), slot.end()));
                 } else {
                     this.cache.get(room).add(slot.start(), slot);
+                    free_slots.add(new TimeSpan(slot.start(), slot.end()));
                 }
             }
         } catch (UndefinedException e) {
             log.log_Fatal("Error detected in the schedule slot data-structure in cache of Room: ", room);
             log.log_Exception(e);
         }
+        return free_slots;
     }
 
     /**

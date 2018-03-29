@@ -274,8 +274,8 @@ public class OptimisedSearch {
         try {
             return calculateFreeSlots(session_token, room, from, to);
         } catch (DbQueryException e) {
-            log.log_Error(""); //TODO
-            throw new FailedDbFetch("", e); //TODO
+            log.log_Error("For [", session_token, "]: Problem accessing records whilst processing search between ", from, " and ", to, " for ", room);
+            throw new FailedDbFetch("Problem occurred trying to access the records during a search for " + room, e);
         }
     }
 
@@ -299,8 +299,8 @@ public class OptimisedSearch {
         try {
             return calculateFreeSlots(session_token, candidates, from, to);
         } catch (DbQueryException e) {
-            log.log_Error(""); //TODO
-            throw new FailedDbFetch("", e); //TODO
+            log.log_Error("For [", session_token, "]: Problem accessing records whilst processing floor [", building_id, ".", floor_id, "] search between ", from, " and ", to, " for ", property); //TODO
+            throw new FailedDbFetch("Problem occurred trying to access the records during a floor [" + building_id + "." + floor_id + "] search.", e);
         }
     }
 
@@ -323,8 +323,8 @@ public class OptimisedSearch {
         try {
             return calculateFreeSlots(session_token, candidates, from, to);
         } catch (DbQueryException e) {
-            log.log_Error(""); //TODO
-            throw new FailedDbFetch("", e); //TODO
+            log.log_Error("For [", session_token, "]: Problem accessing records whilst processing building [", building_id, "] search between ", from, " and ", to, " for ", property); //TODO
+            throw new FailedDbFetch("Problem occurred trying to access the records during a building [" + building_id + "] search.", e);
         }
     }
 
@@ -346,8 +346,8 @@ public class OptimisedSearch {
         try {
             return calculateFreeSlots(session_token, candidates, from, to);
         } catch (DbQueryException e) {
-            log.log_Error(""); //TODO
-            throw new FailedDbFetch("", e); //TODO
+            log.log_Error("For [", session_token, "]: Problem accessing records whilst processing global search between ", from, " and ", to, " for ", property); //TODO
+            throw new FailedDbFetch("Problem occurred trying to access the records during a global search.", e);
         }
     }
 }

@@ -46,7 +46,6 @@ public class OptimisedSearch {
         for (Room candidate_room : candidates) {
             results.put(candidate_room, calculateFreeSlots(session_token, candidate_room, from, to));
         }
-        //TODO //3. Also check cache for booked rooms? or wait until the last bit.
         return results;
     }
 
@@ -63,11 +62,16 @@ public class OptimisedSearch {
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
     private List<TimeSpan> calculateFreeSlots(Token session_token, Room candidate_room, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        List<TimeSpan> results = new ArrayList<>();
         ObjectTable candidate_bookings = this.db_delegate.search(session_token, candidate_room, from, to);
-        if (!candidate_bookings.isEmpty()) System.out.println(candidate_bookings); //TODO delete; temporary debug line
+
+        if (candidate_bookings.isEmpty())
+            return this.schedule_cache.add(session_token, candidate_room, from, to); //(!) early return
+        else
+            System.out.println(candidate_bookings); //TODO delete; temporary debug line
+
+        List<TimeSpan> results = new ArrayList<>();
         TimestampUTC previous_span_end = new TimestampUTC(TimestampConverter.getUTCTimestampString(from));
-        //Create empty unbooked spans between the booking
+        //Create empty unbooked spans between the booking(s)
         for (int i = 1; i <= candidate_bookings.rowCount(); i++) {
             HashMap<String, Object> row = candidate_bookings.getRow(i);
             TimeSpan booking_span = new TimeSpan(
@@ -79,8 +83,7 @@ public class OptimisedSearch {
                 Optional<TimeSpan> prior_span = createPriorSpan(from, booking_span);
                 if (prior_span.isPresent()) { //i.e. 'span' didn't start before the 'from' Date
                     log.log_Trace("Prior span: ", prior_span);
-                    this.schedule_cache.add(session_token, candidate_room, prior_span.get());
-                    results.add(prior_span.get());
+                    results.addAll(this.schedule_cache.add(session_token, candidate_room, prior_span.get()));
                     previous_span_end = booking_span.end();
                 }
             }
@@ -91,8 +94,7 @@ public class OptimisedSearch {
                         booking_span.start()
                 );
                 log.log_Trace("Intermediary span: ", span);
-                this.schedule_cache.add(session_token, candidate_room, span);
-                results.add(span);
+                results.addAll(this.schedule_cache.add(session_token, candidate_room, span));
                 previous_span_end = booking_span.end();
             }
 
@@ -100,8 +102,7 @@ public class OptimisedSearch {
                 Optional<TimeSpan> post_span = createPostSpan(booking_span, to);
                 if (post_span.isPresent()) { //i.e. 'span' didn't end after the 'to' Date
                     log.log_Trace("Post span: ", post_span);
-                    this.schedule_cache.add(session_token, candidate_room, post_span.get());
-                    results.add(post_span.get());
+                    results.addAll(this.schedule_cache.add(session_token, candidate_room, post_span.get()));
                 }
             }
         }

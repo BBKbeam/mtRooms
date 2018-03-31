@@ -93,6 +93,11 @@ public class ScheduleCache extends Observable {
      * @param room_reservation RoomReservation DTO
      */
     public synchronized void broadcastRoomReservation(Token watcher_token, RoomReservation room_reservation) {
+        this.cached_schedule.setBooked(
+                room_reservation.room(),
+                room_reservation.reservationStart(),
+                room_reservation.reservationEnd()
+        );
         //Remove reservation watcher
         this.cached_schedule.clearWatcherCache(
                 watcher_token,
@@ -108,14 +113,12 @@ public class ScheduleCache extends Observable {
         );
         //Broadcasts to all remaining watchers concerned the update
         for (Token token : observers) {
-            ReservationSession observer = this.observers.get(token.getSessionId());
-            if (observer == null)
-                log.log_Error("Found a tracked Token [", token, "] that doesn't have a matching ReservationSession in the list of observers.");
+            if (this.observers.containsKey(token.getSessionId()))
+                this.observers.get(token.getSessionId()).update(this, room_reservation);
             else
-                observer.update(this, room_reservation);
+                log.log_Error("Found a tracked Token [", token, "] that doesn't have a matching ReservationSession in the list of observers.");
         }
     }
-
 
     /**
      * Clears watcher from a room
@@ -126,16 +129,6 @@ public class ScheduleCache extends Observable {
     public void clearWatcherCache(Token token, Room room) {
         this.cached_schedule.clearWatcherCache(token, room);
     }
-
-    /**
-     * Clears watcher and any items subsequently unwatched from the cache
-     *
-     * @param token Watcher session token
-     */
-    public void clearWatcherCache(Token token) {
-        this.cached_schedule.clearWatcherCache(token);
-    }
-
 
     /**
      * Adds an observer

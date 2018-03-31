@@ -5,10 +5,12 @@ import bbk_beam.mtRooms.reservation.processing.CustomerAccountAccess;
 import bbk_beam.mtRooms.reservation.processing.OptimisedSearch;
 import bbk_beam.mtRooms.reservation.processing.PaymentProcessing;
 import bbk_beam.mtRooms.reservation.processing.ReservationProcessing;
+import eadjlib.logger.Logger;
 
 import java.util.Observable;
 
 public class ReservationSession implements IReservationSession, IReservationPayment {
+    private final Logger log = Logger.getLoggerInstance(ReservationSession.class.getName());
     private Token token;
     private CustomerAccountAccess customerAccountAccess;
     private PaymentProcessing paymentProcessing;
@@ -51,6 +53,6 @@ public class ReservationSession implements IReservationSession, IReservationPaym
 
     @Override
     public void update(Observable o, Object arg) {
-
+        log.log_Debug("Observable ", o, " called update.");
     }
 }

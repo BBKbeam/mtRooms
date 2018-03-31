@@ -63,7 +63,7 @@ public class OptimisedSearch {
      */
     private List<TimeSpan> calculateFreeSlots(Token session_token, Room candidate_room, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         ObjectTable candidate_bookings = this.db_delegate.search(session_token, candidate_room, from, to);
-
+        log.log_Debug("For [", session_token, "]: found ", candidate_bookings.rowCount(), " booking(s) for ", candidate_room);
         if (candidate_bookings.isEmpty())
             return this.schedule_cache.add(session_token, candidate_room, from, to); //(!) early return
         else
@@ -82,7 +82,7 @@ public class OptimisedSearch {
             if (i == 1) { //First booking
                 Optional<TimeSpan> prior_span = createPriorSpan(from, booking_span);
                 if (prior_span.isPresent()) { //i.e. 'span' didn't start before the 'from' Date
-                    log.log_Trace("Prior span: ", prior_span);
+                    log.log_Trace("Prior span: ", prior_span);  //TODO delete; temporary debug line
                     results.addAll(this.schedule_cache.add(session_token, candidate_room, prior_span.get()));
                     previous_span_end = booking_span.end();
                 }
@@ -93,7 +93,7 @@ public class OptimisedSearch {
                         previous_span_end,
                         booking_span.start()
                 );
-                log.log_Trace("Intermediary span: ", span);
+                log.log_Trace("Intermediary span: ", span); //TODO delete; temporary debug line
                 results.addAll(this.schedule_cache.add(session_token, candidate_room, span));
                 previous_span_end = booking_span.end();
             }
@@ -101,7 +101,7 @@ public class OptimisedSearch {
             if (i == candidate_bookings.rowCount()) { //Last booking
                 Optional<TimeSpan> post_span = createPostSpan(booking_span, to);
                 if (post_span.isPresent()) { //i.e. 'span' didn't end after the 'to' Date
-                    log.log_Trace("Post span: ", post_span);
+                    log.log_Trace("Post span: ", post_span); //TODO delete; temporary debug line
                     results.addAll(this.schedule_cache.add(session_token, candidate_room, post_span.get()));
                 }
             }
@@ -170,7 +170,7 @@ public class OptimisedSearch {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    List<Room> search(Token session_token, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+    public List<Room> search(Token session_token, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         try {
             ObjectTable table = this.db_delegate.search(session_token, properties);
             List<Room> list = new ArrayList<>();
@@ -203,7 +203,7 @@ public class OptimisedSearch {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    List<Room> search(Token session_token, Integer building_id, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+    public List<Room> search(Token session_token, Integer building_id, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         try {
             ObjectTable table = this.db_delegate.search(session_token, building_id, properties);
             List<Room> list = new ArrayList<>();
@@ -237,7 +237,7 @@ public class OptimisedSearch {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    List<Room> search(Token session_token, Integer building_id, Integer floor_id, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+    public List<Room> search(Token session_token, Integer building_id, Integer floor_id, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         try {
             ObjectTable table = this.db_delegate.search(session_token, building_id, floor_id, properties);
             List<Room> list = new ArrayList<>();
@@ -271,7 +271,7 @@ public class OptimisedSearch {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    List<TimeSpan> search(Token session_token, Room room, Date from, Date to) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+    public List<TimeSpan> search(Token session_token, Room room, Date from, Date to) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         try {
             return calculateFreeSlots(session_token, room, from, to);
         } catch (DbQueryException e) {
@@ -294,7 +294,7 @@ public class OptimisedSearch {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+    public HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         List<Room> candidates = search(session_token, building_id, floor_id, property);
         log.log_Debug("For [", session_token, "]: floor [", building_id, ".", floor_id, "] search found ", candidates.size(), " candidate rooms matching ", property);
         try {
@@ -318,7 +318,7 @@ public class OptimisedSearch {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+    public HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         List<Room> candidates = search(session_token, building_id, property);
         log.log_Debug("For [", session_token, "]: building [", building_id, "] search found ", candidates.size(), " candidate rooms matching ", property);
         try {
@@ -341,7 +341,7 @@ public class OptimisedSearch {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    HashMap<Room, List<TimeSpan>> search(Token session_token, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+    public HashMap<Room, List<TimeSpan>> search(Token session_token, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         List<Room> candidates = search(session_token, property);
         log.log_Debug("For [", session_token, "]: global search found ", candidates.size(), " candidate rooms matching ", property);
         try {

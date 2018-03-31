@@ -126,4 +126,11 @@ public class ScheduleCacheTest {
         this.cache.addObserver(mock_observer3);
         Assert.assertEquals(3, this.cache.countObservers());
     }
+
+    @Test
+    public void exists() throws Exception {
+        Assert.assertFalse(this.cache.exists(mock_observer1));
+        this.cache.addObserver(mock_observer1);
+        Assert.assertTrue(this.cache.exists(mock_observer1));
+    }
 }

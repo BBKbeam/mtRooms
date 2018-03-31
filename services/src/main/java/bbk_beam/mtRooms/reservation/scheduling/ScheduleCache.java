@@ -148,6 +148,16 @@ public class ScheduleCache extends Observable {
     }
 
     /**
+     * Observing state of an observer
+     *
+     * @param session ReservationSession instance
+     * @return Observing state
+     */
+    public synchronized boolean exists(ReservationSession session) {
+        return this.observers.containsKey(session.getToken().getSessionId());
+    }
+
+    /**
      * Adds an observer
      *
      * @param o ReservationSession instance

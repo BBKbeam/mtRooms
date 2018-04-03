@@ -8,10 +8,6 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import eadjlib.datastructure.ObjectTable;
 
-/**
- * //TODO/NOTES Maybe put a lock on currently accessed customers so that sessions don't corrupt each other?
- */
-
 public interface ICustomerAccount {
     /**
      * Gets the Customer account details

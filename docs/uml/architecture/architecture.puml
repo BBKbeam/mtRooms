@@ -78,7 +78,6 @@ package mtRooms {
                 [Schedule] <<Datastructure>> as Schedule
 
                 IReservationSession -- [ReservationSession]
-                IReservationPayment -- [ReservationSession]
                 IOptimisedSearch -- [OptimisedSearch]
                 IReservationProcessing -- [ReservationProcessing]
                 IPaymentProcessing -- [PaymentProcessing]
@@ -210,7 +209,6 @@ package mtRooms {
     Authenticator --( IAuthenticationSystem
 
     FrontDeskDelegate --( IReservationSession
-    FrontDeskDelegate --( IReservationPayment
 
     RevenuePersonnelDelegate --( IRevenueReporter
     RevenuePersonnelDelegate --( IInvoice

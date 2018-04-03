@@ -120,5 +120,14 @@ public class ServiceDriver {
         }
     }
 
+    /**
+     * Delete <<Observer>> ReservationSession instance from the <<Observable>> ScheduleCache
+     *
+     * @param reservation_session ReservationSession instance
+     */
+    public void removeReservationSession(ReservationSession reservation_session) {
+        this.scheduleCache.deleteObserver(reservation_session);
+    }
+
 
 }

@@ -44,7 +44,12 @@ public class OptimisedSearch {
     private HashMap<Room, List<TimeSpan>> calculateFreeSlots(Token session_token, List<Room> candidates, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         HashMap<Room, List<TimeSpan>> results = new HashMap<>();
         for (Room candidate_room : candidates) {
-            results.put(candidate_room, calculateFreeSlots(session_token, candidate_room, from, to));
+            results.put(
+                    candidate_room,
+                    calculateFreeSlots(session_token, candidate_room, from, to)
+            );
+            if (results.get(candidate_room).isEmpty())
+                results.remove(candidate_room);
         }
         return results;
     }
@@ -66,8 +71,6 @@ public class OptimisedSearch {
         log.log_Debug("For [", session_token, "]: found ", candidate_bookings.rowCount(), " booking(s) for ", candidate_room);
         if (candidate_bookings.isEmpty())
             return this.schedule_cache.add(session_token, candidate_room, from, to); //(!) early return
-        else
-            System.out.println(candidate_bookings); //TODO delete; temporary debug line
 
         List<TimeSpan> results = new ArrayList<>();
         TimestampUTC previous_span_end = new TimestampUTC(TimestampConverter.getUTCTimestampString(from));
@@ -81,11 +84,9 @@ public class OptimisedSearch {
 
             if (i == 1) { //First booking
                 Optional<TimeSpan> prior_span = createPriorSpan(from, booking_span);
-                if (prior_span.isPresent()) { //i.e. 'span' didn't start before the 'from' Date
-                    log.log_Trace("Prior span: ", prior_span);  //TODO delete; temporary debug line
+                if (prior_span.isPresent()) //i.e. did 'booking_span' start after the 'from' Date
                     results.addAll(this.schedule_cache.add(session_token, candidate_room, prior_span.get()));
-                    previous_span_end = booking_span.end();
-                }
+                previous_span_end = booking_span.end();
             }
 
             if (i > 1 && i <= candidate_bookings.rowCount()) {
@@ -93,17 +94,14 @@ public class OptimisedSearch {
                         previous_span_end,
                         booking_span.start()
                 );
-                log.log_Trace("Intermediary span: ", span); //TODO delete; temporary debug line
                 results.addAll(this.schedule_cache.add(session_token, candidate_room, span));
                 previous_span_end = booking_span.end();
             }
 
             if (i == candidate_bookings.rowCount()) { //Last booking
                 Optional<TimeSpan> post_span = createPostSpan(booking_span, to);
-                if (post_span.isPresent()) { //i.e. 'span' didn't end after the 'to' Date
-                    log.log_Trace("Post span: ", post_span); //TODO delete; temporary debug line
+                if (post_span.isPresent()) //i.e. did 'booking_span' end before the 'to' Date
                     results.addAll(this.schedule_cache.add(session_token, candidate_room, post_span.get()));
-                }
             }
         }
         return results;

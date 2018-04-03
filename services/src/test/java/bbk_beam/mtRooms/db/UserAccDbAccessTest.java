@@ -18,13 +18,13 @@ public class UserAccDbAccessTest {
     private SessionTracker mocked_SessionTracker;
 
     @org.junit.Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mocked_Database = mock(Database.class);
         mocked_SessionTracker = mock(SessionTracker.class);
     }
 
     @org.junit.After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mocked_Database = null;
         mocked_SessionTracker = null;
     }

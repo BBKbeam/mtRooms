@@ -37,13 +37,13 @@ public class ScheduleTest {
 
     @Test
     public void addSlot() throws Exception {
-        Date date1from = new Date();
-        Date date2from = Date.from(Instant.now().minus(30, ChronoUnit.MINUTES));
-        Date date1to = Date.from(Instant.now().plus(43, ChronoUnit.MINUTES));
-        Date date2to = Date.from(Instant.now().plus(90, ChronoUnit.MINUTES));
-        this.schedule.addSlot(token1, room1, date1from, date1to);
-        this.schedule.addSlot(token2, room1, date2from, date2to);
-        this.schedule.addSlot(token2, room1, date2from, date2to); //duplicates should not be added
+        Date date1from = TimestampConverter.getDateObject("2018-01-05 10:15:00"); //10:00 rounded
+        Date date1to = TimestampConverter.getDateObject("2018-01-05 10:58:00"); //11:00 rounded
+        Date date2from = TimestampConverter.getDateObject("2018-01-05 09:45:00"); //09:30 rounded
+        Date date2to = TimestampConverter.getDateObject("2018-01-05 11:45:00"); //12:00 rounded
+        Assert.assertEquals(2, this.schedule.addSlot(token1, room1, date1from, date1to).size()); //2x30mns slots
+        Assert.assertEquals(5, this.schedule.addSlot(token2, room1, date2from, date2to).size()); //4x30mns slots
+        Assert.assertEquals(5, this.schedule.addSlot(token2, room1, date2from, date2to).size()); //duplicates should not be added
         Collection<Token> watchers = this.schedule.getWatchers(room1, date1from, date2to);
         Assert.assertEquals(2, watchers.size());
     }

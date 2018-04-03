@@ -83,4 +83,40 @@ public class TimestampUTCTest {
         Assert.assertTrue(timestampUTC2.equals(timestampUTC1));
         Assert.assertFalse(timestampUTC1.equals(timestampUTC3));
     }
+
+    @Test
+    public void year() {
+        TimestampUTC timestampUTC = new TimestampUTC("2018-12-05 23:17:51");
+        Assert.assertEquals(new Integer(2018), timestampUTC.year());
+    }
+
+    @Test
+    public void month() {
+        TimestampUTC timestampUTC = new TimestampUTC("2018-12-05 23:17:51");
+        Assert.assertEquals(new Integer(12), timestampUTC.month());
+    }
+
+    @Test
+    public void day() {
+        TimestampUTC timestampUTC = new TimestampUTC("2018-12-05 23:17:51");
+        Assert.assertEquals(new Integer(5), timestampUTC.day());
+    }
+
+    @Test
+    public void hours() {
+        TimestampUTC timestampUTC = new TimestampUTC("2018-12-05 23:17:51");
+        Assert.assertEquals(new Integer(23), timestampUTC.hours());
+    }
+
+    @Test
+    public void minutes() {
+        TimestampUTC timestampUTC = new TimestampUTC("2018-12-05 23:17:51");
+        Assert.assertEquals(new Integer(17), timestampUTC.minutes());
+    }
+
+    @Test
+    public void seconds() {
+        TimestampUTC timestampUTC = new TimestampUTC("2018-12-05 23:17:51");
+        Assert.assertEquals(new Integer(51), timestampUTC.seconds());
+    }
 }

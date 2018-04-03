@@ -50,6 +50,7 @@ public class DbSystemBootstrap implements IDbSystemBootstrap {
                 if (!this.db.disconnect()) {
                     log.log_Error("Could not disconnect cleanly from the database.");
                 }
+                throw new SQLException("");
             } catch (SQLException exception) {
                 log.log_Error("The database was already disconnected from. Weird but good... I guess?!");
             }

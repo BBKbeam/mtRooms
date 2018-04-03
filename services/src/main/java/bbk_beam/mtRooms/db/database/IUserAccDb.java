@@ -11,7 +11,7 @@ public interface IUserAccDb extends IDatabase {
      *
      * @return Success
      */
-    public boolean setupUserAccDB();
+    boolean setupUserAccDB();
 
     /**
      * Checks the structure of the user accounts database
@@ -19,5 +19,5 @@ public interface IUserAccDb extends IDatabase {
      * @return Success
      * @throws DbEmptyException when non of the user account tables exist
      */
-    public boolean checkUserAccDB() throws DbEmptyException;
+    boolean checkUserAccDB() throws DbEmptyException;
 }

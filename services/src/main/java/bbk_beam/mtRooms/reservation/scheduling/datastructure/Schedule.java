@@ -112,8 +112,10 @@ public class Schedule {
      * @param room          Room DTO
      * @param from          Start timestamp of the time slot
      * @param to            End timestamp of the time stamp
+     * @return List of the room's free slots as time spans
      */
-    public void addSlot(Token watcher_token, Room room, Date from, Date to) {
+    public List<TimeSpan> addSlot(Token watcher_token, Room room, Date from, Date to) {
+        List<TimeSpan> free_slots = new LinkedList<>();
         try {
             log.log_Debug("Adding schedule slot for ", watcher_token, " between ", from, " -> ", to, " for ", room);
             for (ScheduleSlot slot : convertToUTCSlotIntervals(watcher_token, from, to)) {
@@ -127,14 +129,18 @@ public class Schedule {
                             s.addWatcher(watcher_token);
                         return s;
                     });
+                    if (!new_slot.isBooked())
+                        free_slots.add(new TimeSpan(slot.start(), slot.end()));
                 } else {
                     this.cache.get(room).add(slot.start(), slot);
+                    free_slots.add(new TimeSpan(slot.start(), slot.end()));
                 }
             }
         } catch (UndefinedException e) {
             log.log_Fatal("Error detected in the schedule slot data-structure in cache of Room: ", room);
             log.log_Exception(e);
         }
+        return free_slots;
     }
 
     /**
@@ -192,7 +198,7 @@ public class Schedule {
      * @param to   End timestamp of the time span
      * @return Success (false -> when there are 1+ slots already booked in the time span)
      */
-    boolean setBooked(Room room, Date from, Date to) {
+    public boolean setBooked(Room room, Date from, Date to) {
         if (this.cache.containsKey(room)) {
             ScheduleSlot slot = new ScheduleSlot(
                     TimestampConverter.getUTCTimestampString(from),
@@ -229,22 +235,22 @@ public class Schedule {
                 TimestampConverter.getUTCTimestampString(this.timeSlot_increment.floorToInterval(from)),
                 TimestampConverter.getUTCTimestampString(this.timeSlot_increment.ceilToInterval(to))
         );
-        try {
-            if (!this.cache.containsKey(room)) return Collections.emptySet();
-            Set<Token> watchers = new HashSet<>();
-            List<TimeSpan> spans = convertToUTCSlotIntervals(from, to);
-            for (TimeSpan span : spans) {
+
+        if (!this.cache.containsKey(room)) return Collections.emptySet();
+        Set<Token> watchers = new HashSet<>();
+        List<TimeSpan> spans = convertToUTCSlotIntervals(from, to);
+        for (TimeSpan span : spans) {
+            try {
                 ScheduleSlot scheduleSlot = cache.get(room).getValue(span.start());
                 if (scheduleSlot != null) {
                     Collection<Token> slot_watchers = scheduleSlot.watchers();
                     watchers.addAll(slot_watchers);
                 }
+            } catch (NullPointerException e) {
+                log.log_Warning("Tried to get list of watchers from a un-cached Room (", room, ", ) slot: ", slot);
             }
-            return watchers;
-        } catch (NullPointerException e) {
-            log.log("Tried to get list of watchers from a un-cached Room (", room, ", ) slot: ", slot);
-            return Collections.emptySet();
         }
+        return watchers;
     }
 
     /**

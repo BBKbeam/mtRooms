@@ -8,12 +8,12 @@ import java.util.Date;
 
 public class TimestampConverterTest {
     @Test
-    public void getUTCTimestampString() throws Exception {
+    public void getUTCTimestampString() {
         Assert.assertEquals("1970-01-01 00:00:00", TimestampConverter.getUTCTimestampString(Date.from(Instant.EPOCH)));
     }
 
     @Test
-    public void getDateObject() throws Exception {
+    public void getDateObject() {
         Date expected = Date.from(Instant.parse("2000-01-30T23:59:40Z"));
         Date returned = TimestampConverter.getDateObject("2000-01-30 23:59:40");
         Assert.assertEquals(expected, returned);

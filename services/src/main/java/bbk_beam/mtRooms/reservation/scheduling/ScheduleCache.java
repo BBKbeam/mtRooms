@@ -1,10 +1,12 @@
 package bbk_beam.mtRooms.reservation.scheduling;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.reservation.ReservationSession;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
 import bbk_beam.mtRooms.reservation.scheduling.datastructure.Schedule;
+import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
 import eadjlib.logger.Logger;
 
 import java.util.*;
@@ -37,9 +39,10 @@ public class ScheduleCache extends Observable {
      *
      * @param watcher_token    Watcher token
      * @param room_reservation RoomReservation DTO
+     * @return List of the room's free slots as time spans
      */
-    public synchronized void add(Token watcher_token, RoomReservation room_reservation) {
-        this.cached_schedule.addSlot(
+    public synchronized List<TimeSpan> add(Token watcher_token, RoomReservation room_reservation) {
+        return this.cached_schedule.addSlot(
                 watcher_token,
                 room_reservation.room(),
                 room_reservation.reservationStart(),
@@ -54,13 +57,31 @@ public class ScheduleCache extends Observable {
      * @param room          Room DTO
      * @param from          Start timestamp of the time frame
      * @param to            End timestamp of the time frame
+     * @return List of the room's free slots as time spans
      */
-    public synchronized void add(Token watcher_token, Room room, Date from, Date to) {
-        this.cached_schedule.addSlot(
+    public synchronized List<TimeSpan> add(Token watcher_token, Room room, Date from, Date to) {
+        return this.cached_schedule.addSlot(
                 watcher_token,
                 room,
                 from,
                 to
+        );
+    }
+
+    /**
+     * Adds a Room + time frame to the schedule cache
+     *
+     * @param watcher_token Watcher DTO
+     * @param room          Room DTO
+     * @param time_span     Time frame span
+     * @return List of the room's free slots as time spans
+     */
+    public synchronized List<TimeSpan> add(Token watcher_token, Room room, TimeSpan time_span) {
+        return this.cached_schedule.addSlot(
+                watcher_token,
+                room,
+                TimestampConverter.getDateObject(time_span.start().get()),
+                TimestampConverter.getDateObject(time_span.end().get())
         );
     }
 
@@ -72,6 +93,11 @@ public class ScheduleCache extends Observable {
      * @param room_reservation RoomReservation DTO
      */
     public synchronized void broadcastRoomReservation(Token watcher_token, RoomReservation room_reservation) {
+        this.cached_schedule.setBooked(
+                room_reservation.room(),
+                room_reservation.reservationStart(),
+                room_reservation.reservationEnd()
+        );
         //Remove reservation watcher
         this.cached_schedule.clearWatcherCache(
                 watcher_token,
@@ -87,14 +113,12 @@ public class ScheduleCache extends Observable {
         );
         //Broadcasts to all remaining watchers concerned the update
         for (Token token : observers) {
-            ReservationSession observer = this.observers.get(token.getSessionId());
-            if (observer == null)
-                log.log_Error("Found a tracked Token [", token, "] that doesn't have a matching ReservationSession in the list of observers.");
+            if (this.observers.containsKey(token.getSessionId()))
+                this.observers.get(token.getSessionId()).update(this, room_reservation);
             else
-                observer.update(this, room_reservation);
+                log.log_Error("Found a tracked Token [", token, "] that doesn't have a matching ReservationSession in the list of observers.");
         }
     }
-
 
     /**
      * Clears watcher from a room
@@ -105,16 +129,6 @@ public class ScheduleCache extends Observable {
     public void clearWatcherCache(Token token, Room room) {
         this.cached_schedule.clearWatcherCache(token, room);
     }
-
-    /**
-     * Clears watcher and any items subsequently unwatched from the cache
-     *
-     * @param token Watcher session token
-     */
-    public void clearWatcherCache(Token token) {
-        this.cached_schedule.clearWatcherCache(token);
-    }
-
 
     /**
      * Adds an observer
@@ -131,6 +145,16 @@ public class ScheduleCache extends Observable {
             addObserver((ReservationSession) o);
         else
             throw new ClassCastException("Observer is not an instance of ReservationSession.");
+    }
+
+    /**
+     * Observing state of an observer
+     *
+     * @param session ReservationSession instance
+     * @return Observing state
+     */
+    public synchronized boolean exists(ReservationSession session) {
+        return this.observers.containsKey(session.getToken().getSessionId());
     }
 
     /**

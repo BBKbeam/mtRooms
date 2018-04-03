@@ -561,7 +561,7 @@ public class ReservationDbDelegateTest {
         ObjectTable table = this.reservationDbDelegate.search(this.token, 1, from, to);
         System.out.println(table);
         //Testing
-        Assert.assertEquals(8, table.rowCount());
+        Assert.assertEquals(13, table.rowCount());
         HashMap<String, Object> row1 = table.getRow(1);
         Assert.assertEquals("1st row building_id fail", 1, row1.get("building_id"));
         Assert.assertEquals("1st row floor_id fail", 1, row1.get("floor_id"));
@@ -600,16 +600,46 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals("6th row timestamp_out fail", "2018-03-10 17:00:00", row6.get("timestamp_out"));
         HashMap<String, Object> row7 = table.getRow(7);
         Assert.assertEquals("7th row building_id fail", 1, row7.get("building_id"));
-        Assert.assertEquals("7th row floor_id fail", 3, row7.get("floor_id"));
-        Assert.assertEquals("7th row room_id fail", 7, row7.get("room_id"));
-        Assert.assertEquals("7th row timestamp_in fail", "2018-03-10 14:00:00", row7.get("timestamp_in"));
-        Assert.assertEquals("7th row timestamp_out fail", "2018-03-10 18:00:00", row7.get("timestamp_out"));
+        Assert.assertEquals("7th row floor_id fail", 2, row7.get("floor_id"));
+        Assert.assertEquals("7th row room_id fail", 5, row7.get("room_id"));
+        Assert.assertEquals("7th row timestamp_in fail", "2018-03-10 09:00:00", row7.get("timestamp_in"));
+        Assert.assertEquals("7th row timestamp_out fail", "2018-03-10 10:00:00", row7.get("timestamp_out"));
         HashMap<String, Object> row8 = table.getRow(8);
         Assert.assertEquals("8th row building_id fail", 1, row8.get("building_id"));
-        Assert.assertEquals("8th row floor_id fail", 3, row8.get("floor_id"));
-        Assert.assertEquals("8th row room_id fail", 8, row8.get("room_id"));
-        Assert.assertEquals("8th row timestamp_in fail", "2018-03-10 14:00:00", row8.get("timestamp_in"));
-        Assert.assertEquals("8th row timestamp_out fail", "2018-03-10 18:00:00", row8.get("timestamp_out"));
+        Assert.assertEquals("8th row floor_id fail", 2, row8.get("floor_id"));
+        Assert.assertEquals("8th row room_id fail", 5, row8.get("room_id"));
+        Assert.assertEquals("8th row timestamp_in fail", "2018-03-10 11:00:00", row8.get("timestamp_in"));
+        Assert.assertEquals("8th row timestamp_out fail", "2018-03-10 12:00:00", row8.get("timestamp_out"));
+        HashMap<String, Object> row9 = table.getRow(9);
+        Assert.assertEquals("9th row building_id fail", 1, row9.get("building_id"));
+        Assert.assertEquals("9th row floor_id fail", 2, row9.get("floor_id"));
+        Assert.assertEquals("9th row room_id fail", 5, row9.get("room_id"));
+        Assert.assertEquals("9th row timestamp_in fail", "2018-03-10 12:30:00", row9.get("timestamp_in"));
+        Assert.assertEquals("9th row timestamp_out fail", "2018-03-10 14:00:00", row9.get("timestamp_out"));
+        HashMap<String, Object> row10 = table.getRow(10);
+        Assert.assertEquals("10th row building_id fail", 1, row10.get("building_id"));
+        Assert.assertEquals("10th row floor_id fail", 2, row10.get("floor_id"));
+        Assert.assertEquals("10th row room_id fail", 5, row10.get("room_id"));
+        Assert.assertEquals("10th row timestamp_in fail", "2018-03-10 14:30:00", row10.get("timestamp_in"));
+        Assert.assertEquals("10th row timestamp_out fail", "2018-03-10 16:00:00", row10.get("timestamp_out"));
+        HashMap<String, Object> row11 = table.getRow(11);
+        Assert.assertEquals("11th row building_id fail", 1, row11.get("building_id"));
+        Assert.assertEquals("11th row floor_id fail", 2, row11.get("floor_id"));
+        Assert.assertEquals("11th row room_id fail", 5, row11.get("room_id"));
+        Assert.assertEquals("11th row timestamp_in fail", "2018-03-10 18:00:00", row11.get("timestamp_in"));
+        Assert.assertEquals("11th row timestamp_out fail", "2018-03-10 20:00:00", row11.get("timestamp_out"));
+        HashMap<String, Object> row12 = table.getRow(12);
+        Assert.assertEquals("12th row building_id fail", 1, row12.get("building_id"));
+        Assert.assertEquals("12th row floor_id fail", 3, row12.get("floor_id"));
+        Assert.assertEquals("12th row room_id fail", 7, row12.get("room_id"));
+        Assert.assertEquals("12th row timestamp_in fail", "2018-03-10 14:00:00", row12.get("timestamp_in"));
+        Assert.assertEquals("12th row timestamp_out fail", "2018-03-10 18:00:00", row12.get("timestamp_out"));
+        HashMap<String, Object> row13 = table.getRow(13);
+        Assert.assertEquals("13th row building_id fail", 1, row13.get("building_id"));
+        Assert.assertEquals("13th row floor_id fail", 3, row13.get("floor_id"));
+        Assert.assertEquals("13th row room_id fail", 8, row13.get("room_id"));
+        Assert.assertEquals("13th row timestamp_in fail", "2018-03-10 14:00:00", row13.get("timestamp_in"));
+        Assert.assertEquals("13th row timestamp_out fail", "2018-03-10 18:00:00", row13.get("timestamp_out"));
     }
 
     @Test

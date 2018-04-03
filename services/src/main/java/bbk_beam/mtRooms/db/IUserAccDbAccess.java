@@ -16,7 +16,7 @@ public interface IUserAccDbAccess {
      * @throws SessionCorruptedException when given expiry does not match expiry tracked.
      * @throws SessionInvalidException   when session is not tracked
      */
-    public void checkValidity(String session_id, Date session_expiry) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException;
+    void checkValidity(String session_id, Date session_expiry) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException;
 
     /**
      * Gets the type of the session
@@ -25,7 +25,7 @@ public interface IUserAccDbAccess {
      * @return Session type
      * @throws SessionInvalidException when session ID is not tracked
      */
-    public SessionType getSessionType(String session_id) throws SessionInvalidException;
+    SessionType getSessionType(String session_id) throws SessionInvalidException;
 
     /**
      * Gets the associated account ID of the session
@@ -34,7 +34,7 @@ public interface IUserAccDbAccess {
      * @return Session account ID
      * @throws SessionInvalidException when session ID is not tracked
      */
-    public Integer getSessionAccountID(String session_id) throws SessionInvalidException;
+    Integer getSessionAccountID(String session_id) throws SessionInvalidException;
 
     /**
      * Opens a session with the database
@@ -44,7 +44,7 @@ public interface IUserAccDbAccess {
      * @param account_id Associated account ID
      * @throws SessionException when session ID is already tracked
      */
-    public void openSession(String session_id, Date expiry, SessionType session_type, Integer account_id) throws SessionException;
+    void openSession(String session_id, Date expiry, SessionType session_type, Integer account_id) throws SessionException;
 
     /**
      * Closes a session with the database
@@ -52,7 +52,7 @@ public interface IUserAccDbAccess {
      * @param session_id Session ID
      * @throws SessionInvalidException when trying to close a non-tracked session
      */
-    public void closeSession(String session_id) throws SessionInvalidException;
+    void closeSession(String session_id) throws SessionInvalidException;
 
     /**
      * Passes a SQL query to the database
@@ -61,7 +61,7 @@ public interface IUserAccDbAccess {
      * @return Success
      * @throws DbQueryException when a problem was encountered whilst processing the query
      */
-    public boolean pushToDB(String query) throws DbQueryException;
+    boolean pushToDB(String query) throws DbQueryException;
 
     /**
      * Passes a SQL query to the database
@@ -70,5 +70,5 @@ public interface IUserAccDbAccess {
      * @return Result set container
      * @throws DbQueryException when a problem was encountered whilst processing the query
      */
-    public ObjectTable pullFromDB(String query) throws DbQueryException;
+    ObjectTable pullFromDB(String query) throws DbQueryException;
 }

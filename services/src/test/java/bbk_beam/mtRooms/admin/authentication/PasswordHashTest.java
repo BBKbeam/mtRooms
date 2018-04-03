@@ -7,15 +7,15 @@ import org.junit.Test;
 
 public class PasswordHashTest {
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
     }
 
     @Test
-    public void createSalt() throws Exception {
+    public void createSalt() {
         String salt = PasswordHash.createSalt();
         for (int i = 0; i < 100; i++) {
             Assert.assertFalse(salt.equals(PasswordHash.createSalt()));

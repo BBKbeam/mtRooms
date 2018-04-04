@@ -65,7 +65,7 @@ public class ReservationProcessingTest {
         Date reservation_end = Date.from(Instant.now().plus(2, ChronoUnit.HOURS));
         String note = "Note 1";
         RoomPrice room_price = new RoomPrice(12, 110.00, 2008);
-        RoomReservation roomReservation = new RoomReservation(room, reservation_start, reservation_end, note, room_price, false);
+        RoomReservation roomReservation = new RoomReservation(room, reservation_start, reservation_end, 80, false, note, room_price, false);
         Reservation test_reservation = new Reservation(reservation_start, 1, discount);
         test_reservation.addRoomReservation(roomReservation);
         //Testing
@@ -83,6 +83,8 @@ public class ReservationProcessingTest {
                 new Room(8, 3, 1, 6),
                 new Date(),
                 Date.from(Instant.now().plus(2, ChronoUnit.HOURS)),
+                80,
+                false,
                 "Note 1",
                 new RoomPrice(12, 110., 2008),
                 false

@@ -375,7 +375,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     @Override
     public void createRoomReservation(Token session_token, Integer reservation_id, RoomReservation room_reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "INSERT INTO Room_has_Reservation " +
-                "( room_id, floor_id, building_id, reservation_id, timestamp_in, timestamp_out, notes ) " +
+                "( room_id, floor_id, building_id, reservation_id, timestamp_in, timestamp_out, seated_count, catering, notes ) " +
                 "VALUES ( " +
                 room_reservation.room().id() + ", " +
                 room_reservation.room().floorID() + ", " +
@@ -383,6 +383,8 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 reservation_id + ", " +
                 "\"" + TimestampConverter.getUTCTimestampString(room_reservation.reservationStart()) + "\", " +
                 "\"" + TimestampConverter.getUTCTimestampString(room_reservation.reservationEnd()) + "\", " +
+                room_reservation.seatedCount() + ", " +
+                (room_reservation.hasCateringRequired() ? 1 : 0) + ", " +
                 (room_reservation.note().isEmpty() ? null : "\"" + room_reservation.note() + "\" ") +
                 ")";
         if (!this.db_access.pushToDB(session_token.getSessionId(), query)) {
@@ -586,6 +588,8 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Room_has_Reservation.building_id, " +
                 "Room_has_Reservation.timestamp_in, " +
                 "Room_has_Reservation.timestamp_out, " +
+                "Room_has_Reservation.seated_count, " +
+                "Room_has_Reservation.catering, " +
                 "Room_has_Reservation.notes, " +
                 "Room_has_Reservation.cancelled_flag, " +
                 "Room.description, " +

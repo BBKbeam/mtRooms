@@ -172,6 +172,8 @@ public class ReservationProcessing {
                         ),
                         TimestampConverter.getDateObject((String) reserved_room_row.get("timestamp_in")),
                         TimestampConverter.getDateObject((String) reserved_room_row.get("timestamp_out")),
+                        (Integer) reserved_room_row.get("seated_count"),
+                        ((Integer) reserved_room_row.get("catering") != 0),
                         (String) reserved_room_row.get("notes"),
                         new RoomPrice(
                                 (Integer) reserved_room_row.get("price_id"),

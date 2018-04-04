@@ -10,6 +10,8 @@ public class RoomReservation {
     private Date timestamp_out;
     private String note;
     private RoomPrice price;
+    private Integer seated_count;
+    private boolean catering_flag;
     private boolean cancelled_flag;
 
     /**
@@ -18,6 +20,8 @@ public class RoomReservation {
      * @param room           Room
      * @param timestamp_in   Room reservation start timestamp
      * @param timestamp_out  Room reservation end timestamp
+     * @param seated_count   Actual seated count
+     * @param catering_flag  Catering option flag
      * @param note           Note
      * @param roomPrice      Price for the reservation of the room
      * @param cancelled_flag Cancelled room reservation flag
@@ -25,12 +29,16 @@ public class RoomReservation {
     public RoomReservation(Room room,
                            Date timestamp_in,
                            Date timestamp_out,
+                           Integer seated_count,
+                           boolean catering_flag,
                            String note,
                            RoomPrice roomPrice,
                            boolean cancelled_flag) {
         this.room = room;
         this.timestamp_in = timestamp_in;
         this.timestamp_out = timestamp_out;
+        this.seated_count = seated_count;
+        this.catering_flag = catering_flag;
         this.note = note;
         this.price = roomPrice;
         this.cancelled_flag = cancelled_flag;
@@ -61,6 +69,24 @@ public class RoomReservation {
      */
     public Date reservationEnd() {
         return this.timestamp_out;
+    }
+
+    /**
+     * Gets the room's reservation seated count
+     *
+     * @return Seated count
+     */
+    public Integer seatedCount() {
+        return this.seated_count;
+    }
+
+    /**
+     * Gets the room reservation's catering requirement option
+     *
+     * @return Catering option selected state
+     */
+    public boolean hasCateringRequired() {
+        return this.catering_flag;
     }
 
     /**
@@ -106,6 +132,8 @@ public class RoomReservation {
         String thisTimestampOUT = TimestampConverter.getUTCTimestampString(timestamp_out);
         String thatTimestampOUT = TimestampConverter.getUTCTimestampString(that.timestamp_out);
         if (thisTimestampOUT.compareTo(thatTimestampOUT) != 0) return false;
+        if (!seated_count.equals(that.seated_count)) return false;
+        if (catering_flag != that.catering_flag) return false;
         if (!note.equals(that.note)) return false;
         return price.equals(that.price);
     }
@@ -115,6 +143,8 @@ public class RoomReservation {
         int result = room.hashCode();
         result = 31 * result + TimestampConverter.getUTCTimestampString(timestamp_in).hashCode();
         result = 31 * result + TimestampConverter.getUTCTimestampString(timestamp_out).hashCode();
+        result = 31 * result + seated_count.hashCode();
+        result = 31 * result + (catering_flag ? 1 : 0);
         result = 31 * result + note.hashCode();
         result = 31 * result + price.hashCode();
         result = 31 * result + (cancelled_flag ? 1 : 0);
@@ -127,6 +157,8 @@ public class RoomReservation {
                 "room: " + room +
                 ", timestamp_in: " + timestamp_in +
                 ", timestamp_out: " + timestamp_out +
+                ", seated_count: " + seated_count +
+                ", catering: " + (catering_flag ? "yes" : "no") +
                 ", note: '" + note + '\'' +
                 ", price: " + price +
                 ", cancelled: " + (cancelled_flag ? "true" : "false") +

@@ -31,4 +31,18 @@ frame "Service Layer" #lightgreen {
     }
 }
 
+'##---------------------------------##
+'## Service to Business Logic Layer ##
+'##---------------------------------##
+AdminDelegate --( IAdminSession
+
+Authenticator --( IAuthenticationSystem
+
+FrontDeskDelegate --( IReservationSession
+
+RevenuePersonnelDelegate --( IRevenueReporter
+RevenuePersonnelDelegate --( IInvoice
+
+LogisticsPersonnelDelegate --( ILogisticReportGenerator
+
 @enduml

@@ -12,7 +12,7 @@ import eadjlib.logger.Logger;
 
 import java.util.Date;
 
-class LogisticAggregator {
+public class LogisticAggregator {
     private final Logger log = Logger.getLoggerInstance(LogisticAggregator.class.getName());
     private IReservationDbAccess db_access;
 
@@ -21,7 +21,7 @@ class LogisticAggregator {
      *
      * @param reservationDbAccess ReservationDbAccess instance
      */
-    LogisticAggregator(IReservationDbAccess reservationDbAccess) {
+    public LogisticAggregator(IReservationDbAccess reservationDbAccess) {
         this.db_access = reservationDbAccess;
     }
 

@@ -6,6 +6,9 @@ import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.authentication.UserAccountChecker;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.exception.DbBootstrapException;
+import bbk_beam.mtRooms.operation.ILogisticReportGenerator;
+import bbk_beam.mtRooms.operation.LogisticAggregator;
+import bbk_beam.mtRooms.operation.LogisticReportGenerator;
 import bbk_beam.mtRooms.reservation.ReservationSession;
 import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
 import bbk_beam.mtRooms.reservation.processing.CustomerAccountAccess;
@@ -34,6 +37,8 @@ public class ServiceDriver {
     private ReservationProcessing reservationProcessing;
     private PaymentProcessing paymentProcessing;
     private CustomerAccountAccess customerAccountAccess;
+    //Operation
+    private ILogisticReportGenerator logisticReportGenerator;
 
 
     /**
@@ -74,6 +79,10 @@ public class ServiceDriver {
         this.optimisedSearch = new OptimisedSearch(
                 reservationDbDelegate,
                 this.scheduleCache
+        );
+        //Operation
+        this.logisticReportGenerator = new LogisticReportGenerator(
+                new LogisticAggregator(this.dbSystemBootstrap.getReservationDbAccess())
         );
     }
 
@@ -127,6 +136,15 @@ public class ServiceDriver {
      */
     public void removeReservationSession(ReservationSession reservation_session) {
         this.scheduleCache.deleteObserver(reservation_session);
+    }
+
+    /**
+     * Gets the operation:ILogisticReportGenerator instance
+     *
+     * @return LogisticReportGenerator instance
+     */
+    public ILogisticReportGenerator getLogisticReportGenerator() {
+        return this.logisticReportGenerator;
     }
 
 

@@ -1,0 +1,81 @@
+package bbk_beam.mtRooms.operation;
+
+import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.db.DbSystemBootstrap;
+import bbk_beam.mtRooms.db.IReservationDbAccess;
+import bbk_beam.mtRooms.db.IUserAccDbAccess;
+import bbk_beam.mtRooms.db.TimestampConverter;
+import bbk_beam.mtRooms.db.session.SessionType;
+import bbk_beam.mtRooms.reservation.dto.Room;
+import bbk_beam.mtRooms.test_data.TestDBGenerator;
+import eadjlib.datastructure.ObjectTable;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public class LogisticAggregatorTest {
+    private DbSystemBootstrap db_bootstrapper = new DbSystemBootstrap();
+    private IReservationDbAccess reservationDbAccess;
+    private IUserAccDbAccess userAccDbAccess;
+    private Token token = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+    private LogisticAggregator logisticAggregator;
+
+    @Before
+    public void setUp() throws Exception {
+        Files.deleteIfExists(Paths.get("logistic_aggregator_test.db"));
+        TestDBGenerator testDBGenerator = new TestDBGenerator();
+        testDBGenerator.createTestDB("logistic_aggregator_test.db");
+        this.db_bootstrapper.init("logistic_aggregator_test.db");
+        this.userAccDbAccess = this.db_bootstrapper.getUserAccDbAccess();
+        this.reservationDbAccess = this.db_bootstrapper.getReservationDbAccess();
+        this.userAccDbAccess.openSession(this.token.getSessionId(), this.token.getExpiry(), SessionType.ADMIN, 1);
+        this.logisticAggregator = new LogisticAggregator(reservationDbAccess);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        this.userAccDbAccess.closeSession(this.token.getSessionId());
+        this.userAccDbAccess = null;
+        this.reservationDbAccess = null;
+        this.logisticAggregator = null;
+        Files.deleteIfExists(Paths.get("logistic_aggregator_test.db"));
+    }
+
+    @Test
+    public void getInfo_by_building() throws Exception {
+        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
+        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
+        ObjectTable table = this.logisticAggregator.getInfo(this.token, 1, from, to);
+        Assert.assertEquals(13, table.rowCount());
+    }
+
+    @Test
+    public void getInfo_by_floor() throws Exception {
+        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
+        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
+        ObjectTable table = this.logisticAggregator.getInfo(this.token, 1, 3, from, to);
+        Assert.assertEquals(2, table.rowCount());
+    }
+
+    @Test
+    public void getInfo_by_room() throws Exception {
+        Room mock_room = mock(Room.class);
+        when(mock_room.id()).thenReturn(5);
+        when(mock_room.floorID()).thenReturn(2);
+        when(mock_room.buildingID()).thenReturn(1);
+        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
+        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
+        ObjectTable table = this.logisticAggregator.getInfo(this.token, mock_room, from, to);
+        Assert.assertEquals(5, table.rowCount());
+    }
+}

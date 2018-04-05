@@ -10,6 +10,11 @@ import bbk_beam.mtRooms.db.session.SessionType;
 public class Authenticator implements IAuthenticationSystem {
     private IAuthenticationSystem authentication_system;
 
+    /**
+     * Constructor
+     *
+     * @param driver Service layer driver
+     */
     Authenticator(ServiceDriver driver) {
         this.authentication_system = driver.getAuthenticationSystem();
     }

@@ -131,6 +131,41 @@ public class ScheduleCache extends Observable {
     }
 
     /**
+     * Observing state of an observer
+     *
+     * @param session ReservationSession instance
+     * @return Observing state
+     */
+    public synchronized boolean exists(ReservationSession session) {
+        return this.observers.containsKey(session.getToken().getSessionId());
+    }
+
+    /**
+     * Observing state of an observer
+     *
+     * @param token Observer session token
+     * @return Observing state
+     */
+    public synchronized boolean exists(Token token) {
+        return this.observers.containsKey(token.getSessionId());
+    }
+
+    /**
+     * Gets the ReservationSession associated with a Token
+     *
+     * @param token Session token
+     * @return ReservationSession instance for the token or null of none was found
+     */
+    public synchronized ReservationSession getReservationSession(Token token) throws IllegalArgumentException {
+        if (this.observers.containsKey(token.getSessionId())) {
+            return this.observers.get(token.getSessionId());
+        } else {
+            log.log_Error("Token [", token, "] is not associated with any ScheduleCache observers.");
+            return null;
+        }
+    }
+
+    /**
      * Adds an observer
      *
      * @param o Observer instance
@@ -145,16 +180,6 @@ public class ScheduleCache extends Observable {
             addObserver((ReservationSession) o);
         else
             throw new ClassCastException("Observer is not an instance of ReservationSession.");
-    }
-
-    /**
-     * Observing state of an observer
-     *
-     * @param session ReservationSession instance
-     * @return Observing state
-     */
-    public synchronized boolean exists(ReservationSession session) {
-        return this.observers.containsKey(session.getToken().getSessionId());
     }
 
     /**

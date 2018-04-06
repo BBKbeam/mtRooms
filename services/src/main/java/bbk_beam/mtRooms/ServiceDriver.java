@@ -109,24 +109,30 @@ public class ServiceDriver {
      *
      * @param session_token Session token
      * @return ReservationSession instance for the token given
-     * @throws InstantiationException when token is already currently used with a ReservationSession
+     * @throws InstantiationException when token is already currently used with a another different ReservationSession
      */
     public ReservationSession createNewReservationSession(Token session_token) throws InstantiationException {
-        log.log("New ReservationSession requested. Target token is '", session_token, "'.");
-        ReservationSession session = new ReservationSession(
-                session_token,
-                customerAccountAccess,
-                paymentProcessing,
-                reservationProcessing,
-                optimisedSearch
-        );
-        if (!this.scheduleCache.exists(session)) {
-            this.scheduleCache.addObserver(session);
-            return session;
+        ReservationSession session = this.scheduleCache.getReservationSession(session_token);
+        if (session != null) {
+            log.log("Current ReservationSession requested. Target token is '", session_token, "'.");
         } else {
-            log.log_Error("Tried to create a reservation session with a currently used Token [", session_token, "].");
-            throw new InstantiationException("Tried to create a reservation session with a currently used Token [" + session_token + "].");
+            log.log("New ReservationSession requested. Target token is '", session_token, "'.");
+            session = new ReservationSession(
+                    session_token,
+                    customerAccountAccess,
+                    paymentProcessing,
+                    reservationProcessing,
+                    optimisedSearch
+            );
+
+            if (!this.scheduleCache.exists(session)) {
+                this.scheduleCache.addObserver(session);
+            } else {
+                log.log_Error("Tried to create a reservation session with a currently used Token [", session_token, "].");
+                throw new InstantiationException("Tried to create a reservation session with a currently used Token [" + session_token + "].");
+            }
         }
+        return session;
     }
 
     /**

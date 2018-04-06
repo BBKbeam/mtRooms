@@ -160,7 +160,7 @@ public class ScheduleCache extends Observable {
         if (this.observers.containsKey(token.getSessionId())) {
             return this.observers.get(token.getSessionId());
         } else {
-            log.log_Error("Token [", token, "] is not associated with any ScheduleCache observers.");
+            log.log_Warning("Token [", token, "] is not associated with any ScheduleCache observers.");
             return null;
         }
     }

@@ -4,10 +4,7 @@ import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.admin.exception.AuthenticationHasherException;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
-import bbk_beam.mtRooms.db.exception.DbQueryException;
-import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
-import bbk_beam.mtRooms.db.exception.SessionExpiredException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.db.exception.*;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
@@ -50,8 +47,14 @@ public class UserAccountChecker implements IAuthenticationSystem {
             Integer user_id = (Integer) row.get("id");
             String hash = (String) row.get("pwd_hash");
             String salt = (String) row.get("pwd_salt");
+            boolean active_state = ((Integer) row.get("active_state")) == 1;
+            SessionType session_type = SessionType.valueOf((String) row.get("description"));
             if (PasswordHash.validateHash(password, salt, hash)) {
                 log.log("User '", username, "' authenticated (#", user_id, ").");
+                if (!active_state) {
+                    log.log_Error("Trying to login with a disabled account (#", user_id, ")!");
+                    throw new AuthenticationFailureException("Trying to login with a disabled account!");
+                }
                 Instant now = Instant.now();
                 Date created = Date.from(now);
                 Date expiry = Date.from(now.plus(SESSION_TIMEOUT_HOURS, ChronoUnit.HOURS));
@@ -64,6 +67,7 @@ public class UserAccountChecker implements IAuthenticationSystem {
                 log.log("User '", username, "' assigned session id #", session_id, " (", created.toString(), " to ", expiry.toString(), ").");
                 if (!updateLastLoginTimestamp(username, created))
                     log.log_Error("Failed update in records for last successful login timestamp (", created, ").");
+                this.user_access.openSession(session_id, expiry, session_type, user_id);
                 return new Token(session_id, created, expiry);
             } else {
                 log.log_Error("User '", username, "' failed authentication.");
@@ -78,6 +82,9 @@ public class UserAccountChecker implements IAuthenticationSystem {
         } catch (AuthenticationHasherException e) {
             log.log_Error("Problem encountered processing hash for user '", username, "'.");
             throw new AuthenticationFailureException("Problem encountered processing hash for user '" + username + "'.", e);
+        } catch (SessionException e) {
+            log.log_Error("(!) Token ID generated is already tracked.. Not designed to allow for this to happen!");
+            throw new AuthenticationFailureException("(!) Token ID generated is already tracked.");
         }
     }
 
@@ -98,8 +105,13 @@ public class UserAccountChecker implements IAuthenticationSystem {
             }
             log.log("Session [", session_token.getSessionId(), "] logout completed.");
         } catch (SessionInvalidException e) {
-            log.log_Error("Session [", session_token.getSessionId(), "] is not valid.");
-            throw new SessionInvalidException("Session [" + session_token.getSessionId() + "] is not valid.", e);
+            if (session_token.getExpiry().before(new Date())) {
+                log.log_Error("Session [", session_token.getSessionId(), "] was invalidated as it's expired.");
+                throw new SessionInvalidException("Session [" + session_token.getSessionId() + "] was invalidated as it's expired.", e);
+            } else {
+                log.log_Error("Session [", session_token.getSessionId(), "] is not valid.");
+                throw new SessionInvalidException("Session [" + session_token.getSessionId() + "] is not valid.", e);
+            }
         }
     }
 

@@ -33,4 +33,9 @@ public class Authenticator implements IAuthenticationSystem {
     public boolean hasValidAccessRights(Token session_token, SessionType user_session_type) {
         return this.authentication_system.hasValidAccessRights(session_token, user_session_type);
     }
+
+    @Override
+    public boolean isLoggedIn(Token session_token) {
+        return this.authentication_system.isLoggedIn(session_token);
+    }
 }

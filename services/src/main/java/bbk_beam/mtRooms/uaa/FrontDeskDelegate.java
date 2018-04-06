@@ -21,7 +21,7 @@ public class FrontDeskDelegate {
      *
      * @param token Session token
      * @return ReservationSession for the token
-     * @throws InstantiationException when token is already currently in use with a session
+     * @throws InstantiationException when token is already currently used with a another different ReservationSession
      */
     ReservationSession getSession(Token token) throws InstantiationException {
         return this.driver.createNewReservationSession(token);

@@ -9,7 +9,7 @@ import bbk_beam.mtRooms.uaa.exception.InvalidAccessRights;
 
 public interface IAuthenticatedFrontDesk {
     /**
-     * Gets a ReservationSession
+     * Opens a ReservationSession
      *
      * @param token Session token
      * @return ReservationSession instance
@@ -17,24 +17,13 @@ public interface IAuthenticatedFrontDesk {
      * @throws AuthenticationFailureException when token is not valid/has not got access rights to this resource
      * @throws DuplicateSession               when generated token is already used in another session (should not happen!)
      */
-    public ReservationSession getReservationSession(Token token) throws InvalidAccessRights, AuthenticationFailureException, DuplicateSession;
+    public ReservationSession openReservationSession(Token token) throws InvalidAccessRights, AuthenticationFailureException, DuplicateSession;
 
     /**
-     * Login and get a ReservationSession
+     * Closes a ReservationSession
      *
-     * @param username Username
-     * @param password Password
-     * @return User's ReservationSession
-     * @throws AuthenticationFailureException when username/password is not valid
-     * @throws DuplicateSession               when generated token is already used in another session (should not happen!)
-     */
-    public ReservationSession login(String username, String password) throws AuthenticationFailureException, DuplicateSession;
-
-    /**
-     * Logout from a ReservationSession
-     *
-     * @param reservation_session ReservationSession to logout from
+     * @param reservation_session ReservationSession to close
      * @throws SessionInvalidException when the token used in the ReservationSession is invalid
      */
-    public void logout(ReservationSession reservation_session) throws SessionInvalidException;
+    public void closeReservationSession(ReservationSession reservation_session) throws SessionInvalidException;
 }

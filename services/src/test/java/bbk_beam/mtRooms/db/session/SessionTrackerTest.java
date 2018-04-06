@@ -161,4 +161,26 @@ public class SessionTrackerTest {
         SessionTracker sessionTracker = new SessionTracker();
         sessionTracker.checkValidity("0001", date_valid);
     }
+
+    @Test
+    public void validTrackedCount() throws Exception {
+        Date date_invalid = Date.from(Instant.EPOCH);
+        Date date_valid = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+        SessionTracker sessionTracker = new SessionTracker();
+        sessionTracker.addSession("0001", date_valid, SessionType.USER, 0);
+        Assert.assertEquals(1, sessionTracker.validTrackedCount());
+        sessionTracker.addSession("0002", date_valid, SessionType.USER, 1);
+        Assert.assertEquals(2, sessionTracker.validTrackedCount());
+        sessionTracker.addSession("0003", date_valid, SessionType.USER, 2);
+        Assert.assertEquals(3, sessionTracker.validTrackedCount());
+        sessionTracker.addSession("0004", date_valid, SessionType.USER, 3);
+        Assert.assertEquals(4, sessionTracker.validTrackedCount());
+        sessionTracker.addSession("0005", date_invalid, SessionType.USER, 4);
+        Assert.assertEquals(4, sessionTracker.validTrackedCount());
+        sessionTracker.addSession("0006", date_invalid, SessionType.USER, 5);
+        Assert.assertEquals(4, sessionTracker.validTrackedCount());
+        sessionTracker.addSession("0007", date_valid, SessionType.USER, 6);
+        Assert.assertEquals(5, sessionTracker.validTrackedCount());
+    }
+
 }

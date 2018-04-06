@@ -51,6 +51,8 @@ public class UserAccountCheckerTest {
         account_row.put("id", 1);
         account_row.put("pwd_hash", hash);
         account_row.put("pwd_salt", salt);
+        account_row.put("active_state", 1);
+        account_row.put("description", "USER");
         //Mock for inner dependency calls
         when(mocked_user_access.pullFromDB(any(String.class))).thenReturn(mocked_table);
         when(mocked_table.getRow(1)).thenReturn(account_row);
@@ -77,6 +79,28 @@ public class UserAccountCheckerTest {
         account_row.put("id", 1);
         account_row.put("pwd_hash", hash);
         account_row.put("pwd_salt", salt);
+        account_row.put("active_state", 1);
+        account_row.put("description", "USER");
+        //Mock for inner dependency calls
+        when(mocked_user_access.pullFromDB(any(String.class))).thenReturn(mocked_table);
+        when(mocked_table.getRow(1)).thenReturn(account_row);
+        //Login
+        Token token = accountChecker.login("username", "password");
+    }
+
+    @Test(expected = AuthenticationFailureException.class)
+    public void login_inactive_account() throws Exception {
+        ObjectTable mocked_table = mock(ObjectTable.class);
+        UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
+        HashMap<String, Object> account_row = new HashMap<>();
+        //Account info required for login
+        String salt = PasswordHash.createSalt();
+        String hash = PasswordHash.createHash("password", salt);
+        account_row.put("id", 1);
+        account_row.put("pwd_hash", hash);
+        account_row.put("pwd_salt", salt);
+        account_row.put("active_state", 0);
+        account_row.put("description", "USER");
         //Mock for inner dependency calls
         when(mocked_user_access.pullFromDB(any(String.class))).thenReturn(mocked_table);
         when(mocked_table.getRow(1)).thenReturn(account_row);
@@ -95,6 +119,8 @@ public class UserAccountCheckerTest {
         account_row.put("id", 1);
         account_row.put("pwd_hash", hash);
         account_row.put("pwd_salt", salt);
+        account_row.put("active_state", 1);
+        account_row.put("description", "USER");
         //Mock for inner dependency calls
         when(mocked_user_access.pullFromDB(any(String.class))).thenThrow(new DbQueryException(""));
         //Login
@@ -124,6 +150,7 @@ public class UserAccountCheckerTest {
     public void logout_bad_session() throws Exception {
         UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
         doThrow(new SessionInvalidException("")).when(mocked_user_access).closeSession(any(String.class));
+        doReturn(Date.from(Instant.EPOCH)).when(mocked_token).getExpiry();
         accountChecker.logout(mocked_token);
     }
 

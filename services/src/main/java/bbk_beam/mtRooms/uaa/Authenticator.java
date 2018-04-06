@@ -69,4 +69,11 @@ public class Authenticator {
     public int validTokenCount() {
         return this.authentication_system.validTokenCount();
     }
+
+    /**
+     * Removes all expired tokens from the session tracker
+     */
+    public void clearExpiredTokens() {
+        this.authentication_system.clearExpiredTokens();
+    }
 }

@@ -108,6 +108,16 @@ public interface ICurrentSessions {
     int validTrackedCount();
 
     /**
+     * Clears all expired sessions from the tracker
+     */
+    void clearExpired();
+
+    /**
+     * Clears all tracked sessions from the tracker
+     */
+    void flush();
+
+    /**
      * Gets the no-tracking state
      *
      * @return No sessions tracked state

@@ -46,4 +46,9 @@ public interface IAuthenticationSystem {
      * @return Unexpired token count
      */
     int validTokenCount();
+
+    /**
+     * Clears expired tokens from the tracker
+     */
+    void clearExpiredTokens();
 }

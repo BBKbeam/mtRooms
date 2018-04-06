@@ -87,6 +87,7 @@ public class UserAccountChecker implements IAuthenticationSystem {
             log.log("Logout initiated for session [", session_token.getSessionId(), "].");
             if (this.sessionID_to_Username_Map.containsKey(session_token.getSessionId())) {
                 String username = this.sessionID_to_Username_Map.get(session_token.getSessionId());
+                this.sessionID_to_Username_Map.remove(session_token.getSessionId());
                 log.log("Session [", session_token.getSessionId(), "] mapped to user '", username, "'.");
             } else {
                 log.log_Warning("Session [", session_token.getSessionId(), "] is not tracked in id-username map.");
@@ -123,8 +124,12 @@ public class UserAccountChecker implements IAuthenticationSystem {
         } catch (SessionExpiredException e) {
             log.log("State: token [", session_token, "]'s session has expired.");
         } catch (SessionInvalidException e) {
-            log.log_Warning("State: token [", session_token, "] is invalid.");
-            e.printStackTrace();
+            if (this.sessionID_to_Username_Map.containsKey(session_token.getSessionId())) {
+                log.log_Warning("State: token [", session_token, "] was invalidated as expired.");
+                this.sessionID_to_Username_Map.remove(session_token.getSessionId());
+            } else {
+                log.log_Warning("State: token [", session_token, "] is invalid.");
+            }
         } catch (SessionCorruptedException e) {
             log.log_Error("State: token [", session_token, "] is corrupted.");
         }
@@ -134,6 +139,11 @@ public class UserAccountChecker implements IAuthenticationSystem {
     @Override
     public int validTokenCount() {
         return this.user_access.validSessionCount();
+    }
+
+    @Override
+    public void clearExpiredTokens() {
+        this.user_access.clearExpiredSessions();
     }
 
     /**

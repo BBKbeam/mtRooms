@@ -6,9 +6,7 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import eadjlib.logger.Logger;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SessionTracker implements ICurrentSessions {
     private class SessionDetail {
@@ -171,6 +169,22 @@ public class SessionTracker implements ICurrentSessions {
             if (entry.getValue().date.compareTo(now) > 0)
                 count++;
         return count;
+    }
+
+    @Override
+    public void clearExpired() {
+        Date now = new Date();
+        List<String> toDelete = new LinkedList<>();
+        for (Map.Entry<String, SessionDetail> entry : tracker.entrySet())
+            if (entry.getValue().date.compareTo(now) <= 0)
+                toDelete.add(entry.getKey());
+        for (String id : toDelete)
+            this.tracker.remove(id);
+    }
+
+    @Override
+    public void flush() {
+        this.tracker.clear();
     }
 
     @Override

@@ -10,6 +10,7 @@ skinparam package {
 
 frame "Service Layer" #lightgreen {
     package "uaa" {
+        ISessionDriver -- [SessionDriver]
         IAuthenticator -- [Authenticator]
         IFrontDeskDelegate -- [FrontDeskDelegate]
         IAuthenticatedFrontDesk -- [AuthenticatedFrontDesk]
@@ -22,23 +23,29 @@ frame "Service Layer" #lightgreen {
 
         AuthenticatedFrontDesk --( IAuthenticator
         AuthenticatedFrontDesk --( IFrontDeskDelegate
+        SessionDriver --( IAuthenticator
         AuthenticatedAdmin --( IAuthenticator
         AuthenticatedAdmin --( IAdminDelegate
         AuthenticatedLogisticsPersonnel --( IAuthenticator
         AuthenticatedLogisticsPersonnel --( ILogisticsPersonnelDelegate
         AuthenticatedRevenuePersonnel --( IAuthenticator
         AuthenticatedRevenuePersonnel --( IRevenuePersonnelDelegate
+
+        SessionDriver *- AuthenticatedFrontDesk
+        SessionDriver *- AuthenticatedAdmin
+        SessionDriver *- AuthenticatedRevenuePersonnel
+        SessionDriver *- AuthenticatedLogisticsPersonnel
     }
 }
 
 '##---------------------------------##
 '## Service to Business Logic Layer ##
 '##---------------------------------##
-AdminDelegate --( IAdminSession
+AdminDelegate --( IAdminSessionDriver
 
 Authenticator --( IAuthenticationSystem
 
-FrontDeskDelegate --( IReservationSession
+FrontDeskDelegate --( IReservationSessionDriver
 
 RevenuePersonnelDelegate --( IRevenueReporter
 RevenuePersonnelDelegate --( IInvoice

@@ -39,4 +39,11 @@ public interface IAuthenticationSystem {
      * @return Login state
      */
     boolean isLoggedIn(Token session_token);
+
+    /**
+     * Gets the number of currently non-expired current tokens
+     *
+     * @return Unexpired token count
+     */
+    int validTokenCount();
 }

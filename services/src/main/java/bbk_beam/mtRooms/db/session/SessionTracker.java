@@ -8,6 +8,7 @@ import eadjlib.logger.Logger;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 
 public class SessionTracker implements ICurrentSessions {
     private class SessionDetail {
@@ -160,6 +161,16 @@ public class SessionTracker implements ICurrentSessions {
     @Override
     public int trackedCount() {
         return this.tracker.size();
+    }
+
+    @Override
+    public int validTrackedCount() {
+        int count = 0;
+        Date now = new Date();
+        for (Map.Entry<String, SessionDetail> entry : tracker.entrySet())
+            if (entry.getValue().date.compareTo(now) > 0)
+                count++;
+        return count;
     }
 
     @Override

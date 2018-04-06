@@ -191,6 +191,7 @@ public class ScheduleCache extends Observable {
     public synchronized void addObserver(ReservationSession o) throws NullPointerException {
         if (o == null)
             throw new NullPointerException();
+        log.log_Debug("Called for creating a ReservationSession for [", o.getToken(), "].");
         this.observers.putIfAbsent(o.getToken().getSessionId(), o);
     }
 
@@ -214,6 +215,7 @@ public class ScheduleCache extends Observable {
      * @param o ReservationSession instance
      */
     public synchronized void deleteObserver(ReservationSession o) {
+        log.log_Debug("Called for deletion of [", o.getToken(), "]'s ReservationSession observer.");
         this.cached_schedule.clearWatcherCache(o.getToken());
         this.observers.remove(o.getToken().getSessionId());
     }

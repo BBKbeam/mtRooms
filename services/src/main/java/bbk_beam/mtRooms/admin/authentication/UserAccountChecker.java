@@ -131,6 +131,11 @@ public class UserAccountChecker implements IAuthenticationSystem {
         return false;
     }
 
+    @Override
+    public int validTokenCount() {
+        return this.user_access.validSessionCount();
+    }
+
     /**
      * Updates the last successful login timestamp in the records for a username
      *

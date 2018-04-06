@@ -101,6 +101,13 @@ public interface ICurrentSessions {
     int trackedCount();
 
     /**
+     * Gets the number of valid session currently tracked
+     *
+     * @return Valid tracked session count
+     */
+    int validTrackedCount();
+
+    /**
      * Gets the no-tracking state
      *
      * @return No sessions tracked state

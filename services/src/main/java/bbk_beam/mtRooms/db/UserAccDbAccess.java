@@ -72,6 +72,11 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
+    public int validSessionCount() {
+        return this.currentSessions.validTrackedCount();
+    }
+
+    @Override
     public boolean pushToDB(String query) throws DbQueryException {
         return this.db.push(query);
     }

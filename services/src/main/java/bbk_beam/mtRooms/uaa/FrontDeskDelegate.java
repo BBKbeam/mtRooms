@@ -20,7 +20,11 @@ public class FrontDeskDelegate {
     /**
      * Constructor
      *
-     * @param schedule_cache ScheduleCache instance
+     * @param schedule_cache        ScheduleCache instance
+     * @param optimisedSearch       OptimisedSearch instance
+     * @param reservationProcessing ReservationProcessing instance
+     * @param paymentProcessing     PaymentProcessing instance
+     * @param customerAccountAccess CustomerAccountAccess instance
      */
     FrontDeskDelegate(
             ScheduleCache schedule_cache,

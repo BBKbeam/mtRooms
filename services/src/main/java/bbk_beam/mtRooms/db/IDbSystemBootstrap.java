@@ -15,6 +15,13 @@ public interface IDbSystemBootstrap {
     void init(String database) throws DbBootstrapException;
 
     /**
+     * Closes the current database connection
+     *
+     * @return Success
+     */
+    boolean closeConnection();
+
+    /**
      * Gets the running instance of the UserAccDbAccess
      *
      * @return UserAccDbAccess instance

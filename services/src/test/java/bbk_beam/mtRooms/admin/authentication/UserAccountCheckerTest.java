@@ -5,6 +5,8 @@ import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.UserAccDbAccess;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
+import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
+import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
@@ -143,5 +145,43 @@ public class UserAccountCheckerTest {
         when(mocked_token.getSessionId()).thenReturn("0003");
         Assert.assertFalse(accountChecker.hasValidAccessRights(mocked_token, SessionType.ADMIN));
         Assert.assertFalse(accountChecker.hasValidAccessRights(mocked_token, SessionType.USER));
+    }
+
+    @Test
+    public void isLoggedIn() throws Exception {
+        UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
+        when(mocked_token.getSessionId()).thenReturn("0001");
+        when(mocked_token.getExpiry()).thenReturn(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
+        Assert.assertTrue(accountChecker.isLoggedIn(mocked_token));
+    }
+
+    @Test
+    public void isLoggedIn_fail_expired() throws Exception {
+        UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
+        Date expiry = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+        doThrow(SessionExpiredException.class).when(mocked_user_access).checkValidity("0001", expiry);
+        when(mocked_token.getSessionId()).thenReturn("0001");
+        when(mocked_token.getExpiry()).thenReturn(expiry);
+        Assert.assertFalse(accountChecker.isLoggedIn(mocked_token));
+    }
+
+    @Test
+    public void isLoggedIn_fail_invalid() throws Exception {
+        UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
+        Date expiry = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+        doThrow(SessionInvalidException.class).when(mocked_user_access).checkValidity("0001", expiry);
+        when(mocked_token.getSessionId()).thenReturn("0001");
+        when(mocked_token.getExpiry()).thenReturn(expiry);
+        Assert.assertFalse(accountChecker.isLoggedIn(mocked_token));
+    }
+
+    @Test
+    public void isLoggedIn_fail_corrupt() throws Exception {
+        UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
+        Date expiry = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
+        doThrow(SessionCorruptedException.class).when(mocked_user_access).checkValidity("0001", expiry);
+        when(mocked_token.getSessionId()).thenReturn("0001");
+        when(mocked_token.getExpiry()).thenReturn(expiry);
+        Assert.assertFalse(accountChecker.isLoggedIn(mocked_token));
     }
 }

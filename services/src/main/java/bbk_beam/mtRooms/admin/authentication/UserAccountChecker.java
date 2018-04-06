@@ -5,6 +5,8 @@ import bbk_beam.mtRooms.admin.exception.AuthenticationHasherException;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
+import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
+import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
@@ -108,6 +110,23 @@ public class UserAccountChecker implements IAuthenticationSystem {
             return user_session_type.level() >= type.level();
         } catch (SessionInvalidException e) {
             log.log_Error("Session '", session_token.getSessionId(), "' not valid.");
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isLoggedIn(Token session_token) {
+        try {
+            log.log_Debug("Checking user session '", session_token, "' is currently logged in.");
+            this.user_access.checkValidity(session_token.getSessionId(), session_token.getExpiry());
+            return true;
+        } catch (SessionExpiredException e) {
+            log.log("State: token [", session_token, "]'s session has expired.");
+        } catch (SessionInvalidException e) {
+            log.log_Warning("State: token [", session_token, "] is invalid.");
+            e.printStackTrace();
+        } catch (SessionCorruptedException e) {
+            log.log_Error("State: token [", session_token, "] is corrupted.");
         }
         return false;
     }

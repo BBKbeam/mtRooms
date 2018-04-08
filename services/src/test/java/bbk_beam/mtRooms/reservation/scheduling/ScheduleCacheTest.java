@@ -85,6 +85,8 @@ public class ScheduleCacheTest {
                 room1,
                 start1,
                 end1,
+                10,
+                false,
                 "",
                 new RoomPrice(1, 100., 2018),
                 false

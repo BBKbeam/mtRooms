@@ -73,33 +73,33 @@ package mtRooms {
     frame "Business Logic Layer" #orange {
         package "reservation" {
             component ReservationSystem #white {
-                [ReservationSession] <<Observer>>
-                [<u>:ScheduleCache] <<Observable>> as ScheduleCache
+                [<u>:ReservationSession] <<Observer>> as ReservationSession
+                [ScheduleCache] <<Observable>> as ScheduleCache
+                [Schedule] <<Datastructure>> as Schedule
 
                 IReservationSession -- [ReservationSession]
-                IReservationPayment -- [ReservationSession]
                 IOptimisedSearch -- [OptimisedSearch]
-                IReservation -- [Reservation]
+                IReservationProcessing -- [ReservationProcessing]
                 IPaymentProcessing -- [PaymentProcessing]
                 ICustomerAccountAccess -- [CustomerAccountAccess]
-                ICacheSchedule -- [ScheduleCache]
-                IChangeSchedule -- [ScheduleCache]
+                IScheduleCache -- [ScheduleCache]
                 IScheduleChanged -- [ScheduleCache]
                 IPay -- [ReservationDbDelegate]
                 IReserve -- [ReservationDbDelegate]
                 ISearch -- [ReservationDbDelegate]
                 ICustomerAccount -- [ReservationDbDelegate]
 
+                ScheduleCache *- Schedule
                 ReservationSession --( IOptimisedSearch
                 ReservationSession --( IPaymentProcessing
-                ReservationSession --( IReservation
+                ReservationSession --( IReservationProcessing
                 ReservationSession --( ICustomerAccountAccess
-                OptimisedSearch --( ICacheSchedule
+                OptimisedSearch --( IScheduleCache
                 ReservationSession --( IScheduleChanged
-                Reservation --( IChangeSchedule
+                ReservationProcessing --( IScheduleCache
 
                 OptimisedSearch --( ISearch
-                Reservation  --( IReserve
+                ReservationProcessing  --( IReserve
                 CustomerAccountAccess   --( ICustomerAccount
                 PaymentProcessing --( IPay
             }
@@ -128,6 +128,9 @@ package mtRooms {
         package "operation" {
             component LogisticsSystem #white {
                 ILogisticReportGenerator -- [LogisticReportGenerator]
+                ILogisticAggregator -- [LogisticAggregator]
+
+                LogisticReportGenerator --( ILogisticAggregator
             }
         }
 
@@ -173,9 +176,7 @@ package mtRooms {
                 IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
                 IDatabaseSystemBootstrap -- [DbSystemBootstrap]
-                ITimestampConverter -- [TimestampConverter]
 
-                DatabaseBuilder --( ITimestampConverter
                 DbSystemBootstrap *-left- ReservationDbAccess
                 DbSystemBootstrap *-right- UserAccDbAccess
                 ReservationDbAccess --( ICurrentSessions
@@ -208,7 +209,6 @@ package mtRooms {
     Authenticator --( IAuthenticationSystem
 
     FrontDeskDelegate --( IReservationSession
-    FrontDeskDelegate --( IReservationPayment
 
     RevenuePersonnelDelegate --( IRevenueReporter
     RevenuePersonnelDelegate --( IInvoice
@@ -225,7 +225,7 @@ package mtRooms {
 
     ReservationDbDelegate --( IReservationDbAccess
 
-    LogisticReportGenerator --( IReservationDbAccess
+    LogisticAggregator --( IReservationDbAccess
     InvoiceAggregator --( IReservationDbAccess
     RevenueAggregator --( IReservationDbAccess
 }

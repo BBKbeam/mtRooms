@@ -6,6 +6,7 @@ import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.logger.Logger;
+import org.junit.After;
 import org.junit.Test;
 
 import java.nio.file.Files;
@@ -16,6 +17,11 @@ import java.util.Date;
 
 public class TestDBGenerator {
     private final Logger log = Logger.getLoggerInstance(TestDBGenerator.class.getName());
+
+    @After
+    public void tearDown() throws Exception {
+        Files.deleteIfExists(Paths.get("mtRoomsTestData.db"));
+    }
 
     /**
      * Run this test to create a database with test data
@@ -59,10 +65,7 @@ public class TestDBGenerator {
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.reservations);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.room_has_reservation);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.payments);
-        //reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.payment_method);
         reservationDbAccess.pushToDB(token.getSessionId(), TestDataDBQueries.reservation_has_payments);
-
-
         //Close access session
         userAccDbAccess.closeSession(token.getSessionId());
     }

@@ -27,13 +27,13 @@ public class UserAccountCheckerTest {
     private Token mocked_token;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mocked_user_access = mock(UserAccDbAccess.class);
         mocked_token = mock(Token.class);
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mocked_user_access = null;
         mocked_token = null;
     }

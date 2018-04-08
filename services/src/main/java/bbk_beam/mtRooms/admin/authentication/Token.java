@@ -46,4 +46,9 @@ public class Token {
     public Date getExpiry() {
         return expiry;
     }
+
+    @Override
+    public String toString() {
+        return this.session_id;
+    }
 }

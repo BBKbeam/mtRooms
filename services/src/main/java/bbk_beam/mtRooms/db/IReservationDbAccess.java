@@ -17,7 +17,7 @@ public interface IReservationDbAccess {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public boolean pushToDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    boolean pushToDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Passes a SQL query to the database
@@ -29,5 +29,5 @@ public interface IReservationDbAccess {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public ObjectTable pullFromDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException;
+    ObjectTable pullFromDB(String session_id, String query) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 }

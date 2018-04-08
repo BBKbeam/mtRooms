@@ -32,9 +32,7 @@ frame "Data Layer" #purple {
             IReservationDbAccess -- [ReservationDbAccess]
             IUserAccDbAccess -- [UserAccDbAccess]
             IDatabaseSystemBootstrap -- [DbSystemBootstrap]
-            ITimestampConverter -- [TimestampConverter]
 
-            DatabaseBuilder --( ITimestampConverter
             DbSystemBootstrap *-left- ReservationDbAccess
             DbSystemBootstrap *-right- UserAccDbAccess
             ReservationDbAccess --( ICurrentSessions

@@ -20,7 +20,7 @@ public interface ICurrentSessions {
      * @param account_id   Associated account ID
      * @throws SessionException when trying to add an already tracked session ID
      */
-    public void addSession(String session_id, Date expiry, SessionType session_type, Integer account_id) throws SessionException;
+    void addSession(String session_id, Date expiry, SessionType session_type, Integer account_id) throws SessionException;
 
     /**
      * Removes a session from the tracker
@@ -28,7 +28,7 @@ public interface ICurrentSessions {
      * @param session_id Session ID
      * @throws SessionInvalidException when trying to remove non-tracked session ID
      */
-    public void removeSession(String session_id) throws SessionInvalidException;
+    void removeSession(String session_id) throws SessionInvalidException;
 
     /**
      * Gets the tracked status of a session
@@ -36,7 +36,7 @@ public interface ICurrentSessions {
      * @param session_id Session ID
      * @return Tracked state
      */
-    public boolean isTracked(String session_id);
+    boolean isTracked(String session_id);
 
     /**
      * Gets the expiry timestamp of a tracked session
@@ -45,7 +45,7 @@ public interface ICurrentSessions {
      * @return Expiry date
      * @throws SessionInvalidException when ID is not in the sessions tracked
      */
-    public Date getSessionExpiry(String session_id) throws SessionInvalidException;
+    Date getSessionExpiry(String session_id) throws SessionInvalidException;
 
     /**
      * Gets the type of a session
@@ -54,7 +54,7 @@ public interface ICurrentSessions {
      * @return Session type
      * @throws SessionInvalidException when ID is not in the sessions tracked
      */
-    public SessionType getSessionType(String session_id) throws SessionInvalidException;
+    SessionType getSessionType(String session_id) throws SessionInvalidException;
 
     /**
      * Gets the associated account ID for a tracked session
@@ -63,7 +63,7 @@ public interface ICurrentSessions {
      * @return Account ID
      * @throws SessionInvalidException when ID is not in the sessions tracked
      */
-    public Integer getSessionAccountID(String session_id) throws SessionInvalidException;
+    Integer getSessionAccountID(String session_id) throws SessionInvalidException;
 
     /**
      * Gets the existence state of a session in the tracker
@@ -71,7 +71,7 @@ public interface ICurrentSessions {
      * @param session_id Session ID
      * @return Existence state in the tracker
      */
-    public boolean exists(String session_id);
+    boolean exists(String session_id);
 
     /**
      * Gets the validity state (not expired) of a session
@@ -80,7 +80,7 @@ public interface ICurrentSessions {
      * @throws SessionExpiredException when session is expired
      * @throws SessionInvalidException when ID is not in the sessions tracked
      */
-    public void checkValidity(String session_id) throws SessionExpiredException, SessionInvalidException;
+    void checkValidity(String session_id) throws SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the validity state (not expired) of a session
@@ -91,19 +91,19 @@ public interface ICurrentSessions {
      * @throws SessionCorruptedException when given expiry does not match expiry tracked.
      * @throws SessionInvalidException   when ID is not in the sessions tracked
      */
-    public void checkValidity(String session_id, Date session_expiry) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException;
+    void checkValidity(String session_id, Date session_expiry) throws SessionExpiredException, SessionCorruptedException, SessionInvalidException;
 
     /**
      * Gets the number of sessions currently tracked
      *
      * @return Tracked sessions count
      */
-    public int trackedCount();
+    int trackedCount();
 
     /**
      * Gets the no-tracking state
      *
      * @return No sessions tracked state
      */
-    public boolean isEmpty();
+    boolean isEmpty();
 }

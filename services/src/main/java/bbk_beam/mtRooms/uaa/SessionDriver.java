@@ -114,6 +114,7 @@ public class SessionDriver implements ISessionDriver {
      */
     private IAuthenticatedLogisticsPersonnel createAuthenticatedLogisticsPersonnel() throws FailedSessionSpooling {
         try {
+            log.log("Creating [AuthenticatedLogisticsPersonnel] instance...");
             ILogisticReportGenerator logisticReportGenerator = new LogisticReportGenerator(
                     new LogisticAggregator(this.dbSystemBootstrap.getReservationDbAccess())
             );
@@ -132,6 +133,8 @@ public class SessionDriver implements ISessionDriver {
      * @throws FailedSessionSpooling when a problem occurred during spooling
      */
     private IAuthenticatedRevenuePersonnel createAuthenticatedRevenuePersonnel() throws FailedSessionSpooling {
+        log.log("Creating [AuthenticatedRevenuePersonnel] instance...");
+        log.log_Warning("//createAuthenticatedRevenuePersonnel() is currently unimplemented!");
         //TODO implementation for creating the dependency chain of AuthenticatedRevenuePersonnel
         return null;
     }

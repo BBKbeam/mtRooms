@@ -30,6 +30,25 @@ public class SessionDriverTest {
     }
 
     @Test
+    public void reservation1() throws Exception {
+        //create dummy data file for test
+        this.session_driver.init(this.test_db_file);
+        //login admin
+        Token token = this.session_driver.login("root", "letmein");
+        IAuthenticatedAdministration administration = this.session_driver.getAdminInstance(token);
+
+
+        IAuthenticatedFrontDesk front_desk = this.session_driver.getFrontDeskInstance(token);
+        ReservationSession session = front_desk.openReservationSession(token);
+        Customer customer = session.getCustomerAccount(token, 1);
+        System.out.println(customer);
+        front_desk.closeReservationSession(session);
+        this.session_driver.logout(token);
+        this.session_driver.reset();
+        this.session_driver.init(this.test_db_file);
+    }
+
+    @Test
     public void init() {
         //TODO
     }
@@ -50,6 +69,7 @@ public class SessionDriverTest {
         front_desk.closeReservationSession(session);
         this.session_driver.logout(token);
         this.session_driver.reset();
+        this.session_driver.init(this.test_db_file);
     }
 
     @Test

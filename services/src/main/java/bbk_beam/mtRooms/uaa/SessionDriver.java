@@ -31,20 +31,20 @@ public class SessionDriver implements ISessionDriver {
 
     private DbSystemBootstrap dbSystemBootstrap;
     private Authenticator authenticator;
-    private IAuthenticatedAdmin authenticated_admin;
+    private IAuthenticatedAdministration authenticated_admin;
     private IAuthenticatedFrontDesk authenticated_front_desk;
     private IAuthenticatedLogisticsPersonnel authenticated_logistics_personnel;
     private IAuthenticatedRevenuePersonnel authenticated_revenue_personnel;
 
     /**
-     * Creates an IAuthenticatedAdmin implementation instance + dependency chain
+     * Creates an IAuthenticatedAdministration implementation instance + dependency chain
      *
-     * @return IAuthenticatedAdmin implementation  instance
+     * @return IAuthenticatedAdministration implementation  instance
      * @throws FailedSessionSpooling when a problem occurred during spooling
      */
-    private IAuthenticatedAdmin createAuthenticatedAdmin() throws FailedSessionSpooling {
+    private IAuthenticatedAdministration createAuthenticatedAdmin() throws FailedSessionSpooling {
         try {
-            log.log("Creating [AuthenticatedAdmin] instance...");
+            log.log("Creating [AuthenticatedAdministration] instance...");
             IAuthenticationSystem authenticationSystem = new UserAccountChecker(
                     this.dbSystemBootstrap.getUserAccDbAccess()
             );
@@ -54,11 +54,11 @@ public class SessionDriver implements ISessionDriver {
                     authenticationSystem
             );
             this.authenticator = new Authenticator(authenticationSystem);
-            return new AuthenticatedAdmin(
-                    new AdminDelegate(adminSession)
+            return new AuthenticatedAdministration(
+                    new AdministrationDelegate(adminSession)
             );
         } catch (DbBootstrapException e) {
-            throw new FailedSessionSpooling("Could not spool AuthenticatedAdmin dependency chain.", e);
+            throw new FailedSessionSpooling("Could not spool AuthenticatedAdministration dependency chain.", e);
         }
 
     }
@@ -203,7 +203,7 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public IAuthenticatedAdmin getAdminInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    public IAuthenticatedAdministration getAdminInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
             throw new SessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))

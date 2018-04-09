@@ -9,7 +9,7 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 
-public interface IAuthenticatedAdmin {
+public interface IAuthenticatedAdministration {
     /**
      * Creates a new account
      *

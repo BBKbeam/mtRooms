@@ -37,14 +37,14 @@ public interface ISessionDriver {
     public IAuthenticatedFrontDesk getFrontDeskInstance(Token session_token) throws SessionInactive, AuthenticationFailureException;
 
     /**
-     * Gets the IAuthenticatedAdmin instance
+     * Gets the IAuthenticatedAdministration instance
      *
      * @param session_token Session token
-     * @return IAuthenticatedAdmin implementation instance
+     * @return IAuthenticatedAdministration implementation instance
      * @throws SessionInactive                when the SessionDriver has not been initialised
      * @throws AuthenticationFailureException when the token has not got access right to the resource
      */
-    public IAuthenticatedAdmin getAdminInstance(Token session_token) throws SessionInactive, AuthenticationFailureException;
+    public IAuthenticatedAdministration getAdminInstance(Token session_token) throws SessionInactive, AuthenticationFailureException;
 
     /**
      * Gets the IAuthenticatedRevenuePersonnel instance

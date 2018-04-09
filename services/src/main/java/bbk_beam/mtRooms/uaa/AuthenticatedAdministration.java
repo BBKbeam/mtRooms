@@ -9,15 +9,15 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 
-public class AuthenticatedAdmin implements IAuthenticatedAdmin {
-    private AdminDelegate delegate;
+public class AuthenticatedAdministration implements IAuthenticatedAdministration {
+    private AdministrationDelegate delegate;
 
     /**
      * Constructor
      *
-     * @param delegate AdminDelegate instance
+     * @param delegate AdministrationDelegate instance
      */
-    public AuthenticatedAdmin(AdminDelegate delegate) {
+    public AuthenticatedAdministration(AdministrationDelegate delegate) {
         this.delegate = delegate;
     }
 

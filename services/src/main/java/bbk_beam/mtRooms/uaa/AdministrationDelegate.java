@@ -10,7 +10,7 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 
-public class AdminDelegate implements IAdminSession {
+public class AdministrationDelegate implements IAdminSession {
     private IAdminSession admin_session;
 
     /**
@@ -18,7 +18,7 @@ public class AdminDelegate implements IAdminSession {
      *
      * @param admin_session IAdminSession instance
      */
-    AdminDelegate(IAdminSession admin_session) {
+    AdministrationDelegate(IAdminSession admin_session) {
         this.admin_session = admin_session;
     }
 

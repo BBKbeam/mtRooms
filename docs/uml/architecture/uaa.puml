@@ -14,8 +14,8 @@ frame "Service Layer" #lightgreen {
         IAuthenticator -- [Authenticator]
         IFrontDeskDelegate -- [FrontDeskDelegate]
         IAuthenticatedFrontDesk -- [AuthenticatedFrontDesk]
-        IAdminDelegate -- [AdminDelegate]
-        IAuthenticatedAdmin -- [AuthenticatedAdmin]
+        IAdministrationDelegate -- [AdministrationDelegate]
+        IAuthenticatedAdministration -- [AuthenticatedAdministration]
         IRevenuePersonnelDelegate -- [RevenuePersonnelDelegate]
         IAuthenticatedRevenuePersonnel -- [AuthenticatedRevenuePersonnel]
         ILogisticsPersonnelDelegate -- [LogisticsPersonnelDelegate]
@@ -24,15 +24,15 @@ frame "Service Layer" #lightgreen {
         AuthenticatedFrontDesk --( IAuthenticator
         AuthenticatedFrontDesk --( IFrontDeskDelegate
         SessionDriver --( IAuthenticator
-        AuthenticatedAdmin --( IAuthenticator
-        AuthenticatedAdmin --( IAdminDelegate
+        AuthenticatedAdministration --( IAuthenticator
+        AuthenticatedAdministration --( IAdministrationDelegate
         AuthenticatedLogisticsPersonnel --( IAuthenticator
         AuthenticatedLogisticsPersonnel --( ILogisticsPersonnelDelegate
         AuthenticatedRevenuePersonnel --( IAuthenticator
         AuthenticatedRevenuePersonnel --( IRevenuePersonnelDelegate
 
         SessionDriver *- AuthenticatedFrontDesk
-        SessionDriver *- AuthenticatedAdmin
+        SessionDriver *- AuthenticatedAdministration
         SessionDriver *- AuthenticatedRevenuePersonnel
         SessionDriver *- AuthenticatedLogisticsPersonnel
     }
@@ -41,7 +41,7 @@ frame "Service Layer" #lightgreen {
 '##---------------------------------##
 '## Service to Business Logic Layer ##
 '##---------------------------------##
-AdminDelegate --( IAdminSessionDriver
+AdministrationDelegate --( IAdminSessionDriver
 
 Authenticator --( IAuthenticationSystem
 

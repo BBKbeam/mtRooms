@@ -203,7 +203,7 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public IAuthenticatedAdministration getAdminInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    public IAuthenticatedAdministration getAdministrationInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
             throw new SessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))

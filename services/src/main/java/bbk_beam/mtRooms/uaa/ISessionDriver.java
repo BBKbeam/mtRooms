@@ -44,7 +44,7 @@ public interface ISessionDriver {
      * @throws SessionInactive                when the SessionDriver has not been initialised
      * @throws AuthenticationFailureException when the token has not got access right to the resource
      */
-    public IAuthenticatedAdministration getAdminInstance(Token session_token) throws SessionInactive, AuthenticationFailureException;
+    public IAuthenticatedAdministration getAdministrationInstance(Token session_token) throws SessionInactive, AuthenticationFailureException;
 
     /**
      * Gets the IAuthenticatedRevenuePersonnel instance

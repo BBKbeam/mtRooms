@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.admin.authentication;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Token {
     private String session_id;
@@ -50,5 +51,18 @@ public class Token {
     @Override
     public String toString() {
         return this.session_id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Token token = (Token) o;
+        return Objects.equals(session_id, token.session_id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(session_id);
     }
 }

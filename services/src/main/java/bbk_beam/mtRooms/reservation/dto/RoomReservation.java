@@ -2,9 +2,10 @@ package bbk_beam.mtRooms.reservation.dto;
 
 import bbk_beam.mtRooms.db.TimestampConverter;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class RoomReservation {
+public class RoomReservation implements Serializable {
     private Room room;
     private Date timestamp_in;
     private Date timestamp_out;

@@ -6,13 +6,14 @@ import bbk_beam.mtRooms.reservation.exception.FailedPaymentHashing;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 import java.util.Objects;
 
-public class Payment {
+public class Payment implements Serializable {
     private Integer id;
     private Double amount;
     private Date timestamp;

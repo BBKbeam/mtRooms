@@ -4,10 +4,11 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.reservation.exception.InvalidOperation;
 import eadjlib.logger.Logger;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Customer {
-    private final Logger log = Logger.getLoggerInstance(Customer.class.getName());
+public class Customer implements Serializable {
+    transient private final Logger log = Logger.getLoggerInstance(Customer.class.getName());
     private Integer id;
     private Integer membership_type_id;
     private Date account_creation;

@@ -140,8 +140,8 @@ public class AdminSession implements IAdminSession {
                                 TimestampConverter.getDateObject((String) row.get("last_login")),
                                 TimestampConverter.getDateObject((String) row.get("last_pwd_change")),
                                 new AccountType(
-                                        (Integer) row.get(""),
-                                        (String) row.get("")
+                                        (Integer) row.get("type_id"),
+                                        (String) row.get("description")
                                 ),
                                 ((Integer) row.get("active_state") != 0)
                         ));
@@ -167,8 +167,8 @@ public class AdminSession implements IAdminSession {
                         TimestampConverter.getDateObject((String) row.get("last_login")),
                         TimestampConverter.getDateObject((String) row.get("last_pwd_change")),
                         new AccountType(
-                                (Integer) row.get(""),
-                                (String) row.get("")
+                                (Integer) row.get("type_id"),
+                                (String) row.get("description")
                         ),
                         ((Integer) row.get("active_state") != 0)
                 );
@@ -196,8 +196,8 @@ public class AdminSession implements IAdminSession {
                         TimestampConverter.getDateObject((String) row.get("last_login")),
                         TimestampConverter.getDateObject((String) row.get("last_pwd_change")),
                         new AccountType(
-                                (Integer) row.get(""),
-                                (String) row.get("")
+                                (Integer) row.get("type_id"),
+                                (String) row.get("description")
                         ),
                         ((Integer) row.get("active_state") != 0)
                 );

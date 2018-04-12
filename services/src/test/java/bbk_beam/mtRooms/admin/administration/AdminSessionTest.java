@@ -2,9 +2,12 @@ package bbk_beam.mtRooms.admin.administration;
 
 import bbk_beam.mtRooms.admin.authentication.IAuthenticationSystem;
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.admin.dto.Account;
+import bbk_beam.mtRooms.admin.dto.AccountType;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
@@ -19,6 +22,8 @@ import org.junit.Test;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import static org.mockito.Mockito.*;
 
@@ -301,10 +306,32 @@ public class AdminSessionTest {
     @Test
     public void getAccounts() throws Exception {
         ObjectTable account_table = mock(ObjectTable.class);
+        HashMap<String, Object> row = new HashMap<>();
+        row.put("id", 10);
+        row.put("username", "jsmith01");
+        row.put("created", "2010-01-03 15:02:54");
+        row.put("last_login", "2018-02-25 09:05:21");
+        row.put("last_pwd_change", "2012-11-12 17:01:54");
+        row.put("type_id", 1);
+        row.put("description", "ADMIN");
+        row.put("active_state", 1);
+        when(account_table.isEmpty()).thenReturn(false);
+        when(account_table.rowCount()).thenReturn(1);
+        when(account_table.getRow(1)).thenReturn(row);
         doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
         when(mock_administration_module.getAccounts()).thenReturn(account_table);
-        Assert.assertEquals(account_table, this.adminSession.getAccounts(this.admin_token));
+        //Testing
+        List<Account> accounts = this.adminSession.getAccounts(this.admin_token);
+        Assert.assertEquals(1, accounts.size());
+        Account account = accounts.get(0);
+        Assert.assertEquals(new Integer(10), account.id());
+        Assert.assertEquals("jsmith01", account.username());
+        Assert.assertEquals(TimestampConverter.getDateObject("2010-01-03 15:02:54"), account.created());
+        Assert.assertEquals(TimestampConverter.getDateObject("2018-02-25 09:05:21"), account.lastLogin());
+        Assert.assertEquals(TimestampConverter.getDateObject("2012-11-12 17:01:54"), account.lastPwdChange());
+        Assert.assertEquals(new AccountType(1, "ADMIN"), account.type());
+        Assert.assertTrue(account.isActive());
         verify(mock_administration_module, times(1)).getAccounts();
     }
 
@@ -335,11 +362,30 @@ public class AdminSessionTest {
     @Test
     public void getAccount_by_id() throws Exception {
         ObjectTable account_table = mock(ObjectTable.class);
+        HashMap<String, Object> row = new HashMap<>();
+        row.put("id", 10);
+        row.put("username", "jsmith01");
+        row.put("created", "2010-01-03 15:02:54");
+        row.put("last_login", "2018-02-25 09:05:21");
+        row.put("last_pwd_change", "2012-11-12 17:01:54");
+        row.put("type_id", 1);
+        row.put("description", "ADMIN");
+        row.put("active_state", 1);
+        when(account_table.isEmpty()).thenReturn(false);
+        when(account_table.getRow(1)).thenReturn(row);
         doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
-        when(mock_administration_module.getAccount(1)).thenReturn(account_table);
-        Assert.assertEquals(account_table, this.adminSession.getAccount(this.admin_token, 1));
-        verify(mock_administration_module, times(1)).getAccount(1);
+        when(mock_administration_module.getAccount(10)).thenReturn(account_table);
+        //Testing
+        Account account = this.adminSession.getAccount(this.admin_token, 10);
+        Assert.assertEquals(new Integer(10), account.id());
+        Assert.assertEquals("jsmith01", account.username());
+        Assert.assertEquals(TimestampConverter.getDateObject("2010-01-03 15:02:54"), account.created());
+        Assert.assertEquals(TimestampConverter.getDateObject("2018-02-25 09:05:21"), account.lastLogin());
+        Assert.assertEquals(TimestampConverter.getDateObject("2012-11-12 17:01:54"), account.lastPwdChange());
+        Assert.assertEquals(new AccountType(1, "ADMIN"), account.type());
+        Assert.assertTrue(account.isActive());
+        verify(mock_administration_module, times(1)).getAccount(10);
     }
 
     @Test(expected = SessionInvalidException.class)
@@ -369,10 +415,29 @@ public class AdminSessionTest {
     @Test
     public void getAccount_by_username() throws Exception {
         ObjectTable account_table = mock(ObjectTable.class);
+        HashMap<String, Object> row = new HashMap<>();
+        row.put("id", 10);
+        row.put("username", "jsmith01");
+        row.put("created", "2010-01-03 15:02:54");
+        row.put("last_login", "2018-02-25 09:05:21");
+        row.put("last_pwd_change", "2012-11-12 17:01:54");
+        row.put("type_id", 1);
+        row.put("description", "ADMIN");
+        row.put("active_state", 1);
+        when(account_table.isEmpty()).thenReturn(false);
+        when(account_table.getRow(1)).thenReturn(row);
         doNothing().when(mock_administration_module).checkValidity(this.admin_token);
         when(mock_authentication_module.hasValidAccessRights(this.admin_token, SessionType.ADMIN)).thenReturn(true);
         when(mock_administration_module.getAccount("00001")).thenReturn(account_table);
-        Assert.assertEquals(account_table, this.adminSession.getAccount(this.admin_token, "00001"));
+        //Testing
+        Account account = this.adminSession.getAccount(this.admin_token, "00001");
+        Assert.assertEquals(new Integer(10), account.id());
+        Assert.assertEquals("jsmith01", account.username());
+        Assert.assertEquals(TimestampConverter.getDateObject("2010-01-03 15:02:54"), account.created());
+        Assert.assertEquals(TimestampConverter.getDateObject("2018-02-25 09:05:21"), account.lastLogin());
+        Assert.assertEquals(TimestampConverter.getDateObject("2012-11-12 17:01:54"), account.lastPwdChange());
+        Assert.assertEquals(new AccountType(1, "ADMIN"), account.type());
+        Assert.assertTrue(account.isActive());
         verify(mock_administration_module, times(1)).getAccount("00001");
     }
 

@@ -131,6 +131,41 @@ public class ScheduleCache extends Observable {
     }
 
     /**
+     * Observing state of an observer
+     *
+     * @param session ReservationSession instance
+     * @return Observing state
+     */
+    public synchronized boolean exists(ReservationSession session) {
+        return this.observers.containsKey(session.getToken().getSessionId());
+    }
+
+    /**
+     * Observing state of an observer
+     *
+     * @param token Observer session token
+     * @return Observing state
+     */
+    public synchronized boolean exists(Token token) {
+        return this.observers.containsKey(token.getSessionId());
+    }
+
+    /**
+     * Gets the ReservationSession associated with a Token
+     *
+     * @param token Session token
+     * @return ReservationSession instance for the token or null of none was found
+     */
+    public synchronized ReservationSession getReservationSession(Token token) throws IllegalArgumentException {
+        if (this.observers.containsKey(token.getSessionId())) {
+            return this.observers.get(token.getSessionId());
+        } else {
+            log.log_Warning("Token [", token, "] is not associated with any ScheduleCache observers.");
+            return null;
+        }
+    }
+
+    /**
      * Adds an observer
      *
      * @param o Observer instance
@@ -148,16 +183,6 @@ public class ScheduleCache extends Observable {
     }
 
     /**
-     * Observing state of an observer
-     *
-     * @param session ReservationSession instance
-     * @return Observing state
-     */
-    public synchronized boolean exists(ReservationSession session) {
-        return this.observers.containsKey(session.getToken().getSessionId());
-    }
-
-    /**
      * Adds an observer
      *
      * @param o ReservationSession instance
@@ -166,6 +191,7 @@ public class ScheduleCache extends Observable {
     public synchronized void addObserver(ReservationSession o) throws NullPointerException {
         if (o == null)
             throw new NullPointerException();
+        log.log_Debug("Called for creating a ReservationSession for [", o.getToken(), "].");
         this.observers.putIfAbsent(o.getToken().getSessionId(), o);
     }
 
@@ -189,6 +215,7 @@ public class ScheduleCache extends Observable {
      * @param o ReservationSession instance
      */
     public synchronized void deleteObserver(ReservationSession o) {
+        log.log_Debug("Called for deletion of [", o.getToken(), "]'s ReservationSession observer.");
         this.cached_schedule.clearWatcherCache(o.getToken());
         this.observers.remove(o.getToken().getSessionId());
     }

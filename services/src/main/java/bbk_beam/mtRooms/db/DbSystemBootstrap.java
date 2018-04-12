@@ -65,6 +65,11 @@ public class DbSystemBootstrap implements IDbSystemBootstrap {
     }
 
     @Override
+    public boolean closeConnection() {
+        return this.db.disconnect();
+    }
+
+    @Override
     public IUserAccDbAccess getUserAccDbAccess() throws DbBootstrapException {
         if (this.userAccDbAccess == null) {
             log.log_Error("Trying to get instance of [UserAccDbAccess] which hasn't been initialised.");

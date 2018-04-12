@@ -1,6 +1,8 @@
 package bbk_beam.mtRooms.reservation.dto;
 
-public class RoomCategory {
+import java.io.Serializable;
+
+public class RoomCategory implements Serializable {
     private Integer id;
     private Integer capacity;
     private Integer dimension;

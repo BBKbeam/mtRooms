@@ -1,9 +1,10 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class Room implements Comparable<Room> {
+public class Room implements Comparable<Room>, Serializable {
     private Integer id;
     private Integer floor_id;
     private Integer building_id;

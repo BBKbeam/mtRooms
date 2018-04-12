@@ -1,8 +1,9 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class Discount {
+public class Discount implements Serializable {
     private Integer id;
     private Double rate;
     private Integer category_id;

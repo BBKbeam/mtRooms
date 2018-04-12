@@ -1,5 +1,9 @@
 package bbk_beam.mtRooms.reservation.dto;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.Objects;
 
 /**
@@ -10,7 +14,7 @@ import java.util.Objects;
  * positives will be evaluated as a "minimum requirement"
  * </p>
  */
-public class RoomProperty implements Comparable<RoomProperty> {
+public class RoomProperty implements Comparable<RoomProperty>, Serializable {
     /**
      * Trilean  (3-state logic)
      * <p>
@@ -18,15 +22,41 @@ public class RoomProperty implements Comparable<RoomProperty> {
      * </p>
      */
     public enum Trilean {
-        TRUE,
-        UNDEFINED,
-        FALSE
+        TRUE("TRUE"),
+        UNDEFINED("UNDEFINED"),
+        FALSE("FALSE");
+
+        private final String value;
+
+        /**
+         * Constructor
+         *
+         * @param value Value
+         */
+        Trilean(String value) {
+            this.value = value;
+        }
+
+        public String value() {
+            return value;
+        }
+
+        public static Trilean getEnum(String value) {
+            if (value != null) {
+                for (Trilean trilean : values()) {
+                    if (trilean.value.equals(value)) {
+                        return trilean;
+                    }
+                }
+            }
+            throw new IllegalArgumentException("Invalid Trialian: " + value);
+        }
     }
 
-    private Trilean has_fixed_chairs;
-    private Trilean has_catering_space;
-    private Trilean has_whiteboard;
-    private Trilean has_projector;
+    transient private Trilean has_fixed_chairs;
+    transient private Trilean has_catering_space;
+    transient private Trilean has_whiteboard;
+    transient private Trilean has_projector;
     private Integer capacity;
     private Integer dimension;
 
@@ -212,5 +242,21 @@ public class RoomProperty implements Comparable<RoomProperty> {
         sb.append(", dimension: ").append(dimension);
         sb.append(" }");
         return sb.toString();
+    }
+
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.defaultWriteObject();
+        out.writeObject(this.has_fixed_chairs.value);
+        out.writeObject(this.has_catering_space.value);
+        out.writeObject(this.has_whiteboard.value);
+        out.writeObject(this.has_projector.value);
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        this.has_fixed_chairs = Trilean.getEnum((String) in.readObject());
+        this.has_catering_space = Trilean.getEnum((String) in.readObject());
+        this.has_whiteboard = Trilean.getEnum((String) in.readObject());
+        this.has_projector = Trilean.getEnum((String) in.readObject());
     }
 }

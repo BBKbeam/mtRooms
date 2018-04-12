@@ -3,6 +3,11 @@ package bbk_beam.mtRooms.reservation.dto;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 public class RoomPropertyTest {
 
     @Test
@@ -213,5 +218,30 @@ public class RoomPropertyTest {
                 5
         );
         Assert.assertEquals(-1, a.compareTo(b));
+    }
+
+    @Test
+    public void serialization() throws Exception {
+        RoomProperty before = new RoomProperty(
+                RoomProperty.Trilean.TRUE,
+                RoomProperty.Trilean.FALSE,
+                RoomProperty.Trilean.UNDEFINED,
+                RoomProperty.Trilean.TRUE,
+                10,
+                50
+        );
+        //Out
+        FileOutputStream fos = new FileOutputStream("RoomProperty_Serializable_Test.ser");
+        ObjectOutputStream oos = new ObjectOutputStream(fos);
+        oos.writeObject(before);
+        oos.flush();
+        oos.close();
+        //In
+        FileInputStream fis = new FileInputStream("RoomProperty_Serializable_Test.ser");
+        ObjectInputStream ois = new ObjectInputStream(fis);
+        RoomProperty after = (RoomProperty) ois.readObject();
+        ois.close();
+        //Test
+        Assert.assertEquals(before, after);
     }
 }

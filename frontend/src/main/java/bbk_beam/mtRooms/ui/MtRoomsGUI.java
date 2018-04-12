@@ -1,4 +1,23 @@
 package bbk_beam.mtRooms.ui;
 
-public class MtRoomsGUI {
+import bbk_beam.mtRooms.uaa.ISessionDriver;
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+
+public class MtRoomsGUI extends Application {
+    private ISessionDriver services;
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        try {
+            BorderPane root = new BorderPane();
+            Scene scene = new Scene(root, 800, 600);
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

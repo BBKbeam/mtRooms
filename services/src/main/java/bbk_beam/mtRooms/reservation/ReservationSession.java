@@ -26,6 +26,7 @@ public class ReservationSession implements IReservationSession {
     private PaymentProcessing paymentProcessing;
     private ReservationProcessing reservationProcessing;
     private OptimisedSearch optimisedSearch;
+    private IEventWatcher eventWatcher = null;
 
     /**
      * Constructor
@@ -61,10 +62,17 @@ public class ReservationSession implements IReservationSession {
     public void update(Observable o, Object arg) {
         if (arg instanceof RoomReservation) {
             log.log_Debug("Observable ", o, " called update: ", arg);
-            //TODO ReservationSession update(..) implementation
+            this.eventWatcher.update(this, (RoomReservation) arg);
         } else {
             log.log_Warning("Update argument unsupported by this <<Observer>>: ", arg);
         }
+    }
+
+    @Override
+    public IEventWatcher addEventWatcher(IEventWatcher watcher) {
+        IEventWatcher previous = this.eventWatcher;
+        this.eventWatcher = watcher;
+        return previous;
     }
 
     @Override

@@ -1,8 +1,9 @@
 package bbk_beam.mtRooms.admin.authentication;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Token {
+public class Token implements Serializable {
     private String session_id;
     private Date created;
     private Date expiry;

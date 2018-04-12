@@ -2,11 +2,14 @@ package bbk_beam.mtRooms.admin.administration;
 
 import bbk_beam.mtRooms.admin.authentication.IAuthenticationSystem;
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.admin.dto.Account;
+import bbk_beam.mtRooms.admin.dto.AccountType;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
@@ -14,6 +17,10 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class AdminSession implements IAdminSession {
     private final Logger log = Logger.getLoggerInstance(AdminSession.class.getName());
@@ -118,10 +125,28 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public ObjectTable getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
+    public List<Account> getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
-            return this.administration.getAccounts();
+            ObjectTable table = this.administration.getAccounts();
+            List<Account> account_list = new ArrayList<>();
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                account_list.add(
+                        new Account(
+                                (Integer) row.get("id"),
+                                (String) row.get("username"),
+                                TimestampConverter.getDateObject((String) row.get("created")),
+                                TimestampConverter.getDateObject((String) row.get("last_login")),
+                                TimestampConverter.getDateObject((String) row.get("last_pwd_change")),
+                                new AccountType(
+                                        (Integer) row.get(""),
+                                        (String) row.get("")
+                                ),
+                                ((Integer) row.get("active_state") != 0)
+                        ));
+            }
+            return account_list;
         } catch (DbQueryException e) {
             log.log_Fatal("Could not fetch user accounts from records.");
             throw new RuntimeException("Could not fetch user accounts from records.", e);
@@ -129,10 +154,28 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
+    public Account getAccount(Token admin_token, Integer account_id) throws AccountExistenceException, SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
-            return this.administration.getAccount(account_id);
+            ObjectTable table = this.administration.getAccount(account_id);
+            if (!table.isEmpty()) {
+                HashMap<String, Object> row = table.getRow(1);
+                return new Account(
+                        (Integer) row.get("id"),
+                        (String) row.get("username"),
+                        TimestampConverter.getDateObject((String) row.get("created")),
+                        TimestampConverter.getDateObject((String) row.get("last_login")),
+                        TimestampConverter.getDateObject((String) row.get("last_pwd_change")),
+                        new AccountType(
+                                (Integer) row.get(""),
+                                (String) row.get("")
+                        ),
+                        ((Integer) row.get("active_state") != 0)
+                );
+            } else {
+                log.log_Error("Account [", account_id, "] does not exist in records.");
+                throw new AccountExistenceException("Account [" + account_id + "] does not exist in records.");
+            }
         } catch (DbQueryException e) {
             log.log_Fatal("Could not fetch user account [id: ", account_id, "] from records.");
             throw new RuntimeException("Could not fetch user account from records.", e);
@@ -140,10 +183,28 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
+    public Account getAccount(Token admin_token, String account_username) throws AccountExistenceException, SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         try {
             checkTokenValidity(admin_token);
-            return this.administration.getAccount(account_username);
+            ObjectTable table = this.administration.getAccount(account_username);
+            if (!table.isEmpty()) {
+                HashMap<String, Object> row = table.getRow(1);
+                return new Account(
+                        (Integer) row.get("id"),
+                        (String) row.get("username"),
+                        TimestampConverter.getDateObject((String) row.get("created")),
+                        TimestampConverter.getDateObject((String) row.get("last_login")),
+                        TimestampConverter.getDateObject((String) row.get("last_pwd_change")),
+                        new AccountType(
+                                (Integer) row.get(""),
+                                (String) row.get("")
+                        ),
+                        ((Integer) row.get("active_state") != 0)
+                );
+            } else {
+                log.log_Error("No account with username '", account_username, "' exists in records.");
+                throw new AccountExistenceException("No account with username '" + account_username + "' exists in records.");
+            }
         } catch (DbQueryException e) {
             log.log_Fatal("Could not fetch user account [u/n: ", account_username, "] from records.");
             throw new RuntimeException("Could not fetch user account from records.", e);

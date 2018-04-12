@@ -9,6 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -36,6 +38,7 @@ public class RoomReservationTest {
                 false
         );
         //Out
+        Files.deleteIfExists(Paths.get("RoomReservation_Serializable_Test.ser"));
         FileOutputStream fos = new FileOutputStream("RoomReservation_Serializable_Test.ser");
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(before);
@@ -48,5 +51,6 @@ public class RoomReservationTest {
         ois.close();
         //Test
         Assert.assertEquals(before, after);
+        Files.deleteIfExists(Paths.get("RoomReservation_Serializable_Test.ser"));
     }
 }

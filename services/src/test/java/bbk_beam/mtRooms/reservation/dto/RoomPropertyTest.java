@@ -7,6 +7,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class RoomPropertyTest {
 
@@ -231,6 +233,7 @@ public class RoomPropertyTest {
                 50
         );
         //Out
+        Files.deleteIfExists(Paths.get("RoomProperty_Serializable_Test.ser"));
         FileOutputStream fos = new FileOutputStream("RoomProperty_Serializable_Test.ser");
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         oos.writeObject(before);
@@ -243,5 +246,6 @@ public class RoomPropertyTest {
         ois.close();
         //Test
         Assert.assertEquals(before, after);
+        Files.deleteIfExists(Paths.get("RoomProperty_Serializable_Test.ser"));
     }
 }

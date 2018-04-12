@@ -102,4 +102,18 @@ public class Account implements Serializable {
     public boolean isActive() {
         return is_active;
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("Account={ ");
+        sb.append("id: ").append(id);
+        sb.append(", username: '").append(username).append('\'');
+        sb.append(", created: ").append(created);
+        sb.append(", last_login: ").append(last_login);
+        sb.append(", last_pwd_change: ").append(last_pwd_change);
+        sb.append(", type: ").append(type);
+        sb.append(", is_active: ").append(is_active);
+        sb.append(" }");
+        return sb.toString();
+    }
 }

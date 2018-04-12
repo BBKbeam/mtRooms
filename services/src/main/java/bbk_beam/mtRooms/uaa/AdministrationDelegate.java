@@ -2,13 +2,15 @@ package bbk_beam.mtRooms.uaa;
 
 import bbk_beam.mtRooms.admin.administration.IAdminSession;
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.admin.dto.Account;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
-import eadjlib.datastructure.ObjectTable;
+
+import java.util.List;
 
 public class AdministrationDelegate implements IAdminSession {
     private IAdminSession admin_session;
@@ -105,14 +107,16 @@ public class AdministrationDelegate implements IAdminSession {
     }
 
     /**
+     * Gets all accounts in records
+     *
      * @param admin_token Administrator session token
-     * @return ObjectTable with all account records found
+     * @return List of Account DTOs
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    public ObjectTable getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
+    public List<Account> getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         return this.admin_session.getAccounts(admin_token);
     }
 
@@ -121,13 +125,14 @@ public class AdministrationDelegate implements IAdminSession {
      *
      * @param admin_token Administrator session token
      * @param account_id  Account ID
-     * @return ObjectTable containing the account's details
+     * @return Account DTO
+     * @throws AccountExistenceException when account does not exist in records
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    public ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
+    public Account getAccount(Token admin_token, Integer account_id) throws AccountExistenceException, SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         return this.admin_session.getAccount(admin_token, account_id);
     }
 
@@ -136,13 +141,14 @@ public class AdministrationDelegate implements IAdminSession {
      *
      * @param admin_token      Administrator session token
      * @param account_username Account username
-     * @return ObjectTable containing the account's details
+     * @return Account DTO
+     * @throws AccountExistenceException when account does not exist in records
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    public ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
+    public Account getAccount(Token admin_token, String account_username) throws AccountExistenceException, SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         return this.admin_session.getAccount(admin_token, account_username);
     }
 

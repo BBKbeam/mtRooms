@@ -55,6 +55,25 @@ public interface IUserAccDbAccess {
     void closeSession(String session_id) throws SessionInvalidException;
 
     /**
+     * Gets the number of tracked sessions
+     *
+     * @return Session count
+     */
+    int sessionCount();
+
+    /**
+     * Gets the number of unexpired session tokens being tracked
+     *
+     * @return Valid token count
+     */
+    int validSessionCount();
+
+    /**
+     * Clears all expired sessions from the tracker
+     */
+    void clearExpiredSessions();
+
+    /**
      * Passes a SQL query to the database
      *
      * @param query SQL Query

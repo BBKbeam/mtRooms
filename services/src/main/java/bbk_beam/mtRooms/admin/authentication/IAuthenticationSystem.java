@@ -31,4 +31,24 @@ public interface IAuthenticationSystem {
      * @return Valid state
      */
     boolean hasValidAccessRights(Token session_token, SessionType user_session_type);
+
+    /**
+     * Check for the current login state of a token
+     *
+     * @param session_token Session token
+     * @return Login state
+     */
+    boolean isLoggedIn(Token session_token);
+
+    /**
+     * Gets the number of currently non-expired current tokens
+     *
+     * @return Unexpired token count
+     */
+    int validTokenCount();
+
+    /**
+     * Clears expired tokens from the tracker
+     */
+    void clearExpiredTokens();
 }

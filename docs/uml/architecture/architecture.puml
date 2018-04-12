@@ -49,11 +49,12 @@ package mtRooms {
 
     frame "Service Layer" #lightgreen {
         package "uaa" {
+            ISessionDriver -- [SessionDriver]
             IAuthenticator -- [Authenticator]
             IFrontDeskDelegate -- [FrontDeskDelegate]
             IAuthenticatedFrontDesk -- [AuthenticatedFrontDesk]
-            IAdminDelegate -- [AdminDelegate]
-            IAuthenticatedAdmin -- [AuthenticatedAdmin]
+            IAdministrationDelegate -- [AdministrationDelegate]
+            IAuthenticatedAdministration -- [AuthenticatedAdministration]
             IRevenuePersonnelDelegate -- [RevenuePersonnelDelegate]
             IAuthenticatedRevenuePersonnel -- [AuthenticatedRevenuePersonnel]
             ILogisticsPersonnelDelegate -- [LogisticsPersonnelDelegate]
@@ -61,12 +62,18 @@ package mtRooms {
 
             AuthenticatedFrontDesk --( IAuthenticator
             AuthenticatedFrontDesk --( IFrontDeskDelegate
-            AuthenticatedAdmin --( IAuthenticator
-            AuthenticatedAdmin --( IAdminDelegate
+            SessionDriver --( IAuthenticator
+            AuthenticatedAdministration --( IAuthenticator
+            AuthenticatedAdministration --( IAdministrationDelegate
             AuthenticatedLogisticsPersonnel --( IAuthenticator
             AuthenticatedLogisticsPersonnel --( ILogisticsPersonnelDelegate
             AuthenticatedRevenuePersonnel --( IAuthenticator
             AuthenticatedRevenuePersonnel --( IRevenuePersonnelDelegate
+
+            SessionDriver *- AuthenticatedFrontDesk
+            SessionDriver *- AuthenticatedAdministration
+            SessionDriver *- AuthenticatedRevenuePersonnel
+            SessionDriver *- AuthenticatedLogisticsPersonnel
         }
     }
 
@@ -193,8 +200,8 @@ package mtRooms {
     ReservationView --( IAuthenticatedFrontDesk
     PaymentView --( IAuthenticatedFrontDesk
 
-    UserAccountView --( IAuthenticatedAdmin
-    CustomerAccountView --( IAuthenticatedAdmin
+    UserAccountView --( IAuthenticatedAdministration
+    CustomerAccountView --( IAuthenticatedAdministration
 
     LogisticsReportView --( IAuthenticatedLogisticsPersonnel
 
@@ -204,7 +211,7 @@ package mtRooms {
     '##---------------------------------##
     '## Service to Business Logic Layer ##
     '##---------------------------------##
-    AdminDelegate --( IAdminSession
+    AdministrationDelegate --( IAdminSession
 
     Authenticator --( IAuthenticationSystem
 

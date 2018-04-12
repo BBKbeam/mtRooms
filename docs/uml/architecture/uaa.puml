@@ -1,0 +1,55 @@
+@startuml
+
+'skinparam linetype ortho
+skinparam linetype polyline
+'skinparam monochrome true
+
+skinparam package {
+    backgroundColor lightgrey
+}
+
+frame "Service Layer" #lightgreen {
+    package "uaa" {
+        ISessionDriver -- [SessionDriver]
+        IAuthenticator -- [Authenticator]
+        IFrontDeskDelegate -- [FrontDeskDelegate]
+        IAuthenticatedFrontDesk -- [AuthenticatedFrontDesk]
+        IAdministrationDelegate -- [AdministrationDelegate]
+        IAuthenticatedAdministration -- [AuthenticatedAdministration]
+        IRevenuePersonnelDelegate -- [RevenuePersonnelDelegate]
+        IAuthenticatedRevenuePersonnel -- [AuthenticatedRevenuePersonnel]
+        ILogisticsPersonnelDelegate -- [LogisticsPersonnelDelegate]
+        IAuthenticatedLogisticsPersonnel -- [AuthenticatedLogisticsPersonnel]
+
+        AuthenticatedFrontDesk --( IAuthenticator
+        AuthenticatedFrontDesk --( IFrontDeskDelegate
+        SessionDriver --( IAuthenticator
+        AuthenticatedAdministration --( IAuthenticator
+        AuthenticatedAdministration --( IAdministrationDelegate
+        AuthenticatedLogisticsPersonnel --( IAuthenticator
+        AuthenticatedLogisticsPersonnel --( ILogisticsPersonnelDelegate
+        AuthenticatedRevenuePersonnel --( IAuthenticator
+        AuthenticatedRevenuePersonnel --( IRevenuePersonnelDelegate
+
+        SessionDriver *- AuthenticatedFrontDesk
+        SessionDriver *- AuthenticatedAdministration
+        SessionDriver *- AuthenticatedRevenuePersonnel
+        SessionDriver *- AuthenticatedLogisticsPersonnel
+    }
+}
+
+'##---------------------------------##
+'## Service to Business Logic Layer ##
+'##---------------------------------##
+AdministrationDelegate --( IAdminSessionDriver
+
+Authenticator --( IAuthenticationSystem
+
+FrontDeskDelegate --( IReservationSessionDriver
+
+RevenuePersonnelDelegate --( IRevenueReporter
+RevenuePersonnelDelegate --( IInvoice
+
+LogisticsPersonnelDelegate --( ILogisticReportGenerator
+
+@enduml

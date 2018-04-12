@@ -3,8 +3,6 @@ package bbk_beam.mtRooms.db.database;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import eadjlib.datastructure.ObjectTable;
 
-import java.sql.SQLException;
-
 /**
  * Universal database interface
  */
@@ -20,9 +18,8 @@ public interface IDatabase {
      * Disconnect from the connected Database
      *
      * @return Success
-     * @throws SQLException when attempting to disconnect nothing
      */
-    boolean disconnect() throws SQLException;
+    boolean disconnect();
 
     /**
      * Query the Database

@@ -72,6 +72,21 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     }
 
     @Override
+    public int sessionCount() {
+        return this.currentSessions.trackedCount();
+    }
+
+    @Override
+    public int validSessionCount() {
+        return this.currentSessions.validTrackedCount();
+    }
+
+    @Override
+    public void clearExpiredSessions() {
+        this.currentSessions.clearExpired();
+    }
+
+    @Override
     public boolean pushToDB(String query) throws DbQueryException {
         return this.db.push(query);
     }
@@ -80,5 +95,4 @@ public class UserAccDbAccess implements IUserAccDbAccess {
     public ObjectTable pullFromDB(String query) throws DbQueryException {
         return this.db.pull(query);
     }
-
 }

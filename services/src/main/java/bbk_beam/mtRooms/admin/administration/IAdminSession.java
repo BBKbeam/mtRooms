@@ -1,13 +1,15 @@
 package bbk_beam.mtRooms.admin.administration;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.admin.dto.Account;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
-import eadjlib.datastructure.ObjectTable;
+
+import java.util.List;
 
 public interface IAdminSession {
     /**
@@ -90,7 +92,7 @@ public interface IAdminSession {
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    ObjectTable getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
+    List<Account> getAccounts(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
     /**
      * Gets the records for an account
@@ -98,12 +100,13 @@ public interface IAdminSession {
      * @param admin_token Administrator session token
      * @param account_id  Account ID
      * @return ObjectTable containing the account's details
+     * @throws AccountExistenceException when account does not exist
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    ObjectTable getAccount(Token admin_token, Integer account_id) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
+    Account getAccount(Token admin_token, Integer account_id) throws AccountExistenceException, SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
     /**
      * Gets the records for an account
@@ -111,12 +114,13 @@ public interface IAdminSession {
      * @param admin_token      Administrator session token
      * @param account_username Account username
      * @return ObjectTable containing the account's details
+     * @throws AccountExistenceException when account does not exist
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    ObjectTable getAccount(Token admin_token, String account_username) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
+    Account getAccount(Token admin_token, String account_username) throws AccountExistenceException, SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
     /**
      * Optimises the reservation database

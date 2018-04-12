@@ -29,6 +29,8 @@ public class RoomReservationTest {
                 new Room(8, 3, 1, 6),
                 new Date(),
                 Date.from(Instant.now().plus(2, ChronoUnit.HOURS)),
+                10,
+                true,
                 "Note 1",
                 new RoomPrice(12, 110., 2008),
                 false

@@ -9,6 +9,12 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 
+/**
+ * mtRooms Server
+ * <p>
+ * Provides RMI access to backend services
+ * </p>
+ */
 public class RmiServer extends RmiServices {
     private final Logger log = Logger.getLoggerInstance(RmiServer.class.getName());
 

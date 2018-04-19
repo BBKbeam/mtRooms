@@ -15,6 +15,14 @@ import java.util.List;
 import java.util.Observer;
 
 public interface IReservationSession extends Observer {
+    /**
+     * Adds an event watcher to the session to catch updates
+     *
+     * @param watcher EventWatcher instance
+     * @return Previously used event watcher or null if none was set
+     */
+    public IEventWatcher addEventWatcher(IEventWatcher watcher);
+
     //---------------------------------------------[ CustomerAccountAccess ]--------------------------------------------
 
     /**

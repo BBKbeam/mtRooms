@@ -1,6 +1,24 @@
 apply plugin: 'application'
 mainClassName = 'bbk_beam.mtRooms.ui.MtRoomsGUI'
 
+buildscript {
+    dependencies {
+        classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
 dependencies {
     compile project(':services')
+}
+
+apply plugin: 'javafx-gradle-plugin'
+
+jfx {
+    mainClass = 'bbk_beam.mtRooms.ui.MtRoomsGUI'
+    vendor = 'BBK_Beam'
 }

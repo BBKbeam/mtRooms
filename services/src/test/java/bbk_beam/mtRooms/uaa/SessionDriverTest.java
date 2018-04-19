@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.uaa;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.admin.dto.Account;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
@@ -157,8 +158,8 @@ public class SessionDriverTest {
         for (int i = 0; i < 3; i++) {
             Token token = this.session_driver.login("root", "letmein");
             IAuthenticatedAdministration administration = this.session_driver.getAdministrationInstance(token);
-            ObjectTable table = administration.getAccount(token, "root");
-            System.out.println(table);
+            Account account = administration.getAccount(token, "root");
+            System.out.println(account);
             this.session_driver.logout(token);
         }
         this.session_driver.reset();

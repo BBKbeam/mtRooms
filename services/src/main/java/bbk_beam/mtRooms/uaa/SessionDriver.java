@@ -18,10 +18,7 @@ import bbk_beam.mtRooms.reservation.processing.OptimisedSearch;
 import bbk_beam.mtRooms.reservation.processing.PaymentProcessing;
 import bbk_beam.mtRooms.reservation.processing.ReservationProcessing;
 import bbk_beam.mtRooms.reservation.scheduling.ScheduleCache;
-import bbk_beam.mtRooms.uaa.exception.FailedSessionSpooling;
-import bbk_beam.mtRooms.uaa.exception.SessionActive;
-import bbk_beam.mtRooms.uaa.exception.SessionInactive;
-import bbk_beam.mtRooms.uaa.exception.SessionLocked;
+import bbk_beam.mtRooms.uaa.exception.*;
 import eadjlib.logger.Logger;
 
 public class SessionDriver implements ISessionDriver {
@@ -140,7 +137,7 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public void init(String db_file_name) throws SessionActive, FailedSessionSpooling {
+    synchronized public void init(String db_file_name) throws SessionActive, FailedSessionSpooling {
         if (instantiated_flag) {
             log.log_Error("Trying to initialise over already active Session (db='", this.db_file, "'). Reset first.");
             throw new SessionActive("Trying to initialise over already active Session (db='" + this.db_file + "'). Reset first.");
@@ -170,7 +167,7 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public void reset() throws SessionLocked {
+    synchronized public void reset() throws SessionLocked {
         if (this.authenticator.validTokenCount() > 0) {
             log.log_Error("Trying to reset with currently logged-in users.");
             throw new SessionLocked("Trying to reset with currently logged-in users.");
@@ -192,7 +189,7 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public IAuthenticatedFrontDesk getFrontDeskInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    synchronized public IAuthenticatedFrontDesk getFrontDeskInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
             throw new SessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))
@@ -203,7 +200,7 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public IAuthenticatedAdministration getAdministrationInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    synchronized public IAuthenticatedAdministration getAdministrationInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
             throw new SessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))
@@ -214,7 +211,7 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public IAuthenticatedRevenuePersonnel getRevenuePersonnelInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    synchronized public IAuthenticatedRevenuePersonnel getRevenuePersonnelInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
             throw new SessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))
@@ -225,7 +222,7 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public IAuthenticatedLogisticsPersonnel getLogisticsPersonnelInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    synchronized public IAuthenticatedLogisticsPersonnel getLogisticsPersonnelInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
             throw new SessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))
@@ -236,7 +233,7 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public Token login(String username, String password) throws AuthenticationFailureException, SessionInactive {
+    synchronized public Token login(String username, String password) throws AuthenticationFailureException, SessionInactive {
         if (!this.instantiated_flag)
             throw new SessionInactive("Session is not initialised.");
         log.log("Login called for '", username, "'.");
@@ -244,10 +241,23 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    public void logout(Token session_token) throws SessionInvalidException, SessionInactive {
+    synchronized public void logout(Token session_token) throws SessionInvalidException, SessionInactive {
         if (!this.instantiated_flag)
             throw new SessionInactive("Session is not initialised.");
         log.log("Logout called for [", session_token, "].");
         this.authenticator.logout(session_token);
+    }
+
+    @Override
+    public boolean isInstantiated() {
+        return this.instantiated_flag;
+    }
+
+    @Override
+    public String currentDB() throws SessionReset {
+        if (this.isInstantiated())
+            return this.db_file;
+        else
+            throw new SessionReset("Session has not been instantiated.");
     }
 }

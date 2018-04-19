@@ -23,7 +23,13 @@ public interface IAuthenticatedFrontDesk {
      * Closes a ReservationSession
      *
      * @param reservation_session ReservationSession to close
-     * @throws SessionInvalidException when the token used in the ReservationSession is invalid
      */
-    public void closeReservationSession(ReservationSession reservation_session) throws SessionInvalidException;
+    public void closeReservationSession(ReservationSession reservation_session);
+
+    /**
+     * Closes a ReservationSession
+     *
+     * @param token Token associated with the ReservationSession to be closed
+     */
+    public void closeReservationSession(Token token);
 }

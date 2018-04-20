@@ -2,11 +2,13 @@ package bbk_beam.mtRooms.ui.network;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.network.IRmiClient;
+import eadjlib.logger.Logger;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class RmiClient extends UnicastRemoteObject implements IRmiClient {
+    private final Logger log = Logger.getLoggerInstance(RmiClient.class.getName());
     private Token token = null;
 
     /**

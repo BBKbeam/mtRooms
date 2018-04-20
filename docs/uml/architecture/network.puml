@@ -25,13 +25,13 @@ package mtRooms {
                 [<u>:RmiServer] as RmiServer
                 component RmiServices
                 component ClientSessions
-                component EventWatcher
+                component EventWatcherDelegate
                 IClientWrapper -- ClientWrapper
 
                 RmiServices --( IClientWrapper
                 RmiServer --|> RmiServices
-                ClientWrapper *- ClientSessions
-                EventWatcher *- ClientSessions
+                ClientWrapper -* ClientSessions
+                EventWatcherDelegate - ClientSessions
             }
 
         }
@@ -43,7 +43,7 @@ package mtRooms {
         IRmiServices -- RmiServices
     }
 
-    EventWatcher -down- IEventWatcher
+    EventWatcherDelegate -down- IEventWatcher
     RmiServices -down-( ISessionDriver
     ClientWrapper -down-( IAuthenticatedFrontDesk
     ClientWrapper -down-( IAuthenticatedAdministration

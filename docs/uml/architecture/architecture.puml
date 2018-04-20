@@ -68,8 +68,8 @@ package mtRooms {
 
                 RmiServices --( IClientWrapper
                 RmiServer --|> RmiServices
-                ClientWrapper *- ClientSessions
-                EventWatcherDelegate *- ClientSessions
+                ClientWrapper -* ClientSessions
+                EventWatcherDelegate - ClientSessions
             }
 
         }

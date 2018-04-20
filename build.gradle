@@ -21,6 +21,7 @@ subprojects {
         testCompile "org.hamcrest:hamcrest-junit:2+"
         testCompile "org.mockito:mockito-all:2+"
         testCompile "org.easytesting:fest-assert-core:2+"
+        compile group: 'commons-cli', name: 'commons-cli', version: '1.4+' // https://mvnrepository.com/artifact/commons-cli/commons-cli
         compile 'com.github.An7ar35:eadjlib:v0.1.10'
     }
 }

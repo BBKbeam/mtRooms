@@ -79,26 +79,14 @@ public class MtRoomsGUI extends Application {
             log.log("Trying to connect to services on //" + server_address + ":" + port + "/RmiServices");
             remoteServices = (IRmiServices) Naming.lookup("//" + server_address + ":" + port + "/RmiServices");
             client = new RmiClient();
-            //Testing...
-            remoteServices.login(client, "root", "letmein");
-            if (remoteServices.hasAdministrativeAccess(client.getToken()))
-                log.log("Client [", client.getToken(), "] has administrative rights.");
-            remoteServices.logout(client.getToken());
-            //End Testing
             launch(argv);
         } catch (ParseException e) {
             System.err.println("Parsing failed. Reason: " + e.getMessage());
-        } catch (SessionInvalidException e) {
-            e.printStackTrace();
         } catch (NotBoundException e) {
             e.printStackTrace();
-        } catch (AuthenticationFailureException e) {
+        } catch (RemoteException e) {
             e.printStackTrace();
         } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (SessionInactive sessionInactive) {
-            sessionInactive.printStackTrace();
-        } catch (RemoteException e) {
             e.printStackTrace();
         }
     }

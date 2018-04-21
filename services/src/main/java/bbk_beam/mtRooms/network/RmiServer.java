@@ -65,6 +65,11 @@ public class RmiServer extends RmiServices {
             log.log_Debug("RmiServices un-exported.");
             UnicastRemoteObject.unexportObject(rmiRegistry, true);
             log.log_Debug("RMI registry un-exported.");
+            int count;
+            if((count = sessions.countObservers()) > 0) {
+                sessions.deleteClients();
+                log.log_Debug("Cleared ", count, " clients from RmiServices session tracker.");
+            }
             return true;
         } catch (RemoteException e) {
             log.log_Error("Issue encountered on network communication.");

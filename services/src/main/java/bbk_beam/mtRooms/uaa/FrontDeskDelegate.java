@@ -46,7 +46,7 @@ public class FrontDeskDelegate {
      * @return ReservationSession instance for the token given
      * @throws InstantiationException when token is already currently used with a another different ReservationSession
      */
-    public ReservationSession getSession(Token session_token) throws InstantiationException {
+    synchronized public ReservationSession getSession(Token session_token) throws InstantiationException {
         ReservationSession session = this.scheduleCache.getReservationSession(session_token);
         if (session != null) {
             log.log("Current ReservationSession requested. Target token is '", session_token, "'.");
@@ -75,8 +75,18 @@ public class FrontDeskDelegate {
      *
      * @param reservation_session ReservationSession instance
      */
-    public void removeSession(ReservationSession reservation_session) {
+    synchronized public void removeSession(ReservationSession reservation_session) {
         log.log("Deletion of associated ReservationSession observer requested. Token is '", reservation_session.getToken(), "'.");
         this.scheduleCache.deleteObserver(reservation_session);
+    }
+
+    /**
+     * Delete <<Observer>> ReservationSession instance from the <<Observable>> ScheduleCache
+     *
+     * @param token Token associated with a ReservationSession instance
+     */
+    synchronized public void removeSession(Token token) {
+        log.log("Deletion of associated ReservationSession observer requested. Token is '", token, "'.");
+        this.scheduleCache.deleteObserver(token);
     }
 }

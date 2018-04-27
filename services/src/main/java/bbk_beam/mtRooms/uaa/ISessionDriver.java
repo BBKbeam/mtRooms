@@ -3,10 +3,7 @@ package bbk_beam.mtRooms.uaa;
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
-import bbk_beam.mtRooms.uaa.exception.FailedSessionSpooling;
-import bbk_beam.mtRooms.uaa.exception.SessionActive;
-import bbk_beam.mtRooms.uaa.exception.SessionInactive;
-import bbk_beam.mtRooms.uaa.exception.SessionLocked;
+import bbk_beam.mtRooms.uaa.exception.*;
 
 public interface ISessionDriver {
 
@@ -85,4 +82,19 @@ public interface ISessionDriver {
      * @throws SessionInactive         when session has not been initiated
      */
     public void logout(Token session_token) throws SessionInvalidException, SessionInactive;
+
+    /**
+     * Gets the instantiated state
+     *
+     * @return Driver instantiated state
+     */
+    public boolean isInstantiated();
+
+    /**
+     * Gets the file name of the currently connected DB used
+     *
+     * @return Connected DB file name
+     * @throws SessionReset when session is not connected to a db
+     */
+    public String currentDB() throws SessionReset;
 }

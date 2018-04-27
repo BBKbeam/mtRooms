@@ -26,7 +26,7 @@ public class AuthenticatedFrontDesk implements IAuthenticatedFrontDesk {
     }
 
     @Override
-    public ReservationSession openReservationSession(Token token) throws InvalidAccessRights, AuthenticationFailureException, DuplicateSession {
+    synchronized public ReservationSession openReservationSession(Token token) throws InvalidAccessRights, AuthenticationFailureException, DuplicateSession {
         if (!this.authenticator.isLoggedIn(token)) {
             log.log_Error("Token [", token, "] is not currently logged in.");
             throw new AuthenticationFailureException("Token [" + token + "] is not currently logged in.");
@@ -45,7 +45,12 @@ public class AuthenticatedFrontDesk implements IAuthenticatedFrontDesk {
     }
 
     @Override
-    public void closeReservationSession(ReservationSession reservation_session) throws SessionInvalidException {
-        this.delegate.removeSession(reservation_session);
+    synchronized public void closeReservationSession(ReservationSession reservation_session) {
+        this.delegate.removeSession(reservation_session.getToken());
+    }
+
+    @Override
+    synchronized public void closeReservationSession( Token token) {
+        this.delegate.removeSession(token);
     }
 }

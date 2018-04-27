@@ -1,0 +1,51 @@
+@startuml
+
+'skinparam linetype ortho
+skinparam linetype polyline
+'skinparam monochrome true
+
+skinparam package {
+    backgroundColor lightgrey
+}
+
+package mtRooms {
+    frame "Presentation Layer" #lightblue {
+        component ui
+    }
+    
+    frame "network layer" #yellow {
+        component client
+        component server
+        client -- server
+    }
+    
+    frame "Service Layer" #lightgreen {
+        component uaa
+    }
+
+    frame "Business Logic Layer" #orange {
+        component revenue
+        component operation
+        component reservation
+        component administration
+    }
+
+    frame "Data Layer" #purple {
+        component db
+    }
+
+    ui -- client
+    server -- uaa
+
+    uaa -- administration
+    uaa -- operation
+    uaa -- reservation
+    uaa -- revenue
+
+    administration -- db
+    operation -- db
+    reservation -- db
+    revenue --db
+}
+
+@enduml

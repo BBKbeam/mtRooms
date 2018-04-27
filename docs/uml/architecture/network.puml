@@ -1,0 +1,54 @@
+@startuml
+
+'skinparam linetype ortho
+skinparam linetype polyline
+'skinparam monochrome true
+
+skinparam package {
+    backgroundColor lightgrey
+}
+
+package mtRooms {
+    frame "network layer" #yellow {
+        frame "client" #white {
+            IClient -- [RmiClient]
+        }
+
+        frame RMIRegistry as RMIRegistry #white {
+            interface IRmiServices
+            interface IRmiClient
+        }
+
+        frame "server" #white {
+            package "network" {
+                [<u>:ClientWrapper] as ClientWrapper
+                [<u>:RmiServer] as RmiServer
+                component RmiServices
+                component ClientSessions
+                component EventWatcherDelegate
+                IClientWrapper -- ClientWrapper
+
+                RmiServices --( IClientWrapper
+                RmiServer --|> RmiServices
+                ClientWrapper -* ClientSessions
+                EventWatcherDelegate - ClientSessions
+            }
+
+        }
+
+        ClientWrapper --( IRmiClient
+        RmiServices *-- ClientSessions
+        RmiClient --( IRmiServices
+        RmiClient -- IRmiClient
+        IRmiServices -- RmiServices
+    }
+
+    EventWatcherDelegate -down- IEventWatcher
+    RmiServices -down-( ISessionDriver
+    ClientWrapper -down-( IAuthenticatedFrontDesk
+    ClientWrapper -down-( IAuthenticatedAdministration
+    ClientWrapper -down-( IAuthenticatedRevenuePersonnel
+    ClientWrapper -down-( IAuthenticatedLogisticsPersonel
+}
+
+@enduml

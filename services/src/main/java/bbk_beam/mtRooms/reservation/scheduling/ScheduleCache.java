@@ -215,9 +215,18 @@ public class ScheduleCache extends Observable {
      * @param o ReservationSession instance
      */
     public synchronized void deleteObserver(ReservationSession o) {
-        log.log_Debug("Called for deletion of [", o.getToken(), "]'s ReservationSession observer.");
-        this.cached_schedule.clearWatcherCache(o.getToken());
-        this.observers.remove(o.getToken().getSessionId());
+        deleteObserver(o.getToken());
+    }
+
+    /**
+     * Removes an observer
+     *
+     * @param token Token used by observer
+     */
+    public synchronized void deleteObserver(Token token) {
+        log.log_Debug("Called for deletion of [", token, "]'s ReservationSession observer.");
+        this.cached_schedule.clearWatcherCache(token);
+        this.observers.remove(token.getSessionId());
     }
 
     @Override

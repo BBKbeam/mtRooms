@@ -47,6 +47,40 @@ package mtRooms {
         }
     }
 
+    frame "network layer" #yellow {
+        frame "client" #white {
+            IClient -- [RmiClient]
+        }
+
+        frame RMIRegistry as RMIRegistry #white {
+            interface IRmiServices
+            interface IRmiClient
+        }
+
+        frame "server" #white {
+            package "network" {
+                [<u>:ClientWrapper] as ClientWrapper
+                [<u>:RmiServer] as RmiServer
+                component RmiServices
+                component ClientSessions
+                component EventWatcherDelegate
+                IClientWrapper -- ClientWrapper
+
+                RmiServices --( IClientWrapper
+                RmiServer --|> RmiServices
+                ClientWrapper -* ClientSessions
+                EventWatcherDelegate - ClientSessions
+            }
+
+        }
+
+        ClientWrapper --( IRmiClient
+        RmiServices *-- ClientSessions
+        RmiClient --( IRmiServices
+        RmiClient -- IRmiClient
+        IRmiServices -- RmiServices
+    }
+
     frame "Service Layer" #lightgreen {
         package "uaa" {
             ISessionDriver -- [SessionDriver]
@@ -80,6 +114,7 @@ package mtRooms {
     frame "Business Logic Layer" #orange {
         package "reservation" {
             component ReservationSystem #white {
+                interface IEventWatcher
                 [<u>:ReservationSession] <<Observer>> as ReservationSession
                 [ScheduleCache] <<Observable>> as ScheduleCache
                 [Schedule] <<Datastructure>> as Schedule
@@ -97,6 +132,7 @@ package mtRooms {
                 ICustomerAccount -- [ReservationDbDelegate]
 
                 ScheduleCache *- Schedule
+                ReservationSession -up-( IEventWatcher
                 ReservationSession --( IOptimisedSearch
                 ReservationSession --( IPaymentProcessing
                 ReservationSession --( IReservationProcessing
@@ -195,18 +231,29 @@ package mtRooms {
     }
 
     '##-------------------------------##
-    '## Presentation to Service Layer ##
+    '## Presentation to Network Layer ##
     '##-------------------------------##
-    ReservationView --( IAuthenticatedFrontDesk
-    PaymentView --( IAuthenticatedFrontDesk
+'    ReservationView --( IAuthenticatedFrontDesk
+'    PaymentView --( IAuthenticatedFrontDesk
+'
+'    UserAccountView --( IAuthenticatedAdministration
+'    CustomerAccountView --( IAuthenticatedAdministration
+'
+'    LogisticsReportView --( IAuthenticatedLogisticsPersonnel
+'
+'    InvoiceView --( IAuthenticatedRevenuePersonnel
+'    RevenueReportView --( IAuthenticatedRevenuePersonnel
 
-    UserAccountView --( IAuthenticatedAdministration
-    CustomerAccountView --( IAuthenticatedAdministration
+    '##--------------------------##
+    '## Network to Service Layer ##
+    '##--------------------------##
 
-    LogisticsReportView --( IAuthenticatedLogisticsPersonnel
-
-    InvoiceView --( IAuthenticatedRevenuePersonnel
-    RevenueReportView --( IAuthenticatedRevenuePersonnel
+    RmiServices -down-( ISessionDriver
+    ClientWrapper -down-( IAuthenticatedFrontDesk
+    ClientWrapper -down-( IAuthenticatedAdministration
+    ClientWrapper -down-( IAuthenticatedRevenuePersonnel
+    ClientWrapper -down-( IAuthenticatedLogisticsPersonnel
+    EventWatcherDelegate .. IEventWatcher
 
     '##---------------------------------##
     '## Service to Business Logic Layer ##

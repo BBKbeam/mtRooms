@@ -89,7 +89,7 @@ class ScheduleSlot extends TimeSpan {
     }
 
     /**
-     * Gets a read-only view of the watchers
+     * Gets a read-only session of the watchers
      *
      * @return List of watchers on the schedule slot
      */

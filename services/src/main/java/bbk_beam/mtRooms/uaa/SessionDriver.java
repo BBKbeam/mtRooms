@@ -189,9 +189,9 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    synchronized public IAuthenticatedFrontDesk getFrontDeskInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    synchronized public IAuthenticatedFrontDesk getFrontDeskInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
-            throw new SessionInactive("Session is inactive. It needs to be initialised.");
+            throw new ServerSessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))
             throw new AuthenticationFailureException("Token [" + session_token + "] is not logged in.");
         if (!this.authenticator.hasValidAccessRights(session_token, SessionType.USER))
@@ -200,9 +200,9 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    synchronized public IAuthenticatedAdministration getAdministrationInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    synchronized public IAuthenticatedAdministration getAdministrationInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
-            throw new SessionInactive("Session is inactive. It needs to be initialised.");
+            throw new ServerSessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))
             throw new AuthenticationFailureException("Token [" + session_token + "] is not logged in.");
         if (!this.authenticator.hasValidAccessRights(session_token, SessionType.ADMIN))
@@ -211,9 +211,9 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    synchronized public IAuthenticatedRevenuePersonnel getRevenuePersonnelInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    synchronized public IAuthenticatedRevenuePersonnel getRevenuePersonnelInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
-            throw new SessionInactive("Session is inactive. It needs to be initialised.");
+            throw new ServerSessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))
             throw new AuthenticationFailureException("Token [" + session_token + "] is not logged in.");
         if (!this.authenticator.hasValidAccessRights(session_token, SessionType.USER))
@@ -222,9 +222,9 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    synchronized public IAuthenticatedLogisticsPersonnel getLogisticsPersonnelInstance(Token session_token) throws SessionInactive, AuthenticationFailureException {
+    synchronized public IAuthenticatedLogisticsPersonnel getLogisticsPersonnelInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException {
         if (!this.instantiated_flag)
-            throw new SessionInactive("Session is inactive. It needs to be initialised.");
+            throw new ServerSessionInactive("Session is inactive. It needs to be initialised.");
         if (!this.authenticator.isLoggedIn(session_token))
             throw new AuthenticationFailureException("Token [" + session_token + "] is not logged in.");
         if (!this.authenticator.hasValidAccessRights(session_token, SessionType.USER))
@@ -233,17 +233,17 @@ public class SessionDriver implements ISessionDriver {
     }
 
     @Override
-    synchronized public Token login(String username, String password) throws AuthenticationFailureException, SessionInactive {
+    synchronized public Token login(String username, String password) throws AuthenticationFailureException, ServerSessionInactive {
         if (!this.instantiated_flag)
-            throw new SessionInactive("Session is not initialised.");
+            throw new ServerSessionInactive("Server session is not initialised.");
         log.log("Login called for '", username, "'.");
         return this.authenticator.login(username, password);
     }
 
     @Override
-    synchronized public void logout(Token session_token) throws SessionInvalidException, SessionInactive {
+    synchronized public void logout(Token session_token) throws SessionInvalidException, ServerSessionInactive {
         if (!this.instantiated_flag)
-            throw new SessionInactive("Session is not initialised.");
+            throw new ServerSessionInactive("Server session is not initialised.");
         log.log("Logout called for [", session_token, "].");
         this.authenticator.logout(session_token);
     }

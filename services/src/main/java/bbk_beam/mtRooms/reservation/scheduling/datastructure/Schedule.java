@@ -144,12 +144,12 @@ public class Schedule {
     }
 
     /**
-     * Gets the number of overlapping slots based on the views from concurrent sessions
+     * Gets the number of overlapping slots based on the session from concurrent sessions
      *
      * @param room Room DTO
      * @param from Start timestamp of the time slot
      * @param to   End timestamp of the time slot
-     * @return Number of overlapping views on the slot
+     * @return Number of overlapping session on the slot
      */
     public Integer getSlotOverlapCount(Room room, Date from, Date to) {
         ScheduleSlot slot = new ScheduleSlot(

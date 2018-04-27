@@ -26,7 +26,7 @@ import bbk_beam.mtRooms.uaa.ISessionDriver;
 import bbk_beam.mtRooms.uaa.SessionDriver;
 import bbk_beam.mtRooms.uaa.exception.FailedSessionSpooling;
 import bbk_beam.mtRooms.uaa.exception.SessionActive;
-import bbk_beam.mtRooms.uaa.exception.SessionInactive;
+import bbk_beam.mtRooms.uaa.exception.ServerSessionInactive;
 import bbk_beam.mtRooms.uaa.exception.SessionReset;
 import eadjlib.logger.Logger;
 import javafx.util.Pair;
@@ -80,7 +80,7 @@ public class RmiServices implements IRmiServices {
     }
 
     @Override
-    public synchronized Token login(IRmiClient client, String username, String password) throws AuthenticationFailureException, SessionInactive, RemoteException {
+    public synchronized Token login(IRmiClient client, String username, String password) throws AuthenticationFailureException, ServerSessionInactive, RemoteException {
         Token token = driver.login(username, password);
         try {
             client.setToken(token);
@@ -92,7 +92,7 @@ public class RmiServices implements IRmiServices {
     }
 
     @Override
-    public synchronized void logout(Token session_token) throws SessionInvalidException, SessionInactive, RemoteException {
+    public synchronized void logout(Token session_token) throws SessionInvalidException, ServerSessionInactive, RemoteException {
         sessions.removeClient(session_token);
         driver.logout(session_token);
     }

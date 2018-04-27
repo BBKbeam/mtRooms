@@ -14,7 +14,7 @@ import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.reservation.exception.*;
 import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
-import bbk_beam.mtRooms.uaa.exception.SessionInactive;
+import bbk_beam.mtRooms.uaa.exception.ServerSessionInactive;
 import javafx.util.Pair;
 
 import java.rmi.Remote;
@@ -38,20 +38,20 @@ public interface IRmiServices extends Remote {
      * @param password Password
      * @return Session token
      * @throws AuthenticationFailureException when username/password are not valid
-     * @throws SessionInactive                when session has not been initiated
+     * @throws ServerSessionInactive                when session has not been initiated
      * @throws RemoteException                when network issues occur during the remote call
      */
-    Token login(IRmiClient client, String username, String password) throws AuthenticationFailureException, SessionInactive, RemoteException;
+    Token login(IRmiClient client, String username, String password) throws AuthenticationFailureException, ServerSessionInactive, RemoteException;
 
     /**
      * Logout from a session
      *
      * @param session_token Session token for the session to log out from
      * @throws SessionInvalidException when session is not valid
-     * @throws SessionInactive         when session has not been initiated
+     * @throws ServerSessionInactive         when session has not been initiated
      * @throws RemoteException         when network issues occur during the remote call
      */
-    void logout(Token session_token) throws SessionInvalidException, SessionInactive, RemoteException;
+    void logout(Token session_token) throws SessionInvalidException, ServerSessionInactive, RemoteException;
 
     /**
      * Check access rights to administration

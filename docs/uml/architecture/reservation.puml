@@ -1,0 +1,59 @@
+@startuml
+
+'skinparam linetype ortho
+skinparam linetype polyline
+'skinparam monochrome true
+
+skinparam package {
+    backgroundColor lightgrey
+}
+
+interface IReservationDbAccess
+
+frame "Business Logic Layer" #orange {
+    package "reservation" {
+        component ReservationSystem #white {
+            interface IEventWatcher
+            interface IReservationSession
+            interface ICustomerAccount
+            interface IPay
+            interface IReserve
+            interface ISearch
+            interface IScheduleNotify
+            component [<u>:ReservationSession] <<Observer>> as ReservationSession
+            component [ScheduleCache] <<Observable>> as ScheduleCache
+            component [Schedule] <<Datastructure>> as Schedule
+            component OptimisedSearch
+            component ReservationProcessing
+            component PaymentProcessing
+            component CustomerAccountAccess
+            component ReservationDbDelegate
+
+            IReservationSession -- ReservationSession
+            IPay -- ReservationDbDelegate
+            IReserve -- ReservationDbDelegate
+            ISearch -- ReservationDbDelegate
+            ICustomerAccount -- ReservationDbDelegate
+            IScheduleNotify ---- ScheduleCache
+
+            ScheduleCache *- Schedule
+            ReservationSession -up-( IEventWatcher
+            ReservationSession --> OptimisedSearch
+            ReservationSession --> PaymentProcessing
+            ReservationSession --> ReservationProcessing
+            ReservationSession --> CustomerAccountAccess
+            OptimisedSearch --> ScheduleCache
+            ReservationSession --( IScheduleNotify
+            ReservationProcessing --> ScheduleCache
+
+            OptimisedSearch --( ISearch
+            ReservationProcessing  --( IReserve
+            CustomerAccountAccess   --( ICustomerAccount
+            PaymentProcessing --( IPay
+        }
+    }
+
+    ReservationDbDelegate ---( IReservationDbAccess
+}
+
+@enduml

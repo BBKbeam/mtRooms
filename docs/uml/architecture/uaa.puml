@@ -11,25 +11,25 @@ skinparam package {
 frame "Service Layer" #lightgreen {
     package "uaa" {
         ISessionDriver -- [SessionDriver]
-        IAuthenticator -- [Authenticator]
-        IFrontDeskDelegate -- [FrontDeskDelegate]
+        [Authenticator]
+        [FrontDeskDelegate]
         IAuthenticatedFrontDesk -- [AuthenticatedFrontDesk]
-        IAdministrationDelegate -- [AdministrationDelegate]
+        [AdministrationDelegate]
         IAuthenticatedAdministration -- [AuthenticatedAdministration]
-        IRevenuePersonnelDelegate -- [RevenuePersonnelDelegate]
+        [RevenuePersonnelDelegate]
         IAuthenticatedRevenuePersonnel -- [AuthenticatedRevenuePersonnel]
-        ILogisticsPersonnelDelegate -- [LogisticsPersonnelDelegate]
+        [LogisticsPersonnelDelegate]
         IAuthenticatedLogisticsPersonnel -- [AuthenticatedLogisticsPersonnel]
 
-        AuthenticatedFrontDesk --( IAuthenticator
-        AuthenticatedFrontDesk --( IFrontDeskDelegate
-        SessionDriver --( IAuthenticator
-        AuthenticatedAdministration --( IAuthenticator
-        AuthenticatedAdministration --( IAdministrationDelegate
-        AuthenticatedLogisticsPersonnel --( IAuthenticator
-        AuthenticatedLogisticsPersonnel --( ILogisticsPersonnelDelegate
-        AuthenticatedRevenuePersonnel --( IAuthenticator
-        AuthenticatedRevenuePersonnel --( IRevenuePersonnelDelegate
+        AuthenticatedFrontDesk --> Authenticator
+        AuthenticatedFrontDesk --> FrontDeskDelegate
+        SessionDriver --> Authenticator
+        AuthenticatedAdministration --> Authenticator
+        AuthenticatedAdministration --> AdministrationDelegate
+        AuthenticatedLogisticsPersonnel --> Authenticator
+        AuthenticatedLogisticsPersonnel --> LogisticsPersonnelDelegate
+        AuthenticatedRevenuePersonnel --> Authenticator
+        AuthenticatedRevenuePersonnel --> RevenuePersonnelDelegate
 
         SessionDriver *- AuthenticatedFrontDesk
         SessionDriver *- AuthenticatedAdministration

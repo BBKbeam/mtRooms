@@ -18,17 +18,18 @@ frame "Data Layer" #purple {
                 IUserAccDB -- [Database]
                 IReservationDB ..> IDatabase
                 IUserAccDB ..> IDatabase
-                IDatabaseBuilder -- [DatabaseBuilder]
-                IDatabaseChecker -- [DatabaseChecker]
+                [DatabaseBuilder]
+                [DatabaseChecker]
 
                 [Database] -down- DB
-                [Database] --( IDatabaseBuilder
-                [Database] --( IDatabaseChecker
+                [Database] --> DatabaseBuilder
+                [Database] --> DatabaseChecker
             }
             package "session" {
                 [<u>:SessionTracker] as SessionTracker
                 ICurrentSessions -- [SessionTracker]
             }
+
             IReservationDbAccess -- [ReservationDbAccess]
             IUserAccDbAccess -- [UserAccDbAccess]
             IDatabaseSystemBootstrap -- [DbSystemBootstrap]

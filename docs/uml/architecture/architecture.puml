@@ -8,10 +8,35 @@ skinparam package {
     backgroundColor lightgrey
 }
 
+skinparam component {
+	BackgroundColor<<FXML>> LightGreen
+	ArrowColor<<FXML>> DarkBlue
+	BorderColor<<FXML>> DarkBlue
+}
+
+
 package mtRooms {
     frame "Presentation Layer" #lightblue {
         package "ui" {
-            component FrontDeskView #white {
+            component MtRoomsGUI
+            component SessionManager
+
+            component MainWindow #white {
+                component MainWindowController
+                component MainWindow <<FXML>> as MainWindowView
+
+                MainWindowController -- MainWindowView
+            }
+
+            component LoginPane #white {
+                component LoginController
+                component LoginView <<FXML>> as LoginView
+
+                LoginController -- LoginView
+            }
+
+
+            component FrontDeskPane #white {
                 IFrontDeskController -- [FrontDeskController]
                 IReservationView -- [ReservationView]
                 IPaymentView -- [PaymentView]
@@ -20,7 +45,7 @@ package mtRooms {
                 FrontDeskController --( IPaymentView
             }
 
-            component AdminView #white {
+            component AdministrationPane #white {
                 IAdminViewController -- [AdminViewController]
                 IUserAccountView -- [UserAccountView]
                 ICustomerAccountView -- [CustomerAccountView]
@@ -29,14 +54,14 @@ package mtRooms {
                 AdminViewController --( ICustomerAccountView
             }
 
-            component LogisticsView #white {
+            component LogisticsPane #white {
                 ILogisticsViewController -- [LogisticsViewController]
                 ILogisticsReportView -- [LogisticsReportView]
 
                 LogisticsViewController --( ILogisticsReportView
             }
 
-            component RevenueView #white {
+            component RevenuePane #white {
                 IRevenueViewController -- [RevenueViewController]
                 IInvoiceView -- [InvoiceView]
                 IRevenueReportView -- [RevenueReportView]
@@ -44,6 +69,16 @@ package mtRooms {
                 RevenueViewController --( IInvoiceView
                 RevenueViewController --( IRevenueReportView
             }
+
+            MtRoomsGUI --> SessionManager
+
+            MtRoomsGUI -down-> MainWindow
+            MainWindow *-down- LoginPane
+            MainWindow *--down- FrontDeskPane
+            MainWindow *--down-- AdministrationPane
+            MainWindow *--down-- LogisticsPane
+            MainWindow *--down-- RevenuePane
+
         }
     }
 
@@ -76,7 +111,7 @@ package mtRooms {
 
         ClientWrapper --( IRmiClient
         RmiServices *-- ClientSessions
-        RmiClient --( IRmiServices
+'        RmiClient --( IRmiServices
         RmiClient -- IRmiClient
         IRmiServices -- RmiServices
     }
@@ -84,25 +119,25 @@ package mtRooms {
     frame "Service Layer" #lightgreen {
         package "uaa" {
             ISessionDriver -- [SessionDriver]
-            IAuthenticator -- [Authenticator]
-            IFrontDeskDelegate -- [FrontDeskDelegate]
+            [Authenticator]
+            [FrontDeskDelegate]
             IAuthenticatedFrontDesk -- [AuthenticatedFrontDesk]
-            IAdministrationDelegate -- [AdministrationDelegate]
+            [AdministrationDelegate]
             IAuthenticatedAdministration -- [AuthenticatedAdministration]
-            IRevenuePersonnelDelegate -- [RevenuePersonnelDelegate]
+            [RevenuePersonnelDelegate]
             IAuthenticatedRevenuePersonnel -- [AuthenticatedRevenuePersonnel]
-            ILogisticsPersonnelDelegate -- [LogisticsPersonnelDelegate]
+            [LogisticsPersonnelDelegate]
             IAuthenticatedLogisticsPersonnel -- [AuthenticatedLogisticsPersonnel]
 
-            AuthenticatedFrontDesk --( IAuthenticator
-            AuthenticatedFrontDesk --( IFrontDeskDelegate
-            SessionDriver --( IAuthenticator
-            AuthenticatedAdministration --( IAuthenticator
-            AuthenticatedAdministration --( IAdministrationDelegate
-            AuthenticatedLogisticsPersonnel --( IAuthenticator
-            AuthenticatedLogisticsPersonnel --( ILogisticsPersonnelDelegate
-            AuthenticatedRevenuePersonnel --( IAuthenticator
-            AuthenticatedRevenuePersonnel --( IRevenuePersonnelDelegate
+            AuthenticatedFrontDesk --> Authenticator
+            AuthenticatedFrontDesk --> FrontDeskDelegate
+            SessionDriver --> Authenticator
+            AuthenticatedAdministration --> Authenticator
+            AuthenticatedAdministration --> AdministrationDelegate
+            AuthenticatedLogisticsPersonnel --> Authenticator
+            AuthenticatedLogisticsPersonnel --> LogisticsPersonnelDelegate
+            AuthenticatedRevenuePersonnel --> Authenticator
+            AuthenticatedRevenuePersonnel --> RevenuePersonnelDelegate
 
             SessionDriver *- AuthenticatedFrontDesk
             SessionDriver *- AuthenticatedAdministration
@@ -115,31 +150,37 @@ package mtRooms {
         package "reservation" {
             component ReservationSystem #white {
                 interface IEventWatcher
-                [<u>:ReservationSession] <<Observer>> as ReservationSession
-                [ScheduleCache] <<Observable>> as ScheduleCache
-                [Schedule] <<Datastructure>> as Schedule
+                interface IReservationSession
+                interface ICustomerAccount
+                interface IPay
+                interface IReserve
+                interface ISearch
+                interface IScheduleNotify
+                component [<u>:ReservationSession] <<Observer>> as ReservationSession
+                component [ScheduleCache] <<Observable>> as ScheduleCache
+                component [Schedule] <<Datastructure>> as Schedule
+                component OptimisedSearch
+                component ReservationProcessing
+                component PaymentProcessing
+                component CustomerAccountAccess
+                component ReservationDbDelegate
 
-                IReservationSession -- [ReservationSession]
-                IOptimisedSearch -- [OptimisedSearch]
-                IReservationProcessing -- [ReservationProcessing]
-                IPaymentProcessing -- [PaymentProcessing]
-                ICustomerAccountAccess -- [CustomerAccountAccess]
-                IScheduleCache -- [ScheduleCache]
-                IScheduleChanged -- [ScheduleCache]
-                IPay -- [ReservationDbDelegate]
-                IReserve -- [ReservationDbDelegate]
-                ISearch -- [ReservationDbDelegate]
-                ICustomerAccount -- [ReservationDbDelegate]
+                IReservationSession -- ReservationSession
+                IPay -- ReservationDbDelegate
+                IReserve -- ReservationDbDelegate
+                ISearch -- ReservationDbDelegate
+                ICustomerAccount -- ReservationDbDelegate
+                IScheduleNotify ---- ScheduleCache
 
                 ScheduleCache *- Schedule
                 ReservationSession -up-( IEventWatcher
-                ReservationSession --( IOptimisedSearch
-                ReservationSession --( IPaymentProcessing
-                ReservationSession --( IReservationProcessing
-                ReservationSession --( ICustomerAccountAccess
-                OptimisedSearch --( IScheduleCache
-                ReservationSession --( IScheduleChanged
-                ReservationProcessing --( IScheduleCache
+                ReservationSession --> OptimisedSearch
+                ReservationSession --> PaymentProcessing
+                ReservationSession --> ReservationProcessing
+                ReservationSession --> CustomerAccountAccess
+                OptimisedSearch --> ScheduleCache
+                ReservationSession --( IScheduleNotify
+                ReservationProcessing --> ScheduleCache
 
                 OptimisedSearch --( ISearch
                 ReservationProcessing  --( IReserve
@@ -151,47 +192,51 @@ package mtRooms {
         package "revenue" {
             component RevenueSystem #white {
                 IRevenueReporter -- [ReportCreator]
-                IRevenueAggregator -- [RevenueAggregator]
-                IReportPrinter -- [ReportPrinter]
+                [RevenueAggregator]
 
-                ReportCreator --( IRevenueAggregator
-                ReportCreator --( IReportPrinter
+                ReportCreator --> RevenueAggregator
             }
 
             component InvoiceSystem #white {
-                IInvoiceAggregator -- [InvoiceAggregator]
-                IMailer -- [Mailer]
                 IInvoice -- [InvoiceCreator]
+                [InvoiceAggregator]
+                [Mailer]
 
-                InvoiceCreator --( IInvoiceAggregator
-                InvoiceCreator --( IMailer
+                InvoiceCreator --> InvoiceAggregator
+                InvoiceCreator --> Mailer
             }
         }
 
         package "operation" {
             component LogisticsSystem #white {
-                ILogisticReportGenerator -- [LogisticReportGenerator]
-                ILogisticAggregator -- [LogisticAggregator]
+                interface ILogisticReportGenerator
+                component LogisticReportGenerator
+                component LogisticAggregator
 
-                LogisticReportGenerator --( ILogisticAggregator
+                ILogisticReportGenerator -- LogisticReportGenerator
+                LogisticReportGenerator --> LogisticAggregator
             }
         }
 
         package "admin" {
             component AdministrationSystem #white {
-                IAdminSession -- [AdminSession]
-                IUserAccAdministration -- [UserAccAdministration]
-                IReservationDbMaintenance -- [ReservationDbMaintenance]
+                interface IAdminSession
+                component AdminSession
+                component UserAccAdministration
+                component ReservationDbMaintenance
 
-                AdminSession --( IUserAccAdministration
-                AdminSession --( IReservationDbMaintenance
+                IAdminSession -- AdminSession
+                AdminSession --> UserAccAdministration
+                AdminSession --> ReservationDbMaintenance
             }
 
             component AuthenticationSystem #white {
-                IAuthenticationSystem -- [UserAccountChecker]
-                ISessionIdGenerator -- [SessionIdGenerator]
+                interface IAuthenticationSystem
+                component UserAccountChecker
+                component SessionIdGenerator
 
-                UserAccountChecker --( ISessionIdGenerator
+                IAuthenticationSystem -- UserAccountChecker
+                UserAccountChecker --> SessionIdGenerator
             }
         }
     }
@@ -205,17 +250,18 @@ package mtRooms {
                     IUserAccDB -- [Database]
                     IReservationDB ..> IDatabase
                     IUserAccDB ..> IDatabase
-                    IDatabaseBuilder -- [DatabaseBuilder]
-                    IDatabaseChecker -- [DatabaseChecker]
+                    [DatabaseBuilder]
+                    [DatabaseChecker]
 
                     [Database] -down- DB
-                    [Database] --( IDatabaseBuilder
-                    [Database] --( IDatabaseChecker
+                    [Database] --> DatabaseBuilder
+                    [Database] --> DatabaseChecker
                 }
                 package "session" {
                     [<u>:SessionTracker] as SessionTracker
                     ICurrentSessions -- [SessionTracker]
                 }
+
                 IReservationDbAccess -- [ReservationDbAccess]
                 IUserAccDbAccess -- [UserAccDbAccess]
                 IDatabaseSystemBootstrap -- [DbSystemBootstrap]
@@ -233,6 +279,8 @@ package mtRooms {
     '##-------------------------------##
     '## Presentation to Network Layer ##
     '##-------------------------------##
+    SessionManager --( IRmiServices
+    SessionManager --( IClient
 '    ReservationView --( IAuthenticatedFrontDesk
 '    PaymentView --( IAuthenticatedFrontDesk
 '

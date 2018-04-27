@@ -1,0 +1,98 @@
+@startuml
+
+'skinparam linetype ortho
+skinparam linetype polyline
+'skinparam monochrome true
+
+skinparam package {
+    backgroundColor lightgrey
+}
+
+skinparam component {
+	BackgroundColor<<FXML>> LightGreen
+	ArrowColor<<FXML>> DarkBlue
+	BorderColor<<FXML>> DarkBlue
+}
+
+interface IClient
+interface IRmiServices
+
+frame "Presentation Layer" #lightblue {
+    package "ui" {
+        component MtRoomsGUI
+        component SessionManager
+
+        component MainWindow #white {
+            component MainWindowController
+            component MainWindow <<FXML>> as MainWindowView
+
+            MainWindowController -- MainWindowView
+        }
+
+        component LoginPane #white {
+            component LoginController
+            component LoginView <<FXML>> as LoginView
+
+            LoginController -- LoginView
+        }
+
+
+        component FrontDeskPane #white {
+            IFrontDeskController -- [FrontDeskController]
+            IReservationView -- [ReservationView]
+            IPaymentView -- [PaymentView]
+
+            FrontDeskController --( IReservationView
+            FrontDeskController --( IPaymentView
+        }
+
+        component AdministrationPane #white {
+            component AdministrationController
+            component AdministrationView <<FXML>> as AdministrationView
+
+            component UserAdministrationTab {
+                component UserAdministrationController
+                component UserAdministrationView <<FXML>> as UserAdministrationView
+            }
+            component MaintenanceTab {
+                component MaintenanceController
+                component MaintenanceView <<FXML>> as MaintenanceView
+            }
+
+            AdministrationController ..( IRmiServices
+
+            AdministrationController -- AdministrationView
+        }
+
+        component LogisticsPane #white {
+            ILogisticsViewController -- [LogisticsViewController]
+            ILogisticsReportView -- [LogisticsReportView]
+
+            LogisticsViewController --( ILogisticsReportView
+        }
+
+        component RevenuePane #white {
+            IRevenueViewController -- [RevenueViewController]
+            IInvoiceView -- [InvoiceView]
+            IRevenueReportView -- [RevenueReportView]
+
+            RevenueViewController --( IInvoiceView
+            RevenueViewController --( IRevenueReportView
+        }
+
+        MtRoomsGUI *-- SessionManager
+        MainWindowController -------> SessionManager
+        SessionManager --( IRmiServices
+        SessionManager --( IClient
+
+        MtRoomsGUI *-down- MainWindow
+        MainWindow *-down-- LoginPane
+        MainWindow *--down-- FrontDeskPane
+        MainWindow *--down-- AdministrationPane
+        MainWindow *--down-- LogisticsPane
+        MainWindow *--down-- RevenuePane
+
+    }
+}
+
+@enduml

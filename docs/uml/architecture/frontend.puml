@@ -21,6 +21,9 @@ frame "Presentation Layer" #lightblue {
     package "ui" {
         component MtRoomsGUI
         component SessionManager
+        component Printer {
+
+        }
 
         component MainWindow #white {
             component MainWindowController
@@ -36,14 +39,61 @@ frame "Presentation Layer" #lightblue {
             LoginController -- LoginView
         }
 
-
         component FrontDeskPane #white {
-            IFrontDeskController -- [FrontDeskController]
-            IReservationView -- [ReservationView]
-            IPaymentView -- [PaymentView]
+            component FrontDeskController
+            component FrontDeskView <<FXML>> as FrontDeskView
 
-            FrontDeskController --( IReservationView
-            FrontDeskController --( IPaymentView
+            FrontDeskController -- FrontDeskView
+
+            component "Customer Account" as CustAcc {
+                component CustomerAccountController
+                component CustomerAccountView <<FXML>> as CustomerAccountView
+                component CustomerAccountAddView <<FXML>> as CustomerAccountAddView
+                component CustomerAccountEditView <<FXML>> as CustomerAccountEditView
+
+                CustomerAccountController -- CustomerAccountView
+                CustomerAccountController -- CustomerAccountAddView
+                CustomerAccountController -- CustomerAccountEditView
+            }
+
+            component "Search" {
+                component ReservationSearchController
+                component ReservationSearchView <<FXML>> as ReservationSearchView
+
+                 ReservationSearchController -- ReservationSearchView
+            }
+
+            component Basket {
+                component BasketController
+                component BasketView <<FXML>> as BasketView
+
+                BasketController -- BasketView
+            }
+
+            component Payment {
+                component PaymentController
+                component PaymentView <<FXML>> as PaymentView
+
+                PaymentController -- PaymentView
+            }
+
+            component "Transaction Summary" as Summary {
+                component TransactionSummaryController
+                component TransactionSummaryView <<FXML>> as TransactionSummaryView
+
+                TransactionSummaryController -- TransactionSummaryView
+            }
+
+            FrontDeskView --> CustAcc
+            FrontDeskView --> Search
+            FrontDeskView --> Payment
+            FrontDeskView --> Summary
+
+            Search ---> Basket
+            Payment ---> Basket
+            Summary ---> Basket
+
+            FrontDeskController <... TransactionSummaryController
         }
 
         component AdministrationPane #white {
@@ -53,45 +103,51 @@ frame "Presentation Layer" #lightblue {
             component UserAdministrationTab {
                 component UserAdministrationController
                 component UserAdministrationView <<FXML>> as UserAdministrationView
+                component AdministrationAddAccountView <<FXML>> as AdministrationAddAccountView
+                component AdministrationEditAccountView <<FXML>> as AdministrationEditAccountView
+
+                UserAdministrationController -- UserAdministrationView
+                UserAdministrationController -- AdministrationAddAccountView
+                UserAdministrationController -- AdministrationEditAccountView
             }
             component MaintenanceTab {
                 component MaintenanceController
                 component MaintenanceView <<FXML>> as MaintenanceView
+
+                MaintenanceController --> MaintenanceView
             }
 
-            AdministrationController ..( IRmiServices
-
-            AdministrationController -- AdministrationView
+            AdministrationController -left- AdministrationView
+            AdministrationView --> UserAdministrationTab
+            AdministrationView --> MaintenanceTab
         }
 
         component LogisticsPane #white {
-            ILogisticsViewController -- [LogisticsViewController]
-            ILogisticsReportView -- [LogisticsReportView]
+            component LogisticsViewController
+            component LogisticsReportView <<FXML>> as LogisticsReportView
 
-            LogisticsViewController --( ILogisticsReportView
+            LogisticsViewController -- LogisticsReportView
         }
 
         component RevenuePane #white {
-            IRevenueViewController -- [RevenueViewController]
-            IInvoiceView -- [InvoiceView]
-            IRevenueReportView -- [RevenueReportView]
+            component RevenueReportController
+            component RevenueView <<FXML>> as RevenueReportView
 
-            RevenueViewController --( IInvoiceView
-            RevenueViewController --( IRevenueReportView
+            RevenueReportController -- RevenueReportView
         }
 
-        MtRoomsGUI *-- SessionManager
-        MainWindowController -------> SessionManager
+        MainWindowController -> SessionManager
         SessionManager --( IRmiServices
         SessionManager --( IClient
 
-        MtRoomsGUI *-down- MainWindow
-        MainWindow *-down-- LoginPane
-        MainWindow *--down-- FrontDeskPane
-        MainWindow *--down-- AdministrationPane
-        MainWindow *--down-- LogisticsPane
-        MainWindow *--down-- RevenuePane
+        MtRoomsGUI *-down--> MainWindow
+        MainWindow *-down---> LoginPane
+        MainWindow *--down--> FrontDeskPane
+        MainWindow *--down--> AdministrationPane
+        MainWindow *--down--> LogisticsPane
+        MainWindow *--down--> RevenuePane
 
+        MtRoomsGUI *------ SessionManager
     }
 }
 

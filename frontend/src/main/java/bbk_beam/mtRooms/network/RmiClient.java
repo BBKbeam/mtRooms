@@ -1,7 +1,6 @@
-package bbk_beam.mtRooms.ui.network;
+package bbk_beam.mtRooms.network;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
-import bbk_beam.mtRooms.network.IRmiClient;
 import eadjlib.logger.Logger;
 
 import java.rmi.RemoteException;

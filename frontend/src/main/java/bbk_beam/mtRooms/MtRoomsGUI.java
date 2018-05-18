@@ -1,43 +1,52 @@
-package bbk_beam.mtRooms.ui;
+package bbk_beam.mtRooms;
 
-import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
-import bbk_beam.mtRooms.network.IRmiClient;
-import bbk_beam.mtRooms.network.IRmiServices;
-import bbk_beam.mtRooms.uaa.exception.SessionInactive;
-import bbk_beam.mtRooms.ui.network.RmiClient;
+import bbk_beam.mtRooms.exception.ClientInitFailure;
+import bbk_beam.mtRooms.ui.controller.MainWindowController;
+import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.apache.commons.cli.*;
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
+import java.util.ResourceBundle;
 
 public class MtRoomsGUI extends Application {
     private final Logger log = Logger.getLoggerInstance(MtRoomsGUI.class.getName());
     private static Integer port = 9999; //default
     private static String server_address = "localhost";
-    private static IRmiServices remoteServices;
-    private static IRmiClient client;
+    private static SessionManager sessionManager;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         try {
-            BorderPane root = new BorderPane();
-            Scene scene = new Scene(root, 800, 600);
+            FXMLLoader loader = new FXMLLoader();
+            ResourceBundle languageResource = ResourceBundle.getBundle("bundles.MtRooms_en");
+            loader.setLocation(MtRoomsGUI.class.getResource("/view/MainWindow.fxml"));
+            loader.setResources(languageResource);
+            Parent root = loader.load();
+
+            MainWindowController mainWindowController = loader.getController();
+            mainWindowController.setSessionManager(sessionManager);
+            mainWindowController.setViewMenuAccessibility();
+            mainWindowController.showLoginPane();
+
+            Scene scene = new Scene(root);
             primaryStage.setTitle("mtRooms");
             primaryStage.setScene(scene);
             primaryStage.show();
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void stop() throws Exception {
+        sessionManager.logout();
+        super.stop();
+        System.exit(0);
     }
 
     public static void main(String[] argv) {
@@ -67,27 +76,26 @@ public class MtRoomsGUI extends Application {
 
         try {
             CommandLine cmd = parser.parse(options, argv);
+
             if(cmd.hasOption("help")) {
                 HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp("backend", options);
                 System.exit(0);
             }
+
             if (cmd.hasOption("port"))
                 port = Integer.parseInt(cmd.getOptionValue("port"));
             if(cmd.hasOption("address"))
                 server_address = cmd.getOptionValue("address");
-            log.log("Trying to connect to services on //" + server_address + ":" + port + "/RmiServices");
-            remoteServices = (IRmiServices) Naming.lookup("//" + server_address + ":" + port + "/RmiServices");
-            client = new RmiClient();
+
+            sessionManager = new SessionManager(server_address, port);
             launch(argv);
         } catch (ParseException e) {
             System.err.println("Parsing failed. Reason: " + e.getMessage());
-        } catch (NotBoundException e) {
-            e.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+        } catch (ClientInitFailure e) {
+            log.log_Fatal("Could not start client.");
+            log.log_Exception(e);
+            System.exit(1);
         }
     }
 }

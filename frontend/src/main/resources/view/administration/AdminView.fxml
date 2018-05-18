@@ -33,8 +33,8 @@
             </TableView>
             <ToolBar prefHeight="40.0" prefWidth="200.0" GridPane.hgrow="ALWAYS">
               <items>
-                <Button mnemonicParsing="false" text="New" />
-                  <Button mnemonicParsing="false" text="Edit" />
+                <Button mnemonicParsing="false" fx:id="new" text="New" onAction="#handleNewAction"/>
+                  <Button mnemonicParsing="false" fx:id="edit" text="Edit" onAction="#handleEditAction"/>
               </items>
             </ToolBar>
          </children>

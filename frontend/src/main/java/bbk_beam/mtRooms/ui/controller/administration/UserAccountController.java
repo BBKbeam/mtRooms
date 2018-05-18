@@ -20,12 +20,9 @@ import java.util.List;
 
 public class UserAccountController {
     private SessionManager sessionManager;
-    public TextField id_field;
     public TextField username_field;
-    public TextField created_field;
-    public TextField lastLogin_field;
-    public TextField lastPwdChange_field;
-    public ChoiceBox<AccountType> accountType_comboBox;
+    public TextField pwd_field;
+    public ChoiceBox<AccountType> accountType_choiceBox;
     public CheckBox active_field;
     public Button cancelButton;
     public Button saveButton;
@@ -34,36 +31,35 @@ public class UserAccountController {
         this.sessionManager = sessionManager;
     }
 
-    public void setFields(UserAccount userAccount) {
-        this.id_field.setText(userAccount.getId().toString());
-        this.username_field.setText(userAccount.getUsername());
-        this.created_field.setText(userAccount.getCreated().toString());
-        this.lastLogin_field.setText(userAccount.getLastLogin().toString());
-        this.lastPwdChange_field.setText(userAccount.getLastPwdChange().toString());
-        this.active_field.setSelected(userAccount.isActive());
+    private void loadAccoutTypeChoiceBox() {
         IRmiServices services = this.sessionManager.getServices();
         try {
             List<AccountType> accountTypeList = services.getAccountTypes(this.sessionManager.getToken());
             ObservableList<AccountType> accountTypeObservableList = FXCollections.observableList(accountTypeList);
-            this.accountType_comboBox.setItems(accountTypeObservableList);
-            this.accountType_comboBox.getSelectionModel().select(userAccount.getAccountType());
-
-        } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace();
+            this.accountType_choiceBox.setItems(accountTypeObservableList);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (LoginException e) {
             e.printStackTrace();
+        } catch (Unauthorised unauthorised) {
+            unauthorised.printStackTrace();
         }
-
     }
 
-    public void clearFields() {
-        this.id_field.clear();
-        this.username_field.clear();
-        this.created_field.clear();
-        this.lastLogin_field.clear();
-        this.lastPwdChange_field.clear();
+    public void setEditAccountFields(UserAccount userAccount) {
+        this.username_field.setText(userAccount.getUsername());
+        this.username_field.setDisable(true);
+        this.pwd_field.setPromptText("type to modify password.");
+        this.active_field.setSelected(userAccount.isActive());
+        loadAccoutTypeChoiceBox();
+        this.accountType_choiceBox.getSelectionModel().select(userAccount.getAccountType());
+    }
+
+    public void setNewAccountFields() {
+        this.username_field.setDisable(false);
+        this.pwd_field.clear();
+        this.pwd_field.setPromptText("");
+        loadAccoutTypeChoiceBox();
         this.active_field.setSelected(true);
     }
 
@@ -76,8 +72,5 @@ public class UserAccountController {
         //TODO save
         Stage stage = (Stage) this.saveButton.getScene().getWindow();
         stage.close();
-    }
-
-    public void handleChangePwdAction(ActionEvent actionEvent) {
     }
 }

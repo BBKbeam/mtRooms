@@ -78,9 +78,9 @@ public class AdministrationController implements Initializable {
             UserAccountController userAccountController = loader.getController();
             userAccountController.setSessionManager(this.sessionManager);
             if( userAccount != null )
-                userAccountController.setFields(userAccount);
+                userAccountController.setEditAccountFields(userAccount);
             else
-                userAccountController.clearFields();
+                userAccountController.setNewAccountFields();
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

@@ -38,11 +38,7 @@ public class AccountType implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("AccountType={ ");
-        sb.append("id: ").append(id);
-        sb.append(", description: '").append(description).append("\' ");
-        sb.append('}');
-        return sb.toString();
+        return description;
     }
 
     @Override

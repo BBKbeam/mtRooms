@@ -212,6 +212,30 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
+    public List<AccountType> getAccountTypes(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
+        try {
+            checkTokenValidity(admin_token);
+            List<AccountType> list = new ArrayList<>();
+            ObjectTable table = this.administration.getAccountTypes();
+            if (!table.isEmpty()) {
+                for (int i = 1; i <= table.rowCount(); i++) {
+                    HashMap<String, Object> row = table.getRow(i);
+                    list.add(
+                            new AccountType(
+                                    (Integer) row.get("id"),
+                                    (String) row.get("description")
+                            )
+                    );
+                }
+            }
+            return list;
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not fetch user account types from records.");
+            throw new RuntimeException("Could not fetch user account types from records.", e);
+        }
+    }
+
+    @Override
     public boolean optimiseReservationDatabase(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException {
         try {
             checkTokenValidity(admin_token);

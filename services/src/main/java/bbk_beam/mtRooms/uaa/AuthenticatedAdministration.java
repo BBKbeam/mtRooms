@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.uaa;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.dto.Account;
+import bbk_beam.mtRooms.admin.dto.AccountType;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
@@ -62,6 +63,11 @@ public class AuthenticatedAdministration implements IAuthenticatedAdministration
     @Override
     synchronized public Account getAccount(Token admin_token, String account_username) throws AccountExistenceException, SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         return this.delegate.getAccount(admin_token, account_username);
+    }
+
+    @Override
+    public List<AccountType> getAccountTypes(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
+        return this.delegate.getAccountTypes(admin_token);
     }
 
     @Override

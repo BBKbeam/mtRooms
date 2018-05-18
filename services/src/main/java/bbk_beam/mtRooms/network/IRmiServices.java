@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.network;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.dto.Account;
+import bbk_beam.mtRooms.admin.dto.AccountType;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
@@ -38,7 +39,7 @@ public interface IRmiServices extends Remote {
      * @param password Password
      * @return Session token
      * @throws AuthenticationFailureException when username/password are not valid
-     * @throws ServerSessionInactive                when session has not been initiated
+     * @throws ServerSessionInactive          when session has not been initiated
      * @throws RemoteException                when network issues occur during the remote call
      */
     Token login(IRmiClient client, String username, String password) throws AuthenticationFailureException, ServerSessionInactive, RemoteException;
@@ -48,7 +49,7 @@ public interface IRmiServices extends Remote {
      *
      * @param session_token Session token for the session to log out from
      * @throws SessionInvalidException when session is not valid
-     * @throws ServerSessionInactive         when session has not been initiated
+     * @throws ServerSessionInactive   when session has not been initiated
      * @throws RemoteException         when network issues occur during the remote call
      */
     void logout(Token session_token) throws SessionInvalidException, ServerSessionInactive, RemoteException;
@@ -184,6 +185,17 @@ public interface IRmiServices extends Remote {
      * @throws RemoteException           when network issues occur during the remote call
      */
     Account getAccount(Token admin_token, String account_username) throws AccountExistenceException, Unauthorised, RuntimeException, RemoteException;
+
+    /**
+     * Gets the user account types
+     *
+     * @param admin_token Administrator session token
+     * @return List of AccountType DTOs
+     * @throws Unauthorised     when client is not authorised to access the resource
+     * @throws RuntimeException when non-standard failure occurred during account fetching from records
+     * @throws RemoteException  when network issues occur during the remote call
+     */
+    List<AccountType> getAccountTypes(Token admin_token) throws Unauthorised, RuntimeException, RemoteException;
 
     /**
      * Optimises the reservation database

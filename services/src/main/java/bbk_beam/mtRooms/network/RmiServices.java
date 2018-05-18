@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.network;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.dto.Account;
+import bbk_beam.mtRooms.admin.dto.AccountType;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
@@ -25,8 +26,8 @@ import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
 import bbk_beam.mtRooms.uaa.ISessionDriver;
 import bbk_beam.mtRooms.uaa.SessionDriver;
 import bbk_beam.mtRooms.uaa.exception.FailedSessionSpooling;
-import bbk_beam.mtRooms.uaa.exception.SessionActive;
 import bbk_beam.mtRooms.uaa.exception.ServerSessionInactive;
+import bbk_beam.mtRooms.uaa.exception.SessionActive;
 import bbk_beam.mtRooms.uaa.exception.SessionReset;
 import eadjlib.logger.Logger;
 import javafx.util.Pair;
@@ -294,6 +295,23 @@ public class RmiServices implements IRmiServices {
         } catch (IllegalArgumentException e) {
             log.log_Error("Client [", admin_token, "] is not tracked in ClientSessions.");
             throw new Unauthorised("Client [" + admin_token + "] is not tracked in ClientSessions.", e);
+        } catch (SessionInvalidException e) {
+            log.log_Error("Client [", admin_token, "] is invalid.");
+            throw new Unauthorised("Client [" + admin_token + "] is invalid.", e);
+        } catch (SessionExpiredException e) {
+            log.log_Error("Client [", admin_token, "] token has expired..");
+            throw new Unauthorised("Client [" + admin_token + "] token has expired.", e);
+        } catch (SessionCorruptedException e) {
+            log.log_Error("Client [", admin_token, "] is using a corrupted Token.");
+            throw new Unauthorised("Client [" + admin_token + "] is using a corrupted Token.", e);
+        }
+    }
+
+    @Override
+    public List<AccountType> getAccountTypes(Token admin_token) throws Unauthorised, RuntimeException, RemoteException {
+        try {
+            ClientWrapper client = sessions.getClient(admin_token);
+            return client.getAdministrationAccess().getAccountTypes(admin_token);
         } catch (SessionInvalidException e) {
             log.log_Error("Client [", admin_token, "] is invalid.");
             throw new Unauthorised("Client [" + admin_token + "] is invalid.", e);

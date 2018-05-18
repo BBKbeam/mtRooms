@@ -288,6 +288,20 @@ public class UserAccAdministration {
     }
 
     /**
+     * Gets the list of all user account types
+     *
+     * @return List of account type
+     * @throws DbQueryException when query to get account types fails
+     */
+    public ObjectTable getAccountTypes() throws DbQueryException {
+        String query = "SELECT " +
+                "AccountType.id, " +
+                "AccountType.description " +
+                "FROM AccountType";
+        return db_access.pullFromDB(query);
+    }
+
+    /**
      * Runs the vacuum command on the connected user account database
      *
      * @throws DbQueryException when vacuuming query failed

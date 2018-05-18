@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.admin.administration;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.dto.Account;
+import bbk_beam.mtRooms.admin.dto.AccountType;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
@@ -121,6 +122,18 @@ public interface IAdminSession {
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
     Account getAccount(Token admin_token, String account_username) throws AccountExistenceException, SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
+
+    /**
+     * Gets the list of account types
+     *
+     * @param admin_token Administrator session token
+     * @return List of AccountType DTOs
+     * @throws SessionInvalidException   when administrator session is not valid
+     * @throws SessionExpiredException   when current administrator session has expired
+     * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
+     * @throws RuntimeException          when non-standard failure occurred during account fetching from records
+     */
+    List<AccountType> getAccountTypes(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
     /**
      * Optimises the reservation database

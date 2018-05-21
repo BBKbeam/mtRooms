@@ -13,17 +13,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.rmi.RemoteException;
 import java.util.List;
 
+//TODO handle exceptions with error box
+//TODO refresh main view after save
 public class UserAccountController {
     private final Logger log = Logger.getLoggerInstance(UserAccountController.class.getName());
+    private final int MIN_PWD_LENGTH = 6;
+    private final int MIN_USERNAME_LENGTH = 4;
 
     public enum ScenarioType {EDIT_ACCOUNT, NEW_ACCOUNT}
 
@@ -36,6 +37,18 @@ public class UserAccountController {
     public CheckBox active_field;
     public Button cancelButton;
     public Button saveButton;
+
+    /**
+     * Helper method for showing an alert dialog
+     *
+     * @param msg Message to print in the dialog
+     */
+    private void showErrorAlert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("User account error");
+        alert.setHeaderText(msg);
+        alert.showAndWait();
+    }
 
     /**
      * Loader helper for account type choice box
@@ -57,13 +70,22 @@ public class UserAccountController {
 
     /**
      * Saves to records new account
+     *
+     * @return Success
      */
-    private void saveNewAccount() {
+    private boolean saveNewAccount() {
         log.log("New account creation required...");
-        //TODO check fields (username 3+char, pwd 6+char)
         String username = this.username_field.getText();
         String password = this.pwd_field.getText();
         AccountType account_type = this.accountType_choiceBox.getValue();
+        if( username.length() < MIN_USERNAME_LENGTH ) {
+            showErrorAlert("Username too short.\nMinimum char length required: " + MIN_USERNAME_LENGTH);
+            return false;
+        }
+        if( password.length() < MIN_PWD_LENGTH ) {
+            showErrorAlert("Password too short.\nMinimum number of characters required: " + MIN_PWD_LENGTH);
+            return false;
+        }
         IRmiServices services = this.sessionManager.getServices();
         try {
             services.createNewAccount(
@@ -72,29 +94,37 @@ public class UserAccountController {
                     username,
                     password
             );
+            return true;
         } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace();
+            showErrorAlert("Current user session is not authorised to execute this action.");
         } catch (AccountExistenceException e) {
-            e.printStackTrace();
+            showErrorAlert("An account with the same username ('" + username + "') already exists in the records.");
         } catch (RemoteException e) {
-            e.printStackTrace();
+            showErrorAlert("A connection/remote issue has occurred.");
         } catch (LoginException e) {
-            e.printStackTrace();
+            showErrorAlert("Currently not logged-in. Log-in again.");
         }
+        return false;
     }
 
     /**
      * Saves to records account modifications
+     *
+     * @return Success
      */
-    private void saveModifiedAccount() {
+    private boolean saveModifiedAccount() {
         IRmiServices services = this.sessionManager.getServices();
         try {
             if (!this.pwd_field.getText().isEmpty()) {
-                log.log("Password change required...");
+                String password = this.pwd_field.getText();
+                if(password.length() < MIN_PWD_LENGTH) {
+                    showErrorAlert("Password too short.\nMinimum number of characters required: " + MIN_PWD_LENGTH);
+                    return false;
+                }
                 services.updateAccountPassword(
                         this.sessionManager.getToken(),
                         userAccount.getId(),
-                        this.pwd_field.getText()
+                        password
                 );
             }
             if (this.userAccount.isActive() != this.active_field.isSelected()) {
@@ -110,17 +140,19 @@ public class UserAccountController {
                             this.userAccount.getId()
                     );
             }
+            return true;
         } catch (AccountExistenceException e) {
-            e.printStackTrace();
+            showErrorAlert("This account (u/n: '" + userAccount.getUsername() + "') does not exist in the records.");
         } catch (AccountOverrideException e) {
-            e.printStackTrace();
+            showErrorAlert("Password is the same as the old one.");
         } catch (LoginException e) {
-            e.printStackTrace();
+            showErrorAlert("Currently not logged-in. Log-in again.");
         } catch (RemoteException e) {
-            e.printStackTrace();
+            showErrorAlert("A connection/remote issue has occurred.");
         } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace();
+            showErrorAlert("Current user session is not authorised to execute this action.");
         }
+        return false;
     }
 
     /**
@@ -175,15 +207,16 @@ public class UserAccountController {
 
     @FXML
     public void handleSaveAction(ActionEvent actionEvent) {
+        Stage stage = (Stage) this.saveButton.getScene().getWindow();
         switch (this.scenarioType) {
             case NEW_ACCOUNT:
-                saveNewAccount();
+                if (saveNewAccount())
+                    stage.close();
                 break;
             case EDIT_ACCOUNT:
-                saveModifiedAccount();
+                if (saveModifiedAccount())
+                    stage.close();
                 break;
         }
-        Stage stage = (Stage) this.saveButton.getScene().getWindow();
-        stage.close();
     }
 }

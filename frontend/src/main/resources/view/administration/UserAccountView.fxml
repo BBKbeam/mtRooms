@@ -30,7 +30,7 @@
                   <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
               </rowConstraints>
                <children>
-                  <TextField fx:id="username_field" editable="false" focusTraversable="false" GridPane.columnIndex="1" />
+                  <TextField fx:id="username_field" focusTraversable="false" GridPane.columnIndex="1" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password" GridPane.rowIndex="1" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Account type" GridPane.rowIndex="2" />

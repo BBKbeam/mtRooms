@@ -60,6 +60,27 @@ public class UserAccountController {
      */
     private void saveNewAccount() {
         log.log("New account creation required...");
+        //TODO check fields (username 3+char, pwd 6+char)
+        String username = this.username_field.getText();
+        String password = this.pwd_field.getText();
+        AccountType account_type = this.accountType_choiceBox.getValue();
+        IRmiServices services = this.sessionManager.getServices();
+        try {
+            services.createNewAccount(
+                    this.sessionManager.getToken(),
+                    account_type.getSessionType(),
+                    username,
+                    password
+            );
+        } catch (Unauthorised unauthorised) {
+            unauthorised.printStackTrace();
+        } catch (AccountExistenceException e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (LoginException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -122,6 +143,7 @@ public class UserAccountController {
         this.username_field.setText(userAccount.getUsername());
         this.username_field.setDisable(true);
         this.pwd_field.setPromptText("type to modify password.");
+        this.active_field.setDisable(false);
         this.active_field.setSelected(userAccount.isActive());
         loadAccountTypeChoiceBox();
         this.accountType_choiceBox.getSelectionModel().select(userAccount.getAccountType());
@@ -141,6 +163,7 @@ public class UserAccountController {
         this.accountType_choiceBox.getSelectionModel().select(1);
         this.accountType_choiceBox.setDisable(false);
         this.active_field.setSelected(true);
+        this.active_field.setDisable(true);
     }
 
 

@@ -37,14 +37,14 @@
                   <CheckBox fx:id="active_field" mnemonicParsing="false" text="Enabled (active)" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <children>
-                        <TextField fx:id="pwd_field" editable="false" focusTraversable="false" HBox.hgrow="ALWAYS">
+                        <TextField fx:id="pwd_field" focusTraversable="false" HBox.hgrow="ALWAYS">
                            <opaqueInsets>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </opaqueInsets>
                         </TextField>
                      </children>
                   </HBox>
-                  <ChoiceBox fx:id="accountType_choiceBox" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <ChoiceBox fx:id="accountType_choiceBox" GridPane.columnIndex="1" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="2" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

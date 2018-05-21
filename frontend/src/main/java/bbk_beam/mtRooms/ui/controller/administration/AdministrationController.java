@@ -5,6 +5,7 @@ import bbk_beam.mtRooms.ui.model.SessionManager;
 import bbk_beam.mtRooms.ui.model.administration.UserAccount;
 import bbk_beam.mtRooms.ui.model.administration.UserAccountTable;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -87,12 +88,13 @@ public class AdministrationController implements Initializable {
         }
     }
 
-
+    @FXML
     public void handleEditAction(ActionEvent actionEvent) {
         UserAccount userAccount = this.account_table.getSelectionModel().getSelectedItem();
         openEditDialog(actionEvent, userAccount);
     }
 
+    @FXML
     public void handleNewAction(ActionEvent actionEvent) {
         openEditDialog(actionEvent, null);
     }

@@ -13,15 +13,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.ResourceBundle;
 
-//TODO handle exceptions with error box
-//TODO refresh main view after save
-public class UserAccountController {
+public class UserAccountController implements Initializable {
     private final Logger log = Logger.getLoggerInstance(UserAccountController.class.getName());
     private final int MIN_PWD_LENGTH = 6;
     private final int MIN_USERNAME_LENGTH = 4;
@@ -31,12 +32,18 @@ public class UserAccountController {
     private SessionManager sessionManager;
     private ScenarioType scenarioType;
     private UserAccount userAccount;
+    private ResourceBundle resourceBundle;
     public TextField username_field;
     public TextField pwd_field;
     public ChoiceBox<AccountType> accountType_choiceBox;
     public CheckBox active_field;
     public Button cancelButton;
     public Button saveButton;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        this.resourceBundle = resources;
+    }
 
     /**
      * Helper method for showing an alert dialog
@@ -45,27 +52,23 @@ public class UserAccountController {
      */
     private void showErrorAlert(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("User account error");
+        alert.setTitle(resourceBundle.getString("ErrorDialogTitle_UserAccount"));
         alert.setHeaderText(msg);
         alert.showAndWait();
     }
 
     /**
      * Loader helper for account type choice box
+     *
+     * @throws LoginException  when method is used outside a session
+     * @throws Unauthorised    when client is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
      */
-    private void loadAccountTypeChoiceBox() {
+    private void loadAccountTypeChoiceBox() throws LoginException, Unauthorised, RemoteException {
         IRmiServices services = this.sessionManager.getServices();
-        try {
-            List<AccountType> accountTypeList = services.getAccountTypes(this.sessionManager.getToken());
-            ObservableList<AccountType> accountTypeObservableList = FXCollections.observableList(accountTypeList);
-            this.accountType_choiceBox.setItems(accountTypeObservableList);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (LoginException e) {
-            e.printStackTrace();
-        } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace();
-        }
+        List<AccountType> accountTypeList = services.getAccountTypes(this.sessionManager.getToken());
+        ObservableList<AccountType> accountTypeObservableList = FXCollections.observableList(accountTypeList);
+        this.accountType_choiceBox.setItems(accountTypeObservableList);
     }
 
     /**
@@ -74,16 +77,17 @@ public class UserAccountController {
      * @return Success
      */
     private boolean saveNewAccount() {
-        log.log("New account creation required...");
         String username = this.username_field.getText();
         String password = this.pwd_field.getText();
         AccountType account_type = this.accountType_choiceBox.getValue();
-        if( username.length() < MIN_USERNAME_LENGTH ) {
-            showErrorAlert("Username too short.\nMinimum char length required: " + MIN_USERNAME_LENGTH);
+        if (username.length() < MIN_USERNAME_LENGTH) {
+            showErrorAlert(resourceBundle.getString("ErrorMsg_UsernameTooShort") +
+                    "\n" + resourceBundle.getString("InfoMsg_UsernameMinLength") + MIN_USERNAME_LENGTH);
             return false;
         }
-        if( password.length() < MIN_PWD_LENGTH ) {
-            showErrorAlert("Password too short.\nMinimum number of characters required: " + MIN_PWD_LENGTH);
+        if (password.length() < MIN_PWD_LENGTH) {
+            showErrorAlert(resourceBundle.getString("ErrorMsg_PwdTooShort") +
+                    "\n" + resourceBundle.getString("InfoMsg_PwdMinLength") + MIN_PWD_LENGTH);
             return false;
         }
         IRmiServices services = this.sessionManager.getServices();
@@ -96,13 +100,13 @@ public class UserAccountController {
             );
             return true;
         } catch (Unauthorised unauthorised) {
-            showErrorAlert("Current user session is not authorised to execute this action.");
+            showErrorAlert(resourceBundle.getString("ErrorMsg_Unauthorized"));
         } catch (AccountExistenceException e) {
-            showErrorAlert("An account with the same username ('" + username + "') already exists in the records.");
+            showErrorAlert(resourceBundle.getString("ErrorMsg_UserAccountOverride"));
         } catch (RemoteException e) {
-            showErrorAlert("A connection/remote issue has occurred.");
+            showErrorAlert(resourceBundle.getString("ErrorMsg_RemoteIssue"));
         } catch (LoginException e) {
-            showErrorAlert("Currently not logged-in. Log-in again.");
+            showErrorAlert(resourceBundle.getString("ErrorMsg_LoggedOut"));
         }
         return false;
     }
@@ -117,40 +121,48 @@ public class UserAccountController {
         try {
             if (!this.pwd_field.getText().isEmpty()) {
                 String password = this.pwd_field.getText();
-                if(password.length() < MIN_PWD_LENGTH) {
-                    showErrorAlert("Password too short.\nMinimum number of characters required: " + MIN_PWD_LENGTH);
+                if (password.length() < MIN_PWD_LENGTH) {
+                    showErrorAlert(resourceBundle.getString("ErrorMsg_PwdTooShort") +
+                            "\n" + resourceBundle.getString("InfoMsg_PwdMinLength") + MIN_PWD_LENGTH);
                     return false;
                 }
-                services.updateAccountPassword(
-                        this.sessionManager.getToken(),
-                        userAccount.getId(),
-                        password
-                );
+                try {
+                    services.updateAccountPassword(
+                            this.sessionManager.getToken(),
+                            userAccount.getId(),
+                            password
+                    );
+                } catch (AccountOverrideException e) {
+                    showErrorAlert(resourceBundle.getString("ErrorMsg_SamePwdOverride"));
+                    return false;
+                }
             }
             if (this.userAccount.isActive() != this.active_field.isSelected()) {
-                log.log("Active status change required...");
-                if (this.active_field.isSelected())
-                    services.activateAccount(
-                            this.sessionManager.getToken(),
-                            this.userAccount.getId()
-                    );
-                else
-                    services.deactivateAccount(
-                            this.sessionManager.getToken(),
-                            this.userAccount.getId()
-                    );
+                try {
+                    if (this.active_field.isSelected()) {
+                        services.activateAccount(
+                                this.sessionManager.getToken(),
+                                this.userAccount.getId()
+                        );
+                    } else
+                        services.deactivateAccount(
+                                this.sessionManager.getToken(),
+                                this.userAccount.getId()
+                        );
+                } catch (AccountOverrideException e) {
+                    showErrorAlert(resourceBundle.getString("ErrorMsg_CurrentUserOverride"));
+                    return false;
+                }
             }
             return true;
         } catch (AccountExistenceException e) {
-            showErrorAlert("This account (u/n: '" + userAccount.getUsername() + "') does not exist in the records.");
-        } catch (AccountOverrideException e) {
-            showErrorAlert("Password is the same as the old one.");
+            showErrorAlert(resourceBundle.getString("ErrorMsg_InvalidUserAccount"));
         } catch (LoginException e) {
-            showErrorAlert("Currently not logged-in. Log-in again.");
+            showErrorAlert(resourceBundle.getString("ErrorMsg_LoggedOut"));
         } catch (RemoteException e) {
-            showErrorAlert("A connection/remote issue has occurred.");
+            showErrorAlert(resourceBundle.getString("ErrorMsg_RemoteIssue"));
         } catch (Unauthorised unauthorised) {
-            showErrorAlert("Current user session is not authorised to execute this action.");
+            showErrorAlert(resourceBundle.getString("ErrorMsg_Unauthorized"));
         }
         return false;
     }
@@ -169,35 +181,41 @@ public class UserAccountController {
      *
      * @param userAccount UserAccount DTO
      */
-    void setEditAccountFields(UserAccount userAccount) {
+    void setEditAccountFields(UserAccount userAccount) throws LoginException, Unauthorised, RemoteException {
         this.userAccount = userAccount;
         this.scenarioType = ScenarioType.EDIT_ACCOUNT;
         this.username_field.setText(userAccount.getUsername());
         this.username_field.setDisable(true);
-        this.pwd_field.setPromptText("type to modify password.");
-        this.active_field.setDisable(false);
-        this.active_field.setSelected(userAccount.isActive());
+        this.username_field.setFocusTraversable(false);
+        this.pwd_field.setPromptText(resourceBundle.getString("PromptText_UserAccountPwd"));
         loadAccountTypeChoiceBox();
         this.accountType_choiceBox.getSelectionModel().select(userAccount.getAccountType());
         this.accountType_choiceBox.setDisable(true);
+        this.accountType_choiceBox.setFocusTraversable(false);
+        this.active_field.setDisable(false);
+        this.active_field.setSelected(userAccount.isActive());
+        this.active_field.setFocusTraversable(true);
     }
 
     /**
      * Sets the fields for a new account scenario
      */
-    void setNewAccountFields() {
+    void setNewAccountFields() throws LoginException, Unauthorised, RemoteException {
         this.userAccount = null;
         this.scenarioType = ScenarioType.NEW_ACCOUNT;
         this.username_field.setDisable(false);
+        this.username_field.setFocusTraversable(true);
+        this.username_field.requestFocus();
         this.pwd_field.clear();
         this.pwd_field.setPromptText("");
         loadAccountTypeChoiceBox();
         this.accountType_choiceBox.getSelectionModel().select(1);
         this.accountType_choiceBox.setDisable(false);
+        this.accountType_choiceBox.setFocusTraversable(true);
         this.active_field.setSelected(true);
         this.active_field.setDisable(true);
+        this.active_field.setFocusTraversable(false);
     }
-
 
     @FXML
     public void handleCancelAction(ActionEvent actionEvent) {

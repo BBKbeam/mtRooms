@@ -14,14 +14,13 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 
 import java.io.IOException;
 import java.net.URL;
@@ -31,6 +30,9 @@ import java.util.ResourceBundle;
 public class MainWindowController implements Initializable {
     private final Logger log = Logger.getLoggerInstance(MainWindowController.class.getName());
     private SessionManager sessionManager;
+    private ResourceBundle resourceBundle;
+    public Label status_left;
+    public Label status_right;
     public ScrollPane main_pane;
     public MenuItem logout;
     public MenuItem quit;
@@ -43,6 +45,8 @@ public class MainWindowController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.resourceBundle = resources;
+
         ImageView logout_menuIcon = new ImageView(new Image("icon/account-logout-8x.png"));
         ImageView quit_menuIcon = new ImageView(new Image("icon/x-8x.png"));
         ImageView admin_menuIcon = new ImageView(new Image("icon/wrench-8x.png"));
@@ -73,6 +77,16 @@ public class MainWindowController implements Initializable {
         revenue.setGraphic(revenue_menuIcon);
         logistics.setGraphic(logistics_menuIcon);
         about.setGraphic(about_menuIcon);
+
+        clearStatusBar();
+    }
+
+    /**
+     * Clears the status bar of messages
+     */
+    private void clearStatusBar() {
+        this.status_left.setText("");
+        this.status_right.setText("");
     }
 
     /**
@@ -123,6 +137,7 @@ public class MainWindowController implements Initializable {
     public void showLoginPane() {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(MtRoomsGUI.class.getResource("/view/LoginView.fxml"));
+        loader.setResources(resourceBundle);
         try {
             //TODO keep view panes in cache during a session then null them @ logout
             AnchorPane pane = loader.load();
@@ -143,6 +158,7 @@ public class MainWindowController implements Initializable {
     public void showAdminPane() {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(MtRoomsGUI.class.getResource("/view/administration/AdminView.fxml"));
+        loader.setResources(resourceBundle);
         try {
             AnchorPane pane = loader.load();
             AdministrationController adminController = loader.getController();
@@ -153,6 +169,10 @@ public class MainWindowController implements Initializable {
             main_pane.setContent(pane);
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (LoginException e) {
+            e.printStackTrace();
+        } catch (Unauthorised unauthorised) {
+            unauthorised.printStackTrace();
         }
     }
 
@@ -163,6 +183,7 @@ public class MainWindowController implements Initializable {
             this.logout.setVisible(false);
             this.disableAllViewMenuOptions();
             this.showLoginPane();
+            this.status_left.setText("Logged out of user session...");
         } catch (RemoteFailure remoteFailure) {
             remoteFailure.printStackTrace();
         } catch (AuthenticationFailureException e) {
@@ -178,6 +199,7 @@ public class MainWindowController implements Initializable {
 
     @FXML
     public void handleAboutAction(ActionEvent actionEvent) {
+        this.status_left.setText("");
         System.out.println("About action");
         //TODO
     }
@@ -185,21 +207,25 @@ public class MainWindowController implements Initializable {
     @FXML
     public void handleViewReservationAction(ActionEvent actionEvent) {
         this.administration_menu.setVisible(false);
+        this.status_left.setText("");
     }
 
     @FXML
     public void handleViewRevenueAction(ActionEvent actionEvent) {
         this.administration_menu.setVisible(false);
+        this.status_left.setText("");
     }
 
     @FXML
     public void handleViewLogisticsAction(ActionEvent actionEvent) {
         this.administration_menu.setVisible(false);
+        this.status_left.setText("");
     }
 
     @FXML
     public void handleViewAdministrationAction(ActionEvent actionEvent) {
         this.administration_menu.setVisible(true);
+        this.status_left.setText("");
         this.showAdminPane();
     }
 
@@ -209,6 +235,7 @@ public class MainWindowController implements Initializable {
         if (services != null) {
             try {
                 services.optimiseReservationDatabase(this.sessionManager.getToken());
+                this.status_left.setText("Reservation DB optimised.");
             } catch (Unauthorised unauthorised) {
                 unauthorised.printStackTrace();
             } catch (RemoteException e) {
@@ -225,6 +252,7 @@ public class MainWindowController implements Initializable {
         if (services != null) {
             try {
                 services.optimiseUserAccountDatabase(this.sessionManager.getToken());
+                this.status_left.setText("User account DB optimised.");
             } catch (Unauthorised unauthorised) {
                 unauthorised.printStackTrace();
             } catch (RemoteException e) {

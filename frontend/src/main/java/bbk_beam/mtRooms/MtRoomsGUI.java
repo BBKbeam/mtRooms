@@ -11,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.commons.cli.*;
 
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class MtRoomsGUI extends Application {
@@ -37,6 +38,7 @@ public class MtRoomsGUI extends Application {
             primaryStage.setTitle("mtRooms");
             primaryStage.setScene(scene);
             primaryStage.show();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

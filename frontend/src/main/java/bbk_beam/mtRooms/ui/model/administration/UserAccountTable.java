@@ -19,22 +19,40 @@ public class UserAccountTable {
      * Constructor
      *
      * @param sessionManager SessionManager instance
+     * @throws LoginException  when method is used outside a session
+     * @throws Unauthorised    when client is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
      */
-    public UserAccountTable(SessionManager sessionManager) {
+    public UserAccountTable(SessionManager sessionManager) throws LoginException, Unauthorised, RemoteException {
         this.sessionManager = sessionManager;
+        loadData();
+    }
+
+    /**
+     * Loads the table with updated data from backend
+     *
+     * @throws LoginException  when method is used outside a session
+     * @throws Unauthorised    when client is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
+     */
+    public void loadData() throws LoginException, Unauthorised, RemoteException {
         IRmiServices services = sessionManager.getServices();
-        try {
-            List<Account> accountList = services.getAccounts(sessionManager.getToken());
-            for (Account account : accountList) {
-                user_data.add(new UserAccount(account));
-            }
-        } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (LoginException e) {
-            e.printStackTrace();
+        List<Account> accountList = services.getAccounts(sessionManager.getToken());
+        for (Account account : accountList) {
+            user_data.add(new UserAccount(account));
         }
+    }
+
+    /**
+     * Reload the table with updated data from backend
+     *
+     * @throws LoginException  when method is used outside a session
+     * @throws Unauthorised    when client is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
+     */
+    public void reloadData() throws LoginException, Unauthorised, RemoteException {
+        this.user_data.clear();
+        loadData();
     }
 
     /**

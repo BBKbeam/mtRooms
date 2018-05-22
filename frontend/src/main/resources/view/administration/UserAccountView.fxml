@@ -30,14 +30,13 @@
                   <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
               </rowConstraints>
                <children>
-                  <TextField fx:id="username_field" focusTraversable="false" GridPane.columnIndex="1" />
+                  <TextField fx:id="username_field" GridPane.columnIndex="1" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password" GridPane.rowIndex="1" />
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Account type" GridPane.rowIndex="2" />
-                  <CheckBox fx:id="active_field" mnemonicParsing="false" text="Enabled (active)" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <children>
-                        <TextField fx:id="pwd_field" focusTraversable="false" HBox.hgrow="ALWAYS">
+                        <TextField fx:id="pwd_field" HBox.hgrow="ALWAYS">
                            <opaqueInsets>
                               <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                            </opaqueInsets>
@@ -45,6 +44,7 @@
                      </children>
                   </HBox>
                   <ChoiceBox fx:id="accountType_choiceBox" GridPane.columnIndex="1" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="2" />
+                  <CheckBox fx:id="active_field" mnemonicParsing="false" text="Enabled (active)" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

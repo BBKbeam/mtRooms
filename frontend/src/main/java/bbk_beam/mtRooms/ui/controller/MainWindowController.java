@@ -6,6 +6,7 @@ import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.exception.RemoteFailure;
 import bbk_beam.mtRooms.network.IRmiServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
+import bbk_beam.mtRooms.ui.controller.about.AboutController;
 import bbk_beam.mtRooms.ui.controller.administration.AdministrationController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
@@ -14,13 +15,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
@@ -42,6 +44,18 @@ public class MainWindowController implements Initializable {
     public MenuItem administration;
     public Menu administration_menu;
     public MenuItem about;
+
+    /**
+     * Helper method for showing an alert dialog
+     *
+     * @param msg Message to print in the dialog
+     */
+    private void showErrorAlert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(this.resourceBundle.getString("ErrorDialogTitle_Generic"));
+        alert.setHeaderText(msg);
+        alert.showAndWait();
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -139,7 +153,6 @@ public class MainWindowController implements Initializable {
         loader.setLocation(MtRoomsGUI.class.getResource("/view/LoginView.fxml"));
         loader.setResources(resourceBundle);
         try {
-            //TODO keep view panes in cache during a session then null them @ logout
             AnchorPane pane = loader.load();
             LoginController loginController = loader.getController();
             loginController.setSessionManager(sessionManager);
@@ -184,12 +197,17 @@ public class MainWindowController implements Initializable {
             this.disableAllViewMenuOptions();
             this.showLoginPane();
             this.status_left.setText("Logged out of user session...");
-        } catch (RemoteFailure remoteFailure) {
-            remoteFailure.printStackTrace();
+        } catch (RemoteFailure e) {
+            showErrorAlert(this.resourceBundle.getString("ErrorMsg_RemoteFailure"));
         } catch (AuthenticationFailureException e) {
-            e.printStackTrace();
+            log.log_Error("Token was found invalid by server.");
+            log.log_Exception(e);
+            showErrorAlert(this.resourceBundle.getString("ErrorMsg_InvalidSessionToken"));
+            this.logout.setVisible(false);
+            this.disableAllViewMenuOptions();
+            this.showLoginPane();
+            this.status_left.setText("Invalid user session terminated.");
         }
-        //TODO
     }
 
     @FXML
@@ -200,8 +218,19 @@ public class MainWindowController implements Initializable {
     @FXML
     public void handleAboutAction(ActionEvent actionEvent) {
         this.status_left.setText("");
-        System.out.println("About action");
-        //TODO
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MtRoomsGUI.class.getResource("/view/about/AboutView.fxml"));
+        loader.setResources(resourceBundle);
+        try {
+            Stage dialog = new Stage();
+            dialog.initStyle(StageStyle.UTILITY);
+            Scene scene = new Scene(loader.load());
+            dialog.setScene(scene);
+            dialog.show();
+        } catch (IOException e) {
+            log.log_Error("Could not load the 'about' dialog.");
+            log.log_Exception(e);
+        }
     }
 
     @FXML

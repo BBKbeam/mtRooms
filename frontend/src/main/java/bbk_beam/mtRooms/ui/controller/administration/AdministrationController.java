@@ -6,12 +6,14 @@ import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import bbk_beam.mtRooms.ui.model.administration.UserAccount;
 import bbk_beam.mtRooms.ui.model.administration.UserAccountTable;
+import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Modality;
@@ -23,6 +25,7 @@ import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class AdministrationController implements Initializable {
+    private final Logger log = Logger.getLoggerInstance(AdministrationController.class.getName());
     public TableView<UserAccount> account_table; //UI Table
     public TableColumn<UserAccount, Integer> id_col;
     public TableColumn<UserAccount, String> username_col;
@@ -34,7 +37,18 @@ public class AdministrationController implements Initializable {
     private ResourceBundle resourceBundle;
     private UserAccountTable userAccountTable; //Model
     private SessionManager sessionManager;
-    //add/edit user should overlay admin view. cancel/add/ok should go back to admin view on those
+
+    /**
+     * Helper method for showing an alert dialog
+     *
+     * @param msg Message to print in the dialog
+     */
+    private void showErrorAlert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(this.resourceBundle.getString("ErrorDialogTitle_Generic"));
+        alert.setHeaderText(msg);
+        alert.showAndWait();
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -64,21 +78,17 @@ public class AdministrationController implements Initializable {
 
     /**
      * Loads the model into the UI table
-     *
-     * @throws LoginException  when method is used outside a session
-     * @throws Unauthorised    when client is not authorised to access the resource
-     * @throws RemoteException when network issues occur during the remote call
      */
     public void loadAccountTable() {
         try {
             this.userAccountTable.reloadData();
-            account_table.setItems(this.userAccountTable.getUserData());
+            this.account_table.setItems(this.userAccountTable.getUserData());
         } catch (LoginException e) {
-            e.printStackTrace();
-        } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace();
+            showErrorAlert(this.resourceBundle.getString("ErrorMsg_LoggedOut"));
+        } catch (Unauthorised e) {
+            showErrorAlert(this.resourceBundle.getString("ErrorMsg_Unauthorized"));
         } catch (RemoteException e) {
-            e.printStackTrace();
+            showErrorAlert(this.resourceBundle.getString("ErrorMsg_RemoteIssue"));
         }
     }
 
@@ -108,12 +118,17 @@ public class AdministrationController implements Initializable {
                 userAccountController.setNewAccountFields();
             }
             stage.show();
+        } catch (RemoteException e) {
+            showErrorAlert(this.resourceBundle.getString("ErrorMsg_RemoteIssue"));
         } catch (IOException e) {
+            log.log_Error("Could not load UI scene.");
+            log.log_Exception(e);
+            showErrorAlert(this.resourceBundle.getString("ErrorMsg_UiResourceIO"));
             e.printStackTrace();
         } catch (LoginException e) {
-            e.printStackTrace();
+            showErrorAlert(this.resourceBundle.getString("ErrorMsg_LoggedOut"));
         } catch (Unauthorised e) {
-            e.printStackTrace();
+            showErrorAlert(this.resourceBundle.getString("ErrorMsg_Unauthorized"));
         }
     }
 

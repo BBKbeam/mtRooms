@@ -6,6 +6,7 @@ import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -15,6 +16,7 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
     private final Logger log = Logger.getLoggerInstance(LoginController.class.getName());
+    private ResourceBundle resourceBundle;
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
     public Button validate;
@@ -41,6 +43,7 @@ public class LoginController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        this.resourceBundle = resources;
         this.validate.setDefaultButton(true);
     }
 
@@ -66,16 +69,19 @@ public class LoginController implements Initializable {
                     password.setStyle("-fx-control-inner-background: white;");
                     this.mainWindowController.logout.setVisible(true);
                     this.mainWindowController.setViewMenuAccessibility();
-                    log.log("Login OK...");
+                    log.log("Login OK: " + username.getText());
                 } else {
                     username.setStyle("-fx-control-inner-background: red;");
                     password.setStyle("-fx-control-inner-background: red;");
                 }
-            } catch (RemoteFailure remoteFailure) {
-                //TODO show error popup
-                remoteFailure.printStackTrace();
+            } catch (RemoteFailure e) {
+                log.log_Error("A remote failure occurred...");
+                log.log_Exception(e);
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setTitle(this.resourceBundle.getString("ErrorDialogTitle_Generic"));
+                alert.setHeaderText(this.resourceBundle.getString("ErrorMsg_RemoteFailure"));
+                alert.showAndWait();
             }
-
         }
     }
 

@@ -142,7 +142,7 @@ public class RevenueAggregator {
      * Gets revenue data from records needed to build a room-specific report
      *
      * @param session_token Session token
-     * @param room
+     * @param room          Room DTO
      * @param from          Start of the date range for the report
      * @param to            End of the date range for the report
      * @return ObjectTable

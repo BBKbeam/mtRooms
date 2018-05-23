@@ -49,11 +49,7 @@ public class ReservationSession implements IReservationSession {
         this.optimisedSearch = optimisedSearch;
     }
 
-    /**
-     * Gets the User's reservation session token
-     *
-     * @return Session token
-     */
+    @Override
     public Token getToken() {
         return token;
     }

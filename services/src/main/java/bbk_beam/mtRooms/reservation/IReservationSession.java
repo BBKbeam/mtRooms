@@ -21,7 +21,14 @@ public interface IReservationSession extends Observer {
      * @param watcher EventWatcher instance
      * @return Previously used event watcher or null if none was set
      */
-    public IEventWatcher addEventWatcher(IEventWatcher watcher);
+    IEventWatcher addEventWatcher(IEventWatcher watcher);
+
+    /**
+     * Gets the User's reservation session token
+     *
+     * @return Session token
+     */
+    Token getToken();
 
     //---------------------------------------------[ CustomerAccountAccess ]--------------------------------------------
 
@@ -35,7 +42,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Customer getCustomerAccount(Token session_token, Integer customerID) throws InvalidCustomer, DbQueryException, SessionExpiredException, SessionInvalidException;
+    Customer getCustomerAccount(Token session_token, Integer customerID) throws InvalidCustomer, DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
      * Reloads the customer info from the DB
@@ -48,7 +55,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Customer getCustomerAccount(Token session_token, Customer customer) throws InvalidCustomer, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Customer getCustomerAccount(Token session_token, Customer customer) throws InvalidCustomer, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Finds the records for customer from their surname
@@ -60,7 +67,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public List<Pair<Integer, String>> findCustomer(Token session_token, String surname) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<Pair<Integer, String>> findCustomer(Token session_token, String surname) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Creates a new customer
@@ -73,7 +80,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Customer createNewCustomer(Token session_token, Customer customer) throws FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Customer createNewCustomer(Token session_token, Customer customer) throws FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Saves changes of a Customer container to the database
@@ -84,7 +91,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public void saveCustomerChangesToDB(Token session_token, Customer customer) throws FailedDbWrite, SessionExpiredException, SessionInvalidException;
+    void saveCustomerChangesToDB(Token session_token, Customer customer) throws FailedDbWrite, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets a membership type from records
@@ -122,7 +129,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public List<Room> search(Token session_token, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<Room> search(Token session_token, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Searches for Rooms that match the properties given
@@ -135,7 +142,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public List<Room> search(Token session_token, Integer building_id, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<Room> search(Token session_token, Integer building_id, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Searches for Rooms that match the properties given
@@ -149,7 +156,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public List<Room> search(Token session_token, Integer building_id, Integer floor_id, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<Room> search(Token session_token, Integer building_id, Integer floor_id, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Searches for available times for a Room
@@ -163,7 +170,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public List<TimeSpan> search(Token session_token, Room room, Date from, Date to) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<TimeSpan> search(Token session_token, Room room, Date from, Date to) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Searches for available rooms in a building within a time frame
@@ -179,7 +186,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Searches for available rooms on a floor within a time frame
@@ -194,7 +201,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Searches for available rooms anywhere
@@ -208,7 +215,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public HashMap<Room, List<TimeSpan>> search(Token session_token, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    HashMap<Room, List<TimeSpan>> search(Token session_token, Date from, Date to, RoomProperty property) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     //-----------------------------------------------[ PaymentProcessing ]----------------------------------------------
 
@@ -224,7 +231,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public Double pay(Token session_token, Reservation reservation, Payment payment) throws FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Double pay(Token session_token, Reservation reservation, Payment payment) throws FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets payments on a reservation from the records
@@ -236,7 +243,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public List<Payment> getPayments(Token session_token, Reservation reservation) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<Payment> getPayments(Token session_token, Reservation reservation) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Get all available payment methods
@@ -247,7 +254,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public List<PaymentMethod> getPaymentMethods(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<PaymentMethod> getPaymentMethods(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     //---------------------------------------------[ ReservationProcessing ]--------------------------------------------
 
@@ -262,7 +269,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Reservation createReservation(Token session_token, Reservation reservation) throws FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Reservation createReservation(Token session_token, Reservation reservation) throws FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Creates a RoomReservation in the records
@@ -276,7 +283,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public void createRoomReservation(Token session_token, Reservation reservation, RoomReservation reserved_room) throws InvalidReservation, FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    void createRoomReservation(Token session_token, Reservation reservation, RoomReservation reserved_room) throws InvalidReservation, FailedDbWrite, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Mark the record of a reservation as cancelled
@@ -289,7 +296,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public Double cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException;
+    Double cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException;
 
     /**
      * Mark the record of a room inside a reservation as cancelled
@@ -303,7 +310,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public Double cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException;
+    Double cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets a reservation's details
@@ -316,7 +323,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public Reservation getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Reservation getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the reservations associated with a customer
@@ -328,7 +335,7 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public List<Reservation> getReservations(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<Reservation> getReservations(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the RoomCategory DTO from an ID
@@ -341,6 +348,6 @@ public interface IReservationSession extends Observer {
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
-    public RoomCategory getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    RoomCategory getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
 }

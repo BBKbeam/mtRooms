@@ -14,14 +14,14 @@ public interface ISessionDriver {
      * @throws SessionActive         when trying to initialise over a current spooled session
      * @throws FailedSessionSpooling when spooling failed
      */
-    public void init(String db_file_name) throws SessionActive, FailedSessionSpooling;
+    void init(String db_file_name) throws SessionActive, FailedSessionSpooling;
 
     /**
      * Resets all the spooled instances to null
      *
      * @throws SessionLocked when opened sessions are using the spooled instances of the components
      */
-    public void reset() throws SessionLocked;
+    void reset() throws SessionLocked;
 
     /**
      * Gets the IAuthenticatedFrontDesk instance
@@ -31,7 +31,7 @@ public interface ISessionDriver {
      * @throws ServerSessionInactive                when the SessionDriver has not been initialised
      * @throws AuthenticationFailureException when the token has not got access right to the resource
      */
-    public IAuthenticatedFrontDesk getFrontDeskInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException;
+    IAuthenticatedFrontDesk getFrontDeskInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException;
 
     /**
      * Gets the IAuthenticatedAdministration instance
@@ -41,7 +41,7 @@ public interface ISessionDriver {
      * @throws ServerSessionInactive                when the SessionDriver has not been initialised
      * @throws AuthenticationFailureException when the token has not got access right to the resource
      */
-    public IAuthenticatedAdministration getAdministrationInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException;
+    IAuthenticatedAdministration getAdministrationInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException;
 
     /**
      * Gets the IAuthenticatedRevenuePersonnel instance
@@ -51,7 +51,7 @@ public interface ISessionDriver {
      * @throws ServerSessionInactive                when the SessionDriver has not been initialised
      * @throws AuthenticationFailureException when the token has not got access right to the resource
      */
-    public IAuthenticatedRevenuePersonnel getRevenuePersonnelInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException;
+    IAuthenticatedRevenuePersonnel getRevenuePersonnelInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException;
 
     /**
      * Gets the IAuthenticatedLogisticsPersonnel instance
@@ -61,7 +61,7 @@ public interface ISessionDriver {
      * @throws ServerSessionInactive                when the SessionDriver has not been initialised
      * @throws AuthenticationFailureException when the token has not got access right to the resource
      */
-    public IAuthenticatedLogisticsPersonnel getLogisticsPersonnelInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException;
+    IAuthenticatedLogisticsPersonnel getLogisticsPersonnelInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException;
 
     /**
      * Create a session for a user
@@ -72,7 +72,7 @@ public interface ISessionDriver {
      * @throws AuthenticationFailureException when username/password are not valid
      * @throws ServerSessionInactive                when session has not been initiated
      */
-    public Token login(String username, String password) throws AuthenticationFailureException, ServerSessionInactive;
+    Token login(String username, String password) throws AuthenticationFailureException, ServerSessionInactive;
 
     /**
      * Logout from a session
@@ -81,14 +81,14 @@ public interface ISessionDriver {
      * @throws SessionInvalidException when session is not valid
      * @throws ServerSessionInactive         when session has not been initiated
      */
-    public void logout(Token session_token) throws SessionInvalidException, ServerSessionInactive;
+    void logout(Token session_token) throws SessionInvalidException, ServerSessionInactive;
 
     /**
      * Gets the instantiated state
      *
      * @return Driver instantiated state
      */
-    public boolean isInstantiated();
+    boolean isInstantiated();
 
     /**
      * Gets the file name of the currently connected DB used
@@ -96,5 +96,5 @@ public interface ISessionDriver {
      * @return Connected DB file name
      * @throws SessionReset when session is not connected to a db
      */
-    public String currentDB() throws SessionReset;
+    String currentDB() throws SessionReset;
 }

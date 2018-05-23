@@ -73,7 +73,7 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals("UK", row.get("country"));
         Assert.assertEquals("W1 4AQ", row.get("postcode"));
         Assert.assertEquals("+44 9876 532 123", row.get("telephone_1"));
-        Assert.assertEquals(null, row.get("telephone_2"));
+        Assert.assertNull(row.get("telephone_2"));
         Assert.assertEquals("jbouvier@mail.com", row.get("email"));
     }
 
@@ -97,7 +97,7 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals("UK", row.get("country"));
         Assert.assertEquals("W1 4AQ", row.get("postcode"));
         Assert.assertEquals("+44 9876 532 123", row.get("telephone_1"));
-        Assert.assertEquals(null, row.get("telephone_2"));
+        Assert.assertNull(row.get("telephone_2"));
         Assert.assertEquals("jbouvier@mail.com", row.get("email"));
     }
 
@@ -136,7 +136,7 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals("UK", row.get("country"));
         Assert.assertEquals("W1 4AQ", row.get("postcode"));
         Assert.assertEquals("+44 9876 532 123", row.get("telephone_1"));
-        Assert.assertEquals(null, row.get("telephone_2"));
+        Assert.assertNull(row.get("telephone_2"));
         Assert.assertEquals("jbouvier@mail.com", row.get("email"));
     }
 
@@ -379,7 +379,7 @@ public class ReservationDbDelegateTest {
     @Test
     public void createRoomReservation() throws Exception {
         String check_query = "SELECT * FROM Room_has_Reservation WHERE room_id = 8 AND floor_id = 3 AND building_id = 1 AND reservation_id = 4";
-        Assert.assertFalse(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+        Assert.assertNotEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
 
         Room room = new Room(8, 3, 1, 6);
         RoomReservation mock_roomReservation = mock(RoomReservation.class);
@@ -393,7 +393,7 @@ public class ReservationDbDelegateTest {
         when(mock_roomReservation.note()).thenReturn(note);
 
         this.reservationDbDelegate.createRoomReservation(this.token, 4, mock_roomReservation);
-        Assert.assertTrue(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+        Assert.assertEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
     }
 
     @Test
@@ -430,9 +430,9 @@ public class ReservationDbDelegateTest {
                 " AND timestamp_in = \"2018-02-09 10:05:00\"" +
                 " AND cancelled_flag = 1";
         //Test
-        Assert.assertFalse(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+        Assert.assertNotEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
         Assert.assertEquals(new Double(85.00), this.reservationDbDelegate.cancelReservedRoom(this.token, 1, mock_roomReservation));
-        Assert.assertTrue(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+        Assert.assertEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
     }
 
     @Test
@@ -485,7 +485,7 @@ public class ReservationDbDelegateTest {
             } else if ((Integer) row.get("id") == 3) {
                 Assert.assertEquals("2018-06-13 15:00:00", row.get("created_timestamp"));
             } else {
-                Assert.assertTrue("Found an unexpected reservation ID.", false);
+                Assert.fail("Found an unexpected reservation ID.");
             }
         }
     }
@@ -532,7 +532,7 @@ public class ReservationDbDelegateTest {
                 Assert.assertEquals(45.00, row.get("price"));
                 Assert.assertEquals(2008, row.get("price_year"));
             } else {
-                Assert.assertTrue("Found an unexpected ReservedRoom (r=" + r + ", f=" + f + ", b=" + b + ").", false);
+                Assert.fail("Found an unexpected ReservedRoom (r=" + r + ", f=" + f + ", b=" + b + ").");
             }
         }
     }

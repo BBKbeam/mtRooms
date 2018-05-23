@@ -62,7 +62,7 @@ class ScheduleSlot extends TimeSpan {
     /**
      * Adds a watcher to this exact schedule slot
      *
-     * @param watcher_token
+     * @param watcher_token Session token that needs to be updated of any changes
      * @return Watcher list changed status
      */
     public boolean addWatcher(Token watcher_token) {

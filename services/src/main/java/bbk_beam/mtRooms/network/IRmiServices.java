@@ -7,7 +7,6 @@ import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
-import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
@@ -60,28 +59,28 @@ public interface IRmiServices extends Remote {
      *
      * @return Access rights
      */
-    public boolean hasAdministrativeAccess(Token token) throws RemoteException;
+    boolean hasAdministrativeAccess(Token token) throws RemoteException;
 
     /**
      * Check access rights to front desk
      *
      * @return Access rights
      */
-    public boolean hasFrontDeskAccess(Token token) throws RemoteException;
+    boolean hasFrontDeskAccess(Token token) throws RemoteException;
 
     /**
      * Check access rights to logistics
      *
      * @return Access rights
      */
-    public boolean hasLogisticsAccess(Token token) throws RemoteException;
+    boolean hasLogisticsAccess(Token token) throws RemoteException;
 
     /**
      * Check access rights to revenue
      *
      * @return Access rights
      */
-    public boolean hasRevenueAccess(Token token) throws RemoteException;
+    boolean hasRevenueAccess(Token token) throws RemoteException;
 
     //------------------------------------------------[ Administration ]------------------------------------------------
 
@@ -230,7 +229,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised     when client is not authorised to access the resource
      * @throws RemoteException  when network issues occur during the remote call
      */
-    public Customer getCustomerAccount(Token session_token, Integer customerID) throws InvalidCustomer, DbQueryException, Unauthorised, RemoteException;
+    Customer getCustomerAccount(Token session_token, Integer customerID) throws InvalidCustomer, DbQueryException, Unauthorised, RemoteException;
 
     /**
      * Reloads the customer info from the DB
@@ -243,7 +242,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public Customer getCustomerAccount(Token session_token, Customer customer) throws InvalidCustomer, FailedDbFetch, Unauthorised, RemoteException;
+    Customer getCustomerAccount(Token session_token, Customer customer) throws InvalidCustomer, FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Finds the records for customer from their surname
@@ -255,7 +254,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public List<Pair<Integer, String>> findCustomer(Token session_token, String surname) throws FailedDbFetch, Unauthorised, RemoteException;
+    List<Pair<Integer, String>> findCustomer(Token session_token, String surname) throws FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Creates a new customer
@@ -268,7 +267,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public Customer createNewCustomer(Token session_token, Customer customer) throws FailedDbWrite, FailedDbFetch, Unauthorised, RemoteException;
+    Customer createNewCustomer(Token session_token, Customer customer) throws FailedDbWrite, FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Saves changes of a Customer container to the database
@@ -279,7 +278,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public void saveCustomerChangesToDB(Token session_token, Customer customer) throws FailedDbWrite, Unauthorised, RemoteException;
+    void saveCustomerChangesToDB(Token session_token, Customer customer) throws FailedDbWrite, Unauthorised, RemoteException;
 
     /**
      * Gets a membership type from records
@@ -292,7 +291,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public Membership getMembership(Token session_token, Integer membership_id) throws InvalidMembership, FailedDbFetch, Unauthorised, RemoteException;
+    Membership getMembership(Token session_token, Integer membership_id) throws InvalidMembership, FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Gets all membership types from records
@@ -303,7 +302,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public List<Membership> getMemberships(Token session_token) throws FailedDbFetch, Unauthorised, RemoteException;
+    List<Membership> getMemberships(Token session_token) throws FailedDbFetch, Unauthorised, RemoteException;
 
     //------------------------------------------------[ OptimisedSearch ]-----------------------------------------------
 
@@ -317,7 +316,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public List<Room> search(Token session_token, RoomProperty properties) throws FailedDbFetch, Unauthorised, RemoteException;
+    List<Room> search(Token session_token, RoomProperty properties) throws FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Searches for Rooms that match the properties given
@@ -330,7 +329,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public List<Room> search(Token session_token, Integer building_id, RoomProperty properties) throws FailedDbFetch, Unauthorised, RemoteException;
+    List<Room> search(Token session_token, Integer building_id, RoomProperty properties) throws FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Searches for Rooms that match the properties given
@@ -344,7 +343,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public List<Room> search(Token session_token, Integer building_id, Integer floor_id, RoomProperty properties) throws FailedDbFetch, Unauthorised, RemoteException;
+    List<Room> search(Token session_token, Integer building_id, Integer floor_id, RoomProperty properties) throws FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Searches for available times for a Room
@@ -358,7 +357,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public List<TimeSpan> search(Token session_token, Room room, Date from, Date to) throws FailedDbFetch, Unauthorised, RemoteException;
+    List<TimeSpan> search(Token session_token, Room room, Date from, Date to) throws FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Searches for available rooms in a building within a time frame
@@ -374,7 +373,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, Unauthorised, RemoteException;
+    HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Integer floor_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Searches for available rooms on a floor within a time frame
@@ -389,7 +388,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, Unauthorised, RemoteException;
+    HashMap<Room, List<TimeSpan>> search(Token session_token, Integer building_id, Date from, Date to, RoomProperty property) throws FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Searches for available rooms anywhere
@@ -403,7 +402,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public HashMap<Room, List<TimeSpan>> search(Token session_token, Date from, Date to, RoomProperty property) throws FailedDbFetch, Unauthorised, RemoteException;
+    HashMap<Room, List<TimeSpan>> search(Token session_token, Date from, Date to, RoomProperty property) throws FailedDbFetch, Unauthorised, RemoteException;
 
     //-----------------------------------------------[ PaymentProcessing ]----------------------------------------------
 
@@ -419,7 +418,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public Double pay(Token session_token, Reservation reservation, Payment payment) throws FailedDbWrite, FailedDbFetch, Unauthorised, RemoteException;
+    Double pay(Token session_token, Reservation reservation, Payment payment) throws FailedDbWrite, FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Gets payments on a reservation from the records
@@ -431,7 +430,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public List<Payment> getPayments(Token session_token, Reservation reservation) throws FailedDbFetch, Unauthorised, RemoteException;
+    List<Payment> getPayments(Token session_token, Reservation reservation) throws FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Get all available payment methods
@@ -442,7 +441,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public List<PaymentMethod> getPaymentMethods(Token session_token) throws FailedDbFetch, Unauthorised, RemoteException;
+    List<PaymentMethod> getPaymentMethods(Token session_token) throws FailedDbFetch, Unauthorised, RemoteException;
 
     //---------------------------------------------[ ReservationProcessing ]--------------------------------------------
 
@@ -457,7 +456,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public Reservation createReservation(Token session_token, Reservation reservation) throws FailedDbWrite, FailedDbFetch, Unauthorised, RemoteException;
+    Reservation createReservation(Token session_token, Reservation reservation) throws FailedDbWrite, FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Creates a RoomReservation in the records
@@ -471,7 +470,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised       when client is not authorised to access the resource
      * @throws RemoteException    when network issues occur during the remote call
      */
-    public void createRoomReservation(Token session_token, Reservation reservation, RoomReservation reserved_room) throws InvalidReservation, FailedDbWrite, FailedDbFetch, Unauthorised, RemoteException;
+    void createRoomReservation(Token session_token, Reservation reservation, RoomReservation reserved_room) throws InvalidReservation, FailedDbWrite, FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Mark the record of a reservation as cancelled
@@ -484,7 +483,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised       when client is not authorised to access the resource
      * @throws RemoteException    when network issues occur during the remote call
      */
-    public Double cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, FailedDbWrite, Unauthorised, RemoteException;
+    Double cancelReservation(Token session_token, Reservation reservation) throws InvalidReservation, FailedDbWrite, Unauthorised, RemoteException;
 
     /**
      * Mark the record of a room inside a reservation as cancelled
@@ -498,7 +497,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised       when client is not authorised to access the resource
      * @throws RemoteException    when network issues occur during the remote call
      */
-    public Double cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, Unauthorised, RemoteException;
+    Double cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, Unauthorised, RemoteException;
 
     /**
      * Gets a reservation's details
@@ -511,7 +510,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised       when client is not authorised to access the resource
      * @throws RemoteException    when network issues occur during the remote call
      */
-    public Reservation getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, FailedDbFetch, Unauthorised, RemoteException;
+    Reservation getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Gets the reservations associated with a customer
@@ -523,7 +522,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    public List<Reservation> getReservations(Token session_token, Customer customer) throws FailedDbFetch, Unauthorised, RemoteException;
+    List<Reservation> getReservations(Token session_token, Customer customer) throws FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Gets the RoomCategory DTO from an ID
@@ -536,7 +535,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised        when client is not authorised to access the resource
      * @throws RemoteException     when network issues occur during the remote call
      */
-    public RoomCategory getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, FailedDbFetch, Unauthorised, RemoteException;
+    RoomCategory getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, FailedDbFetch, Unauthorised, RemoteException;
 
 
     //----------------------------------------------------[ Logistics ]-------------------------------------------------
@@ -554,7 +553,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised           when client is not authorised to access the resource
      * @throws RemoteException        when network issues occur during the remote call
      */
-    public LogisticsInfo getInfo(Token session_token, Integer building_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, Unauthorised, RemoteException;
+    LogisticsInfo getInfo(Token session_token, Integer building_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Gets logistical information
@@ -570,7 +569,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised           when client is not authorised to access the resource
      * @throws RemoteException        when network issues occur during the remote call
      */
-    public LogisticsInfo getInfo(Token session_token, Integer building_id, Integer floor_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, Unauthorised, RemoteException;
+    LogisticsInfo getInfo(Token session_token, Integer building_id, Integer floor_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, Unauthorised, RemoteException;
 
     /**
      * Gets logistical information
@@ -585,7 +584,7 @@ public interface IRmiServices extends Remote {
      * @throws Unauthorised           when client is not authorised to access the resource
      * @throws RemoteException        when network issues occur during the remote call
      */
-    public LogisticsInfo getInfo(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, Unauthorised, RemoteException;
+    LogisticsInfo getInfo(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, Unauthorised, RemoteException;
 
     //-----------------------------------------------------[ Revenue ]--------------------------------------------------
 

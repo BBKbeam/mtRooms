@@ -79,9 +79,9 @@ public class TimestampUTCTest {
         TimestampUTC timestampUTC1 = new TimestampUTC("2000-01-01 00:00:00");
         TimestampUTC timestampUTC2 = new TimestampUTC("2000-01-01 00:00:00");
         TimestampUTC timestampUTC3 = new TimestampUTC("2000-01-01 00:00:01");
-        Assert.assertTrue(timestampUTC1.equals(timestampUTC2));
-        Assert.assertTrue(timestampUTC2.equals(timestampUTC1));
-        Assert.assertFalse(timestampUTC1.equals(timestampUTC3));
+        Assert.assertEquals(timestampUTC1, timestampUTC2);
+        Assert.assertEquals(timestampUTC2, timestampUTC1);
+        Assert.assertNotEquals(timestampUTC1, timestampUTC3);
     }
 
     @Test

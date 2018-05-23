@@ -7,14 +7,13 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.operation.dto.LogisticsEntry;
 import bbk_beam.mtRooms.operation.dto.LogisticsInfo;
-import bbk_beam.mtRooms.reservation.ReservationSession;
+import bbk_beam.mtRooms.reservation.IReservationSession;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomProperty;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import bbk_beam.mtRooms.uaa.exception.SessionActive;
 import bbk_beam.mtRooms.uaa.exception.SessionLocked;
-import eadjlib.datastructure.ObjectTable;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,7 +60,7 @@ public class SessionDriverTest {
         Token user_token = this.session_driver.login("user01", "userpassword");
         //access reservation system
         IAuthenticatedFrontDesk front_desk = this.session_driver.getFrontDeskInstance(user_token);
-        ReservationSession session = front_desk.openReservationSession(user_token);
+        IReservationSession session = front_desk.openReservationSession(user_token);
         //test customer details fetching
         Customer customer = session.getCustomerAccount(user_token, 1);
         Assert.assertEquals(new Integer(1), customer.customerID());
@@ -126,7 +125,7 @@ public class SessionDriverTest {
         this.session_driver.init(this.test_db_file);
         Token token = this.session_driver.login("root", "letmein");
         IAuthenticatedFrontDesk front_desk = this.session_driver.getFrontDeskInstance(token);
-        ReservationSession session = front_desk.openReservationSession(token);
+        IReservationSession session = front_desk.openReservationSession(token);
         Customer customer = session.getCustomerAccount(token, 1);
         System.out.println(customer);
         front_desk.closeReservationSession(session);
@@ -147,7 +146,7 @@ public class SessionDriverTest {
         this.session_driver.init(this.test_db_file);
         Token token = this.session_driver.login("root", "letmein");
         IAuthenticatedFrontDesk front_desk = this.session_driver.getFrontDeskInstance(token);
-        ReservationSession session = front_desk.openReservationSession(bad_token);
+        IReservationSession session = front_desk.openReservationSession(bad_token);
     }
 
     @Test
@@ -186,7 +185,7 @@ public class SessionDriverTest {
         this.session_driver.logout(admin_token);
         //login with new user
         Token user_token = this.session_driver.login("user01", "userpassword");
-        administration = this.session_driver.getAdministrationInstance(user_token);
+        this.session_driver.getAdministrationInstance(user_token);
     }
 
     @Test

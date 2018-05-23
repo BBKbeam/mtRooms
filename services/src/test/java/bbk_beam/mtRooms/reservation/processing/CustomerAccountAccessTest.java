@@ -70,7 +70,7 @@ public class CustomerAccountAccessTest {
         Assert.assertEquals("UK", customer.country());
         Assert.assertEquals("W1 4AQ", customer.postCode());
         Assert.assertEquals("+44 9876 532 123", customer.phone1());
-        Assert.assertEquals(null, customer.phone2());
+        Assert.assertNull(customer.phone2());
         Assert.assertEquals("jbouvier@mail.com", customer.email());
     }
 
@@ -109,7 +109,7 @@ public class CustomerAccountAccessTest {
         Customer post_commit_DTO = this.customerAccountAccess.createNewCustomer(this.token, pre_commit_DTO);
         Customer record_DTO = this.customerAccountAccess.getCustomerAccount(this.token, 6);
         Assert.assertEquals((Integer) 6, post_commit_DTO.customerID());
-        Assert.assertTrue(post_commit_DTO.equals(record_DTO));
+        Assert.assertEquals(post_commit_DTO, record_DTO);
     }
 
     @Test
@@ -151,7 +151,7 @@ public class CustomerAccountAccessTest {
         );
         this.customerAccountAccess.saveCustomerChangesToDB(this.token, update);
         Customer check = this.customerAccountAccess.getCustomerAccount(this.token, customer.customerID());
-        Assert.assertTrue(update.equals(check));
+        Assert.assertEquals(update, check);
     }
 
     @Test(expected = FailedDbWrite.class)

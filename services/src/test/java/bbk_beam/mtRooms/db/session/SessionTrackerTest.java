@@ -19,7 +19,7 @@ public class SessionTrackerTest {
         try {
             sessionTracker.addSession("0001", date, SessionType.USER, 0);
         } catch (SessionException e) {
-            Assert.assertTrue(false); //Should not have thrown
+            Assert.fail(); //Should not have thrown
         }
         sessionTracker.addSession("0001", date, SessionType.USER, 0);
     }
@@ -32,7 +32,7 @@ public class SessionTrackerTest {
         try {
             sessionTracker.removeSession("0001");
         } catch (SessionInvalidException e) {
-            Assert.assertTrue(false); //Should not have thrown
+            Assert.fail(); //Should not have thrown
         }
         sessionTracker.removeSession("0001");
     }

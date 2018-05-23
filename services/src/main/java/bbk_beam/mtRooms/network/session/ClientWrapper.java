@@ -6,7 +6,6 @@ import bbk_beam.mtRooms.network.IRmiClient;
 import bbk_beam.mtRooms.network.exception.FailedAllocation;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.IReservationSession;
-import bbk_beam.mtRooms.reservation.ReservationSession;
 import bbk_beam.mtRooms.uaa.*;
 import bbk_beam.mtRooms.uaa.exception.DuplicateSession;
 import bbk_beam.mtRooms.uaa.exception.InvalidAccessRights;
@@ -28,7 +27,7 @@ public class ClientWrapper implements Serializable {
     private IRmiClient client;
     private IAuthenticatedAdministration administration = null;
     private IAuthenticatedFrontDesk front_desk = null;
-    private ReservationSession reservation_session;
+    private IReservationSession reservation_session;
     private IAuthenticatedLogisticsPersonnel logistics = null;
     private IAuthenticatedRevenuePersonnel revenues = null;
 

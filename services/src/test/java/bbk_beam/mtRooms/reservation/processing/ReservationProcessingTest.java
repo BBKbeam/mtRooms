@@ -71,7 +71,7 @@ public class ReservationProcessingTest {
         //Testing
         Reservation fetched_reservation = this.reservationProcessing.createReservation(this.token, test_reservation);
         test_reservation.setID(fetched_reservation.id());
-        Assert.assertTrue(test_reservation.equals(fetched_reservation));
+        Assert.assertEquals(test_reservation, fetched_reservation);
     }
 
     @Test

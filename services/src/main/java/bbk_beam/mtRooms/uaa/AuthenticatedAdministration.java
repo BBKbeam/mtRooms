@@ -9,7 +9,6 @@ import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
-import eadjlib.datastructure.ObjectTable;
 
 import java.util.List;
 

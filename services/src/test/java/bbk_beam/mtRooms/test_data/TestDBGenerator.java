@@ -26,7 +26,7 @@ public class TestDBGenerator {
     /**
      * Run this test to create a database with test data
      *
-     * @throws Exception
+     * @throws Exception when something goes wrong...
      */
     @Test
     public void createTestDB() throws Exception {
@@ -37,7 +37,7 @@ public class TestDBGenerator {
      * Test data generation method that can be called by unit tests creating a database with some basic data
      *
      * @param file_name Database file name
-     * @throws Exception
+     * @throws Exception when something goes wrong...
      */
     public void createTestDB(String file_name) throws Exception {
         DbSystemBootstrap DbBootstrapper = new DbSystemBootstrap();

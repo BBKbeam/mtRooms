@@ -233,15 +233,13 @@ public class RoomProperty implements Comparable<RoomProperty>, Serializable {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("RoomProperty={ ");
-        sb.append("has_fixed_chairs: ").append(has_fixed_chairs);
-        sb.append(", has_catering_space: ").append(has_catering_space);
-        sb.append(", has_whiteboard: ").append(has_whiteboard);
-        sb.append(", has_projector: ").append(has_projector);
-        sb.append(", capacity: ").append(capacity);
-        sb.append(", dimension: ").append(dimension);
-        sb.append(" }");
-        return sb.toString();
+        return "RoomProperty={ " + "has_fixed_chairs: " + has_fixed_chairs +
+                ", has_catering_space: " + has_catering_space +
+                ", has_whiteboard: " + has_whiteboard +
+                ", has_projector: " + has_projector +
+                ", capacity: " + capacity +
+                ", dimension: " + dimension +
+                " }";
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException {

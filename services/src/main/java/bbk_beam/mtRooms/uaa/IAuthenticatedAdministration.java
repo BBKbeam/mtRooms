@@ -133,7 +133,7 @@ public interface IAuthenticatedAdministration {
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      * @throws RuntimeException          when non-standard failure occurred during account fetching from records
      */
-    public List<AccountType> getAccountTypes(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
+    List<AccountType> getAccountTypes(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException;
 
 
     /**

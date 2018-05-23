@@ -101,6 +101,16 @@ public class ReservationSession implements IReservationSession {
     }
 
     @Override
+    public Membership getMembership(Token session_token, Integer membership_id) throws InvalidMembership, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.customerAccountAccess.getMembership(session_token, membership_id);
+    }
+
+    @Override
+    public List<Membership> getMemberships(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.customerAccountAccess.getMemberships(session_token);
+    }
+
+    @Override
     public List<Room> search(Token session_token, RoomProperty properties) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
         return this.optimisedSearch.search(session_token, properties);
     }

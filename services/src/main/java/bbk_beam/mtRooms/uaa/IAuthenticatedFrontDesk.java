@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.uaa;
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.reservation.IReservationSession;
 import bbk_beam.mtRooms.reservation.ReservationSession;
 import bbk_beam.mtRooms.uaa.exception.DuplicateSession;
 import bbk_beam.mtRooms.uaa.exception.InvalidAccessRights;
@@ -17,7 +18,7 @@ public interface IAuthenticatedFrontDesk {
      * @throws AuthenticationFailureException when token is not valid/has not got access rights to this resource
      * @throws DuplicateSession               when generated token is already used in another session (should not happen!)
      */
-    public ReservationSession openReservationSession(Token token) throws InvalidAccessRights, AuthenticationFailureException, DuplicateSession;
+    public IReservationSession openReservationSession(Token token) throws InvalidAccessRights, AuthenticationFailureException, DuplicateSession;
 
     /**
      * Closes a ReservationSession

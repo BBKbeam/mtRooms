@@ -217,6 +217,37 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
+    public ObjectTable getMembership(Token session_token, Integer membership_id) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "MembershipType.id, " +
+                "MembershipType.description, " +
+                "DiscountCategory.id AS discount_category_id, " +
+                "DiscountCategory.description AS discount_category_desc, " +
+                "Discount.id AS discount_id, " +
+                "Discount.discount_rate AS discount_rate " +
+                "FROM MembershipType " +
+                "LEFT OUTER JOIN DiscountCategory ON MembershipType.discount_category_id = DiscountCategory.id " +
+                "LEFT OUTER JOIN Discount ON DiscountCategory.id = Discount.discount_category_id " +
+                "WHERE MembershipType.id = " + membership_id;
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    @Override
+    public ObjectTable getMemberships(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "MembershipType.id, " +
+                "MembershipType.description, " +
+                "DiscountCategory.id AS discount_category_id, " +
+                "DiscountCategory.description AS discount_category_desc, " +
+                "Discount.id AS discount_id, " +
+                "Discount.discount_rate AS discount_rate " +
+                "FROM MembershipType " +
+                "LEFT OUTER JOIN DiscountCategory ON MembershipType.discount_category_id = DiscountCategory.id " +
+                "LEFT OUTER JOIN Discount ON DiscountCategory.id = Discount.discount_category_id";
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    @Override
     public void pay(Token session_token, Reservation reservation, Payment payment) throws DbQueryException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
         //Adding Payment entry
         String query1 = "INSERT INTO Payment( hash_id, amount, payment_method, timestamp, note ) VALUES ( " +

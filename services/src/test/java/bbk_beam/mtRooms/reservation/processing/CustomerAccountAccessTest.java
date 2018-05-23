@@ -8,6 +8,8 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
 import bbk_beam.mtRooms.reservation.dto.Customer;
+import bbk_beam.mtRooms.reservation.dto.Discount;
+import bbk_beam.mtRooms.reservation.dto.Membership;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
@@ -172,5 +174,18 @@ public class CustomerAccountAccessTest {
                 "jsmith@mail.com"
         );
         this.customerAccountAccess.saveCustomerChangesToDB(this.token, update);
+    }
+
+    @Test
+    public void getMembership() throws Exception {
+        Membership expected = new Membership(3, "Full Member", new Discount(3, 10d, 3, "Member"));
+        Membership returned = this.customerAccountAccess.getMembership(this.token, 3);
+        Assert.assertEquals(expected, returned);
+    }
+
+    @Test
+    public void getMemberships() throws Exception {
+        List<Membership> list = this.customerAccountAccess.getMemberships(this.token);
+        Assert.assertEquals(3, list.size());
     }
 }

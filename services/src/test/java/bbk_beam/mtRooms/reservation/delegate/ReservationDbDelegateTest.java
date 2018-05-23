@@ -52,7 +52,7 @@ public class ReservationDbDelegateTest {
         this.userAccDbAccess = null;
         this.reservationDbAccess = null;
         this.reservationDbDelegate = null;
-        Files.deleteIfExists(Paths.get("reservation_db_delegate_test.db"));
+        //Files.deleteIfExists(Paths.get("reservation_db_delegate_test.db"));
     }
 
     @Test
@@ -243,6 +243,47 @@ public class ReservationDbDelegateTest {
                 "Flat 10", "21 huge road", "W1 4AQ", "Birmingham", "Birminghamshire", "UK",
                 "+44 9876 111 111", "+44 6666 666 666", "jbouvier05@mail.com");
         this.reservationDbDelegate.saveCustomerChangesToDB(this.token, update);
+    }
+
+
+    @Test
+    public void getMembership() throws Exception {
+        ObjectTable table = this.reservationDbDelegate.getMembership(this.token, 1);
+        Assert.assertFalse(table.isEmpty());
+        HashMap<String, Object> row = table.getRow(1);
+        Assert.assertEquals(1, row.get("id"));
+        Assert.assertEquals("None", row.get("description"));
+        Assert.assertEquals(1, row.get("discount_category_id"));
+        Assert.assertEquals("None", row.get("discount_category_desc"));
+        Assert.assertEquals(1, row.get("discount_id"));
+        Assert.assertEquals(0d, row.get("discount_rate"));
+    }
+
+    @Test
+    public void getMemberships() throws Exception {
+        ObjectTable table = this.reservationDbDelegate.getMemberships(this.token);
+        Assert.assertEquals(3, table.rowCount());
+        HashMap<String, Object> row1 = table.getRow(1);
+        Assert.assertEquals(1, row1.get("id"));
+        Assert.assertEquals("None", row1.get("description"));
+        Assert.assertEquals(1, row1.get("discount_category_id"));
+        Assert.assertEquals("None", row1.get("discount_category_desc"));
+        Assert.assertEquals(1, row1.get("discount_id"));
+        Assert.assertEquals(0d, row1.get("discount_rate"));
+        HashMap<String, Object> row2 = table.getRow(2);
+        Assert.assertEquals(2, row2.get("id"));
+        Assert.assertEquals("Student", row2.get("description"));
+        Assert.assertEquals(2, row2.get("discount_category_id"));
+        Assert.assertEquals("Student", row2.get("discount_category_desc"));
+        Assert.assertEquals(2, row2.get("discount_id"));
+        Assert.assertEquals(25d, row2.get("discount_rate"));
+        HashMap<String, Object> row3 = table.getRow(3);
+        Assert.assertEquals(3, row3.get("id"));
+        Assert.assertEquals("Full Member", row3.get("description"));
+        Assert.assertEquals(3, row3.get("discount_category_id"));
+        Assert.assertEquals("Member", row3.get("discount_category_desc"));
+        Assert.assertEquals(3, row3.get("discount_id"));
+        Assert.assertEquals(10d, row3.get("discount_rate"));
     }
 
     @Test

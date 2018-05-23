@@ -86,6 +86,30 @@ public interface IReservationSession extends Observer {
      */
     public void saveCustomerChangesToDB(Token session_token, Customer customer) throws FailedDbWrite, SessionExpiredException, SessionInvalidException;
 
+    /**
+     * Gets a membership type from records
+     *
+     * @param session_token Session token
+     * @param membership_id Membership ID
+     * @return Membership DTO
+     * @throws InvalidMembership       when Membership ID does not match any in records
+     * @throws FailedDbFetch           when new record could not be fetched back
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     */
+    Membership getMembership(Token session_token, Integer membership_id) throws InvalidMembership, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Gets all membership types from records
+     *
+     * @param session_token Session token
+     * @return List of Membership DTOs
+     * @throws FailedDbFetch           when new record could not be fetched back
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     */
+    List<Membership> getMemberships(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+
     //------------------------------------------------[ OptimisedSearch ]-----------------------------------------------
 
     /**

@@ -7,6 +7,7 @@ import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
+import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
@@ -279,6 +280,30 @@ public interface IRmiServices extends Remote {
      * @throws RemoteException when network issues occur during the remote call
      */
     public void saveCustomerChangesToDB(Token session_token, Customer customer) throws FailedDbWrite, Unauthorised, RemoteException;
+
+    /**
+     * Gets a membership type from records
+     *
+     * @param session_token Session token
+     * @param membership_id Membership ID
+     * @return Membership DTO
+     * @throws InvalidMembership       when Membership ID does not match any in records
+     * @throws FailedDbFetch           when new record could not be fetched back
+     * @throws Unauthorised    when client is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
+     */
+    public Membership getMembership(Token session_token, Integer membership_id) throws InvalidMembership, FailedDbFetch, Unauthorised, RemoteException;
+
+    /**
+     * Gets all membership types from records
+     *
+     * @param session_token Session token
+     * @return List of Membership DTOs
+     * @throws FailedDbFetch           when new record could not be fetched back
+     * @throws Unauthorised    when client is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
+     */
+    public List<Membership> getMemberships(Token session_token) throws FailedDbFetch, Unauthorised, RemoteException;
 
     //------------------------------------------------[ OptimisedSearch ]-----------------------------------------------
 

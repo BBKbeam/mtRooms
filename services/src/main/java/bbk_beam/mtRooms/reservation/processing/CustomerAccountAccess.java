@@ -7,9 +7,12 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.delegate.ICustomerAccount;
 import bbk_beam.mtRooms.reservation.dto.Customer;
+import bbk_beam.mtRooms.reservation.dto.Discount;
+import bbk_beam.mtRooms.reservation.dto.Membership;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
+import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 import javafx.util.Pair;
@@ -187,6 +190,77 @@ public class CustomerAccountAccess {
         } catch (DbQueryException e) {
             log.log_Error("Update to customer [", customer.customerID(), "]'s details unsuccessful: SQL Query issue.");
             throw new FailedDbWrite("Update to customer [" + customer.customerID() + "]'s details unsuccessful: SQL Query issue.");
+        }
+    }
+
+
+    /**
+     * Gets a membership type from records
+     *
+     * @param session_token Session token
+     * @param membership_id Membership ID
+     * @return Membership DTO
+     * @throws InvalidMembership       when Membership ID does not match any in records
+     * @throws FailedDbFetch           when new record could not be fetched back
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     */
+    public Membership getMembership(Token session_token, Integer membership_id) throws InvalidMembership, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable table = this.db_delegate.getMembership(session_token, membership_id);
+            if (!table.isEmpty()) {
+                HashMap<String, Object> row = table.getRow(1);
+                return new Membership(
+                        (Integer) row.get("id"),
+                        (String) row.get("description"),
+                        new Discount(
+                                (Integer) row.get("discount_id"),
+                                (Double) row.get("discount_rate"),
+                                (Integer) row.get("discount_category_id"),
+                                (String) row.get("discount_category_desc")
+                        )
+                );
+            } else {
+                log.log_Error("Membership [", membership_id, "] does not exist in record.");
+                throw new InvalidMembership("Membership [" + membership_id + "] does not exist in record.");
+            }
+        } catch (DbQueryException e) {
+            log.log_Error("Failed to fetch membership [", membership_id, "]'s record.");
+            throw new FailedDbFetch("Failed to fetch membership [" + membership_id + "]'s record.", e);
+        }
+    }
+
+    /**
+     * Gets all membership types from records
+     *
+     * @param session_token Session token
+     * @return List of Membership DTOs
+     * @throws FailedDbFetch           when new record could not be fetched back
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     */
+    public List<Membership> getMemberships(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable table = this.db_delegate.getMemberships(session_token);
+            List<Membership> list = new ArrayList<>();
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                list.add(new Membership(
+                                (Integer) row.get("id"),
+                                (String) row.get("description"),
+                                new Discount(
+                                        (Integer) row.get("discount_id"),
+                                        (Double) row.get("discount_rate"),
+                                        (Integer) row.get("discount_category_id"),
+                                        (String) row.get("discount_category_desc")
+                                )
+                        )
+                );
+            }
+            return list;
+        } catch (DbQueryException e) {
+            log.log_Error("Failed to fetch memberships from records.");
+            throw new FailedDbFetch("Failed to fetch memberships from records.", e);
         }
     }
 }

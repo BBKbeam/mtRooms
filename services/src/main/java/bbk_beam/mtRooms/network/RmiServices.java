@@ -465,6 +465,40 @@ public class RmiServices implements IRmiServices {
     }
 
     @Override
+    public Membership getMembership(Token session_token, Integer membership_id) throws InvalidMembership, FailedDbFetch, Unauthorised, RemoteException {
+        try {
+            ClientWrapper client = sessions.getClient(session_token);
+            return client.getReservationAccess().getMembership(session_token, membership_id);
+        } catch (SessionExpiredException e) {
+            log.log_Error("Client [", session_token, "] token has expired..");
+            throw new Unauthorised("Client [" + session_token + "] token has expired.", e);
+        } catch (SessionInvalidException e) {
+            log.log_Error("Client [", session_token, "] is invalid.");
+            throw new Unauthorised("Client [" + session_token + "] is invalid.", e);
+        } catch (FailedAllocation e) {
+            log.log_Error("Could not allocated a ReservationSession for client [", session_token, "].");
+            throw new Unauthorised("Could not allocated a ReservationSession for client [" + session_token + "].", e);
+        }
+    }
+
+    @Override
+    public List<Membership> getMemberships(Token session_token) throws FailedDbFetch, Unauthorised, RemoteException {
+        try {
+            ClientWrapper client = sessions.getClient(session_token);
+            return client.getReservationAccess().getMemberships(session_token);
+        } catch (SessionExpiredException e) {
+            log.log_Error("Client [", session_token, "] token has expired..");
+            throw new Unauthorised("Client [" + session_token + "] token has expired.", e);
+        } catch (SessionInvalidException e) {
+            log.log_Error("Client [", session_token, "] is invalid.");
+            throw new Unauthorised("Client [" + session_token + "] is invalid.", e);
+        } catch (FailedAllocation e) {
+            log.log_Error("Could not allocated a ReservationSession for client [", session_token, "].");
+            throw new Unauthorised("Could not allocated a ReservationSession for client [" + session_token + "].", e);
+        }
+    }
+
+    @Override
     public synchronized List<Room> search(Token session_token, RoomProperty properties) throws FailedDbFetch, Unauthorised, RemoteException {
         try {
             ClientWrapper client = sessions.getClient(session_token);

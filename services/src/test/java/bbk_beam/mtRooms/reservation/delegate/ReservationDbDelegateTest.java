@@ -52,7 +52,7 @@ public class ReservationDbDelegateTest {
         this.userAccDbAccess = null;
         this.reservationDbAccess = null;
         this.reservationDbDelegate = null;
-        //Files.deleteIfExists(Paths.get("reservation_db_delegate_test.db"));
+        Files.deleteIfExists(Paths.get("reservation_db_delegate_test.db"));
     }
 
     @Test

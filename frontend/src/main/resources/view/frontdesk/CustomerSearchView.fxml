@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+<TabPane fx:id="search_tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bbk_beam.mtRooms.ui.controller.frontdesk.CustomerSearchController">
+  <tabs>
+    <Tab fx:id="search_tab" closable="false" text="Search customer">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <VBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Customer search" underline="true">
+                           <font>
+                              <Font size="14.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Text>
+                        <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="90.0" prefWidth="355.0">
+                           <children>
+                              <TextField fx:id="id_field" layoutX="14.0" layoutY="14.0" promptText="Customer ID" />
+                              <Button fx:id="searchID_button" layoutX="194.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleSearchIDAction" prefHeight="26.0" prefWidth="146.0" text="Search by ID" />
+                              <TextField fx:id="surname_field" layoutX="14.0" layoutY="50.0" promptText="Customer surname" />
+                              <Button fx:id="searchSurname_button" layoutX="194.0" layoutY="50.0" mnemonicParsing="false" onAction="#handleSearchSurnameAction" text="Search by Surname" />
+                           </children>
+                        </Pane>
+                        <Pane fx:id="result_pane" minHeight="0.0" />
+                     </children>
+                  </VBox>
+               </children></AnchorPane>
+      </content>
+    </Tab>
+    <Tab fx:id="result_tab" closable="false" disable="true" text="Results">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Search results:" VBox.vgrow="SOMETIMES">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Text>
+                        <GridPane alignment="TOP_CENTER">
+                           <columnConstraints>
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="300.0" prefWidth="300.0" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+                           </columnConstraints>
+                           <rowConstraints>
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                           </rowConstraints>
+                           <children>
+                              <Button defaultButton="true" mnemonicParsing="false" onAction="#handleOkAction" text="OK" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                 <GridPane.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </GridPane.margin>
+                              </Button>
+                              <ChoiceBox fx:id="customer_choiceBox" prefWidth="300.0" GridPane.rowIndex="2">
+                                 <GridPane.margin>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </GridPane.margin>
+                              </ChoiceBox>
+                           </children>
+                        </GridPane>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </VBox>
+               </children></AnchorPane>
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>

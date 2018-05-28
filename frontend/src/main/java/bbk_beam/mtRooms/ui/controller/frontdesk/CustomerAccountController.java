@@ -1,6 +1,5 @@
 package bbk_beam.mtRooms.ui.controller.frontdesk;
 
-import bbk_beam.mtRooms.admin.dto.AccountType;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
@@ -18,8 +17,6 @@ import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CustomerAccountController implements Initializable {

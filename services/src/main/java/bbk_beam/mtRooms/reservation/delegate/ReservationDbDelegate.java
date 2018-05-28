@@ -140,7 +140,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         String query = "SELECT "
                 + "id, title, name, surname "
                 + "FROM Customer "
-                + "WHERE surname = \"" + surname + "\"";
+                + "WHERE surname = \"" + surname + "\" COLLATE NOCASE";
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 

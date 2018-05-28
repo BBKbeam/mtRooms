@@ -144,6 +144,7 @@ public class RmiServer extends RmiServices {
                 }
             }));
 
+            log.log("Server working directory: ", System.getProperty("user.dir"));
             server.init();
             log.log("mtRooms server init successful.");
             System.out.println("mtRooms server ready... Press Ctrl+C to terminate.");

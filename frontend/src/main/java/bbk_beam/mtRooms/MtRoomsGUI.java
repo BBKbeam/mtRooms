@@ -11,7 +11,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.commons.cli.*;
 
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class MtRoomsGUI extends Application {
@@ -90,6 +89,7 @@ public class MtRoomsGUI extends Application {
             if(cmd.hasOption("address"))
                 server_address = cmd.getOptionValue("address");
 
+            log.log("Client working directory: ", System.getProperty("user.dir"));
             sessionManager = new SessionManager(server_address, port);
             launch(argv);
         } catch (ParseException e) {

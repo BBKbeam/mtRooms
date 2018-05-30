@@ -1,5 +1,6 @@
 package bbk_beam.mtRooms.ui.controller.frontdesk;
 
+import bbk_beam.mtRooms.MtRoomsGUI;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiServices;
@@ -7,15 +8,19 @@ import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
+import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.text.Text;
 import javafx.util.Pair;
 
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -54,6 +59,7 @@ public class CustomerSearchController implements Initializable {
     public TextField surname_field;
     public Button searchID_button;
     public Button searchSurname_button;
+    public Text searchSummary_TextField;
     public ChoiceBox<CustomerEntry> customer_choiceBox;
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
@@ -90,6 +96,7 @@ public class CustomerSearchController implements Initializable {
         this.resourceBundle = resources;
         searchID_button.setDisable(true);
         searchSurname_button.setDisable(true);
+
         id_field.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("^\\d*$")) {
                 id_field.setStyle("-fx-control-inner-background: red;");
@@ -102,11 +109,27 @@ public class CustomerSearchController implements Initializable {
                 searchID_button.setDisable(false);
             }
         });
+
+        id_field.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                searchID_button.setDefaultButton(true);
+                searchSurname_button.setDefaultButton(false);
+            }
+        });
+
         surname_field.textProperty().addListener((observable, oldValue, newValue) -> {
+            surname_field.setStyle("-fx-control-inner-background: white;");
             if (newValue.isEmpty())
                 searchSurname_button.setDisable(true);
             else
                 searchSurname_button.setDisable(false);
+        });
+
+        surname_field.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                searchID_button.setDefaultButton(false);
+                searchSurname_button.setDefaultButton(true);
+            }
         });
     }
 
@@ -133,8 +156,31 @@ public class CustomerSearchController implements Initializable {
      */
     private void showSearchResults(List<Pair<Integer, String>> result_list) {
         loadSearchResultsChoiceBox(result_list);
+        searchSummary_TextField.setText(this.resourceBundle.getString("TextField_CustomerAccountFound") + result_list.size());
         result_tab.setDisable(false);
         search_tabPane.getSelectionModel().select(result_tab);
+    }
+
+    /**
+     * Shows the customer account view
+     * @param customer Customer DTO
+     */
+    private void showCustomerAccountView(Customer customer) throws LoginException, Unauthorised, InvalidMembership, FailedDbFetch {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MtRoomsGUI.class.getResource("/view/frontdesk/CustomerAccountView.fxml"));
+        loader.setResources(resourceBundle);
+        try {
+            SplitPane pane = loader.load();
+            CustomerAccountController customerAccountController = loader.getController();
+            customerAccountController.setSessionManager(sessionManager);
+            customerAccountController.setMainWindowController(this);
+            customerAccountController.loadCustomer(customer);
+            mainWindowController.main_pane.setFitToWidth(true);
+            mainWindowController.main_pane.setFitToHeight(true);
+            mainWindowController.main_pane.setContent(pane);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -164,20 +210,44 @@ public class CustomerSearchController implements Initializable {
         IRmiServices services = this.sessionManager.getServices();
         try {
             List<Pair<Integer, String>> list = services.findCustomer(this.sessionManager.getToken(), surname_field.getText());
-            if (list.isEmpty())
-                System.out.println("No customers found by this surname: '" + surname_field.getText() + "'.");
-            showSearchResults(list);
+            if (!list.isEmpty())
+                showSearchResults(list);
+            else {
+                surname_field.setStyle("-fx-control-inner-background: red;");
+                ///TODO status bar msg
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (LoginException e) {
             e.printStackTrace();
-        } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace();
-        } catch (FailedDbFetch failedDbFetch) {
-            failedDbFetch.printStackTrace();
+        } catch (Unauthorised e) {
+            e.printStackTrace();
+        } catch (FailedDbFetch e) {
+            e.printStackTrace();
         }
     }
 
     public void handleOkAction(ActionEvent actionEvent) {
+        try {
+            IRmiServices services = this.sessionManager.getServices();
+            Integer customer_id = customer_choiceBox.getSelectionModel().getSelectedItem().id;
+            Customer customer = services.getCustomerAccount(this.sessionManager.getToken(), customer_id);
+            showCustomerAccountView(customer);
+        } catch (InvalidCustomer invalidCustomer) {
+            invalidCustomer.printStackTrace();
+        } catch (DbQueryException e) {
+            e.printStackTrace();
+        } catch (Unauthorised e) {
+            e.printStackTrace();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (LoginException e) {
+            e.printStackTrace();
+        } catch (FailedDbFetch e) {
+            e.printStackTrace();
+        } catch (InvalidMembership e) {
+            e.printStackTrace();
+        }
+
     }
 }

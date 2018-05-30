@@ -191,7 +191,7 @@ public class MainWindowController implements Initializable {
     /**
      * Shows the customer search pane
      */
-    public void showSearchCustomerPane() {
+    public void showCustomerSearchPane() {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(MtRoomsGUI.class.getResource("/view/frontdesk/CustomerSearchView.fxml"));
         loader.setResources(resourceBundle);
@@ -256,7 +256,7 @@ public class MainWindowController implements Initializable {
     public void handleViewReservationAction(ActionEvent actionEvent) {
         this.administration_menu.setVisible(false);
         this.status_left.setText("");
-        showSearchCustomerPane();
+        showCustomerSearchPane();
     }
 
     @FXML

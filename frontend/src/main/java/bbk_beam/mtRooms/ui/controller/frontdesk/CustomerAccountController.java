@@ -12,6 +12,7 @@ import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 
@@ -24,6 +25,7 @@ public class CustomerAccountController implements Initializable {
     private SessionManager sessionManager;
     private ResourceBundle resourceBundle;
 
+    public Button closeAccount_Button;
     public Label customer_field;
     public Text id_field;
     public Text address1_field;
@@ -38,7 +40,7 @@ public class CustomerAccountController implements Initializable {
     public Text membershipType_field;
     public Text discountRate_field;
 
-    private void loadCustomer(Customer customer) throws LoginException, Unauthorised, RemoteException, InvalidMembership, FailedDbFetch {
+    void loadCustomer(Customer customer) throws LoginException, Unauthorised, RemoteException, InvalidMembership, FailedDbFetch {
         IRmiServices services = this.sessionManager.getServices();
         Membership membership = services.getMembership(sessionManager.getToken(), customer.membershipTypeID());
 
@@ -74,5 +76,13 @@ public class CustomerAccountController implements Initializable {
     @FXML
     public void handleEditAction(ActionEvent actionEvent) {
         //TODO
+    }
+
+    public void handleCloseAccountAction(ActionEvent actionEvent) {
+        //TODO
+    }
+
+    public void setMainWindowController(CustomerSearchController customerSearchController) {
+
     }
 }

@@ -69,7 +69,7 @@ public class LoginController implements Initializable {
                     password.setStyle("-fx-control-inner-background: white;");
                     this.mainWindowController.logout.setVisible(true);
                     this.mainWindowController.setViewMenuAccessibility();
-                    this.mainWindowController.showSearchCustomerPane();
+                    this.mainWindowController.showCustomerSearchPane();
                     log.log("Login OK: " + username.getText());
                 } else {
                     username.setStyle("-fx-control-inner-background: red;");

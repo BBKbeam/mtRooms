@@ -7,6 +7,7 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Membership;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
+import bbk_beam.mtRooms.ui.controller.MainWindowController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
@@ -23,6 +24,7 @@ import java.util.ResourceBundle;
 public class CustomerAccountController implements Initializable {
     private final Logger log = Logger.getLoggerInstance(CustomerAccountController.class.getName());
     private SessionManager sessionManager;
+    private MainWindowController mainWindowController;
     private ResourceBundle resourceBundle;
 
     public Button closeAccount_Button;
@@ -40,6 +42,15 @@ public class CustomerAccountController implements Initializable {
     public Text membershipType_field;
     public Text discountRate_field;
 
+    /**
+     * Load a Customer DTO info into the fields
+     * @param customer Customer DTO
+     * @throws LoginException
+     * @throws Unauthorised
+     * @throws RemoteException
+     * @throws InvalidMembership
+     * @throws FailedDbFetch
+     */
     void loadCustomer(Customer customer) throws LoginException, Unauthorised, RemoteException, InvalidMembership, FailedDbFetch {
         IRmiServices services = this.sessionManager.getServices();
         Membership membership = services.getMembership(sessionManager.getToken(), customer.membershipTypeID());
@@ -62,6 +73,8 @@ public class CustomerAccountController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
+        closeAccount_Button.setMinSize(64,64);
+        closeAccount_Button.setMaxSize(64,64);
     }
 
     /**
@@ -73,16 +86,22 @@ public class CustomerAccountController implements Initializable {
         this.sessionManager = sessionManager;
     }
 
+    /**
+     * Sets the parent controller
+     *
+     * @param mainWindowController MainWindowController instance
+     */
+    public void setMainWindowController(MainWindowController mainWindowController) {
+        this.mainWindowController = mainWindowController;
+    }
+
     @FXML
     public void handleEditAction(ActionEvent actionEvent) {
         //TODO
     }
 
+    @FXML
     public void handleCloseAccountAction(ActionEvent actionEvent) {
-        //TODO
-    }
-
-    public void setMainWindowController(CustomerSearchController customerSearchController) {
-
+        this.mainWindowController.showCustomerSearchPane();
     }
 }

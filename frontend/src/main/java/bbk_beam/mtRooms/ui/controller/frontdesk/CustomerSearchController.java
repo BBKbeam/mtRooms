@@ -11,13 +11,18 @@ import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
 import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
+import eadjlib.logger.Logger;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.io.IOException;
@@ -28,6 +33,11 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class CustomerSearchController implements Initializable {
+    private final Logger log = Logger.getLoggerInstance(CustomerSearchController.class.getName());
+    private SessionManager sessionManager;
+    private MainWindowController mainWindowController;
+    private ResourceBundle resourceBundle;
+
     /**
      * Local DTO class to store customer ID and full names for use in a ChoiceBox
      */
@@ -59,11 +69,9 @@ public class CustomerSearchController implements Initializable {
     public TextField surname_field;
     public Button searchID_button;
     public Button searchSurname_button;
+    public Button createCustomer_button;
     public Text searchSummary_TextField;
     public ChoiceBox<CustomerEntry> customer_choiceBox;
-    private SessionManager sessionManager;
-    private MainWindowController mainWindowController;
-    private ResourceBundle resourceBundle;
 
     /**
      * Loads the choice box with the customer results finding
@@ -114,6 +122,7 @@ public class CustomerSearchController implements Initializable {
             if (newValue) {
                 searchID_button.setDefaultButton(true);
                 searchSurname_button.setDefaultButton(false);
+                createCustomer_button.setDefaultButton(false);
             }
         });
 
@@ -129,8 +138,17 @@ public class CustomerSearchController implements Initializable {
             if (newValue) {
                 searchID_button.setDefaultButton(false);
                 searchSurname_button.setDefaultButton(true);
+                createCustomer_button.setDefaultButton(false);
             }
         });
+
+        createCustomer_button.focusedProperty().addListener(((observable, oldValue, newValue) -> {
+            if(newValue) {
+                searchID_button.setDefaultButton(false);
+                searchSurname_button.setDefaultButton(false);
+                createCustomer_button.setDefaultButton(true);
+            }
+        }));
     }
 
     /**
@@ -161,6 +179,51 @@ public class CustomerSearchController implements Initializable {
         search_tabPane.getSelectionModel().select(result_tab);
     }
 
+    private void showCreateCustomerPane() {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MtRoomsGUI.class.getResource("/view/frontdesk/CustomerCreationView.fxml"));
+        loader.setResources(resourceBundle);
+        try {
+            AnchorPane pane = loader.load();
+            CustomerCreationController customerCreationController = loader.getController();
+            customerCreationController.setSessionManager(sessionManager);
+            customerCreationController.setMainWindowController(this.mainWindowController);
+            customerCreationController.loadMembershipChoiceBox();
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setOnHiding(event -> {
+                System.out.println("checking if new customer was created...");
+                if(customerCreationController.getCreatedCustomer().isPresent()) {
+                    try {
+                        System.out.println("New customer created...");
+                        //TODO
+                        showCustomerAccountView(customerCreationController.getCreatedCustomer().get());
+                    } catch (LoginException e) {
+                        e.printStackTrace();
+                    } catch (Unauthorised unauthorised) {
+                        unauthorised.printStackTrace();
+                    } catch (InvalidMembership invalidMembership) {
+                        invalidMembership.printStackTrace();
+                    } catch (FailedDbFetch failedDbFetch) {
+                        failedDbFetch.printStackTrace();
+                    }
+                }
+            });
+            Scene scene = new Scene(pane);
+            dialog.setScene(scene);
+            dialog.show();
+        } catch (IOException e) {
+            log.log_Error("Could not load the 'about' dialog.");
+            log.log_Exception(e);
+        } catch (LoginException e) {
+            e.printStackTrace(); //loadMembershipChoiceBox
+        } catch (Unauthorised unauthorised) {
+            unauthorised.printStackTrace(); //loadMembershipChoiceBox
+        } catch (FailedDbFetch failedDbFetch) {
+            failedDbFetch.printStackTrace(); //loadMembershipChoiceBox
+        }
+    }
+
     /**
      * Shows the customer account view
      * @param customer Customer DTO
@@ -173,7 +236,7 @@ public class CustomerSearchController implements Initializable {
             SplitPane pane = loader.load();
             CustomerAccountController customerAccountController = loader.getController();
             customerAccountController.setSessionManager(sessionManager);
-            customerAccountController.setMainWindowController(this);
+            customerAccountController.setMainWindowController(this.mainWindowController);
             customerAccountController.loadCustomer(customer);
             mainWindowController.main_pane.setFitToWidth(true);
             mainWindowController.main_pane.setFitToHeight(true);
@@ -189,7 +252,7 @@ public class CustomerSearchController implements Initializable {
         IRmiServices services = this.sessionManager.getServices();
         try {
             Customer customer = services.getCustomerAccount(this.sessionManager.getToken(), Integer.valueOf(id_field.getText()));
-            System.out.println(customer);
+            showCustomerAccountView(customer);
         } catch (DbQueryException e) {
             e.printStackTrace();
         } catch (InvalidCustomer invalidCustomer) {
@@ -201,6 +264,10 @@ public class CustomerSearchController implements Initializable {
             e.printStackTrace();
         } catch (Unauthorised unauthorised) {
             unauthorised.printStackTrace();
+        } catch (FailedDbFetch failedDbFetch) {
+            failedDbFetch.printStackTrace();
+        } catch (InvalidMembership invalidMembership) {
+            invalidMembership.printStackTrace();
         }
     }
 
@@ -227,6 +294,12 @@ public class CustomerSearchController implements Initializable {
         }
     }
 
+    @FXML
+    public void handleCreateCustomerAction(ActionEvent actionEvent) {
+        showCreateCustomerPane();
+    }
+
+    @FXML
     public void handleOkAction(ActionEvent actionEvent) {
         try {
             IRmiServices services = this.sessionManager.getServices();

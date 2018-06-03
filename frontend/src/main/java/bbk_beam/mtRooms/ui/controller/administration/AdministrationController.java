@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.ui.controller.administration;
 import bbk_beam.mtRooms.MtRoomsGUI;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
+import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import bbk_beam.mtRooms.ui.model.administration.UserAccount;
 import bbk_beam.mtRooms.ui.model.administration.UserAccountTable;
@@ -38,18 +39,6 @@ public class AdministrationController implements Initializable {
     private UserAccountTable userAccountTable; //Model
     private SessionManager sessionManager;
 
-    /**
-     * Helper method for showing an alert dialog
-     *
-     * @param msg Message to print in the dialog
-     */
-    private void showErrorAlert(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(this.resourceBundle.getString("ErrorDialogTitle_Generic"));
-        alert.setHeaderText(msg);
-        alert.showAndWait();
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
@@ -84,11 +73,23 @@ public class AdministrationController implements Initializable {
             this.userAccountTable.reloadData();
             this.account_table.setItems(this.userAccountTable.getUserData());
         } catch (LoginException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_LoggedOut"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
+            );
         } catch (Unauthorised e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_Unauthorized"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
+            );
         } catch (RemoteException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_RemoteIssue"));
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_RemoteIssue"),
+                    e
+            );
         }
     }
 
@@ -119,16 +120,31 @@ public class AdministrationController implements Initializable {
             }
             stage.show();
         } catch (RemoteException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_RemoteIssue"));
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_RemoteIssue"),
+                    e
+            );
         } catch (IOException e) {
             log.log_Error("Could not load UI scene.");
             log.log_Exception(e);
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_UiResourceIO"));
-            e.printStackTrace();
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_UiResourceIO"),
+                    e
+            );
         } catch (LoginException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_LoggedOut"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
+            );
         } catch (Unauthorised e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_Unauthorized"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
+            );
         }
     }
 

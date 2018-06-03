@@ -6,15 +6,35 @@
 <?import javafx.scene.text.*?>
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bbk_beam.mtRooms.ui.controller.frontdesk.CustomerCreationController">
    <children>
-      <ButtonBar fx:id="button_bar" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="34.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <buttons>
-          <Button fx:id="cancel_Button" cancelButton="true" mnemonicParsing="false" onAction="#handleCloseAction" text="Cancel" />
-            <Button fx:id="save_Button" mnemonicParsing="false" onAction="#handleSaveAction" text="Save" />
-        </buttons>
-         <padding>
-            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-         </padding>
-      </ButtonBar>
+      <Pane fx:id="customerIdLabel_Pane" prefHeight="34.0" AnchorPane.bottomAnchor="366.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="400.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="34.0" prefWidth="200.0">
+               <children>
+                  <Label fx:id="id_Label" text="Customer #">
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <padding>
+                        <Insets bottom="3.0" left="5.0" right="5.0" top="3.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </Pane>
+      <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="34.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <ButtonBar fx:id="button_bar" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="34.0">
+              <buttons>
+                <Button fx:id="cancel_Button" cancelButton="true" mnemonicParsing="false" onAction="#handleCloseAction" text="Cancel" />
+                  <Button fx:id="save_Button" mnemonicParsing="false" onAction="#handleSaveAction" text="Save" />
+              </buttons>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </ButtonBar>
+         </children>
+      </HBox>
       <Accordion fx:id="accordion_section" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="34.0">
          <panes>
             <TitledPane fx:id="personalDetails_TitlePane" animated="false" text="Personal details">

@@ -6,6 +6,7 @@ import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.exception.RemoteFailure;
 import bbk_beam.mtRooms.network.IRmiServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
+import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.administration.AdministrationController;
 import bbk_beam.mtRooms.ui.controller.frontdesk.CustomerSearchController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
@@ -43,18 +44,6 @@ public class MainWindowController implements Initializable {
     public MenuItem administration;
     public Menu administration_menu;
     public MenuItem about;
-
-    /**
-     * Helper method for showing an alert dialog
-     *
-     * @param msg Message to print in the dialog
-     */
-    private void showErrorAlert(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(this.resourceBundle.getString("ErrorDialogTitle_Generic"));
-        alert.setHeaderText(msg);
-        alert.showAndWait();
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -217,11 +206,19 @@ public class MainWindowController implements Initializable {
             this.showLoginPane();
             this.status_left.setText("Logged out of user session...");
         } catch (RemoteFailure e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_RemoteFailure"));
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_RemoteFailure"),
+                    e
+            );
         } catch (AuthenticationFailureException e) {
             log.log_Error("Token was found invalid by server.");
             log.log_Exception(e);
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_InvalidSessionToken"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_InvalidSessionToken")
+            );
             this.logout.setVisible(false);
             this.disableAllViewMenuOptions();
             this.showLoginPane();

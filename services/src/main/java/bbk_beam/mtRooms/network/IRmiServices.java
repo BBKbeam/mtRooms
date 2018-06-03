@@ -286,10 +286,10 @@ public interface IRmiServices extends Remote {
      * @param session_token Session token
      * @param membership_id Membership ID
      * @return Membership DTO
-     * @throws InvalidMembership       when Membership ID does not match any in records
-     * @throws FailedDbFetch           when new record could not be fetched back
-     * @throws Unauthorised    when client is not authorised to access the resource
-     * @throws RemoteException when network issues occur during the remote call
+     * @throws InvalidMembership when Membership ID does not match any in records
+     * @throws FailedDbFetch     when membership record could not be fetched
+     * @throws Unauthorised      when client is not authorised to access the resource
+     * @throws RemoteException   when network issues occur during the remote call
      */
     Membership getMembership(Token session_token, Integer membership_id) throws InvalidMembership, FailedDbFetch, Unauthorised, RemoteException;
 
@@ -298,7 +298,7 @@ public interface IRmiServices extends Remote {
      *
      * @param session_token Session token
      * @return List of Membership DTOs
-     * @throws FailedDbFetch           when new record could not be fetched back
+     * @throws FailedDbFetch   when new record could not be fetched back
      * @throws Unauthorised    when client is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */

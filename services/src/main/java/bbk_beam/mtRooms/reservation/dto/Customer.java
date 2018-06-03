@@ -209,6 +209,15 @@ public class Customer implements Serializable {
     }
 
     /**
+     * Sets the customer's title
+     *
+     * @param title Title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
      * Gets the customer's name
      *
      * @return Customer name
@@ -218,12 +227,30 @@ public class Customer implements Serializable {
     }
 
     /**
+     * Sets the customer's name
+     *
+     * @param name Name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * Gets the customer's surname
      *
      * @return Customer's surname
      */
     public String surname() {
         return this.surname;
+    }
+
+    /**
+     * Sets the customer's surname
+     *
+     * @param surname Surname
+     */
+    public void setSurname(String surname) {
+        this.surname = surname;
     }
 
     /**

@@ -7,6 +7,8 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Membership;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
+import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
+import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
@@ -16,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 import java.net.URL;
@@ -24,12 +27,18 @@ import java.time.Instant;
 import java.util.*;
 
 public class CustomerCreationController implements Initializable {
+    private enum ControllerRole {NEW_CUSTOMER, EDIT_CUSTOMER}
+
     private final Logger log = Logger.getLoggerInstance(CustomerCreationController.class.getName());
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
     private ResourceBundle resourceBundle;
     private HashMap<TextField, Boolean> field_validation = new HashMap<>();
     private Customer customer = null;
+    private ControllerRole controllerRole;
+
+    public Pane customerIdLabel_Pane;
+    public Label id_Label;
     public ButtonBar button_bar;
     public Button cancel_Button;
     public Button save_Button;
@@ -54,6 +63,22 @@ public class CustomerCreationController implements Initializable {
     public Text discountRate_field;
 
     /**
+     * Loads the Membership ChoiceBox content
+     *
+     * @throws LoginException  when there is not a current session
+     * @throws FailedDbFetch   when membership records could not be fetched
+     * @throws Unauthorised    when this client session is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
+     */
+    private void loadMembershipChoiceBox() throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
+        IRmiServices services = this.sessionManager.getServices();
+        List<Membership> membershipList = services.getMemberships(sessionManager.getToken());
+        ObservableList<Membership> membershipObservableList = FXCollections.observableList(membershipList);
+        membership_ChoiceBox.setItems(membershipObservableList);
+        membership_ChoiceBox.getSelectionModel().selectFirst();
+    }
+
+    /**
      * Checks the field validation HashMap
      *
      * @return Field validation state (true = all valid, false = 1+ invalid)
@@ -69,8 +94,81 @@ public class CustomerCreationController implements Initializable {
         return valid_flag;
     }
 
+    /**
+     * Saves a new customer to records
+     *
+     * @throws FailedDbWrite   when customer could not be saved to records
+     * @throws LoginException  when there is not a current session
+     * @throws FailedDbFetch   when membership or customer records could not be fetched
+     * @throws Unauthorised    when this client session is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
+     */
+    private void saveNewCustomer() throws LoginException, Unauthorised, RemoteException, FailedDbWrite, FailedDbFetch {
+        Customer new_customer = new Customer(
+                membership_ChoiceBox.getSelectionModel().getSelectedItem().id(),
+                Date.from(Instant.now()),
+                title_field.getText(),
+                name_field.getText(),
+                surname_field.getText(),
+                address1_field.getText(),
+                (address2_field.getText().isEmpty() ? null : address2_field.getText()),
+                postcode_field.getText(),
+                city_field.getText(),
+                (county_field.getText().isEmpty() ? null : county_field.getText()),
+                country_field.getText(),
+                phone1_field.getText(),
+                (phone2_field.getText().isEmpty() ? null : phone2_field.getText()),
+                email_field.getText()
+        );
+
+        IRmiServices services = this.sessionManager.getServices();
+        try {
+            this.customer = services.createNewCustomer(this.sessionManager.getToken(), new_customer);
+            log.log("New customer created: [", this.customer.customerID(), "].");
+        } catch (FailedDbWrite e) {
+            log.log_Error("Failed to save customer: ", new_customer);
+            throw e;
+        } catch (FailedDbFetch e) {
+            log.log_Error("Failed to fetch back saved customer from records.");
+            throw e;
+        }
+    }
+
+    /**
+     * Updates a customer's records
+     *
+     * @throws FailedDbWrite   when customer could not be saved to records
+     * @throws LoginException  when there is not a current session
+     * @throws Unauthorised    when this client session is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
+     */
+    private void saveEditedCustomer() throws LoginException, Unauthorised, RemoteException, FailedDbWrite {
+        this.customer.setTitle(title_field.getText());
+        this.customer.setName(name_field.getText());
+        this.customer.setSurname(surname_field.getText());
+        this.customer.setAddress1(address1_field.getText());
+        this.customer.setAddress2((address2_field.getText().isEmpty() ? null : address2_field.getText()));
+        this.customer.setPostCode(postcode_field.getText());
+        this.customer.setCity(city_field.getText());
+        this.customer.setCounty((county_field.getText().isEmpty() ? null : county_field.getText()));
+        this.customer.setCountry(country_field.getText());
+        this.customer.setPhone1(phone1_field.getText());
+        this.customer.setPhone2((phone2_field.getText().isEmpty() ? null : phone2_field.getText()));
+        this.customer.setEmail(email_field.getText());
+        this.customer.setMembershipTypeID(membership_ChoiceBox.getSelectionModel().getSelectedItem().id());
+
+        IRmiServices services = this.sessionManager.getServices();
+        try {
+            services.saveCustomerChangesToDB(this.sessionManager.getToken(), this.customer);
+        } catch (FailedDbWrite e) {
+            log.log_Error("Failed to save customer changes to records.");
+            throw e;
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        //TODO add regex for special fields (email, phone..)
         this.resourceBundle = resources;
         accordion_section.setExpandedPane(personalDetails_TitlePane);
 
@@ -199,19 +297,57 @@ public class CustomerCreationController implements Initializable {
     }
 
     /**
-     * Loads the Membership ChoiceBox content
+     * Loads a Customer into the fields
      *
-     * @throws LoginException
-     * @throws FailedDbFetch
-     * @throws Unauthorised
-     * @throws RemoteException
+     * @param customer Customer DTO
+     * @throws InvalidMembership when the customer has an invalid membership ID (doesn't exist in records)
+     * @throws LoginException    when there is not a current session
+     * @throws FailedDbFetch     when membership or records or customer could not be fetched
+     * @throws Unauthorised      when this client session is not authorised to access the resource
+     * @throws RemoteException   when network issues occur during the remote call
      */
-    void loadMembershipChoiceBox() throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
-        IRmiServices services = this.sessionManager.getServices();
-        List<Membership> membershipList = services.getMemberships(sessionManager.getToken());
-        ObservableList<Membership> membershipObservableList = FXCollections.observableList(membershipList);
-        membership_ChoiceBox.setItems(membershipObservableList);
-        membership_ChoiceBox.getSelectionModel().selectFirst();
+    void loadCustomer(Customer customer) throws LoginException, Unauthorised, RemoteException, FailedDbFetch, InvalidMembership {
+        this.customer = customer;
+
+        try {
+            loadMembershipChoiceBox();
+        } catch (FailedDbFetch e) {
+            log.log_Error("Failed to fetch memberships from records.");
+            throw e;
+        }
+
+        if (this.customer == null) {
+            controllerRole = ControllerRole.NEW_CUSTOMER;
+            customerIdLabel_Pane.setVisible(false);
+        } else {
+            controllerRole = ControllerRole.EDIT_CUSTOMER;
+            customerIdLabel_Pane.setVisible(true);
+            IRmiServices services = this.sessionManager.getServices();
+
+            try {
+                Membership membership = services.getMembership(sessionManager.getToken(), customer.membershipTypeID());
+                this.id_Label.setText(this.resourceBundle.getString("Label_Customer") + " #" + customer.customerID());
+                this.title_field.setText(customer.title());
+                this.name_field.setText(customer.name());
+                this.surname_field.setText(customer.surname());
+                this.address1_field.setText(customer.address1());
+                this.address2_field.setText((customer.address2() == null ? "" : customer.address2()));
+                this.city_field.setText(customer.city());
+                this.postcode_field.setText(customer.postCode());
+                this.county_field.setText((customer.county() == null ? "" : customer.county()));
+                this.country_field.setText(customer.country());
+                this.phone1_field.setText(customer.phone1());
+                this.phone2_field.setText((customer.phone2() == null ? "" : customer.phone2()));
+                this.email_field.setText(customer.email());
+                this.membership_ChoiceBox.getSelectionModel().select(membership);
+            } catch (InvalidMembership e) {
+                log.log_Error("Customer [", customer.customerID(), "] has an invalid membership [", customer.membershipTypeID(), "].");
+                throw e;
+            } catch (FailedDbFetch e) {
+                log.log_Error("Failed to fetch Membership type [", customer.membershipTypeID(), "] from records. ");
+                throw e;
+            }
+        }
     }
 
     /**
@@ -219,7 +355,7 @@ public class CustomerCreationController implements Initializable {
      *
      * @return Customer if created
      */
-    Optional<Customer> getCreatedCustomer() {
+    Optional<Customer> getCustomer() {
         return Optional.ofNullable(this.customer);
     }
 
@@ -231,48 +367,58 @@ public class CustomerCreationController implements Initializable {
 
     @FXML
     public void handleSaveAction(ActionEvent actionEvent) {
-        if (checkValidationFlags()) {
-            IRmiServices services = this.sessionManager.getServices();
-            try {
-                this.customer = services.createNewCustomer(
-                        this.sessionManager.getToken(),
-                        new Customer(
-                                membership_ChoiceBox.getSelectionModel().getSelectedItem().id(),
-                                Date.from(Instant.now()),
-                                title_field.getText(),
-                                name_field.getText(),
-                                surname_field.getText(),
-                                address1_field.getText(),
-                                (address2_field.getText().isEmpty() ? null : address2_field.getText()),
-                                postcode_field.getText(),
-                                city_field.getText(),
-                                (county_field.getText().isEmpty() ? null : county_field.getText()),
-                                country_field.getText(),
-                                phone1_field.getText(),
-                                (phone2_field.getText().isEmpty() ? null : phone2_field.getText()),
-                                email_field.getText()
-                        )
-                );
-                log.log("New customer created: ", customer);
+        try {
+            if (checkValidationFlags()) {
+                switch (this.controllerRole) {
+                    case NEW_CUSTOMER:
+                        saveNewCustomer();
+                        log.log("Customer [", this.customer.customerID(), "] added.");
+                        mainWindowController.status_left.setText(this.resourceBundle.getString("Status_CustomerCreated"));
+                        break;
+                    case EDIT_CUSTOMER:
+                        saveEditedCustomer();
+                        log.log("Customer [", this.customer.customerID(), "] updated.");
+                        mainWindowController.status_left.setText(this.resourceBundle.getString("Status_CustomerUpdated"));
+                        break;
+                }
                 save_Button.getScene().getWindow().hide();
-            } catch (FailedDbWrite failedDbWrite) {
-                failedDbWrite.printStackTrace();
-            } catch (FailedDbFetch failedDbFetch) {
-                failedDbFetch.printStackTrace();
-            } catch (Unauthorised unauthorised) {
-                unauthorised.printStackTrace();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } catch (LoginException e) {
-                e.printStackTrace();
+            } else {
+                AlertDialog.showAlert(
+                        Alert.AlertType.ERROR,
+                        this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                        this.resourceBundle.getString("ErrorMsg_RequiredFieldsUnfilled")
+                );
             }
-            //TODO
-        } else {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle(this.resourceBundle.getString("ErrorDialogTitle_Generic"));
-            alert.setHeaderText(this.resourceBundle.getString("ErrorMsg_RequiredFieldsUnfilled"));
-            alert.showAndWait();
+        } catch (FailedDbWrite e) {
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_FailedBackendWrite"),
+                    e
+            );
+        } catch (FailedDbFetch e) {
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_FailedBackendFetch"),
+                    e
+            );
+        } catch (Unauthorised e) {
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
+            );
+        } catch (RemoteException e) {
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_RemoteFailure"),
+                    e
+            );
+        } catch (LoginException e) {
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
+            );
         }
-
     }
 }

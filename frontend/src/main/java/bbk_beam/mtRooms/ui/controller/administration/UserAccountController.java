@@ -6,6 +6,7 @@ import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
+import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import bbk_beam.mtRooms.ui.model.administration.UserAccount;
 import eadjlib.logger.Logger;
@@ -46,18 +47,6 @@ public class UserAccountController implements Initializable {
     }
 
     /**
-     * Helper method for showing an alert dialog
-     *
-     * @param msg Message to print in the dialog
-     */
-    private void showErrorAlert(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(this.resourceBundle.getString("ErrorDialogTitle_UserAccount"));
-        alert.setHeaderText(msg);
-        alert.showAndWait();
-    }
-
-    /**
      * Loader helper for account type choice box
      *
      * @throws LoginException  when method is used outside a session
@@ -81,21 +70,29 @@ public class UserAccountController implements Initializable {
         String password = this.pwd_field.getText();
         AccountType account_type = this.accountType_choiceBox.getValue();
         if (username.length() < MIN_USERNAME_LENGTH) {
-            String sb = this.resourceBundle.getString("ErrorMsg_UsernameTooShort") +
+            String msg = this.resourceBundle.getString("ErrorMsg_UsernameTooShort") +
                     "\n" +
                     this.resourceBundle.getString("InfoMsg_UsernameMinLength") +
                     " " +
                     MIN_USERNAME_LENGTH;
-            showErrorAlert(sb);
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    msg
+            );
             return false;
         }
         if (password.length() < MIN_PWD_LENGTH) {
-            String sb = this.resourceBundle.getString("ErrorMsg_PwdTooShort") +
+            String msg = this.resourceBundle.getString("ErrorMsg_PwdTooShort") +
                     "\n" +
                     this.resourceBundle.getString("InfoMsg_PwdMinLength") +
                     " " +
                     MIN_PWD_LENGTH;
-            showErrorAlert(sb);
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    msg
+            );
             return false;
         }
         IRmiServices services = this.sessionManager.getServices();
@@ -108,13 +105,29 @@ public class UserAccountController implements Initializable {
             );
             return true;
         } catch (Unauthorised unauthorised) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_Unauthorized"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
+            );
         } catch (AccountExistenceException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_UserAccountOverride"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_UserAccountOverride")
+            );
         } catch (RemoteException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_RemoteIssue"));
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_RemoteIssue"),
+                    e
+            );
         } catch (LoginException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_LoggedOut"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
+            );
         }
         return false;
     }
@@ -130,8 +143,12 @@ public class UserAccountController implements Initializable {
             if (!this.pwd_field.getText().isEmpty()) {
                 String password = this.pwd_field.getText();
                 if (password.length() < MIN_PWD_LENGTH) {
-                    showErrorAlert(this.resourceBundle.getString("ErrorMsg_PwdTooShort") +
-                            "\n" + this.resourceBundle.getString("InfoMsg_PwdMinLength") + MIN_PWD_LENGTH);
+                    AlertDialog.showAlert(
+                            Alert.AlertType.ERROR,
+                            this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                            this.resourceBundle.getString("ErrorMsg_PwdTooShort") + "\n" +
+                                    this.resourceBundle.getString("InfoMsg_PwdMinLength") + MIN_PWD_LENGTH
+                    );
                     return false;
                 }
                 try {
@@ -141,7 +158,11 @@ public class UserAccountController implements Initializable {
                             password
                     );
                 } catch (AccountOverrideException e) {
-                    showErrorAlert(this.resourceBundle.getString("ErrorMsg_SamePwdOverride"));
+                    AlertDialog.showAlert(
+                            Alert.AlertType.ERROR,
+                            this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                            this.resourceBundle.getString("ErrorMsg_SamePwdOverride")
+                    );
                     return false;
                 }
             }
@@ -158,19 +179,39 @@ public class UserAccountController implements Initializable {
                                 this.userAccount.getId()
                         );
                 } catch (AccountOverrideException e) {
-                    showErrorAlert(this.resourceBundle.getString("ErrorMsg_CurrentUserOverride"));
+                    AlertDialog.showExceptionAlert(
+                            this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                            this.resourceBundle.getString("ErrorMsg_CurrentUserOverride"),
+                            e
+                    );
                     return false;
                 }
             }
             return true;
         } catch (AccountExistenceException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_InvalidUserAccount"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_InvalidUserAccount")
+            );
         } catch (LoginException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_LoggedOut"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
+            );
         } catch (RemoteException e) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_RemoteIssue"));
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_RemoteIssue"),
+                    e
+            );
         } catch (Unauthorised unauthorised) {
-            showErrorAlert(this.resourceBundle.getString("ErrorMsg_Unauthorized"));
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
+            );
         }
         return false;
     }

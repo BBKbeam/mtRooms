@@ -9,6 +9,7 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
 import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
+import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
@@ -85,18 +86,6 @@ public class CustomerSearchController implements Initializable {
         }
         customer_choiceBox.setItems(FXCollections.observableList(customer_list));
         customer_choiceBox.getSelectionModel().select(0);
-    }
-
-    /**
-     * Helper method for showing an alert dialog
-     *
-     * @param msg Message to print in the dialog
-     */
-    private void showErrorAlert(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(this.resourceBundle.getString("ErrorDialogTitle_CustomerSearch"));
-        alert.setHeaderText(msg);
-        alert.showAndWait();
     }
 
     @Override
@@ -179,7 +168,10 @@ public class CustomerSearchController implements Initializable {
         search_tabPane.getSelectionModel().select(result_tab);
     }
 
-    private void showCreateCustomerPane() {
+    /**
+     * Shows the customer creation dialog
+     */
+    private void showCreateCustomerDialog() {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(MtRoomsGUI.class.getResource("/view/frontdesk/CustomerCreationView.fxml"));
         loader.setResources(resourceBundle);
@@ -188,16 +180,13 @@ public class CustomerSearchController implements Initializable {
             CustomerCreationController customerCreationController = loader.getController();
             customerCreationController.setSessionManager(sessionManager);
             customerCreationController.setMainWindowController(this.mainWindowController);
-            customerCreationController.loadMembershipChoiceBox();
+            customerCreationController.loadCustomer(null);
             Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setOnHiding(event -> {
-                System.out.println("checking if new customer was created...");
-                if(customerCreationController.getCreatedCustomer().isPresent()) {
+                if(customerCreationController.getCustomer().isPresent()) {
                     try {
-                        System.out.println("New customer created...");
-                        //TODO
-                        showCustomerAccountView(customerCreationController.getCreatedCustomer().get());
+                        showCustomerAccountView(customerCreationController.getCustomer().get());
                     } catch (LoginException e) {
                         e.printStackTrace();
                     } catch (Unauthorised unauthorised) {
@@ -213,14 +202,16 @@ public class CustomerSearchController implements Initializable {
             dialog.setScene(scene);
             dialog.show();
         } catch (IOException e) {
-            log.log_Error("Could not load the 'about' dialog.");
+            log.log_Error("Could not load the 'create customer' dialog.");
             log.log_Exception(e);
-        } catch (LoginException e) {
-            e.printStackTrace(); //loadMembershipChoiceBox
-        } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace(); //loadMembershipChoiceBox
-        } catch (FailedDbFetch failedDbFetch) {
-            failedDbFetch.printStackTrace(); //loadMembershipChoiceBox
+        } catch (LoginException e) { //from loadCustomer(..)
+            e.printStackTrace();
+        } catch (Unauthorised unauthorised) { //from loadCustomer(..)
+            unauthorised.printStackTrace();
+        } catch (FailedDbFetch failedDbFetch) { //from loadCustomer(..)
+            failedDbFetch.printStackTrace();
+        } catch (InvalidMembership invalidMembership) { //from loadCustomer(..)
+            invalidMembership.printStackTrace();
         }
     }
 
@@ -255,8 +246,12 @@ public class CustomerSearchController implements Initializable {
             showCustomerAccountView(customer);
         } catch (DbQueryException e) {
             e.printStackTrace();
-        } catch (InvalidCustomer invalidCustomer) {
-            showErrorAlert(resourceBundle.getString("ErrorMsg_InvalidCustomerID"));
+        } catch (InvalidCustomer e) {
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_CustomerSearch"),
+                    resourceBundle.getString("ErrorMsg_InvalidCustomerID")
+            );
             id_field.setStyle("-fx-control-inner-background: red;");
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -296,7 +291,7 @@ public class CustomerSearchController implements Initializable {
 
     @FXML
     public void handleCreateCustomerAction(ActionEvent actionEvent) {
-        showCreateCustomerPane();
+        showCreateCustomerDialog();
     }
 
     @FXML

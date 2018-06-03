@@ -109,7 +109,11 @@ public class UserAccountController implements Initializable {
         } catch (Unauthorised e) {
             this.alertDialog.showGenericError(e);
         } catch (AccountExistenceException e) {
-            this.alertDialog.showGenericError(e);
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_UserAccountOverride")
+            );
         } catch (RemoteException e) {
             this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
@@ -144,7 +148,11 @@ public class UserAccountController implements Initializable {
                             password
                     );
                 } catch (AccountOverrideException e) {
-                    this.alertDialog.showGenericError(e);
+                    AlertDialog.showAlert(
+                            Alert.AlertType.ERROR,
+                            this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                            this.resourceBundle.getString("ErrorMsg_SamePwdOverride")
+                    );
                     return false;
                 }
             }
@@ -161,13 +169,21 @@ public class UserAccountController implements Initializable {
                                 this.userAccount.getId()
                         );
                 } catch (AccountOverrideException e) {
-                    this.alertDialog.showGenericError(e);
+                    AlertDialog.showExceptionAlert(
+                            this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                            this.resourceBundle.getString("ErrorMsg_CurrentUserOverride"),
+                            e
+                    );
                     return false;
                 }
             }
             return true;
         } catch (AccountExistenceException e) {
-            this.alertDialog.showGenericError(e);
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
+                    this.resourceBundle.getString("ErrorMsg_InvalidUserAccount")
+            );
         } catch (LoginException e) {
             this.alertDialog.showGenericError(e);
         } catch (RemoteException e) {

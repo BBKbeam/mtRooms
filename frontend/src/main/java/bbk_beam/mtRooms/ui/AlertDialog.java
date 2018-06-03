@@ -1,7 +1,5 @@
 package bbk_beam.mtRooms.ui;
 
-import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
-import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.exception.RemoteFailure;
@@ -241,32 +239,6 @@ public class AlertDialog {
                 this.resourceBundle.getString("ErrorDialogTitle_Generic"),
                 this.resourceBundle.getString("ErrorMsg_UiResourceIO"),
                 e
-        );
-    }
-
-    /**
-     * Shows a generic alert dialog
-     *
-     * @param e AccountExistenceException exception
-     */
-    public void showGenericError(AccountExistenceException e) {
-        AlertDialog.showAlert(
-                Alert.AlertType.ERROR,
-                this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                this.resourceBundle.getString("ErrorMsg_UserAccountOverride")
-        );
-    }
-
-    /**
-     * Shows a generic alert dialog
-     *
-     * @param e AccountExistenceException exception
-     */
-    public void showGenericError(AccountOverrideException e) {
-        AlertDialog.showAlert(
-                Alert.AlertType.ERROR,
-                this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                this.resourceBundle.getString("ErrorMsg_SamePwdOverride")
         );
     }
 }

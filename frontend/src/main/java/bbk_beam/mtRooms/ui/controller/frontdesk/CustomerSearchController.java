@@ -35,6 +35,7 @@ import java.util.ResourceBundle;
 
 public class CustomerSearchController implements Initializable {
     private final Logger log = Logger.getLoggerInstance(CustomerSearchController.class.getName());
+    private AlertDialog alertDialog;
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
     private ResourceBundle resourceBundle;
@@ -73,6 +74,7 @@ public class CustomerSearchController implements Initializable {
     public Button createCustomer_button;
     public Text searchSummary_TextField;
     public ChoiceBox<CustomerEntry> customer_choiceBox;
+    public Button ok_button;
 
     /**
      * Loads the choice box with the customer results finding
@@ -91,6 +93,8 @@ public class CustomerSearchController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
+        this.alertDialog = new AlertDialog(resources);
+
         searchID_button.setDisable(true);
         searchSurname_button.setDisable(true);
 
@@ -132,7 +136,7 @@ public class CustomerSearchController implements Initializable {
         });
 
         createCustomer_button.focusedProperty().addListener(((observable, oldValue, newValue) -> {
-            if(newValue) {
+            if (newValue) {
                 searchID_button.setDefaultButton(false);
                 searchSurname_button.setDefaultButton(false);
                 createCustomer_button.setDefaultButton(true);
@@ -166,6 +170,11 @@ public class CustomerSearchController implements Initializable {
         searchSummary_TextField.setText(this.resourceBundle.getString("TextField_CustomerAccountFound") + result_list.size());
         result_tab.setDisable(false);
         search_tabPane.getSelectionModel().select(result_tab);
+        ok_button.defaultButtonProperty().bind(ok_button.focusedProperty());
+        if (result_list.size() == 1)
+            ok_button.requestFocus();
+        else
+            customer_choiceBox.requestFocus();
     }
 
     /**
@@ -184,17 +193,17 @@ public class CustomerSearchController implements Initializable {
             Stage dialog = new Stage();
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setOnHiding(event -> {
-                if(customerCreationController.getCustomer().isPresent()) {
+                if (customerCreationController.getCustomer().isPresent()) {
                     try {
                         showCustomerAccountView(customerCreationController.getCustomer().get());
+                    } catch (FailedDbFetch e) {
+                        this.alertDialog.showGenericError(e);
+                    } catch (InvalidMembership e) {
+                        this.alertDialog.showGenericError(e);
                     } catch (LoginException e) {
-                        e.printStackTrace();
-                    } catch (Unauthorised unauthorised) {
-                        unauthorised.printStackTrace();
-                    } catch (InvalidMembership invalidMembership) {
-                        invalidMembership.printStackTrace();
-                    } catch (FailedDbFetch failedDbFetch) {
-                        failedDbFetch.printStackTrace();
+                        this.alertDialog.showGenericError(e);
+                    } catch (Unauthorised e) {
+                        this.alertDialog.showGenericError(e);
                     }
                 }
             });
@@ -204,19 +213,21 @@ public class CustomerSearchController implements Initializable {
         } catch (IOException e) {
             log.log_Error("Could not load the 'create customer' dialog.");
             log.log_Exception(e);
-        } catch (LoginException e) { //from loadCustomer(..)
-            e.printStackTrace();
-        } catch (Unauthorised unauthorised) { //from loadCustomer(..)
-            unauthorised.printStackTrace();
-        } catch (FailedDbFetch failedDbFetch) { //from loadCustomer(..)
-            failedDbFetch.printStackTrace();
-        } catch (InvalidMembership invalidMembership) { //from loadCustomer(..)
-            invalidMembership.printStackTrace();
+            this.alertDialog.showGenericError(e);
+        } catch (LoginException e) {
+            this.alertDialog.showGenericError(e);
+        } catch (Unauthorised e) {
+            this.alertDialog.showGenericError(e);
+        } catch (FailedDbFetch e) {
+            this.alertDialog.showGenericError(e);
+        } catch (InvalidMembership e) {
+            this.alertDialog.showGenericError(e);
         }
     }
 
     /**
      * Shows the customer account view
+     *
      * @param customer Customer DTO
      */
     private void showCustomerAccountView(Customer customer) throws LoginException, Unauthorised, InvalidMembership, FailedDbFetch {
@@ -245,24 +256,22 @@ public class CustomerSearchController implements Initializable {
             Customer customer = services.getCustomerAccount(this.sessionManager.getToken(), Integer.valueOf(id_field.getText()));
             showCustomerAccountView(customer);
         } catch (DbQueryException e) {
-            e.printStackTrace();
+            log.log_Fatal("Db query in server was invalid. See server log for more info.");
+            log.log_Exception(e);
+            this.alertDialog.showGenericError(e);
         } catch (InvalidCustomer e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_CustomerSearch"),
-                    resourceBundle.getString("ErrorMsg_InvalidCustomerID")
-            );
+            this.alertDialog.showGenericError(e);
             id_field.setStyle("-fx-control-inner-background: red;");
         } catch (RemoteException e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
-            e.printStackTrace();
-        } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace();
-        } catch (FailedDbFetch failedDbFetch) {
-            failedDbFetch.printStackTrace();
-        } catch (InvalidMembership invalidMembership) {
-            invalidMembership.printStackTrace();
+            this.alertDialog.showGenericError(e);
+        } catch (Unauthorised e) {
+            this.alertDialog.showGenericError(e);
+        } catch (FailedDbFetch e) {
+            this.alertDialog.showGenericError(e);
+        } catch (InvalidMembership e) {
+            this.alertDialog.showGenericError(e);
         }
     }
 
@@ -279,13 +288,13 @@ public class CustomerSearchController implements Initializable {
                 ///TODO status bar msg
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         } catch (Unauthorised e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         } catch (FailedDbFetch e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         }
     }
 
@@ -301,20 +310,22 @@ public class CustomerSearchController implements Initializable {
             Integer customer_id = customer_choiceBox.getSelectionModel().getSelectedItem().id;
             Customer customer = services.getCustomerAccount(this.sessionManager.getToken(), customer_id);
             showCustomerAccountView(customer);
-        } catch (InvalidCustomer invalidCustomer) {
-            invalidCustomer.printStackTrace();
+        } catch (InvalidCustomer e) {
+            e.printStackTrace(); //TODO
         } catch (DbQueryException e) {
-            e.printStackTrace();
+            log.log_Fatal("Db query in server was invalid. See server log for more info.");
+            log.log_Exception(e);
+            this.alertDialog.showGenericError(e);
         } catch (Unauthorised e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         } catch (RemoteException e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         } catch (FailedDbFetch e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         } catch (InvalidMembership e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         }
 
     }

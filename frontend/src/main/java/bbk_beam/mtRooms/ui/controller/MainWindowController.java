@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 
 public class MainWindowController implements Initializable {
     private final Logger log = Logger.getLoggerInstance(MainWindowController.class.getName());
+    private AlertDialog alertDialog;
     private SessionManager sessionManager;
     private ResourceBundle resourceBundle;
     public Label status_left;
@@ -48,6 +49,7 @@ public class MainWindowController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
+        this.alertDialog = new AlertDialog(resources);
 
         ImageView logout_menuIcon = new ImageView(new Image("icon/account-logout-8x.png"));
         ImageView quit_menuIcon = new ImageView(new Image("icon/x-8x.png"));
@@ -149,7 +151,7 @@ public class MainWindowController implements Initializable {
             main_pane.setFitToHeight(true);
             main_pane.setContent(pane);
         } catch (IOException e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         }
     }
 
@@ -169,11 +171,11 @@ public class MainWindowController implements Initializable {
             main_pane.setFitToHeight(true);
             main_pane.setContent(pane);
         } catch (IOException e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
-            e.printStackTrace();
-        } catch (Unauthorised unauthorised) {
-            unauthorised.printStackTrace();
+            this.alertDialog.showGenericError(e);
+        } catch (Unauthorised e) {
+            this.alertDialog.showGenericError(e);
         }
     }
 
@@ -193,7 +195,7 @@ public class MainWindowController implements Initializable {
             main_pane.setFitToHeight(true);
             main_pane.setContent(pane);
         } catch (IOException e) {
-            e.printStackTrace();
+            this.alertDialog.showGenericError(e);
         }
     }
 
@@ -206,11 +208,7 @@ public class MainWindowController implements Initializable {
             this.showLoginPane();
             this.status_left.setText("Logged out of user session...");
         } catch (RemoteFailure e) {
-            AlertDialog.showExceptionAlert(
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_RemoteFailure"),
-                    e
-            );
+            this.alertDialog.showGenericError(e);
         } catch (AuthenticationFailureException e) {
             log.log_Error("Token was found invalid by server.");
             log.log_Exception(e);
@@ -246,6 +244,7 @@ public class MainWindowController implements Initializable {
         } catch (IOException e) {
             log.log_Error("Could not load the 'about' dialog.");
             log.log_Exception(e);
+            this.alertDialog.showGenericError(e);
         }
     }
 
@@ -282,12 +281,12 @@ public class MainWindowController implements Initializable {
             try {
                 services.optimiseReservationDatabase(this.sessionManager.getToken());
                 this.status_left.setText("Reservation DB optimised.");
-            } catch (Unauthorised unauthorised) {
-                unauthorised.printStackTrace();
+            } catch (Unauthorised e) {
+                this.alertDialog.showGenericError(e);
             } catch (RemoteException e) {
-                e.printStackTrace();
+                this.alertDialog.showGenericError(e);
             } catch (LoginException e) {
-                e.printStackTrace();
+                this.alertDialog.showGenericError(e);
             }
         }
     }
@@ -299,12 +298,12 @@ public class MainWindowController implements Initializable {
             try {
                 services.optimiseUserAccountDatabase(this.sessionManager.getToken());
                 this.status_left.setText("User account DB optimised.");
-            } catch (Unauthorised unauthorised) {
-                unauthorised.printStackTrace();
+            } catch (Unauthorised e) {
+                this.alertDialog.showGenericError(e);
             } catch (RemoteException e) {
-                e.printStackTrace();
+                this.alertDialog.showGenericError(e);
             } catch (LoginException e) {
-                e.printStackTrace();
+                this.alertDialog.showGenericError(e);
             }
         }
     }

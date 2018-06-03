@@ -1,12 +1,12 @@
 package bbk_beam.mtRooms.ui.controller;
 
 import bbk_beam.mtRooms.exception.RemoteFailure;
+import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -16,6 +16,7 @@ import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
     private final Logger log = Logger.getLoggerInstance(LoginController.class.getName());
+    private AlertDialog alertDialog;
     private ResourceBundle resourceBundle;
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
@@ -44,6 +45,7 @@ public class LoginController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
+        this.alertDialog = new AlertDialog(resources);
         this.validate.setDefaultButton(true);
     }
 
@@ -78,10 +80,7 @@ public class LoginController implements Initializable {
             } catch (RemoteFailure e) {
                 log.log_Error("A remote failure occurred...");
                 log.log_Exception(e);
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setTitle(this.resourceBundle.getString("ErrorDialogTitle_Generic"));
-                alert.setHeaderText(this.resourceBundle.getString("ErrorMsg_RemoteFailure"));
-                alert.showAndWait();
+                this.alertDialog.showGenericError(e);
             }
         }
     }

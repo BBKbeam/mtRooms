@@ -14,7 +14,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Modality;
@@ -35,6 +34,7 @@ public class AdministrationController implements Initializable {
     public TableColumn<UserAccount, String> pwd_change_col;
     public TableColumn<UserAccount, String> type_col;
     public TableColumn<UserAccount, Boolean> active_col;
+    private AlertDialog alertDialog;
     private ResourceBundle resourceBundle;
     private UserAccountTable userAccountTable; //Model
     private SessionManager sessionManager;
@@ -42,6 +42,8 @@ public class AdministrationController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
+        this.alertDialog = new AlertDialog(resources);
+
         id_col.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
         username_col.setCellValueFactory(cellData -> cellData.getValue().usernameProperty());
         created_col.setCellValueFactory(cellData -> cellData.getValue().createdProperty().asString());
@@ -73,23 +75,11 @@ public class AdministrationController implements Initializable {
             this.userAccountTable.reloadData();
             this.account_table.setItems(this.userAccountTable.getUserData());
         } catch (LoginException e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
-            );
+            this.alertDialog.showGenericError(e);
         } catch (Unauthorised e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
-            );
+            this.alertDialog.showGenericError(e);
         } catch (RemoteException e) {
-            AlertDialog.showExceptionAlert(
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_RemoteIssue"),
-                    e
-            );
+            this.alertDialog.showGenericError(e);
         }
     }
 
@@ -120,31 +110,15 @@ public class AdministrationController implements Initializable {
             }
             stage.show();
         } catch (RemoteException e) {
-            AlertDialog.showExceptionAlert(
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_RemoteIssue"),
-                    e
-            );
+            this.alertDialog.showGenericError(e);
         } catch (IOException e) {
             log.log_Error("Could not load UI scene.");
             log.log_Exception(e);
-            AlertDialog.showExceptionAlert(
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_UiResourceIO"),
-                    e
-            );
+            this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
-            );
+            this.alertDialog.showGenericError(e);
         } catch (Unauthorised e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
-            );
+            this.alertDialog.showGenericError(e);
         }
     }
 

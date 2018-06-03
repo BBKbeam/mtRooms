@@ -30,6 +30,7 @@ public class CustomerCreationController implements Initializable {
     private enum ControllerRole {NEW_CUSTOMER, EDIT_CUSTOMER}
 
     private final Logger log = Logger.getLoggerInstance(CustomerCreationController.class.getName());
+    private AlertDialog alertDialog;
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
     private ResourceBundle resourceBundle;
@@ -170,6 +171,8 @@ public class CustomerCreationController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         //TODO add regex for special fields (email, phone..)
         this.resourceBundle = resources;
+        this.alertDialog = new AlertDialog(resources);
+
         accordion_section.setExpandedPane(personalDetails_TitlePane);
 
         field_validation.put(title_field, false);
@@ -390,35 +393,15 @@ public class CustomerCreationController implements Initializable {
                 );
             }
         } catch (FailedDbWrite e) {
-            AlertDialog.showExceptionAlert(
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_FailedBackendWrite"),
-                    e
-            );
+            this.alertDialog.showGenericError(e);
         } catch (FailedDbFetch e) {
-            AlertDialog.showExceptionAlert(
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_FailedBackendFetch"),
-                    e
-            );
+            this.alertDialog.showGenericError(e);
         } catch (Unauthorised e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
-            );
+            this.alertDialog.showGenericError(e);
         } catch (RemoteException e) {
-            AlertDialog.showExceptionAlert(
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_RemoteFailure"),
-                    e
-            );
+            this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
-            );
+            this.alertDialog.showGenericError(e);
         }
     }
 }

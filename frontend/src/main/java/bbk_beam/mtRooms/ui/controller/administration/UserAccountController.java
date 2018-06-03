@@ -30,6 +30,7 @@ public class UserAccountController implements Initializable {
 
     public enum ScenarioType {EDIT_ACCOUNT, NEW_ACCOUNT}
 
+    private AlertDialog alertDialog;
     private SessionManager sessionManager;
     private ScenarioType scenarioType;
     private UserAccount userAccount;
@@ -44,6 +45,7 @@ public class UserAccountController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
+        this.alertDialog = new AlertDialog(resources);
     }
 
     /**
@@ -104,30 +106,14 @@ public class UserAccountController implements Initializable {
                     password
             );
             return true;
-        } catch (Unauthorised unauthorised) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
-            );
+        } catch (Unauthorised e) {
+            this.alertDialog.showGenericError(e);
         } catch (AccountExistenceException e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                    this.resourceBundle.getString("ErrorMsg_UserAccountOverride")
-            );
+            this.alertDialog.showGenericError(e);
         } catch (RemoteException e) {
-            AlertDialog.showExceptionAlert(
-                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                    this.resourceBundle.getString("ErrorMsg_RemoteIssue"),
-                    e
-            );
+            this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
-            );
+            this.alertDialog.showGenericError(e);
         }
         return false;
     }
@@ -158,11 +144,7 @@ public class UserAccountController implements Initializable {
                             password
                     );
                 } catch (AccountOverrideException e) {
-                    AlertDialog.showAlert(
-                            Alert.AlertType.ERROR,
-                            this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                            this.resourceBundle.getString("ErrorMsg_SamePwdOverride")
-                    );
+                    this.alertDialog.showGenericError(e);
                     return false;
                 }
             }
@@ -179,39 +161,19 @@ public class UserAccountController implements Initializable {
                                 this.userAccount.getId()
                         );
                 } catch (AccountOverrideException e) {
-                    AlertDialog.showExceptionAlert(
-                            this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                            this.resourceBundle.getString("ErrorMsg_CurrentUserOverride"),
-                            e
-                    );
+                    this.alertDialog.showGenericError(e);
                     return false;
                 }
             }
             return true;
         } catch (AccountExistenceException e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                    this.resourceBundle.getString("ErrorMsg_InvalidUserAccount")
-            );
+            this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                    this.resourceBundle.getString("ErrorMsg_LoggedOut")
-            );
+            this.alertDialog.showGenericError(e);
         } catch (RemoteException e) {
-            AlertDialog.showExceptionAlert(
-                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                    this.resourceBundle.getString("ErrorMsg_RemoteIssue"),
-                    e
-            );
-        } catch (Unauthorised unauthorised) {
-            AlertDialog.showAlert(
-                    Alert.AlertType.ERROR,
-                    this.resourceBundle.getString("ErrorDialogTitle_UserAccount"),
-                    this.resourceBundle.getString("ErrorMsg_Unauthorized")
-            );
+            this.alertDialog.showGenericError(e);
+        } catch (Unauthorised e) {
+            this.alertDialog.showGenericError(e);
         }
         return false;
     }

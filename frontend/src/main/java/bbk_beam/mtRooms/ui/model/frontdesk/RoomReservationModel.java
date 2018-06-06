@@ -3,6 +3,9 @@ package bbk_beam.mtRooms.ui.model.frontdesk;
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
 import javafx.beans.property.*;
 
+import java.time.Duration;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 public class RoomReservationModel {
@@ -14,9 +17,27 @@ public class RoomReservationModel {
     private IntegerProperty room_id = new SimpleIntegerProperty();
     private ObjectProperty<Date> in = new SimpleObjectProperty<>();
     private ObjectProperty<Date> out = new SimpleObjectProperty<>();
+    private StringProperty duration = new SimpleStringProperty();
     private IntegerProperty seated = new SimpleIntegerProperty();
     private StringProperty has_catering = new SimpleStringProperty();
     private StringProperty is_cancelled = new SimpleStringProperty();
+
+    /**
+     * Calculates the difference between 2 Dates and returns the duration
+     *
+     * @param start Start Date
+     * @param end   End Date
+     * @return Duration as a String formatted hh:mm
+     */
+    private static String calcDuration(Date start, Date end) {
+        ZonedDateTime from = ZonedDateTime.ofInstant(start.toInstant(), ZoneId.of("UTC"));
+        ZonedDateTime to = ZonedDateTime.ofInstant(end.toInstant(), ZoneId.of("UTC"));
+        Duration duration = Duration.between(from, to);
+        long duration_mns = duration.toMinutes();
+        long mns = duration_mns % 60;
+        long hours = duration_mns / 60;
+        return String.valueOf(hours) + ":" + (mns < 10 ? "0" + String.valueOf(mns) : String.valueOf(mns));
+    }
 
     /**
      * Constructor
@@ -30,6 +51,7 @@ public class RoomReservationModel {
         room_id.set(roomReservation.room().id());
         in.set(roomReservation.reservationStart());
         out.set(roomReservation.reservationEnd());
+        duration.set(calcDuration(roomReservation.reservationStart(), roomReservation.reservationEnd()));
         seated.set(roomReservation.seatedCount());
         has_catering.set(roomReservation.hasCateringRequired() ? CHECK : "");
         is_cancelled.set(roomReservation.isCancelled() ? CROSS : "");
@@ -132,6 +154,24 @@ public class RoomReservationModel {
      */
     public ObjectProperty<Date> outProperty() {
         return out;
+    }
+
+    /**
+     * Gets the duration of the booking
+     *
+     * @return Duration of the booking
+     */
+    public String duration() {
+        return this.duration.get();
+    }
+
+    /**
+     * Gets the duration property of the booking
+     *
+     * @return Duration property of the booking
+     */
+    public StringProperty durationProperty() {
+        return this.duration;
     }
 
     /**

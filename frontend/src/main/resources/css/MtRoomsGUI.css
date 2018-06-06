@@ -18,6 +18,10 @@
     -fx-font-style: italic;
 }
 
+.cell_middle_alignment {
+    -fx-alignment: center;
+}
+
 .close-button {
     -fx-min-height: 32px;
     -fx-min-width: 32px;

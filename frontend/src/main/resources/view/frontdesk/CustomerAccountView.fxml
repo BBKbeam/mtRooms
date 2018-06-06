@@ -220,33 +220,34 @@
                                        <content>
                                           <HBox>
                                              <children>
-                                                <TableView fx:id="reservation_Table">
+                                                <TableView fx:id="reservation_Table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                                   <columns>
-                                                    <TableColumn fx:id="reservationId_col" prefWidth="75.0" text="#" />
-                                                    <TableColumn fx:id="created_col" prefWidth="75.0" text="Created" />
+                                                    <TableColumn fx:id="reservationId_col" editable="false" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="#" />
+                                                    <TableColumn fx:id="created_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Created" />
                                                   </columns>
                                                    <HBox.margin>
                                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                    </HBox.margin>
                                                 </TableView>
-                                                <TableView fx:id="reservationDetails_Table">
+                                                <TableView fx:id="reservationDetails_Table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                                                   <columns>
-                                                    <TableColumn fx:id="room_col" prefWidth="75.0" text="Room">
+                                                    <TableColumn fx:id="room_col" editable="false" maxWidth="1.7976931348623157E308" prefWidth="-1.0" text="Room">
                                                          <columns>
-                                                            <TableColumn fx:id="buildingId_col" prefWidth="75.0" text="Building ID" />
-                                                            <TableColumn fx:id="floorId_col" prefWidth="75.0" text="Floor ID" />
-                                                            <TableColumn fx:id="roomId_col" prefWidth="75.0" text="Room ID" />
+                                                            <TableColumn fx:id="buildingId_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Building ID" />
+                                                            <TableColumn fx:id="floorId_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Floor ID" />
+                                                            <TableColumn fx:id="roomId_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Room ID" />
                                                          </columns>
                                                       </TableColumn>
-                                                      <TableColumn fx:id="timeSpan_col" prefWidth="75.0" text="Time Span">
+                                                      <TableColumn fx:id="timeSpan_col" editable="false" maxWidth="1.7976931348623157E308" prefWidth="-1.0" text="Time Span">
                                                          <columns>
-                                                          <TableColumn fx:id="in_col" prefWidth="75.0" text="In" />
-                                                            <TableColumn fx:id="out_col" prefWidth="75.0" text="Out" />
+                                                          <TableColumn fx:id="in_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="In" />
+                                                            <TableColumn fx:id="out_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Out" />
+                                                            <TableColumn fx:id="duration_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Duration" />
                                                          </columns>
                                                       </TableColumn>
-                                                      <TableColumn fx:id="seated_col" prefWidth="75.0" text="Seated" />
-                                                      <TableColumn fx:id="catering_col" prefWidth="75.0" text="Catering Opt." />
-                                                      <TableColumn fx:id="cancelled_col" prefWidth="75.0" text="Cancelled" />
+                                                      <TableColumn fx:id="seated_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Seated" />
+                                                      <TableColumn fx:id="catering_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Catering Opt." />
+                                                      <TableColumn fx:id="cancelled_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Cancelled" />
                                                   </columns>
                                                    <HBox.margin>
                                                       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

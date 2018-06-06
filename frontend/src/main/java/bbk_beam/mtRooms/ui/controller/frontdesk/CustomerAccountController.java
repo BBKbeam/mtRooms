@@ -73,6 +73,7 @@ public class CustomerAccountController implements Initializable {
     public TableColumn timeSpan_col;
     public TableColumn<RoomReservationModel, String> in_col;
     public TableColumn<RoomReservationModel, String> out_col;
+    public TableColumn<RoomReservationModel, String> duration_col;
     public TableColumn<RoomReservationModel, Integer> seated_col;
     public TableColumn<RoomReservationModel, String> catering_col;
     public TableColumn<RoomReservationModel, String> cancelled_col;
@@ -161,7 +162,16 @@ public class CustomerAccountController implements Initializable {
         loadReservationTable(this.customer);
     }
 
-    void  loadReservationTable(Customer customer) throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
+    /**
+     * Loads the ReservationTable with data
+     *
+     * @param customer Customer DTO
+     * @throws LoginException  when there is not a current session
+     * @throws FailedDbFetch   when membership or records or customer could not be fetched
+     * @throws Unauthorised    when this client session is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
+     */
+    void loadReservationTable(Customer customer) throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
         ReservationTable table = new ReservationTable(this.sessionManager);
         IRmiServices services = sessionManager.getServices();
         List<Reservation> reservations = services.getReservations(this.sessionManager.getToken(), customer);
@@ -170,6 +180,11 @@ public class CustomerAccountController implements Initializable {
         this.reservation_Table.getSelectionModel().selectFirst();
     }
 
+    /**
+     * Loads the RoomReservationDetailsTable with data
+     *
+     * @param reservation Reservation DTO
+     */
     void loadReservationDetailsTable(Reservation reservation) {
         RoomReservationTable table = new RoomReservationTable(this.sessionManager);
         table.loadData(reservation.rooms());
@@ -182,23 +197,34 @@ public class CustomerAccountController implements Initializable {
         this.alertDialog = new AlertDialog(resources);
         closeAccount_Button.setMinSize(64, 64);
         closeAccount_Button.setMaxSize(64, 64);
+
         //Reservation table
         reservationId_col.setCellValueFactory(cellData -> cellData.getValue().reservationIdProperty().asObject());
         created_col.setCellValueFactory(cellData -> cellData.getValue().createdProperty());
+
         reservation_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if( newValue != null ) {
+            if (newValue != null) {
                 loadReservationDetailsTable(reservation_Table.getSelectionModel().getSelectedItem().getReservation());
+                viewReservation_button.setText("View reservation");
             }
         });
+
         //Reservation details table
         buildingId_col.setCellValueFactory(cellData -> cellData.getValue().buildingIdProperty().asObject());
         floorId_col.setCellValueFactory(cellData -> cellData.getValue().floorIdProperty().asObject());
         roomId_col.setCellValueFactory(cellDate -> cellDate.getValue().roomIdProperty().asObject());
         in_col.setCellValueFactory(cellData -> cellData.getValue().inProperty().asString());
         out_col.setCellValueFactory(cellData -> cellData.getValue().outProperty().asString());
+        duration_col.setCellValueFactory(cellData -> cellData.getValue().durationProperty());
         seated_col.setCellValueFactory(cellData -> cellData.getValue().seatedProperty().asObject());
         catering_col.setCellValueFactory(cellData -> cellData.getValue().cateringProperty());
         cancelled_col.setCellValueFactory(cellData -> cellData.getValue().cancelledProperty());
+
+        reservationDetails_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                viewReservation_button.setText("View room details");
+            }
+        });
     }
 
     /**

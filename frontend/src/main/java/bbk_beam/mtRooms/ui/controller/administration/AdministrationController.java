@@ -1,7 +1,9 @@
 package bbk_beam.mtRooms.ui.controller.administration;
 
 import bbk_beam.mtRooms.MtRoomsGUI;
+import bbk_beam.mtRooms.admin.dto.Account;
 import bbk_beam.mtRooms.exception.LoginException;
+import bbk_beam.mtRooms.network.IRmiServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
@@ -22,6 +24,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AdministrationController implements Initializable {
@@ -72,8 +75,10 @@ public class AdministrationController implements Initializable {
      */
     public void loadAccountTable() {
         try {
-            this.userAccountTable.reloadData();
-            this.account_table.setItems(this.userAccountTable.getUserData());
+            IRmiServices services = sessionManager.getServices();
+            List<Account> accountList = services.getAccounts(sessionManager.getToken());
+            this.userAccountTable.loadData(accountList);
+            this.account_table.setItems(this.userAccountTable.getData());
         } catch (LoginException e) {
             this.alertDialog.showGenericError(e);
         } catch (Unauthorised e) {

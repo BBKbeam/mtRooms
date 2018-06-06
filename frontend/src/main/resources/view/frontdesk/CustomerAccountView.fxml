@@ -23,7 +23,7 @@
                </children>
             </HBox>
          </children></AnchorPane>
-    <AnchorPane minHeight="0.0" minWidth="0.0">
+    <AnchorPane>
          <children>
             <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <tabs>
@@ -214,14 +214,59 @@
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <Button layoutX="282.0" layoutY="327.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="145.0" text="View" />
-                              <Button layoutX="441.0" layoutY="327.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="145.0" text="New reservation" />
-                              <TableView layoutX="82.0" layoutY="34.0" prefHeight="200.0" prefWidth="200.0">
-                                <columns>
-                                  <TableColumn prefWidth="75.0" text="C1" />
-                                  <TableColumn prefWidth="75.0" text="C2" />
-                                </columns>
-                              </TableView>
+                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <ScrollPane>
+                                       <content>
+                                          <HBox>
+                                             <children>
+                                                <TableView fx:id="reservation_Table">
+                                                  <columns>
+                                                    <TableColumn fx:id="reservationId_col" prefWidth="75.0" text="#" />
+                                                    <TableColumn fx:id="created_col" prefWidth="75.0" text="Created" />
+                                                  </columns>
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </HBox.margin>
+                                                </TableView>
+                                                <TableView fx:id="reservationDetails_Table">
+                                                  <columns>
+                                                    <TableColumn fx:id="room_col" prefWidth="75.0" text="Room">
+                                                         <columns>
+                                                            <TableColumn fx:id="buildingId_col" prefWidth="75.0" text="Building ID" />
+                                                            <TableColumn fx:id="floorId_col" prefWidth="75.0" text="Floor ID" />
+                                                            <TableColumn fx:id="roomId_col" prefWidth="75.0" text="Room ID" />
+                                                         </columns>
+                                                      </TableColumn>
+                                                      <TableColumn fx:id="timeSpan_col" prefWidth="75.0" text="Time Span">
+                                                         <columns>
+                                                          <TableColumn fx:id="in_col" prefWidth="75.0" text="In" />
+                                                            <TableColumn fx:id="out_col" prefWidth="75.0" text="Out" />
+                                                         </columns>
+                                                      </TableColumn>
+                                                      <TableColumn fx:id="seated_col" prefWidth="75.0" text="Seated" />
+                                                      <TableColumn fx:id="catering_col" prefWidth="75.0" text="Catering Opt." />
+                                                      <TableColumn fx:id="cancelled_col" prefWidth="75.0" text="Cancelled" />
+                                                  </columns>
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </HBox.margin>
+                                                </TableView>
+                                             </children>
+                                          </HBox>
+                                       </content>
+                                    </ScrollPane>
+                                    <ButtonBar prefHeight="40.0" prefWidth="200.0">
+                                      <buttons>
+                                          <Button fx:id="viewReservation_button" mnemonicParsing="false" onAction="#handleViewReservationAction" prefHeight="26.0" prefWidth="145.0" text="View" />
+                                          <Button fx:id="newReservation_button" mnemonicParsing="false" onAction="#handleNewReservationAction" prefHeight="26.0" prefWidth="145.0" text="New reservation" />
+                                      </buttons>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </ButtonBar>
+                                 </children>
+                              </VBox>
                            </children>
                         </AnchorPane>
                      </content>
@@ -230,12 +275,19 @@
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <TableView layoutX="89.0" layoutY="72.0" prefHeight="200.0" prefWidth="200.0">
-                                <columns>
-                                  <TableColumn prefWidth="75.0" text="C1" />
-                                  <TableColumn prefWidth="75.0" text="C2" />
-                                </columns>
-                              </TableView>
+                              <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <TableView>
+                                      <columns>
+                                        <TableColumn prefWidth="75.0" text="C1" />
+                                        <TableColumn prefWidth="75.0" text="C2" />
+                                      </columns>
+                                       <VBox.margin>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </VBox.margin>
+                                    </TableView>
+                                 </children>
+                              </VBox>
                            </children></AnchorPane>
                      </content>
                   </Tab>

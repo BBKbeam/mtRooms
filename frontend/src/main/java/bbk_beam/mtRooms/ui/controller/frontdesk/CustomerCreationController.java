@@ -183,6 +183,7 @@ public class CustomerCreationController implements Initializable {
         field_validation.put(postcode_field, false);
         field_validation.put(country_field, false);
         field_validation.put(phone1_field, false);
+        field_validation.put(phone2_field, true); //empty at start is valid
         field_validation.put(email_field, false);
 
         title_field.textProperty().addListener((observable, oldValue, newValue) -> {
@@ -255,7 +256,7 @@ public class CustomerCreationController implements Initializable {
             }
         });
 
-        phone1_field.textProperty().addListener((observable, oldValue, newValue) -> {
+        phone1_field.textProperty().addListener((observable, oldValue, newValue) -> { //TODO regex
             if (newValue.length() < 3) {
                 phone1_field.setStyle("-fx-control-inner-background: red;");
                 field_validation.put(phone1_field, false);
@@ -265,7 +266,17 @@ public class CustomerCreationController implements Initializable {
             }
         });
 
-        email_field.textProperty().addListener((observable, oldValue, newValue) -> {
+        phone2_field.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.isEmpty()) {
+                //TODO regex
+//                field_validation.put(phone2_field, true);//or false
+            } else {
+                phone2_field.setStyle("-fx-control-inner-background: white;");
+                field_validation.put(phone2_field, true);
+            }
+        });
+
+        email_field.textProperty().addListener((observable, oldValue, newValue) -> { //TODO regex
             if (newValue.length() < 3) {
                 email_field.setStyle("-fx-control-inner-background: red;");
                 field_validation.put(email_field, false);

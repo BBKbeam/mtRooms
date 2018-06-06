@@ -6,11 +6,16 @@ import bbk_beam.mtRooms.network.IRmiServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Membership;
+import bbk_beam.mtRooms.reservation.dto.Reservation;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
 import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
+import bbk_beam.mtRooms.ui.model.frontdesk.ReservationModel;
+import bbk_beam.mtRooms.ui.model.frontdesk.ReservationTable;
+import bbk_beam.mtRooms.ui.model.frontdesk.RoomReservationModel;
+import bbk_beam.mtRooms.ui.model.frontdesk.RoomReservationTable;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +24,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -27,6 +34,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class CustomerAccountController implements Initializable {
@@ -37,8 +45,10 @@ public class CustomerAccountController implements Initializable {
     private ResourceBundle resourceBundle;
     private Customer customer;
 
+    //Top bar
     public Button closeAccount_Button;
     public Label customer_field;
+    //Customer tab
     public Text id_field;
     public Text address1_field;
     public Text address2_field;
@@ -51,6 +61,23 @@ public class CustomerAccountController implements Initializable {
     public Text creationDate_field;
     public Text membershipType_field;
     public Text discountRate_field;
+    //Reservation tab
+    public TableView<ReservationModel> reservation_Table;
+    public TableColumn<ReservationModel, Integer> reservationId_col;
+    public TableColumn<ReservationModel, String> created_col;
+    public TableView<RoomReservationModel> reservationDetails_Table;
+    public TableColumn room_col;
+    public TableColumn<RoomReservationModel, Integer> buildingId_col;
+    public TableColumn<RoomReservationModel, Integer> floorId_col;
+    public TableColumn<RoomReservationModel, Integer> roomId_col;
+    public TableColumn timeSpan_col;
+    public TableColumn<RoomReservationModel, String> in_col;
+    public TableColumn<RoomReservationModel, String> out_col;
+    public TableColumn<RoomReservationModel, Integer> seated_col;
+    public TableColumn<RoomReservationModel, String> catering_col;
+    public TableColumn<RoomReservationModel, String> cancelled_col;
+    public Button viewReservation_button;
+    public Button newReservation_button;
 
     /**
      * Shows the customer edit dialog
@@ -130,15 +157,48 @@ public class CustomerAccountController implements Initializable {
         this.creationDate_field.setText(customer.accountCreationDate().toString());
         this.membershipType_field.setText(membership.description());
         this.discountRate_field.setText(String.valueOf(membership.discount().rate()));
+
+        loadReservationTable(this.customer);
+    }
+
+    void  loadReservationTable(Customer customer) throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
+        ReservationTable table = new ReservationTable(this.sessionManager);
+        IRmiServices services = sessionManager.getServices();
+        List<Reservation> reservations = services.getReservations(this.sessionManager.getToken(), customer);
+        table.loadData(reservations);
+        this.reservation_Table.setItems(table.getData());
+        this.reservation_Table.getSelectionModel().selectFirst();
+    }
+
+    void loadReservationDetailsTable(Reservation reservation) {
+        RoomReservationTable table = new RoomReservationTable(this.sessionManager);
+        table.loadData(reservation.rooms());
+        this.reservationDetails_Table.setItems(table.getData());
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
         this.alertDialog = new AlertDialog(resources);
-
         closeAccount_Button.setMinSize(64, 64);
         closeAccount_Button.setMaxSize(64, 64);
+        //Reservation table
+        reservationId_col.setCellValueFactory(cellData -> cellData.getValue().reservationIdProperty().asObject());
+        created_col.setCellValueFactory(cellData -> cellData.getValue().createdProperty());
+        reservation_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if( newValue != null ) {
+                loadReservationDetailsTable(reservation_Table.getSelectionModel().getSelectedItem().getReservation());
+            }
+        });
+        //Reservation details table
+        buildingId_col.setCellValueFactory(cellData -> cellData.getValue().buildingIdProperty().asObject());
+        floorId_col.setCellValueFactory(cellData -> cellData.getValue().floorIdProperty().asObject());
+        roomId_col.setCellValueFactory(cellDate -> cellDate.getValue().roomIdProperty().asObject());
+        in_col.setCellValueFactory(cellData -> cellData.getValue().inProperty().asString());
+        out_col.setCellValueFactory(cellData -> cellData.getValue().outProperty().asString());
+        seated_col.setCellValueFactory(cellData -> cellData.getValue().seatedProperty().asObject());
+        catering_col.setCellValueFactory(cellData -> cellData.getValue().cateringProperty());
+        cancelled_col.setCellValueFactory(cellData -> cellData.getValue().cancelledProperty());
     }
 
     /**
@@ -167,5 +227,15 @@ public class CustomerAccountController implements Initializable {
     @FXML
     public void handleCloseAccountAction(ActionEvent actionEvent) {
         this.mainWindowController.showCustomerSearchPane();
+    }
+
+    @FXML
+    public void handleViewReservationAction(ActionEvent actionEvent) {
+        //TODO
+    }
+
+    @FXML
+    public void handleNewReservationAction(ActionEvent actionEvent) {
+        //TODO
     }
 }

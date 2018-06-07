@@ -6,6 +6,8 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.text.SimpleDateFormat;
+
 public class ReservationModel {
     Reservation reservation;
     private IntegerProperty reservationId = new SimpleIntegerProperty();
@@ -19,7 +21,8 @@ public class ReservationModel {
     public ReservationModel(Reservation reservation) {
         this.reservation = reservation;
         this.reservationId.set(reservation.id());
-        this.created.set(reservation.createdTimestamp().toString());
+        SimpleDateFormat df = new SimpleDateFormat("YYYY/MM/dd - HH:mm:ss");
+        this.created.set(df.format(reservation.createdTimestamp()));
     }
 
     /**

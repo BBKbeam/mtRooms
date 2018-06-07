@@ -1,8 +1,12 @@
 package bbk_beam.mtRooms.ui.model.frontdesk;
 
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
-import javafx.beans.property.*;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -11,12 +15,13 @@ import java.util.Date;
 public class RoomReservationModel {
     static private final String CHECK = "\u2713";
     static private final String CROSS = "\u274C";
+    static private final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY/MM/dd - HH:mm:ss");
     private RoomReservation roomReservation;
     private IntegerProperty building_id = new SimpleIntegerProperty();
     private IntegerProperty floor_id = new SimpleIntegerProperty();
     private IntegerProperty room_id = new SimpleIntegerProperty();
-    private ObjectProperty<Date> in = new SimpleObjectProperty<>();
-    private ObjectProperty<Date> out = new SimpleObjectProperty<>();
+    private StringProperty in = new SimpleStringProperty();
+    private StringProperty out = new SimpleStringProperty();
     private StringProperty duration = new SimpleStringProperty();
     private IntegerProperty seated = new SimpleIntegerProperty();
     private StringProperty has_catering = new SimpleStringProperty();
@@ -49,8 +54,8 @@ public class RoomReservationModel {
         building_id.set(roomReservation.room().buildingID());
         floor_id.set(roomReservation.room().floorID());
         room_id.set(roomReservation.room().id());
-        in.set(roomReservation.reservationStart());
-        out.set(roomReservation.reservationEnd());
+        in.set(dateFormat.format(roomReservation.reservationStart()));
+        out.set(dateFormat.format(roomReservation.reservationEnd()));
         duration.set(calcDuration(roomReservation.reservationStart(), roomReservation.reservationEnd()));
         seated.set(roomReservation.seatedCount());
         has_catering.set(roomReservation.hasCateringRequired() ? CHECK : "");
@@ -126,7 +131,7 @@ public class RoomReservationModel {
      * @return Starting timestamp
      */
     public Date inTimestamp() {
-        return in.get();
+        return roomReservation.reservationStart();
     }
 
     /**
@@ -134,7 +139,7 @@ public class RoomReservationModel {
      *
      * @return Starting timestamp property
      */
-    public ObjectProperty<Date> inProperty() {
+    public StringProperty inProperty() {
         return in;
     }
 
@@ -144,7 +149,7 @@ public class RoomReservationModel {
      * @return Ending timestamp
      */
     public Date outTimestamp() {
-        return out.get();
+        return roomReservation.reservationEnd();
     }
 
     /**
@@ -152,7 +157,7 @@ public class RoomReservationModel {
      *
      * @return Ending timestamp property
      */
-    public ObjectProperty<Date> outProperty() {
+    public StringProperty outProperty() {
         return out;
     }
 

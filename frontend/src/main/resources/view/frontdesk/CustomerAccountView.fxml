@@ -25,7 +25,7 @@
          </children></AnchorPane>
     <AnchorPane>
          <children>
-            <TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <TabPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <tabs>
                   <Tab text="Customer">
                      <content>
@@ -212,62 +212,107 @@
                   </Tab>
                   <Tab text="Reservations">
                      <content>
-                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                        <AnchorPane minHeight="-Infinity" minWidth="-Infinity">
                            <children>
-                              <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <ScrollPane>
-                                       <content>
-                                          <HBox>
+                                    <GridPane maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="-Infinity" minWidth="210.0">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                                       </rowConstraints>
+                                       <children>
+                                          <HBox fillHeight="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" prefWidth="200.0">
                                              <children>
-                                                <TableView fx:id="reservation_Table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-                                                  <columns>
-                                                    <TableColumn fx:id="reservationId_col" editable="false" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="#" />
-                                                    <TableColumn fx:id="created_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Created" />
-                                                  </columns>
+                                                <Button fx:id="newReservation_button" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleNewReservationAction" prefHeight="26.0" prefWidth="100.0" text="New">
                                                    <HBox.margin>
-                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
                                                    </HBox.margin>
-                                                </TableView>
-                                                <TableView fx:id="reservationDetails_Table" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
-                                                  <columns>
-                                                    <TableColumn fx:id="room_col" editable="false" maxWidth="1.7976931348623157E308" prefWidth="-1.0" text="Room">
-                                                         <columns>
-                                                            <TableColumn fx:id="buildingId_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Building ID" />
-                                                            <TableColumn fx:id="floorId_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Floor ID" />
-                                                            <TableColumn fx:id="roomId_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Room ID" />
-                                                         </columns>
-                                                      </TableColumn>
-                                                      <TableColumn fx:id="timeSpan_col" editable="false" maxWidth="1.7976931348623157E308" prefWidth="-1.0" text="Time Span">
-                                                         <columns>
-                                                          <TableColumn fx:id="in_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="In" />
-                                                            <TableColumn fx:id="out_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" text="Out" />
-                                                            <TableColumn fx:id="duration_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Duration" />
-                                                         </columns>
-                                                      </TableColumn>
-                                                      <TableColumn fx:id="seated_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Seated" />
-                                                      <TableColumn fx:id="catering_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Catering Opt." />
-                                                      <TableColumn fx:id="cancelled_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Cancelled" />
-                                                  </columns>
+                                                </Button>
+                                                <Button fx:id="cancelReservation_button" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleCancelReservationAction" prefHeight="26.0" prefWidth="100.0" text="Cancel">
                                                    <HBox.margin>
-                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
                                                    </HBox.margin>
-                                                </TableView>
+                                                </Button>
+                                                <Button fx:id="viewReservation_button" contentDisplay="CENTER" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleViewReservationAction" prefHeight="26.0" prefWidth="100.0" text="Details">
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
+                                                   </HBox.margin>
+                                                </Button>
                                              </children>
                                           </HBox>
-                                       </content>
-                                    </ScrollPane>
-                                    <ButtonBar prefHeight="40.0" prefWidth="200.0">
-                                      <buttons>
-                                          <Button fx:id="viewReservation_button" mnemonicParsing="false" onAction="#handleViewReservationAction" prefHeight="26.0" prefWidth="145.0" text="View" />
-                                          <Button fx:id="newReservation_button" mnemonicParsing="false" onAction="#handleNewReservationAction" prefHeight="26.0" prefWidth="145.0" text="New reservation" />
-                                      </buttons>
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </ButtonBar>
+                                          <TableView fx:id="reservation_Table" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
+                                             <columns>
+                                                <TableColumn fx:id="reservationId_col" editable="false" minWidth="50.0" prefWidth="-1.0" resizable="false" styleClass="cell_middle_alignment" text="#" />
+                                                <TableColumn fx:id="created_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="160.0" resizable="false" text="Created" />
+                                             </columns>
+                                          </TableView>
+                                       </children>
+                                    </GridPane>
+                                    <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL">
+                                       <HBox.margin>
+                                          <Insets left="5.0" right="3.0" />
+                                       </HBox.margin>
+                                    </Separator>
+                                    <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                       <columnConstraints>
+                                          <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" />
+                                       </columnConstraints>
+                                       <rowConstraints>
+                                          <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                                       </rowConstraints>
+                                       <children>
+                                          <HBox maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" prefWidth="200.0">
+                                             <children>
+                                                <Button minHeight="-Infinity" mnemonicParsing="false" onAction="#handleAddPaymentAction" prefHeight="26.0" prefWidth="100.0" text="Add Payment">
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                                <Button fx:id="cancelRoomReservation_button" minHeight="-Infinity" mnemonicParsing="false" onAction="#handleCancelRoomReservationAction" prefHeight="26.0" prefWidth="100.0" text="Cancel room">
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                                <Button mnemonicParsing="false" onAction="#handleViewRoomDetailsAction" text="View">
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                          <TableView fx:id="reservationDetails_Table" GridPane.rowIndex="1">
+                                             <columns>
+                                                <TableColumn fx:id="room_col" editable="false" maxWidth="1.7976931348623157E308" prefWidth="-1.0" text="Room">
+                                                   <columns>
+                                                      <TableColumn fx:id="buildingId_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Building ID" />
+                                                      <TableColumn fx:id="floorId_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Floor ID" />
+                                                      <TableColumn fx:id="roomId_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Room ID" />
+                                                   </columns>
+                                                </TableColumn>
+                                                <TableColumn fx:id="timeSpan_col" editable="false" maxWidth="1.7976931348623157E308" prefWidth="-1.0" text="Time Span">
+                                                   <columns>
+                                                      <TableColumn fx:id="in_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="160.0" prefWidth="-1.0" text="In" />
+                                                      <TableColumn fx:id="out_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="160.0" prefWidth="-1.0" text="Out" />
+                                                      <TableColumn fx:id="duration_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Duration" />
+                                                   </columns>
+                                                </TableColumn>
+                                                <TableColumn fx:id="seated_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="75.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Seated" />
+                                                <TableColumn fx:id="catering_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="75.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Catering" />
+                                                <TableColumn fx:id="cancelled_col" editable="false" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="-1.0" styleClass="cell_middle_alignment" text="Cancelled" />
+                                             </columns>
+                                          </TableView>
+                                       </children>
+                                    </GridPane>
                                  </children>
-                              </VBox>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </HBox>
                            </children>
                         </AnchorPane>
                      </content>
@@ -276,19 +321,74 @@
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
-                              <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                              <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                    <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
+                                  <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
                                  <children>
-                                    <TableView>
+                                    <TableView GridPane.rowIndex="2">
                                       <columns>
-                                        <TableColumn prefWidth="75.0" text="C1" />
-                                        <TableColumn prefWidth="75.0" text="C2" />
+                                          <TableColumn prefWidth="75.0" text="ID" />
+                                        <TableColumn prefWidth="102.0" text="Timestamp" />
+                                        <TableColumn prefWidth="94.0" text="Amount" />
+                                          <TableColumn prefWidth="106.0" text="Reservation" />
+                                          <TableColumn prefWidth="75.0" text="Method" />
+                                          <TableColumn prefWidth="75.0" text="Note" />
                                       </columns>
-                                       <VBox.margin>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </VBox.margin>
                                     </TableView>
+                                    <GridPane>
+                                      <columnConstraints>
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                      </columnConstraints>
+                                      <rowConstraints>
+                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                      </rowConstraints>
+                                       <children>
+                                          <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="40.0">
+                                             <children>
+                                                <Button mnemonicParsing="false" text="New">
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                                <Button mnemonicParsing="false" text="View">
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                                <Button mnemonicParsing="false" text="Button">
+                                                   <HBox.margin>
+                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
+                                                   </HBox.margin>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                          <GridPane GridPane.columnIndex="1">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="144.0" minWidth="10.0" prefWidth="65.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" prefWidth="234.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css" text="Credit" />
+                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" GridPane.columnIndex="1" />
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </GridPane>
                                  </children>
-                              </VBox>
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </GridPane>
                            </children></AnchorPane>
                      </content>
                   </Tab>

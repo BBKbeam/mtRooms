@@ -25,9 +25,11 @@
          </children></AnchorPane>
     <AnchorPane>
          <children>
-            <TabPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+             <TabPane fx:id="customerAccount_TabPane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0"
+                      prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0"
+                      AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <tabs>
-                  <Tab text="Customer">
+                   <Tab fx:id="customer_Tab" text="Customer">
                      <content>
                         <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                            <children>
@@ -210,7 +212,7 @@
                         </AnchorPane>
                      </content>
                   </Tab>
-                  <Tab text="Reservations">
+                   <Tab fx:id="reservation_Tab" text="Reservations">
                      <content>
                         <AnchorPane minHeight="-Infinity" minWidth="-Infinity">
                            <children>
@@ -317,7 +319,7 @@
                         </AnchorPane>
                      </content>
                   </Tab>
-                  <Tab text="Payments">
+                   <Tab fx:id="payment_Tab" text="Payments">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>

@@ -9,6 +9,7 @@ import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
 import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.GridPane;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 /**
@@ -25,6 +27,22 @@ import java.util.ResourceBundle;
  */
 public class AlertDialog {
     private ResourceBundle resourceBundle;
+
+    /**
+     * Show a confirmation
+     *
+     * @param title   Dialog title
+     * @param header  Dialog header
+     * @param content Dialog content
+     * @return Button pressed
+     */
+    static public Optional<ButtonType> showConfirmation(String title, String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        return alert.showAndWait();
+    }
 
     /**
      * Show an alert

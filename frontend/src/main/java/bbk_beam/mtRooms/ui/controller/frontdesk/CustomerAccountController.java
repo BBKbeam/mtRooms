@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CustomerAccountController implements Initializable {
@@ -44,6 +45,11 @@ public class CustomerAccountController implements Initializable {
     private ResourceBundle resourceBundle;
     private Customer customer;
 
+    //Tabs
+    public TabPane customerAccount_TabPane;
+    public Tab customer_Tab;
+    public Tab reservation_Tab;
+    public Tab payment_Tab;
     //Context menus
     private ContextMenu reservation_menu = new ContextMenu();
     private ContextMenu roomReservation_menu = new ContextMenu();
@@ -67,6 +73,7 @@ public class CustomerAccountController implements Initializable {
     public Button viewReservation_button;
     public Button cancelReservation_button;
     public Button newReservation_button;
+    public Button cancelRoomReservation_button;
     public TableView<ReservationModel> reservation_Table;
     public TableColumn<ReservationModel, Integer> reservationId_col;
     public TableColumn<ReservationModel, String> created_col;
@@ -134,28 +141,34 @@ public class CustomerAccountController implements Initializable {
     }
 
     /**
-     * Cancel selected RoomReservation from the table
+     * Cancel selected Reservation from the table
      */
-    private void cancelRoomReservation() {
+    private void cancelSelectedReservation() {
         IRmiServices services = this.sessionManager.getServices();
         ReservationModel reservationModel = reservation_Table.getSelectionModel().getSelectedItem();
-        RoomReservationModel roomReservationModel = reservationDetails_Table.getSelectionModel().getSelectedItem();
         try {
-            Double reimburse = services.cancelReservedRoom(
-                    this.sessionManager.getToken(),
-                    reservationModel.getReservation(),
-                    roomReservationModel.getRoomReservation()
-            );
+            Double credit = services.cancelReservation(this.sessionManager.getToken(), reservationModel.getReservation());
+
             Integer reservationID = reservationModel.reservationId();
             loadReservationTable(customer);
-            for (ReservationModel model : reservation_Table.getItems()) {
-                if (model.reservationId() == reservationID)
+
+            for (ReservationModel model : reservation_Table.getItems())
+                if (model.reservationId().equals(reservationID))
                     reservation_Table.getSelectionModel().select(model);
-            }
+
+            AlertDialog.showAlert(
+                    Alert.AlertType.INFORMATION,
+                    this.resourceBundle.getString("InfoDialogTitle_Generic"),
+                    this.resourceBundle.getString("InfoMsg_AccountCredited") + credit
+            );
         } catch (InvalidReservation e) {
-            log.log_Error("RoomReservation in Reservation [", reservationModel.reservationId(), "] is invalid: ", roomReservationModel.getRoomReservation());
+            log.log_Error("Reservation [", reservationModel.reservationId(), "] is invalid.");
             log.log_Exception(e);
-            e.printStackTrace(); //TODO
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_InvalidReservation"),
+                    e
+            );
         } catch (FailedDbWrite e) {
             this.alertDialog.showGenericError(e);
         } catch (Unauthorised e) {
@@ -165,6 +178,57 @@ public class CustomerAccountController implements Initializable {
         } catch (LoginException e) {
             this.alertDialog.showGenericError(e);
         } catch (FailedDbFetch e) {
+            this.alertDialog.showGenericError(e);
+        }
+    }
+
+    /**
+     * Cancel selected RoomReservation from the table
+     */
+    private void cancelSelectedRoomReservation() {
+        IRmiServices services = this.sessionManager.getServices();
+        ReservationModel reservationModel = reservation_Table.getSelectionModel().getSelectedItem();
+        RoomReservationModel roomReservationModel = reservationDetails_Table.getSelectionModel().getSelectedItem();
+        try {
+            Double credit = services.cancelReservedRoom(
+                    this.sessionManager.getToken(),
+                    reservationModel.getReservation(),
+                    roomReservationModel.getRoomReservation()
+            );
+
+            Integer reservationID = reservationModel.reservationId();
+            loadReservationTable(customer);
+
+            for (ReservationModel model : reservation_Table.getItems())
+                if (model.reservationId().equals(reservationID))
+                    reservation_Table.getSelectionModel().select(model);
+
+            Membership membership = services.getMembership(this.sessionManager.getToken(), this.customer.membershipTypeID());
+
+            AlertDialog.showAlert(
+                    Alert.AlertType.INFORMATION,
+                    this.resourceBundle.getString("InfoDialogTitle_Generic"),
+                    this.resourceBundle.getString("InfoMsg_RoomPricePostDiscount") + (credit * membership.discount().rate() / 100)
+            );
+        } catch (InvalidReservation e) {
+            log.log_Error("RoomReservation in Reservation [", reservationModel.reservationId(), "] is invalid: ", roomReservationModel.getRoomReservation());
+            log.log_Exception(e);
+            AlertDialog.showExceptionAlert(
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_InvalidReservation"),
+                    e
+            );
+        } catch (FailedDbWrite e) {
+            this.alertDialog.showGenericError(e);
+        } catch (Unauthorised e) {
+            this.alertDialog.showGenericError(e);
+        } catch (RemoteException e) {
+            this.alertDialog.showGenericError(e);
+        } catch (LoginException e) {
+            this.alertDialog.showGenericError(e);
+        } catch (FailedDbFetch e) {
+            this.alertDialog.showGenericError(e);
+        } catch (InvalidMembership e) {
             this.alertDialog.showGenericError(e);
         }
     }
@@ -210,7 +274,7 @@ public class CustomerAccountController implements Initializable {
      * @throws Unauthorised    when this client session is not authorised to access the resource
      * @throws RemoteException when network issues occur during the remote call
      */
-    void loadReservationTable(Customer customer) throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
+    private void loadReservationTable(Customer customer) throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
         ReservationTable table = new ReservationTable(this.sessionManager);
         IRmiServices services = sessionManager.getServices();
         List<Reservation> reservations = services.getReservations(this.sessionManager.getToken(), customer);
@@ -224,7 +288,7 @@ public class CustomerAccountController implements Initializable {
      *
      * @param reservation Reservation DTO
      */
-    void loadReservationDetailsTable(Reservation reservation) {
+    private void loadReservationDetailsTable(Reservation reservation) {
         RoomReservationTable table = new RoomReservationTable(this.sessionManager);
         table.loadData(reservation.rooms());
         this.reservationDetails_Table.setItems(table.getData());
@@ -237,20 +301,46 @@ public class CustomerAccountController implements Initializable {
         closeAccount_Button.setMinSize(64, 64);
         closeAccount_Button.setMaxSize(64, 64);
 
+        customerAccount_TabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.equals(customer_Tab)) {
+                System.out.println("switched to customer tab");
+                //TODO
+            } else if (newValue.equals(reservation_Tab)) {
+                System.out.println("switched to reservation tab");
+                try {
+                    loadCustomer(this.customer);
+                } catch (LoginException e) {
+                    this.alertDialog.showGenericError(e);
+                } catch (Unauthorised e) {
+                    this.alertDialog.showGenericError(e);
+                } catch (RemoteException e) {
+                    this.alertDialog.showGenericError(e);
+                } catch (InvalidMembership e) {
+                    this.alertDialog.showGenericError(e);
+                } catch (FailedDbFetch e) {
+                    this.alertDialog.showGenericError(e);
+                }
+            } else if (newValue.equals(payment_Tab)) {
+                System.out.println("switched to payment tab");
+                //TODO
+            }
+        });
+
         //Reservation context menu
-        MenuItem menuItem_AddPayment = new MenuItem("Add payment");
-        MenuItem menuItem_CancelReservation = new MenuItem("Cancel reservation");
-        MenuItem menuItem_ShowRoomDetails = new MenuItem("Show room information");
-        MenuItem menuItem_CancelRoomReservation = new MenuItem("Cancel room reservation");
+        MenuItem menuItem_AddPayment = new MenuItem(this.resourceBundle.getString("MenuItem_AddPayment"));
+        MenuItem menuItem_CancelReservation = new MenuItem(this.resourceBundle.getString("MenuItem_CancelReservation"));
+        MenuItem menuItem_ShowRoomDetails = new MenuItem(this.resourceBundle.getString("MenuItem_ShowRoomDetails"));
+        MenuItem menuItem_CancelRoomReservation = new MenuItem(this.resourceBundle.getString("MenuItem_CancelRoomReservation"));
         this.reservation_menu.getItems().add(menuItem_AddPayment);
         this.reservation_menu.getItems().add(menuItem_CancelReservation);
         this.roomReservation_menu.getItems().add(menuItem_ShowRoomDetails);
         this.roomReservation_menu.getItems().add(menuItem_CancelRoomReservation);
         reservation_Table.setContextMenu(this.reservation_menu);
         reservationDetails_Table.setContextMenu(this.roomReservation_menu);
+
         menuItem_CancelReservation.setOnAction(this::handleCancelReservationAction);
         menuItem_ShowRoomDetails.setOnAction(this::handleViewRoomDetailsAction);
-        menuItem_CancelRoomReservation.setOnAction(event -> cancelRoomReservation());
+        menuItem_CancelRoomReservation.setOnAction(this::handleCancelRoomReservationAction);
 
         //Reservation table
         reservationId_col.prefWidthProperty().bind(reservation_Table.widthProperty().multiply(0.25));
@@ -279,16 +369,10 @@ public class CustomerAccountController implements Initializable {
 
         reservationDetails_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                viewReservation_button.setText("View room details");
+                menuItem_CancelRoomReservation.setDisable(newValue.getRoomReservation().isCancelled());
+                cancelRoomReservation_button.setDisable(newValue.getRoomReservation().isCancelled());
             }
         });
-
-
-//        reservationDetails_Table.addEventHandler(MouseEvent.MOUSE_CLICKED, (EventHandler<MouseEvent>) event -> {
-//            if(event.getButton() == MouseButton.SECONDARY) {
-//                reservation_details_menu.show(reservationDetails_Table, event.getScreenX(), event.getScreenY());
-//            }
-//        });
     }
 
     /**
@@ -327,8 +411,16 @@ public class CustomerAccountController implements Initializable {
 
     @FXML
     public void handleCancelReservationAction(ActionEvent actionEvent) {
-        System.out.println("handleCancelReservationAction");
-        //TODO
+        Optional<ButtonType> result = AlertDialog.showConfirmation(
+                resourceBundle.getString("ConfirmationDialogTitle_Generic"),
+                resourceBundle.getString("ConfirmationDialog_CancelReservation"),
+                ""
+        );
+        result.ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                cancelSelectedReservation();
+            }
+        });
     }
 
     @FXML
@@ -339,8 +431,16 @@ public class CustomerAccountController implements Initializable {
 
     @FXML
     public void handleCancelRoomReservationAction(ActionEvent actionEvent) {
-        System.out.println("handleCancelRoomReservationAction");
-        //TODO
+        Optional<ButtonType> result = AlertDialog.showConfirmation(
+                resourceBundle.getString("ConfirmationDialogTitle_Generic"),
+                resourceBundle.getString("ConfirmationDialog_CancelRoomReservation"),
+                ""
+        );
+        result.ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                cancelSelectedRoomReservation();
+            }
+        });
     }
 
     @FXML

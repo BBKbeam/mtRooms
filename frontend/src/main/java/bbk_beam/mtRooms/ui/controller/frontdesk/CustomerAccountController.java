@@ -44,6 +44,7 @@ public class CustomerAccountController implements Initializable {
     private MainWindowController mainWindowController;
     private ResourceBundle resourceBundle;
     private Customer customer;
+    private Membership membership;
 
     //Tabs
     public TabPane customerAccount_TabPane;
@@ -190,7 +191,7 @@ public class CustomerAccountController implements Initializable {
         ReservationModel reservationModel = reservation_Table.getSelectionModel().getSelectedItem();
         RoomReservationModel roomReservationModel = reservationDetails_Table.getSelectionModel().getSelectedItem();
         try {
-            Double credit = services.cancelReservedRoom(
+            services.cancelReservedRoom(
                     this.sessionManager.getToken(),
                     reservationModel.getReservation(),
                     roomReservationModel.getRoomReservation()
@@ -203,13 +204,6 @@ public class CustomerAccountController implements Initializable {
                 if (model.reservationId().equals(reservationID))
                     reservation_Table.getSelectionModel().select(model);
 
-            Membership membership = services.getMembership(this.sessionManager.getToken(), this.customer.membershipTypeID());
-
-            AlertDialog.showAlert(
-                    Alert.AlertType.INFORMATION,
-                    this.resourceBundle.getString("InfoDialogTitle_Generic"),
-                    this.resourceBundle.getString("InfoMsg_RoomPricePostDiscount") + (credit * membership.discount().rate() / 100)
-            );
         } catch (InvalidReservation e) {
             log.log_Error("RoomReservation in Reservation [", reservationModel.reservationId(), "] is invalid: ", roomReservationModel.getRoomReservation());
             log.log_Exception(e);
@@ -228,8 +222,6 @@ public class CustomerAccountController implements Initializable {
             this.alertDialog.showGenericError(e);
         } catch (FailedDbFetch e) {
             this.alertDialog.showGenericError(e);
-        } catch (InvalidMembership e) {
-            this.alertDialog.showGenericError(e);
         }
     }
 
@@ -245,7 +237,7 @@ public class CustomerAccountController implements Initializable {
      */
     void loadCustomer(Customer customer) throws LoginException, Unauthorised, RemoteException, InvalidMembership, FailedDbFetch {
         IRmiServices services = this.sessionManager.getServices();
-        Membership membership = services.getMembership(sessionManager.getToken(), customer.membershipTypeID());
+        this.membership = services.getMembership(sessionManager.getToken(), customer.membershipTypeID());
 
         this.customer = customer;
         this.id_field.setText(String.valueOf(customer.customerID()));
@@ -259,8 +251,8 @@ public class CustomerAccountController implements Initializable {
         this.phone2_field.setText(customer.phone2());
         this.email_field.setText(customer.email());
         this.creationDate_field.setText(customer.accountCreationDate().toString());
-        this.membershipType_field.setText(membership.description());
-        this.discountRate_field.setText(String.valueOf(membership.discount().rate()));
+        this.membershipType_field.setText(this.membership.description());
+        this.discountRate_field.setText(String.valueOf(this.membership.discount().rate()));
 
         loadReservationTable(this.customer);
     }
@@ -371,6 +363,18 @@ public class CustomerAccountController implements Initializable {
             if (newValue != null) {
                 menuItem_CancelRoomReservation.setDisable(newValue.getRoomReservation().isCancelled());
                 cancelRoomReservation_button.setDisable(newValue.getRoomReservation().isCancelled());
+
+                Double roomPrice = newValue.getRoomReservation().price().price();
+                Double discountRate = membership.discount().rate();
+                this.mainWindowController.status_right.setText(
+                        this.resourceBundle.getString("InfoMsg_RoomPricePostDiscount") + (roomPrice * (100 - discountRate) / 100)
+                );
+            }
+        });
+
+        reservation_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                this.mainWindowController.status_right.setText("");
             }
         });
     }

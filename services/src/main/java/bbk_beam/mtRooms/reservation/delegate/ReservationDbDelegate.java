@@ -690,7 +690,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
 
     @Override
     public ObjectTable getRoomDetails(Token session_token, Room room) throws InvalidRoom, DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query = "SELECT " + //TODO getRoomDetails query
+        String query = "SELECT " +
                 "Building.id AS building_id, " +
                 "Building.name AS building_name, " +
                 "Building.address1 , " +

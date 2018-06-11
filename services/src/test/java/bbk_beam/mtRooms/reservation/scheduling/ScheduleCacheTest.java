@@ -53,7 +53,7 @@ public class ScheduleCacheTest {
 
     @Test
     public void add() throws Exception {
-        Room room = new Room(1, 1, 1, 1);
+        Room room = new Room(1, 1, 1, 1, "Small room 1");
         Date from = TimestampConverter.getDateObject("2018-01-01 12:00:00");
         Date to = TimestampConverter.getDateObject("2018-01-02 15:00:00");
         List<TimeSpan> list = this.cache.add(token1, room, from, to);
@@ -67,7 +67,7 @@ public class ScheduleCacheTest {
 
     @Test
     public void broadcastRoomReservation() throws Exception {
-        Room room1 = new Room(1, 1, 1, 1);
+        Room room1 = new Room(1, 1, 1, 1, "Small room 1");
         Date start1 = TimestampConverter.getDateObject("2018-01-01 00:00:00");
         Date end1 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
         Date start2 = TimestampConverter.getDateObject("2018-01-01 02:00:00");

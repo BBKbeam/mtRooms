@@ -7,10 +7,7 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.delegate.IReserve;
 import bbk_beam.mtRooms.reservation.dto.*;
-import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
-import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
-import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
-import bbk_beam.mtRooms.reservation.exception.InvalidRoomCategory;
+import bbk_beam.mtRooms.reservation.exception.*;
 import bbk_beam.mtRooms.reservation.scheduling.ScheduleCache;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
@@ -168,7 +165,8 @@ public class ReservationProcessing {
                                 (Integer) reserved_room_row.get("room_id"),
                                 (Integer) reserved_room_row.get("floor_id"),
                                 (Integer) reserved_room_row.get("building_id"),
-                                (Integer) reserved_room_row.get("room_category_id")
+                                (Integer) reserved_room_row.get("room_category_id"),
+                                (String) reserved_room_row.get("room_description")
                         ),
                         TimestampConverter.getDateObject((String) reserved_room_row.get("timestamp_in")),
                         TimestampConverter.getDateObject((String) reserved_room_row.get("timestamp_out")),
@@ -245,6 +243,63 @@ public class ReservationProcessing {
         } catch (DbQueryException e) {
             log.log_Error("Could not get RoomCategory [", category_id, "]");
             throw new FailedDbFetch("Could not get RoomCategory [" + category_id + "]", e);
+        }
+    }
+
+    /**
+     * Gets details for a Room
+     *
+     * @param session_token Session's token
+     * @param room          Room DTO
+     * @return DetailedRoom DTO
+     * @throws InvalidRoom             when the room does not match any in the records
+     * @throws FailedDbFetch           when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    public DetailedRoom getRoomDetails(Token session_token, Room room) throws InvalidRoom, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable table = this.db_delegate.getRoomDetails(session_token, room);
+            HashMap<String, Object> row = table.getRow(1);
+            return new DetailedRoom(
+                    new Building(
+                            (Integer) row.get("building_id"),
+                            (String) row.get("building_name"),
+                            (String) row.get("address1"),
+                            (String) row.get("address2"),
+                            (String) row.get("city"),
+                            (String) row.get("postcode"),
+                            (String) row.get("country"),
+                            (String) row.get("telephone")
+                    ),
+                    new Floor(
+                            (Integer) row.get("building_id"),
+                            (Integer) row.get("floor_id"),
+                            (String) row.get("floor_description")
+                    ),
+                    new Room(
+                            (Integer) row.get("room_id"),
+                            (Integer) row.get("floor_id"),
+                            (Integer) row.get("building_id"),
+                            (Integer) row.get("category_id"),
+                            (String) row.get("room_description")
+                    ),
+                    new RoomCategory(
+                            (Integer) row.get("category_id"),
+                            (Integer) row.get("capacity"),
+                            (Integer) row.get("dimension")
+                    ),
+                    new RoomFixtures(
+                            (Integer) row.get("room_fixture_id"),
+                            ((Integer) row.get("fixed_chairs") != 0),
+                            ((Integer) row.get("catering_space") != 0),
+                            ((Integer) row.get("whiteboard") != 0),
+                            ((Integer) row.get("projector") != 0)
+                    )
+            );
+        } catch (DbQueryException e) {
+            log.log_Error("");
+            throw new FailedDbFetch("");
         }
     }
 }

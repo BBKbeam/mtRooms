@@ -356,7 +356,7 @@ public class ReservationDbDelegateTest {
 
     @Test
     public void createReservation() throws Exception {
-        Room room = new Room(8, 3, 1, 6);
+        Room room = new Room(8, 3, 1, 6, "Theatre");
         Discount discount = new Discount(1, .0, 1, "None");
         Date created_date = new Date();
         Reservation reservation = new Reservation(-1, created_date, 1, discount);
@@ -381,7 +381,7 @@ public class ReservationDbDelegateTest {
         String check_query = "SELECT * FROM Room_has_Reservation WHERE room_id = 8 AND floor_id = 3 AND building_id = 1 AND reservation_id = 4";
         Assert.assertNotEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
 
-        Room room = new Room(8, 3, 1, 6);
+        Room room = new Room(8, 3, 1, 6, "Theatre");
         RoomReservation mock_roomReservation = mock(RoomReservation.class);
         Date reservation_start = new Date();
         Date reservation_end = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
@@ -753,5 +753,21 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals("2nd row building_id fail", 1, row2.get("building_id"));
         Assert.assertEquals("2nd row floor_id fail", 3, row2.get("floor_id"));
         Assert.assertEquals("2nd row room_id fail", 8, row2.get("room_id"));
+    }
+
+    @Test
+    public void getRoomDetails() throws Exception {
+        Room mock_room = mock(Room.class);
+        when(mock_room.id()).thenReturn(7);
+        when(mock_room.floorID()).thenReturn(3);
+        when(mock_room.buildingID()).thenReturn(1);
+        ObjectTable table = this.reservationDbDelegate.getRoomDetails(this.token, mock_room);
+        Assert.assertFalse(table.isEmpty());
+        HashMap<String, Object> row = table.getRow(1);
+        Assert.assertEquals(mock_room.id(), row.get("room_id"));
+        Assert.assertEquals(mock_room.floorID(), row.get("floor_id"));
+        Assert.assertEquals(mock_room.buildingID(), row.get("building_id"));
+        Assert.assertEquals(5, row.get("category_id"));
+        Assert.assertEquals(4, row.get("room_fixture_id"));
     }
 }

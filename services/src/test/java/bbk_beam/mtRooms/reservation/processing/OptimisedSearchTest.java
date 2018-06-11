@@ -138,7 +138,7 @@ public class OptimisedSearchTest {
      */
     @Test
     public void search4() throws Exception {
-        Room room = new Room(5, 2, 1, 3);
+        Room room = new Room(5, 2, 1, 3, "Medium room 3");
         Date start1 = TimestampConverter.getDateObject("2018-03-10 09:00:00");
         Date end1 = TimestampConverter.getDateObject("2018-03-10 21:00:00"); //24x30mns
         List<TimeSpan> free_slots = this.optimisedSearch.search(this.token, room, start1, end1);
@@ -164,9 +164,9 @@ public class OptimisedSearchTest {
         HashMap<Room, List<TimeSpan>> free_slots = this.optimisedSearch.search(this.token, 1, start1, end1, property);
 
         Assert.assertEquals("Wrong # of rooms for the property.", 3, free_slots.size());
-        Room room2 = new Room(2, 1, 1, 1);
-        Room room5 = new Room(5, 2, 1, 4);
-        Room room6 = new Room(6, 2, 1, 4);
+        Room room2 = new Room(2, 1, 1, 1, "Small room 2");
+        Room room5 = new Room(5, 2, 1, 4, "Medium room 3");
+        Room room6 = new Room(6, 2, 1, 4, "Large room 1");
         Assert.assertTrue("Room2 missing", free_slots.containsKey(room5));
         Assert.assertTrue("Room5 missing", free_slots.containsKey(room5));
         Assert.assertTrue("Room6 missing", free_slots.containsKey(room6));
@@ -197,9 +197,9 @@ public class OptimisedSearchTest {
         HashMap<Room, List<TimeSpan>> free_slots = this.optimisedSearch.search(this.token, 1, 1, start1, end1, property);
 
         Assert.assertEquals("Wrong # of rooms for the property.", 3, free_slots.size());
-        Room room1 = new Room(1, 1, 1, 1);
-        Room room2 = new Room(2, 1, 1, 1);
-        Room room3 = new Room(3, 1, 1, 2);
+        Room room1 = new Room(1, 1, 1, 1, "Small room 1");
+        Room room2 = new Room(2, 1, 1, 1, "Small room 2");
+        Room room3 = new Room(3, 1, 1, 2, "Medium room 1");
         Assert.assertTrue("Room1 missing", free_slots.containsKey(room1));
         Assert.assertTrue("Room2 missing", free_slots.containsKey(room2));
         Assert.assertTrue("Room3 missing", free_slots.containsKey(room3));
@@ -230,10 +230,10 @@ public class OptimisedSearchTest {
         HashMap<Room, List<TimeSpan>> free_slots = this.optimisedSearch.search(this.token, start1, end1, property);
 
         Assert.assertEquals("Wrong # of rooms for the property.", 4, free_slots.size());
-        Room room4 = new Room(4, 2, 1, 3);
-        Room room5 = new Room(5, 2, 1, 4);
-        Room room6 = new Room(6, 2, 1, 4);
-        Room room7 = new Room(7, 3, 1, 5);
+        Room room4 = new Room(4, 2, 1, 3, "Medium room 2");
+        Room room5 = new Room(5, 2, 1, 4, "Medium room 3");
+        Room room6 = new Room(6, 2, 1, 4, "Large room 1");
+        Room room7 = new Room(7, 3, 1, 5, "Large room 2");
         Assert.assertTrue("Room4 missing", free_slots.containsKey(room4));
         Assert.assertTrue("Room5 missing", free_slots.containsKey(room5));
         Assert.assertTrue("Room6 missing", free_slots.containsKey(room6));

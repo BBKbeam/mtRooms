@@ -179,7 +179,8 @@ public class OptimisedSearch {
                                 (Integer) row.get("room_id"),
                                 (Integer) row.get("floor_id"),
                                 (Integer) row.get("building_id"),
-                                (Integer) row.get("room_category_id")
+                                (Integer) row.get("room_category_id"),
+                                (String) row.get("room_description")
                         )
                 );
             }
@@ -212,7 +213,8 @@ public class OptimisedSearch {
                                 (Integer) row.get("room_id"),
                                 (Integer) row.get("floor_id"),
                                 (Integer) row.get("building_id"),
-                                (Integer) row.get("room_category_id")
+                                (Integer) row.get("room_category_id"),
+                                (String) row.get("room_description")
                         )
                 );
             }
@@ -246,7 +248,8 @@ public class OptimisedSearch {
                                 (Integer) row.get("room_id"),
                                 (Integer) row.get("floor_id"),
                                 (Integer) row.get("building_id"),
-                                (Integer) row.get("room_category_id")
+                                (Integer) row.get("room_category_id"),
+                                (String) row.get("room_description")
                         )
                 );
             }

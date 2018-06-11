@@ -2,8 +2,8 @@ package bbk_beam.mtRooms.test_data;
 
 public class TestDataDBQueries {
     //Building table
-    public static String building = "INSERT INTO Building( name, address1, address2, postcode, country, telephone ) "
-            + "VALUES( \"Test Building\", \"1 Test road\", null, \"AB1 C34\", \"UK\", \"01234 567 890\" )"; //id = 1
+    public static String building = "INSERT INTO Building( name, address1, address2, city, postcode, country, telephone ) "
+            + "VALUES( \"Test Building\", \"1 Test road\", null, \"London\", \"AB1 C34\", \"UK\", \"01234 567 890\" )"; //id = 1
     //Floor table
     public static String floors = "INSERT INTO Floor( id, building_id, description ) VALUES "
             + "( 1, 1, \"Ground level\" ), "    //id = 1

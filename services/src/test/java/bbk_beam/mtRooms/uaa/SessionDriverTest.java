@@ -88,7 +88,7 @@ public class SessionDriverTest {
                 90)
         );
         Assert.assertEquals(1, list.size());
-        Assert.assertEquals(new Room(8, 3, 1, 6), list.get(0));
+        Assert.assertEquals(new Room(8, 3, 1, 6, "Theatre"), list.get(0));
         //closing reservation session
         front_desk.closeReservationSession(session);
         //logout user
@@ -209,6 +209,6 @@ public class SessionDriverTest {
 
     @Test
     public void getRevenuePersonnelInstance() throws Exception {
-        //TODO
+        //TODO getRevenuePersonnelInstance() implementation
     }
 }

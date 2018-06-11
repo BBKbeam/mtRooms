@@ -350,4 +350,16 @@ public interface IReservationSession extends Observer {
      */
     RoomCategory getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
+    /**
+     * Gets details for a Room
+     *
+     * @param session_token Session's token
+     * @param room          Room DTO
+     * @return DetailedRoom DTO
+     * @throws InvalidRoom             when the room does not match any in the records
+     * @throws FailedDbFetch           when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    public DetailedRoom getRoomDetails(Token session_token, Room room) throws InvalidRoom, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 }

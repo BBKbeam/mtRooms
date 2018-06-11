@@ -9,6 +9,7 @@ public class Room implements Comparable<Room>, Serializable {
     private Integer floor_id;
     private Integer building_id;
     private Integer category_id;
+    private String description;
 
     /**
      * Constructor
@@ -17,15 +18,18 @@ public class Room implements Comparable<Room>, Serializable {
      * @param floor_id    Room's floor ID
      * @param building_id Room's building ID
      * @param category_id Room category ID
+     * @param description Room description
      */
     public Room(Integer room_id,
                 Integer floor_id,
                 Integer building_id,
-                Integer category_id) {
+                Integer category_id,
+                String description) {
         this.id = room_id;
         this.floor_id = floor_id;
         this.building_id = building_id;
         this.category_id = category_id;
+        this.description = description;
     }
 
     /**
@@ -64,6 +68,24 @@ public class Room implements Comparable<Room>, Serializable {
         return this.category_id;
     }
 
+    /**
+     * Gets the room's description
+     *
+     * @return Room description
+     */
+    public String description() {
+        return this.description;
+    }
+
+    @Override
+    public String toString() {
+        return "[" + id + "]={ "
+                + "floor_id: " + floor_id
+                + ", building_id: " + building_id
+                + ", category_id: " + category_id
+                + ", description: " + description
+                + " }";
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -73,27 +95,19 @@ public class Room implements Comparable<Room>, Serializable {
         return Objects.equals(id, room.id) &&
                 Objects.equals(floor_id, room.floor_id) &&
                 Objects.equals(building_id, room.building_id) &&
-                Objects.equals(category_id, room.category_id);
+                Objects.equals(category_id, room.category_id) &&
+                Objects.equals(description, room.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, floor_id, building_id, category_id);
-    }
-
-    @Override
-    public String toString() {
-        return "[" + id + "]={ "
-                + "floor_id: " + floor_id
-                + ", building_id: " + building_id
-                + ", category_id: " + category_id
-                + " }";
+        return Objects.hash(id, floor_id, building_id, category_id, description);
     }
 
     @Override
     public int compareTo(Room that) {
         return Comparator.comparing(Room::buildingID)
-                .thenComparing(Room::floorID)
+                .thenComparingInt(Room::floorID)
                 .thenComparingInt(Room::id)
                 .compare(this, that);
     }

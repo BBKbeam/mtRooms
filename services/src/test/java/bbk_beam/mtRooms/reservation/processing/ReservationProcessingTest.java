@@ -59,7 +59,7 @@ public class ReservationProcessingTest {
     @Test
     public void createReservation() throws Exception {
         //Setting up dummy test Reservation
-        Room room = new Room(8, 3, 1, 6);
+        Room room = new Room(8, 3, 1, 6, "Theatre");
         Discount discount = new Discount(1, .0, 1, "None");
         Date reservation_start = new Date();
         Date reservation_end = Date.from(Instant.now().plus(2, ChronoUnit.HOURS));
@@ -80,7 +80,7 @@ public class ReservationProcessingTest {
         Reservation mock_reservation = mock(Reservation.class);
         when(mock_reservation.id()).thenReturn(5);
         RoomReservation roomReservation = new RoomReservation(
-                new Room(8, 3, 1, 6),
+                new Room(8, 3, 1, 6, "Theatre"),
                 new Date(),
                 Date.from(Instant.now().plus(2, ChronoUnit.HOURS)),
                 80,
@@ -141,5 +141,21 @@ public class ReservationProcessingTest {
     public void getRoomCategory() throws Exception {
         RoomCategory roomCategory = this.reservationProcessing.getRoomCategory(this.token, 1);
         Assert.assertEquals(new RoomCategory(1, 10, 10), roomCategory);
+    }
+
+    @Test
+    public void getRoomDetails() throws Exception {
+        Room mock_room = mock(Room.class);
+        when(mock_room.id()).thenReturn(7);
+        when(mock_room.floorID()).thenReturn(3);
+        when(mock_room.buildingID()).thenReturn(1);
+        DetailedRoom detailedRoom = this.reservationProcessing.getRoomDetails(this.token, mock_room);
+        Assert.assertEquals(mock_room.id(), detailedRoom.room().id());
+        Assert.assertEquals(mock_room.floorID(), detailedRoom.room().floorID());
+        Assert.assertEquals(mock_room.buildingID(), detailedRoom.room().buildingID());
+        Assert.assertEquals(mock_room.buildingID(), detailedRoom.building().id());
+        Assert.assertEquals(mock_room.floorID(), detailedRoom.floor().floorID());
+        Assert.assertEquals(new Integer(5), detailedRoom.category().id());
+        Assert.assertEquals(new Integer(4), detailedRoom.fixtures().id());
     }
 }

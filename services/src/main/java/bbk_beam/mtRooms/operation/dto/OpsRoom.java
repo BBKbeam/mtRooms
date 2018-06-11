@@ -16,8 +16,8 @@ public class OpsRoom extends Room {
      * @param category_id Room category ID
      * @param capacity    Room capacity
      */
-    public OpsRoom(Integer room_id, Integer floor_id, Integer building_id, Integer category_id, Integer capacity) {
-        super(room_id, floor_id, building_id, category_id);
+    public OpsRoom(Integer room_id, Integer floor_id, Integer building_id, String description, Integer category_id, Integer capacity) {
+        super(room_id, floor_id, building_id, category_id, description);
         this.capacity = capacity;
     }
 

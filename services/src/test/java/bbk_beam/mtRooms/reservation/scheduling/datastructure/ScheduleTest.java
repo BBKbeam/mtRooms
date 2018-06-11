@@ -19,8 +19,8 @@ import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInA
 
 public class ScheduleTest {
     private Schedule schedule;
-    private Room room1 = new Room(1, 1, 1, 1);
-    private Room room2 = new Room(2, 1, 1, 1);
+    private Room room1 = new Room(1, 1, 1, 1, "Small room 1");
+    private Room room2 = new Room(2, 1, 1, 1, "Small room 2");
     private Token token1 = new Token("00001", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
     private Token token2 = new Token("00002", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));
     private Token token3 = new Token("00003", new Date(), Date.from(Instant.now().plus(1, ChronoUnit.DAYS)));

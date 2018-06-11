@@ -48,6 +48,7 @@ public class LogisticReportGenerator implements ILogisticReportGenerator {
                                     (Integer) row.get("room_id"),
                                     (Integer) row.get("floor_id"),
                                     (Integer) row.get("building_id"),
+                                    (String) row.get("room_description"),
                                     (Integer) row.get("room_category_id"),
                                     (Integer) row.get("capacity")
                             ),

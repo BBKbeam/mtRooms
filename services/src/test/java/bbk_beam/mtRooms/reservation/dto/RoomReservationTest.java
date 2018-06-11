@@ -28,7 +28,7 @@ public class RoomReservationTest {
     @Test
     public void serialization() throws Exception {
         RoomReservation before = new RoomReservation(
-                new Room(8, 3, 1, 6),
+                new Room(8, 3, 1, 6, "Theatre"),
                 new Date(),
                 Date.from(Instant.now().plus(2, ChronoUnit.HOURS)),
                 10,

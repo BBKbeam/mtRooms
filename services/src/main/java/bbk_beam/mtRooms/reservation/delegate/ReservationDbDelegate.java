@@ -617,6 +617,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Room_has_Reservation.room_id, " +
                 "Room_has_Reservation.floor_id, " +
                 "Room_has_Reservation.building_id, " +
+                "Room.description AS room_description, " +
                 "Room_has_Reservation.timestamp_in, " +
                 "Room_has_Reservation.timestamp_out, " +
                 "Room_has_Reservation.seated_count, " +
@@ -688,6 +689,54 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
+    public ObjectTable getRoomDetails(Token session_token, Room room) throws InvalidRoom, DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " + //TODO getRoomDetails query
+                "Building.id AS building_id, " +
+                "Building.name AS building_name, " +
+                "Building.address1 , " +
+                "Building.address2 , " +
+                "Building.city , " +
+                "Building.postcode , " +
+                "Building.country , " +
+                "Building.telephone , " +
+                "Floor.id AS floor_id, " +
+                "Floor.description AS floor_description, " +
+                "Room.id AS room_id, " +
+                "Room.description AS room_description, " +
+                "RoomCategory.id AS category_id, " +
+                "RoomCategory.capacity, " +
+                "RoomCategory.dimension, " +
+                "RoomFixtures.id AS room_fixture_id, " +
+                "RoomFixtures.fixed_chairs, " +
+                "RoomFixtures.catering_space, " +
+                "RoomFixtures.whiteboard, " +
+                "RoomFixtures.projector " +
+                "FROM Room " +
+                "LEFT OUTER JOIN Floor " +
+                "ON Room.floor_id = Floor.id" +
+                " AND Room.building_id = Floor.building_id " +
+                "LEFT OUTER JOIN Building " +
+                "ON Floor.building_id = Building.id " +
+                "LEFT OUTER JOIN RoomCategory " +
+                "ON Room.room_category_id = RoomCategory.id " +
+                "LEFT OUTER JOIN Room_has_RoomFixtures " +
+                "ON Room.id = Room_has_RoomFixtures.room_id" +
+                " AND Room.floor_id = Room_has_RoomFixtures.floor_id" +
+                " AND Room.building_id = Room_has_RoomFixtures.building_id " +
+                "LEFT OUTER JOIN RoomFixtures " +
+                "ON Room_has_RoomFixtures.room_fixture_id = RoomFixtures.id " +
+                "WHERE Room.id = " + room.id() +
+                " AND Room.floor_id = " + room.floorID() +
+                " AND Room.building_id = " + room.buildingID();
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.isEmpty()) {
+            log.log_Error("Room does not exists in records: ", room);
+            throw new InvalidRoom("Room does not exists in records: " + room);
+        }
+        return table;
+    }
+
+    @Override
     public ObjectTable search(Token session_token, Room room, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT " +
                 "Room_has_Reservation.timestamp_in, " +
@@ -726,6 +775,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Room.building_id, " +
                 "Room.floor_id, " +
                 "Room.id AS room_id, " +
+                "Room.description AS room_description, " +
                 "Room_has_Reservation.timestamp_in, " +
                 "Room_has_Reservation.timestamp_out, " +
                 "RoomFixtures.fixed_chairs, " +
@@ -761,6 +811,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Room.building_id, " +
                 "Room.floor_id, " +
                 "Room.id AS room_id, " +
+                "Room.description AS room_description, " +
                 "Room_has_Reservation.timestamp_in, " +
                 "Room_has_Reservation.timestamp_out, " +
                 "RoomFixtures.fixed_chairs, " +
@@ -795,6 +846,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Room.building_id, " +
                 "Room.floor_id, " +
                 "Room.id AS room_id, " +
+                "Room.description AS room_description, " +
                 "Room_has_Reservation.timestamp_in, " +
                 "Room_has_Reservation.timestamp_out, " +
                 "RoomFixtures.fixed_chairs, " +
@@ -829,6 +881,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Room.building_id, " +
                 "Room.floor_id, " +
                 "Room.id AS room_id, " +
+                "Room.description AS room_description, " +
                 "Room.room_category_id, " +
                 "RoomFixtures.fixed_chairs, " +
                 "RoomFixtures.catering_space, " +
@@ -856,6 +909,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Room.building_id, " +
                 "Room.floor_id, " +
                 "Room.id AS room_id, " +
+                "Room.description AS room_description, " +
                 "Room.room_category_id, " +
                 "RoomFixtures.fixed_chairs, " +
                 "RoomFixtures.catering_space, " +
@@ -884,6 +938,7 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
                 "Room.building_id, " +
                 "Room.floor_id, " +
                 "Room.id AS room_id, " +
+                "Room.description AS room_description, " +
                 "Room.room_category_id, " +
                 "RoomFixtures.fixed_chairs, " +
                 "RoomFixtures.catering_space, " +

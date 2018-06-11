@@ -80,9 +80,10 @@ class DatabaseBuilder {
                 + "name TEXT NOT NULL, "
                 + "address1 VARCHAR(255) NOT NULL, "
                 + "address2 VARCHAR(255), "
-                + "postcode VARCHAR(145), "
-                + "country VARCHAR(145), "
-                + "telephone VARCHAR(50) "
+                + "city VARCHAR(255) NOT NULL, "
+                + "postcode VARCHAR(145) NOT NULL, "
+                + "country VARCHAR(145) NOT NULL, "
+                + "telephone VARCHAR(50) NOT NULL "
                 + ")";
         return pushQuery(db, query);
     }

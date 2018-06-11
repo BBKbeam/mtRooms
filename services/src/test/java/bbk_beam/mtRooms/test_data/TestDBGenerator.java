@@ -20,7 +20,7 @@ public class TestDBGenerator {
 
     @After
     public void tearDown() throws Exception {
-        Files.deleteIfExists(Paths.get("mtRoomsTestData.db"));
+//        Files.deleteIfExists(Paths.get("mtRoomsTestData.db"));
     }
 
     /**

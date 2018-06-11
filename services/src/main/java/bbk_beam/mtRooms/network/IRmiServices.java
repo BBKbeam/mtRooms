@@ -537,6 +537,18 @@ public interface IRmiServices extends Remote {
      */
     RoomCategory getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, FailedDbFetch, Unauthorised, RemoteException;
 
+    /**
+     * Gets details for a Room
+     *
+     * @param session_token Session's token
+     * @param room          Room DTO
+     * @return DetailedRoom DTO
+     * @throws InvalidRoom     when the room does not match any in the records
+     * @throws FailedDbFetch   when a problem was encountered whilst processing the query
+     * @throws Unauthorised    when client is not authorised to access the resource
+     * @throws RemoteException when network issues occur during the remote call
+     */
+    public DetailedRoom getRoomDetails(Token session_token, Room room) throws InvalidRoom, FailedDbFetch, Unauthorised, RemoteException;
 
     //----------------------------------------------------[ Logistics ]-------------------------------------------------
 

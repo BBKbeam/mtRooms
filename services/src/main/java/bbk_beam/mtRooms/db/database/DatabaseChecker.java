@@ -1024,7 +1024,7 @@ class DatabaseChecker {
     }
 
     private boolean checkTable_Room_has_Reservation(IDatabase db) throws DbMissingTableException {
-        final int column_count = 10;
+        final int column_count = 11;
         String query = "PRAGMA table_info( Room_has_Reservation )";
         try {
             boolean ok_flag = true;
@@ -1069,6 +1069,12 @@ class DatabaseChecker {
                 if (row.get("name").equals("timestamp_out")) {
                     checked++;
                     ColProperty expected = new ColProperty("Room_has_Reservation", "timestamp_out", "TIMESTAMP", true, null, 0);
+                    if (!checkColumn(expected, row))
+                        ok_flag = false;
+                }
+                if (row.get("name").equals("room_price_id")) {
+                    checked++;
+                    ColProperty expected = new ColProperty("Room_has_Reservation", "room_price_id", "INTEGER", true, null, 0);
                     if (!checkColumn(expected, row))
                         ok_flag = false;
                 }

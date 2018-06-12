@@ -382,6 +382,8 @@ public class ReservationDbDelegateTest {
         Assert.assertNotEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
 
         Room room = new Room(8, 3, 1, 6, "Theatre");
+        RoomPrice mock_roomPrice = mock(RoomPrice.class);
+        when(mock_roomPrice.id()).thenReturn(11);
         RoomReservation mock_roomReservation = mock(RoomReservation.class);
         Date reservation_start = new Date();
         Date reservation_end = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
@@ -390,6 +392,7 @@ public class ReservationDbDelegateTest {
         when(mock_roomReservation.room()).thenReturn(room);
         when(mock_roomReservation.reservationStart()).thenReturn(reservation_start);
         when(mock_roomReservation.reservationEnd()).thenReturn(reservation_end);
+        when(mock_roomReservation.price()).thenReturn(mock_roomPrice);
         when(mock_roomReservation.note()).thenReturn(note);
 
         this.reservationDbDelegate.createRoomReservation(this.token, 4, mock_roomReservation);

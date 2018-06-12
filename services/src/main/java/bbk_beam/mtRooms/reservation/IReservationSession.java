@@ -362,4 +362,16 @@ public interface IReservationSession extends Observer {
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     public DetailedRoom getRoomDetails(Token session_token, Room room) throws InvalidRoom, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Gets all the prices on records for a room
+     *
+     * @param session_token Session's token
+     * @param room          Room DTO
+     * @return List of RoomPrice DTOs for the Room
+     * @throws FailedDbFetch           when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    public List<RoomPrice> getRoomPrices(Token session_token, Room room) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 }

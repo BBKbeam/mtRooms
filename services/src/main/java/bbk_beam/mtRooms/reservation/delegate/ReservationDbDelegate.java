@@ -737,6 +737,21 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
     }
 
     @Override
+    public ObjectTable getRoomPrices(Token session_token, Room room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "RoomPrice.id, " +
+                "RoomPrice.price, " +
+                "RoomPrice.year " +
+                "FROM Room_has_RoomPrice " +
+                "LEFT OUTER JOIN RoomPrice " +
+                "ON Room_has_RoomPrice.price_id = RoomPrice.id " +
+                "WHERE Room_has_RoomPrice.room_id = " + room.id() +
+                " AND Room_has_RoomPrice.floor_id = " + room.floorID() +
+                " AND Room_has_RoomPrice.building_id = " + room.buildingID();
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    @Override
     public ObjectTable search(Token session_token, Room room, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT " +
                 "Room_has_Reservation.timestamp_in, " +

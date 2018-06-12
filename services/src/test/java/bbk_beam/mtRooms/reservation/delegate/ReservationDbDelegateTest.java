@@ -770,4 +770,16 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals(5, row.get("category_id"));
         Assert.assertEquals(4, row.get("room_fixture_id"));
     }
+
+    @Test
+    public void getRoomPrice() throws Exception {
+        Room mock_room = mock(Room.class);
+        when(mock_room.id()).thenReturn(7);
+        when(mock_room.floorID()).thenReturn(3);
+        when(mock_room.buildingID()).thenReturn(1);
+        ObjectTable table = this.reservationDbDelegate.getRoomPrices(this.token, mock_room);
+        Assert.assertEquals(2, table.rowCount());
+        Assert.assertEquals(5, table.getInteger(1, 1)); //id
+        Assert.assertEquals(11, table.getInteger(1, 2)); //id
+    }
 }

@@ -148,11 +148,21 @@ public interface IReserve {
      *
      * @param session_token Session's token
      * @param room          Room DTO
-     * @return DetailedRoom DTO
+     * @return Details for the room
      * @throws InvalidRoom             when the room does not match any within the records
      * @throws DbQueryException        when a problem was encountered whilst processing the query
      * @throws SessionExpiredException when the session for the id provided has expired
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     ObjectTable getRoomDetails(Token session_token, Room room) throws InvalidRoom, DbQueryException, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * @param session_token Session's token
+     * @param room          Room DTO
+     * @return Prices for the room in the records
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    ObjectTable getRoomPrices(Token session_token, Room room) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 }

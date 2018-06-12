@@ -302,4 +302,33 @@ public class ReservationProcessing {
             throw new FailedDbFetch("");
         }
     }
+
+    /**
+     * Gets all the prices on records for a room
+     *
+     * @param session_token Session's token
+     * @param room          Room DTO
+     * @return List of RoomPrice DTOs for the Room
+     * @throws FailedDbFetch           when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    public List<RoomPrice> getRoomPrices(Token session_token, Room room) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            List<RoomPrice> list = new ArrayList<>();
+            ObjectTable table = this.db_delegate.getRoomPrices(session_token, room);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                list.add(new RoomPrice(
+                        (Integer) row.get("id"),
+                        (Double) row.get("price"),
+                        (Integer) row.get("year")
+                ));
+            }
+            return list;
+        } catch (DbQueryException e) {
+            log.log_Error("Could not get RoomPrice(s) for Room: ", room);
+            throw new FailedDbFetch("Could not get RoomPrices for Room: " + room, e);
+        }
+    }
 }

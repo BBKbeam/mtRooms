@@ -158,4 +158,20 @@ public class ReservationProcessingTest {
         Assert.assertEquals(new Integer(5), detailedRoom.category().id());
         Assert.assertEquals(new Integer(4), detailedRoom.fixtures().id());
     }
+
+    @Test
+    public void getRoomPrices() throws Exception {
+        Room mock_room = mock(Room.class);
+        when(mock_room.id()).thenReturn(7);
+        when(mock_room.floorID()).thenReturn(3);
+        when(mock_room.buildingID()).thenReturn(1);
+        List<RoomPrice> list = this.reservationProcessing.getRoomPrices(this.token, mock_room);
+        Assert.assertEquals(2, list.size());
+        Assert.assertEquals(new Integer(5), list.get(0).id());
+        Assert.assertEquals(new Double(80.), list.get(0).price());
+        Assert.assertEquals(new Integer(2007), list.get(0).year());
+        Assert.assertEquals(new Integer(11), list.get(1).id());
+        Assert.assertEquals(new Double(85.), list.get(1).price());
+        Assert.assertEquals(new Integer(2008), list.get(1).year());
+    }
 }

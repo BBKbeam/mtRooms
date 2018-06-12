@@ -195,4 +195,9 @@ public class ReservationSession implements IReservationSession {
     public DetailedRoom getRoomDetails(Token session_token, Room room) throws InvalidRoom, FailedDbFetch, SessionExpiredException, SessionInvalidException {
         return this.reservationProcessing.getRoomDetails(session_token, room);
     }
+
+    @Override
+    public List<RoomPrice> getRoomPrices(Token session_token, Room room) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.reservationProcessing.getRoomPrices(session_token, room);
+    }
 }

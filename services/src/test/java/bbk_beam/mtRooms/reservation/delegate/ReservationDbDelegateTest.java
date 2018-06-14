@@ -357,7 +357,7 @@ public class ReservationDbDelegateTest {
     @Test
     public void createReservation() throws Exception {
         Room room = new Room(8, 3, 1, 6, "Theatre");
-        Discount discount = new Discount(1, .0, 1, "None");
+        Discount discount = new Discount(1, .0, new DiscountCategory(1, "None"));
         Date created_date = new Date();
         Reservation reservation = new Reservation(-1, created_date, 1, discount);
         //Testing

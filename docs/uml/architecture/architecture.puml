@@ -220,22 +220,25 @@ package mtRooms {
 
         package "admin" {
             component AdministrationSystem #white {
-                interface IAdminSession
-                component AdminSession
-                component UserAccAdministration
-                component ReservationDbMaintenance
+                IAdminSession -- [AdminSession]
 
-                IAdminSession -- AdminSession
+                component Maintenance #white {
+                    [UserAccAdministration]
+                    [ReservationDbMaintenance]
+                    [RealEstateAdministration]
+                    [MembershipAdministration]
+                }
+
                 AdminSession --> UserAccAdministration
                 AdminSession --> ReservationDbMaintenance
+                AdminSession --> RealEstateAdministration
+                AdminSession --> MembershipAdministration
             }
 
             component AuthenticationSystem #white {
-                interface IAuthenticationSystem
-                component UserAccountChecker
-                component SessionIdGenerator
+                IAuthenticationSystem -- [UserAccountChecker]
+                [SessionIdGenerator]
 
-                IAuthenticationSystem -- UserAccountChecker
                 UserAccountChecker --> SessionIdGenerator
             }
         }
@@ -324,6 +327,8 @@ package mtRooms {
 
     UserAccAdministration --( IUserAccDbAccess
     ReservationDbMaintenance --( IReservationDbAccess
+    RealEstateAdministration --( IReservationDbAccess
+    MembershipAdministration --( IReservationDbAccess
 
     ReservationDbDelegate --( IReservationDbAccess
 

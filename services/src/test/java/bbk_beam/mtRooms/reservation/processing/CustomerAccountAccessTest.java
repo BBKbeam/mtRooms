@@ -9,6 +9,7 @@ import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Discount;
+import bbk_beam.mtRooms.reservation.dto.DiscountCategory;
 import bbk_beam.mtRooms.reservation.dto.Membership;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
@@ -178,7 +179,11 @@ public class CustomerAccountAccessTest {
 
     @Test
     public void getMembership() throws Exception {
-        Membership expected = new Membership(3, "Full Member", new Discount(3, 10d, 3, "Member"));
+        Membership expected = new Membership(
+                3,
+                "Full Member",
+                new Discount(3, 10d, new DiscountCategory(3, "Member"))
+        );
         Membership returned = this.customerAccountAccess.getMembership(this.token, 3);
         Assert.assertEquals(expected, returned);
     }

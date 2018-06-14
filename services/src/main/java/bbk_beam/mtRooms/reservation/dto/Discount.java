@@ -6,22 +6,19 @@ import java.util.Objects;
 public class Discount implements Serializable {
     private Integer id;
     private Double rate;
-    private Integer category_id;
-    private String category_description;
+    private DiscountCategory category;
 
     /**
      * Constructor
      *
-     * @param id                   Discount ID
-     * @param rate                 Discount rate percentage
-     * @param category_id          Discount category ID
-     * @param category_description Discount category description
+     * @param id       Discount ID
+     * @param rate     Discount rate percentage
+     * @param category DiscountCategory DTO
      */
-    public Discount(Integer id, Double rate, Integer category_id, String category_description) {
+    public Discount(Integer id, Double rate, DiscountCategory category) {
         this.id = id;
         this.rate = rate;
-        this.category_id = category_id;
-        this.category_description = category_description;
+        this.category = category;
     }
 
     /**
@@ -32,8 +29,7 @@ public class Discount implements Serializable {
     public Discount(Discount discount) {
         this.id = discount.id;
         this.rate = discount.rate;
-        this.category_id = discount.category_id;
-        this.category_description = discount.category_description;
+        this.category = discount.category;
     }
 
     /**
@@ -55,23 +51,13 @@ public class Discount implements Serializable {
     }
 
     /**
-     * Gets the discount's category ID
+     * Gets the discount's category
      *
-     * @return Discount category ID
+     * @return DiscountCategory DTO
      */
-    public Integer categoryID() {
-        return category_id;
+    public DiscountCategory category() {
+        return this.category;
     }
-
-    /**
-     * Gets the discount's category description
-     *
-     * @return Discount category description
-     */
-    public String categoryDescription() {
-        return category_description;
-    }
-
 
     @Override
     public boolean equals(Object o) {
@@ -80,21 +66,19 @@ public class Discount implements Serializable {
         Discount discount = (Discount) o;
         return Objects.equals(id, discount.id) &&
                 Objects.equals(rate, discount.rate) &&
-                Objects.equals(category_id, discount.category_id) &&
-                Objects.equals(category_description, discount.category_description);
+                Objects.equals(category, discount.category);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, rate, category_id, category_description);
+        return Objects.hash(id, rate, category);
     }
 
     @Override
     public String toString() {
-        return "[" + id + "]={ "
+        return "Discount[" + id + "]={ "
                 + "rate: " + rate
-                + ", category_id: " + category_id
-                + ", category_description: " + category_description
+                + ", " + category
                 + " }";
     }
 }

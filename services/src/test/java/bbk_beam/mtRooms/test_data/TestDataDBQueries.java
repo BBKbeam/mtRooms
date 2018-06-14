@@ -16,7 +16,8 @@ public class TestDataDBQueries {
             + "( 30, 30 ), "    //id = 3
             + "( 40, 40 ), "    //id = 4
             + "( 50, 50 ), "    //id = 5
-            + "( 100, 100 )";   //id = 6
+            + "( 100, 100 ), "  //id = 6
+            + "( 112, 150 )";   //id = 7
     //RoomPrice table
     public static String roomPrices = "INSERT INTO RoomPrice( price, year ) VALUES "
             + "( 40.00, 2007 ), "  //id = 1

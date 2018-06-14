@@ -8,6 +8,7 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.delegate.ICustomerAccount;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Discount;
+import bbk_beam.mtRooms.reservation.dto.DiscountCategory;
 import bbk_beam.mtRooms.reservation.dto.Membership;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
@@ -216,8 +217,10 @@ public class CustomerAccountAccess {
                         new Discount(
                                 (Integer) row.get("discount_id"),
                                 (Double) row.get("discount_rate"),
-                                (Integer) row.get("discount_category_id"),
-                                (String) row.get("discount_category_desc")
+                                new DiscountCategory(
+                                        (Integer) row.get("discount_category_id"),
+                                        (String) row.get("discount_category_desc")
+                                )
                         )
                 );
             } else {
@@ -251,8 +254,10 @@ public class CustomerAccountAccess {
                                 new Discount(
                                         (Integer) row.get("discount_id"),
                                         (Double) row.get("discount_rate"),
-                                        (Integer) row.get("discount_category_id"),
-                                        (String) row.get("discount_category_desc")
+                                        new DiscountCategory(
+                                                (Integer) row.get("discount_category_id"),
+                                                (String) row.get("discount_category_desc")
+                                        )
                                 )
                         )
                 );

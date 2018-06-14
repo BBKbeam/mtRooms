@@ -104,7 +104,8 @@ class DatabaseBuilder {
         String query = "CREATE TABLE RoomCategory( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "capacity INTEGER NOT NULL, "
-                + "dimension INTEGER "
+                + "dimension INTEGER, "
+                + "UNIQUE( capacity, dimension ) "
                 + ")";
         return pushQuery(db, query);
     }

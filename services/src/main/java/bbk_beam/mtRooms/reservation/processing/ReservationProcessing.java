@@ -147,8 +147,10 @@ public class ReservationProcessing {
             Discount discount = new Discount(
                     (Integer) reservation_row.get("discount_id"),
                     (Double) reservation_row.get("discount_rate"),
-                    (Integer) reservation_row.get("discount_category_id"),
-                    (String) reservation_row.get("discount_category_description")
+                    new DiscountCategory(
+                            (Integer) reservation_row.get("discount_category_id"),
+                            (String) reservation_row.get("discount_category_description")
+                    )
             );
             Reservation reservation = new Reservation(
                     (Integer) reservation_row.get("id"),

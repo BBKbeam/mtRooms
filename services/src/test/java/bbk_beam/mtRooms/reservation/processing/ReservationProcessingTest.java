@@ -60,7 +60,7 @@ public class ReservationProcessingTest {
     public void createReservation() throws Exception {
         //Setting up dummy test Reservation
         Room room = new Room(8, 3, 1, 6, "Theatre");
-        Discount discount = new Discount(1, .0, 1, "None");
+        Discount discount = new Discount(1, .0, new DiscountCategory(1, "None"));
         Date reservation_start = new Date();
         Date reservation_end = Date.from(Instant.now().plus(2, ChronoUnit.HOURS));
         String note = "Note 1";

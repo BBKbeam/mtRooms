@@ -48,7 +48,7 @@ public class RoomPrice implements Serializable {
 
     @Override
     public String toString() {
-        return "[" + this.id + "]={ "
+        return "RoomPrice[" + this.id + "]={ "
                 + "price: " + price +
                 ", year: " + year +
                 " }";

@@ -286,7 +286,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    void add(Token admin_token, Building building) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void add(Token admin_token, Building building) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "INSERT INTO Building( name, address1, address2, city, postcode, country, telephone ) VALUES( " +
                 "\"" + building.name() + "\", " +
                 "\"" + building.address1() + "\", " +
@@ -308,7 +308,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    void add(Token admin_token, Floor floor) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void add(Token admin_token, Floor floor) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "INSERT INTO Floor( id, building_id, description ) VALUES ( " +
                 floor.floorID() + ", " +
                 floor.buildingID() + ", " +
@@ -327,7 +327,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    void add(Token admin_token, Room room, RoomFixtures fixtures) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void add(Token admin_token, Room room, RoomFixtures fixtures) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         Integer room_fixture_id = getRoomFixturesID(
                 admin_token,
                 fixtures.hasFixedChairs(),
@@ -363,7 +363,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    ObjectTable add(Token admin_token, RoomPrice roomPrice) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public ObjectTable add(Token admin_token, RoomPrice roomPrice) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String check_query = "SELECT * FROM RoomPrice " +
                 "WHERE price = " + roomPrice.price() +
                 " AND year = " + roomPrice.year();
@@ -388,7 +388,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    ObjectTable add(Token admin_token, RoomCategory roomCategory) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public ObjectTable add(Token admin_token, RoomCategory roomCategory) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String check_query = "SELECT * FROM RoomCategory " +
                 "WHERE capacity = " + roomCategory.capacity() +
                 " AND dimension = " + roomCategory.dimension();
@@ -412,7 +412,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    void update(Token admin_token, Building building) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void update(Token admin_token, Building building) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "UPDATE Building SET" +
                 " name = \"" + building.name() + "\"," +
                 " address1 = \"" + building.address1() + "\"," +
@@ -435,7 +435,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    void update(Token admin_token, Floor floor) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void update(Token admin_token, Floor floor) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "UPDATE Floor SET description = \"" + floor.description() + "\" " +
                 "WHERE Floor.id = " + floor.floorID() +
                 " AND Floor.building_id = " + floor.buildingID();
@@ -452,7 +452,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    void update(Token admin_token, Room room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void update(Token admin_token, Room room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "UPDATE Room SET description = \"" + room.description() + "\" " +
                 "WHERE id = " + room.id() +
                 " AND floor_id = " + room.floorID() +
@@ -470,7 +470,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    boolean remove(Token admin_token, Building building) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public boolean remove(Token admin_token, Building building) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //Check ties to Reservation(s)
         String check_query1 = "SELECT COUNT(*) AS result FROM Room_has_Reservation WHERE building_id = " + building.id();
         ObjectTable table = this.reservation_db_access.pullFromDB(admin_token.getSessionId(), check_query1);
@@ -502,7 +502,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    boolean remove(Token admin_token, Floor floor) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public boolean remove(Token admin_token, Floor floor) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //Check ties to Reservation(s)
         String check_query1 = "SELECT COUNT(*) AS result FROM Room_has_Reservation " +
                 "WHERE building_id = " + floor.buildingID() +
@@ -540,7 +540,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    boolean remove(Token admin_token, Room room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public boolean remove(Token admin_token, Room room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //Check ties to Reservation(s)
         String check_query = "SELECT COUNT(*) AS result FROM Room_has_Reservation " +
                 "WHERE room_id = " + room.id() +
@@ -585,7 +585,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    boolean remove(Token admin_token, RoomPrice roomPrice) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public boolean remove(Token admin_token, RoomPrice roomPrice) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //Check ties to Reservation(s)
         String check_query = "SELECT room_id, floor_id, building_id " +
                 "FROM Room_has_Reservation " +
@@ -616,7 +616,7 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    boolean remove(Token admin_token, RoomCategory roomCategory) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public boolean remove(Token admin_token, RoomCategory roomCategory) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //Check ties to Room(s)
         String check_query = "SELECT Room.id, Room.floor_id, Room.building_id FROM Room " +
                 "LEFT OUTER JOIN RoomCategory ON Room.room_category_id = RoomCategory.id " +

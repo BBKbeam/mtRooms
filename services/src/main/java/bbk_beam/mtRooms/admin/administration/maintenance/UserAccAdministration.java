@@ -1,11 +1,11 @@
-package bbk_beam.mtRooms.admin.administration;
+package bbk_beam.mtRooms.admin.administration.maintenance;
 
 import bbk_beam.mtRooms.admin.authentication.PasswordHash;
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.AuthenticationHasherException;
-import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
+import bbk_beam.mtRooms.admin.exception.FailedRecordUpdate;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
@@ -64,16 +64,16 @@ public class UserAccAdministration {
      * @param account_type Account type to create
      * @param username     Username of the account to create
      * @param password     Password of the account to create
-     * @throws RecordUpdateException     when adding new account fails
+     * @throws FailedRecordUpdate     when adding new account fails
      * @throws AccountExistenceException when account with same name exists already
      */
-    public void createNewAccount(SessionType account_type, String username, String password) throws RecordUpdateException, AccountExistenceException {
+    public void createNewAccount(SessionType account_type, String username, String password) throws FailedRecordUpdate, AccountExistenceException {
         try {
             //AccountType SessionType.value to db ID translation
             ObjectTable account_type_id = db_access.pullFromDB("SELECT id FROM AccountType WHERE description = \"" + account_type.name() + "\"");
             if (account_type_id.isEmpty()) {
                 log.log_Fatal("Cannot get id for account type [", account_type.name(), "] from records.");
-                throw new RecordUpdateException("Cannot get id for account type [" + account_type.name() + "] from records.");
+                throw new FailedRecordUpdate("Cannot get id for account type [" + account_type.name() + "] from records.");
             }
             Integer type_id = account_type_id.getInteger(1, 1);
             //UserAccount records
@@ -96,20 +96,20 @@ public class UserAccAdministration {
                 ObjectTable changes = db_access.pullFromDB("SELECT changes()");
                 if (changes.getInteger(1, 1) == 0) {
                     log.log_Error("Could not create user account (u/n: ", username, "): process yielded no changes to records.");
-                    throw new RecordUpdateException("Could not create user account (u/n: " + username + "): process yielded no changes to records.");
+                    throw new FailedRecordUpdate("Could not create user account (u/n: " + username + "): process yielded no changes to records.");
                 } else {
                     log.log("User account (u/n: ", username, ", type: ", account_type.name(), ") created.");
                 }
             } else {
-                log.log_Error("Cannot add new account (u/n: ", username, "): username already exists.");
-                throw new AccountExistenceException("Cannot add new account (u/n: " + username + "): username already exists.");
+                log.log_Error("Cannot addUsage new account (u/n: ", username, "): username already exists.");
+                throw new AccountExistenceException("Cannot addUsage new account (u/n: " + username + "): username already exists.");
             }
         } catch (DbQueryException e) {
             log.log_Error("Failed to process query to database.");
-            throw new RecordUpdateException("Failed to process query to database.", e);
+            throw new FailedRecordUpdate("Failed to process query to database.", e);
         } catch (AuthenticationHasherException e) {
             log.log_Fatal("Could not create hash for account (u/n: ", username, ").");
-            throw new RecordUpdateException("Could not create hash for account (u/n: " + username + ").", e);
+            throw new FailedRecordUpdate("Could not create hash for account (u/n: " + username + ").", e);
         }
     }
 
@@ -118,11 +118,11 @@ public class UserAccAdministration {
      *
      * @param account_id ID of account to update
      * @param password   New password
-     * @throws RecordUpdateException     when updating account fails
+     * @throws FailedRecordUpdate     when updating account fails
      * @throws AccountExistenceException when account does not exist in the records
      * @throws AccountOverrideException  when new password is the same as old one
      */
-    public void updateAccountPassword(Integer account_id, String password) throws RecordUpdateException, AccountExistenceException, AccountOverrideException {
+    public void updateAccountPassword(Integer account_id, String password) throws FailedRecordUpdate, AccountExistenceException, AccountOverrideException {
         try {
             ObjectTable table = getAccount(account_id);
             if (!table.isEmpty()) {
@@ -142,7 +142,7 @@ public class UserAccAdministration {
                 ObjectTable changes = db_access.pullFromDB("SELECT changes()");
                 if (changes.getInteger(1, 1) == 0) {
                     log.log_Error("Could not update user account password (id: ", account_id, "): process yielded no changes to records.");
-                    throw new RecordUpdateException("Could not update user account password (id: " + account_id + "): process yielded no changes to records.");
+                    throw new FailedRecordUpdate("Could not update user account password (id: " + account_id + "): process yielded no changes to records.");
                 } else {
                     log.log("User account password (id: ", account_id, ") updated.");
                 }
@@ -152,10 +152,10 @@ public class UserAccAdministration {
             }
         } catch (DbQueryException e) {
             log.log_Error("Failed to process query to database.");
-            throw new RecordUpdateException("Failed to process query to database.", e);
+            throw new FailedRecordUpdate("Failed to process query to database.", e);
         } catch (AuthenticationHasherException e) {
             log.log_Fatal("Could not create hash for account (id: ", account_id, ").");
-            throw new RecordUpdateException("Could not create hash for account (id: " + account_id + ").", e);
+            throw new FailedRecordUpdate("Could not create hash for account (id: " + account_id + ").", e);
         }
     }
 

@@ -1,10 +1,10 @@
-package bbk_beam.mtRooms.admin.administration;
+package bbk_beam.mtRooms.admin.administration.maintenance;
 
 import bbk_beam.mtRooms.admin.authentication.PasswordHash;
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
-import bbk_beam.mtRooms.admin.exception.RecordUpdateException;
+import bbk_beam.mtRooms.admin.exception.FailedRecordUpdate;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
@@ -96,7 +96,7 @@ public class UserAccAdministrationTest {
         userAccAdministration.createNewAccount(SessionType.USER, "root", "password");
     }
 
-    @Test(expected = RecordUpdateException.class)
+    @Test(expected = FailedRecordUpdate.class)
     public void createNewAccount_fail_get_account_type_id() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
         String query_type_id = "SELECT id FROM AccountType WHERE description = \"USER\"";
@@ -108,7 +108,7 @@ public class UserAccAdministrationTest {
         userAccAdministration.createNewAccount(SessionType.USER, "mtRoomUser", "user_password_0000");
     }
 
-    @Test(expected = RecordUpdateException.class)
+    @Test(expected = FailedRecordUpdate.class)
     public void createNewAccount_fail_no_change_in_record() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
         String query_type_id = "SELECT id FROM AccountType WHERE description = \"USER\"";
@@ -135,17 +135,17 @@ public class UserAccAdministrationTest {
         userAccAdministration.createNewAccount(SessionType.USER, "mtRoomUser", "user_password_0000");
     }
 
-    @Test(expected = RecordUpdateException.class)
+    @Test(expected = FailedRecordUpdate.class)
     public void createNewAccount_fail_db_query_type_id() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
         String query_type_id = "SELECT id FROM AccountType WHERE description = \"USER\"";
         //Type Id fetching
-        when(this.mock_user_db_access.pullFromDB(query_type_id)).thenThrow(RecordUpdateException.class);
+        when(this.mock_user_db_access.pullFromDB(query_type_id)).thenThrow(FailedRecordUpdate.class);
         //Method call
         userAccAdministration.createNewAccount(SessionType.USER, "mtRoomUser", "user_password_0000");
     }
 
-    @Test(expected = RecordUpdateException.class)
+    @Test(expected = FailedRecordUpdate.class)
     public void createNewAccount_fail_db_query_accounts() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
         String query_type_id = "SELECT id FROM AccountType WHERE description = \"USER\"";
@@ -156,12 +156,12 @@ public class UserAccAdministrationTest {
         when(mocked_type_id_table.isEmpty()).thenReturn(false);
         when(mocked_type_id_table.getInteger(1, 1)).thenReturn(2);
         //New account query
-        doThrow(RecordUpdateException.class).when(this.mock_user_db_access).pullFromDB(query_accounts);
+        doThrow(FailedRecordUpdate.class).when(this.mock_user_db_access).pullFromDB(query_accounts);
         //Method call
         userAccAdministration.createNewAccount(SessionType.USER, "mtRoomUser", "user_password_0000");
     }
 
-    @Test(expected = RecordUpdateException.class)
+    @Test(expected = FailedRecordUpdate.class)
     public void createNewAccount_fail_db_query_changes() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
         String query_type_id = "SELECT id FROM AccountType WHERE description = \"USER\"";
@@ -181,7 +181,7 @@ public class UserAccAdministrationTest {
             return this.user_db_access.pushToDB((String) args[0]);
         });
         //Changes
-        doThrow(RecordUpdateException.class).when(mock_user_db_access).pullFromDB(query_changes);
+        doThrow(FailedRecordUpdate.class).when(mock_user_db_access).pullFromDB(query_changes);
         //Method call
         userAccAdministration.createNewAccount(SessionType.USER, "mtRoomUser", "user_password_0000");
     }
@@ -210,7 +210,7 @@ public class UserAccAdministrationTest {
         userAccAdministration.updateAccountPassword(1, "n3w_pa55w0rd");
     }
 
-    @Test(expected = RecordUpdateException.class)
+    @Test(expected = FailedRecordUpdate.class)
     public void updateAccountPassword_fail_db_query_changes() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
         ObjectTable account_table = mock(ObjectTable.class);
@@ -242,7 +242,7 @@ public class UserAccAdministrationTest {
         userAccAdministration.updateAccountPassword(1, "old_password");
     }
 
-    @Test(expected = RecordUpdateException.class)
+    @Test(expected = FailedRecordUpdate.class)
     public void updateAccountPassword_fail_get_account_query() throws Exception {
         UserAccAdministration userAccAdministration = new UserAccAdministration(this.mock_user_db_access);
         String query_accounts = "SELECT UserAccount.id, UserAccount.username, UserAccount.pwd_hash, UserAccount.pwd_salt, UserAccount.created, UserAccount.last_pwd_change, UserAccount.last_login, UserAccount.active_state, AccountType.id AS type_id, AccountType.description FROM UserAccount LEFT OUTER JOIN AccountType ON UserAccount.account_type_id = AccountType.id WHERE UserAccount.id = 1";

@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.admin.administration;
+package bbk_beam.mtRooms.admin.administration.maintenance;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
@@ -9,15 +9,15 @@ import eadjlib.logger.Logger;
 
 public class ReservationDbMaintenance {
     private final Logger log = Logger.getLoggerInstance(ReservationDbMaintenance.class.getName());
-    private IReservationDbAccess reservation_db_access;
+    private IReservationDbAccess db_access;
 
     /**
      * Constructor
      *
-     * @param reservation_db_access ReservationDbAccess instance
+     * @param db_access ReservationDbAccess instance
      */
-    public ReservationDbMaintenance(IReservationDbAccess reservation_db_access) {
-        this.reservation_db_access = reservation_db_access;
+    public ReservationDbMaintenance(IReservationDbAccess db_access) {
+        this.db_access = db_access;
     }
 
     /**
@@ -28,9 +28,9 @@ public class ReservationDbMaintenance {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws DbQueryException        when vacuuming query failed
      */
-    void vacuumDatabase(Token admin_token) throws SessionInvalidException, SessionExpiredException, DbQueryException {
+    public void vacuumDatabase(Token admin_token) throws SessionInvalidException, SessionExpiredException, DbQueryException {
         try {
-            this.reservation_db_access.pushToDB(admin_token.getSessionId(), "VACUUM");
+            this.db_access.pushToDB(admin_token.getSessionId(), "VACUUM");
             log.log("Reservation database optimised.");
         } catch (DbQueryException e) {
             log.log_Error("Vacuuming failed.");

@@ -14,6 +14,7 @@ import bbk_beam.mtRooms.reservation.dto.*;
 import java.util.List;
 
 public interface IAdminSession {
+    //--------------------------------------------------[ User Accounts ]-----------------------------------------------
     /**
      * Creates a new account
      *

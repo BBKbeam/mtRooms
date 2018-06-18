@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.revenue;
+package bbk_beam.mtRooms.revenue.revenue;
 
 
 import bbk_beam.mtRooms.admin.authentication.Token;
@@ -7,7 +7,6 @@ import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Room;
-import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -20,29 +19,17 @@ import java.util.Date;
  * required from the records in order to generate revenue reports
  * </p>
  */
-public class RevenueAggregator {
+class RevenueAggregator {
     //TODO Sort out queries so that high report abstraction level = less granularity in query data and vice versa
-    private final Logger log = Logger.getLoggerInstance(bbk_beam.mtRooms.revenue.RevenueAggregator.class.getName());
+    private final Logger log = Logger.getLoggerInstance(RevenueAggregator.class.getName());
     private IReservationDbAccess db_access;
-
-    //TODO !!! This should not be here. check should be done at the point of entry for the dates i.e. In 'ReportCreator'
-    private boolean checkDate(Date from, Date to) {
-        try {
-            if (to.after(from)) {
-            }
-            throw new InvalidPeriodException("Check date, from should be an earlier date than to");
-        } catch (InvalidPeriodException e) {
-            log.log("Check date, from should be an earlier date than to");
-        }
-        return true;
-    }
 
     /**
      * Constructor
      *
      * @param db_access IReservationDbAccess instance
      */
-    public RevenueAggregator(IReservationDbAccess db_access) {
+    RevenueAggregator(IReservationDbAccess db_access) {
         this.db_access = db_access;
     }
 
@@ -57,7 +44,7 @@ public class RevenueAggregator {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public ObjectTable getRevenueData(Token session_token, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    ObjectTable getRevenueData(Token session_token, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //TODO Query
         //total by month and by year
         String query = "";
@@ -81,7 +68,7 @@ public class RevenueAggregator {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public ObjectTable getRevenueData(Token session_token, Integer building_id, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    ObjectTable getRevenueData(Token session_token, Integer building_id, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //TODO argument injection into the query to actually get the records we want
         String query = "SELECT " +
                 "Room_has_Reservation.reservation_id," +
@@ -116,7 +103,7 @@ public class RevenueAggregator {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public ObjectTable getRevenueData(Token session_token, Integer building_id, Integer floor_id, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    ObjectTable getRevenueData(Token session_token, Integer building_id, Integer floor_id, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //TODO argument injection into the query to actually get the records we want
         String query = "SELECT " +
                 "Room_has_Reservation.reservation_id," +
@@ -150,7 +137,7 @@ public class RevenueAggregator {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public ObjectTable getRevenueData(Token session_token, Room room, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    ObjectTable getRevenueData(Token session_token, Room room, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         //TODO argument injection into the query to actually get the records we want
         String query = "SELECT " +
                 "Room_has_Reservation.reservation_id," +

@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.revenue;
+package bbk_beam.mtRooms.revenue.revenue;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;

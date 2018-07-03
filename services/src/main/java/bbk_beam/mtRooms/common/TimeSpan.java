@@ -1,12 +1,12 @@
-package bbk_beam.mtRooms.reservation.scheduling.datastructure;
+package bbk_beam.mtRooms.common;
 
 import bbk_beam.mtRooms.db.TimestampConverter;
-import bbk_beam.mtRooms.reservation.scheduling.timing.TimestampUTC;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.time.Instant;
 
-public class TimeSpan implements Comparable<TimeSpan> {
+public class TimeSpan implements Comparable<TimeSpan>, Serializable {
     private TimestampUTC start;
     private TimestampUTC end;
 

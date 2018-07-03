@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.reservation.processing;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.common.TimeSpan;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
@@ -10,7 +11,6 @@ import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomProperty;
 import bbk_beam.mtRooms.reservation.scheduling.ScheduleCache;
-import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import org.junit.After;
 import org.junit.Assert;

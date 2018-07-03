@@ -1,13 +1,13 @@
 package bbk_beam.mtRooms.reservation.scheduling;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.common.TimeSpan;
+import bbk_beam.mtRooms.common.TimestampUTC;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.reservation.ReservationSession;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomPrice;
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
-import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
-import bbk_beam.mtRooms.reservation.scheduling.timing.TimestampUTC;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

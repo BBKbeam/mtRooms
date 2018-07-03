@@ -1,10 +1,11 @@
-package bbk_beam.mtRooms.reservation.scheduling.timing;
+package bbk_beam.mtRooms.common;
 
 import eadjlib.logger.Logger;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class TimestampUTC implements Comparable<TimestampUTC> {
+public class TimestampUTC implements Comparable<TimestampUTC>, Serializable {
     private final Logger log = Logger.getLoggerInstance(TimestampUTC.class.getName());
     private String timestamp;
 

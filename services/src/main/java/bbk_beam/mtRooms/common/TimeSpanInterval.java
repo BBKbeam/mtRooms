@@ -1,9 +1,9 @@
-package bbk_beam.mtRooms.reservation.scheduling.timing;
+package bbk_beam.mtRooms.common;
 
 import java.util.Calendar;
 import java.util.Date;
 
-public enum ScheduleSlotInterval {
+public enum TimeSpanInterval {
     QUARTER_HOUR(15),
     HALF_HOUR(30),
     HOUR(60);
@@ -15,7 +15,7 @@ public enum ScheduleSlotInterval {
      *
      * @param interval_minutes Number of minutes in interval
      */
-    ScheduleSlotInterval(Integer interval_minutes) {
+    TimeSpanInterval(Integer interval_minutes) {
         this.minutes = interval_minutes;
     }
 

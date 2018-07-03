@@ -29,7 +29,7 @@ public class LogisticReportGenerator implements ILogisticReportGenerator {
      * @throws InvalidPeriodException when Start timestamp is after the End timestamp
      */
     private void checkPeriod(Date from, Date to) throws InvalidPeriodException {
-        if (to.after(from)) {
+        if (!to.after(from)) {
             log.log_Error("Invalid period (from > to): ", from, " -> ", to);
             throw new InvalidPeriodException("Start date is after end date for period.");
         }

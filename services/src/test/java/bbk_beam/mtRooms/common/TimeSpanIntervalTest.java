@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.reservation.scheduling.timing;
+package bbk_beam.mtRooms.common;
 
 import bbk_beam.mtRooms.db.TimestampConverter;
 import org.junit.Assert;
@@ -6,10 +6,10 @@ import org.junit.Test;
 
 import java.util.Date;
 
-public class ScheduleSlotIntervalTest {
-    private ScheduleSlotInterval interval15 = ScheduleSlotInterval.QUARTER_HOUR;
-    private ScheduleSlotInterval interval30 = ScheduleSlotInterval.HALF_HOUR;
-    private ScheduleSlotInterval interval60 = ScheduleSlotInterval.HOUR;
+public class TimeSpanIntervalTest {
+    private TimeSpanInterval interval15 = TimeSpanInterval.QUARTER_HOUR;
+    private TimeSpanInterval interval30 = TimeSpanInterval.HALF_HOUR;
+    private TimeSpanInterval interval60 = TimeSpanInterval.HOUR;
     //Test dates
     private Date same = TimestampConverter.getDateObject("2018-03-07 14:00:00");
     private Date lower1 = TimestampConverter.getDateObject("2018-03-07 14:01:30");

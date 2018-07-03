@@ -1,12 +1,12 @@
 package bbk_beam.mtRooms.reservation;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.common.TimeSpan;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.reservation.exception.*;
-import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
 import javafx.util.Pair;
 
 import java.util.Date;

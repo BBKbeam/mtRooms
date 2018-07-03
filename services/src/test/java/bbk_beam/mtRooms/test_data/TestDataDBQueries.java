@@ -141,7 +141,7 @@ public class TestDataDBQueries {
             + "( 4, 2, 1, 1, \"2018-02-09 11:00:00\" , \"2018-02-09 12:00:00\", 9, 30, 0, \"nothing to note\" , 0 ), "  // Room M2, Floor 2, Building 1, Reservation 1, Member 10%
             + "( 1, 1, 1, 1, \"2018-02-09 11:00:00\" , \"2018-02-09 12:00:00\", 7, 8, 0, \"nothing to note\" , 1 ), "   // Room S1, Floor 0, Building 1, Reservation 1, Member 10%
             + "( 1, 1, 1, 2, \"2018-02-09 10:15:00\" , \"2018-02-09 12:30:00\", 7, 10, 0, \"\" , 0 ), "                 // Room S1, Floor 0, Building 1, Reservation 2, Student 25%
-            + "( 5, 2, 1, 3, \"2018-06-13 15:00:59\" , \"2018-06-13 16:00:00\", 10, 35, 0, \" some text\" , 0 ), "      // Room M3, Floor 1, Building 1, Reservation 3, Member 10%
+            + "( 5, 2, 1, 3, \"2018-06-13 15:00:00\" , \"2018-06-13 16:00:00\", 10, 35, 0, \" some text\" , 0 ), "      // Room M3, Floor 1, Building 1, Reservation 3, Member 10%
             + "( 1, 1, 1, 4, \"2015-01-22 14:00:00\" , \"2015-01-22 18:00:00\", 7, 10, 0, \"\", 1 ), "                  // Room S1, Floor 0, Building 1, Reservation 4, Non-member 0%
             + "( 5, 2, 1, 5, \"2015-01-25 09:00:00\" , \"2015-01-25 10:00:00\", 10, 40, 1, \"\", 0 ), "                 // Room M3, Floor 2, Building 1, Reservation 5, Member 10%
             + "( 1, 1, 1, 6, \"2018-03-10 09:00:00\" , \"2018-03-10 10:00:00\", 7, 10, 0, \"\", 0 ), "

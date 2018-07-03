@@ -7,6 +7,7 @@ import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.logger.Logger;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.file.Files;
@@ -28,6 +29,7 @@ public class TestDBGenerator {
      *
      * @throws Exception when something goes wrong...
      */
+    @Ignore("Used to manually create a basic DB template.")
     @Test
     public void createTestDB() throws Exception {
         createTestDB("mtRoomsTestData.db");

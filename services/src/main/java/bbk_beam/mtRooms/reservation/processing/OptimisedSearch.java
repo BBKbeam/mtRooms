@@ -1,6 +1,8 @@
 package bbk_beam.mtRooms.reservation.processing;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.common.TimeSpan;
+import bbk_beam.mtRooms.common.TimestampUTC;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
@@ -10,8 +12,6 @@ import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomProperty;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.scheduling.ScheduleCache;
-import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
-import bbk_beam.mtRooms.reservation.scheduling.timing.TimestampUTC;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 

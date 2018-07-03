@@ -182,7 +182,7 @@ public class ScheduleTest {
         Date mid2 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
         Date end1 = TimestampConverter.getDateObject("2018-01-01 01:30:00");
         //Sanity check
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room1));
         //Testing
         this.schedule.addSlot(token1, room1, start1, end1);
         this.schedule.setBooked(room1, mid1, mid2);
@@ -197,21 +197,21 @@ public class ScheduleTest {
         Date start1 = TimestampConverter.getDateObject("2018-01-01 00:00:00");
         Date end1 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
         //Sanity check
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room1));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room2));
         //Room1
         this.schedule.addSlot(token1, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         this.schedule.addSlot(token2, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         this.schedule.addSlot(token3, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         //Room2
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room2));
         this.schedule.addSlot(token1, room2, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room2));
         this.schedule.addSlot(token2, room2, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room2));
         //Testing
         assertThat(this.schedule.getWatchers(room1, start1, end1), containsInAnyOrder(token1, token2, token3));
         assertThat(this.schedule.getWatchers(room2, start1, end1), containsInAnyOrder(token1, token2));
@@ -226,14 +226,14 @@ public class ScheduleTest {
         Date start3 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
         Date end3 = TimestampConverter.getDateObject("2018-01-01 02:00:00");
         //Sanity check
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room1));
         //Room1
         this.schedule.addSlot(token1, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         this.schedule.addSlot(token2, room1, start2, end2); //00:30:00 - 01:30:00
-        Assert.assertEquals(3, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(3, this.schedule.allocatedSlotCount(room1));
         this.schedule.addSlot(token3, room1, start3, end3); //01:00:00 - 02:00:00
-        Assert.assertEquals(4, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(4, this.schedule.allocatedSlotCount(room1));
         //Testing
         Assert.assertEquals(
                 2,
@@ -295,31 +295,31 @@ public class ScheduleTest {
         Date start1 = TimestampConverter.getDateObject("2018-01-01 00:00:00");
         Date end1 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
         //Sanity check
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room1));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room2));
         //Room1
         this.schedule.addSlot(token1, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         this.schedule.addSlot(token2, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         this.schedule.addSlot(token3, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         //Room2
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room2));
         this.schedule.addSlot(token1, room2, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room2));
         this.schedule.addSlot(token2, room2, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room2));
         //Deletion
         Assert.assertFalse(this.schedule.cacheIsEmpty());
         this.schedule.clearWatcherCache(token1);
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room2));
         assertThat(this.schedule.getWatchers(room1, start1, end1), containsInAnyOrder(token2, token3));
         assertThat(this.schedule.getWatchers(room2, start1, end1), containsInAnyOrder(token2));
         this.schedule.clearWatcherCache(token2);
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room2));
         assertThat(this.schedule.getWatchers(room1, start1, end1), containsInAnyOrder(token3));
         Assert.assertTrue(this.schedule.getWatchers(room2, start1, end1).isEmpty());
         this.schedule.clearWatcherCache(token3);
@@ -333,7 +333,7 @@ public class ScheduleTest {
         Date mid2 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
         Date end1 = TimestampConverter.getDateObject("2018-01-01 01:30:00");
         //Sanity check
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room1));
         //Testing
         this.schedule.addSlot(token1, room1, start1, end1);
         this.schedule.addSlot(token2, room1, mid2, end1);
@@ -347,9 +347,9 @@ public class ScheduleTest {
         this.schedule.clearWatcherCache(token1);
         this.schedule.clearWatcherCache(token2);
         //Testing
-        Assert.assertEquals(1, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(1, this.schedule.allocatedSlotCount(room1));
         this.schedule.clearUnwatchedBookedSlots();
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room1));
     }
 
     @Test
@@ -357,21 +357,21 @@ public class ScheduleTest {
         Date start1 = TimestampConverter.getDateObject("2018-01-01 00:00:00");
         Date end1 = TimestampConverter.getDateObject("2018-01-01 01:00:00");
         //Sanity check
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room1));
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room1));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room2));
         //Room1
         this.schedule.addSlot(token1, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         this.schedule.addSlot(token2, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         this.schedule.addSlot(token3, room1, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room1));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room1));
         //Room2
-        Assert.assertEquals(0, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(0, this.schedule.allocatedSlotCount(room2));
         this.schedule.addSlot(token1, room2, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room2));
         this.schedule.addSlot(token2, room2, start1, end1); //00:00:00 - 01:00:00
-        Assert.assertEquals(2, this.schedule.cachedSlotsCount(room2));
+        Assert.assertEquals(2, this.schedule.allocatedSlotCount(room2));
         //Testing
         Assert.assertFalse(this.schedule.cacheIsEmpty());
         this.schedule.clearCache();

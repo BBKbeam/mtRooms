@@ -1,7 +1,8 @@
 package bbk_beam.mtRooms.reservation.scheduling.datastructure;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
-import bbk_beam.mtRooms.reservation.scheduling.timing.TimestampUTC;
+import bbk_beam.mtRooms.common.TimeSpan;
+import bbk_beam.mtRooms.common.TimestampUTC;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -3,7 +3,7 @@ package bbk_beam.mtRooms.ui.controller.administration;
 import bbk_beam.mtRooms.MtRoomsGUI;
 import bbk_beam.mtRooms.admin.dto.Account;
 import bbk_beam.mtRooms.exception.LoginException;
-import bbk_beam.mtRooms.network.IRmiServices;
+import bbk_beam.mtRooms.network.IRmiAdministrationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
@@ -75,7 +75,7 @@ public class AdministrationController implements Initializable {
      */
     public void loadAccountTable() {
         try {
-            IRmiServices services = sessionManager.getServices();
+            IRmiAdministrationServices services = sessionManager.getAdministrationServices();
             List<Account> accountList = services.getAccounts(sessionManager.getToken());
             this.userAccountTable.loadData(accountList);
             this.account_table.setItems(this.userAccountTable.getData());

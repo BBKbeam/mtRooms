@@ -2,7 +2,7 @@ package bbk_beam.mtRooms.ui.controller.frontdesk;
 
 import bbk_beam.mtRooms.MtRoomsGUI;
 import bbk_beam.mtRooms.exception.LoginException;
-import bbk_beam.mtRooms.network.IRmiServices;
+import bbk_beam.mtRooms.network.IRmiReservationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Membership;
@@ -145,7 +145,7 @@ public class CustomerAccountController implements Initializable {
      * Cancel selected Reservation from the table
      */
     private void cancelSelectedReservation() {
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
         ReservationModel reservationModel = reservation_Table.getSelectionModel().getSelectedItem();
         try {
             Double credit = services.cancelReservation(this.sessionManager.getToken(), reservationModel.getReservation());
@@ -187,7 +187,7 @@ public class CustomerAccountController implements Initializable {
      * Cancel selected RoomReservation from the table
      */
     private void cancelSelectedRoomReservation() {
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
         ReservationModel reservationModel = reservation_Table.getSelectionModel().getSelectedItem();
         RoomReservationModel roomReservationModel = reservationDetails_Table.getSelectionModel().getSelectedItem();
         try {
@@ -236,7 +236,7 @@ public class CustomerAccountController implements Initializable {
      * @throws FailedDbFetch     when membership or records or customer could not be fetched
      */
     void loadCustomer(Customer customer) throws LoginException, Unauthorised, RemoteException, InvalidMembership, FailedDbFetch {
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
         this.membership = services.getMembership(sessionManager.getToken(), customer.membershipTypeID());
 
         this.customer = customer;
@@ -268,7 +268,7 @@ public class CustomerAccountController implements Initializable {
      */
     private void loadReservationTable(Customer customer) throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
         ReservationTable table = new ReservationTable(this.sessionManager);
-        IRmiServices services = sessionManager.getServices();
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
         List<Reservation> reservations = services.getReservations(this.sessionManager.getToken(), customer);
         table.loadData(reservations);
         this.reservation_Table.setItems(table.getData());

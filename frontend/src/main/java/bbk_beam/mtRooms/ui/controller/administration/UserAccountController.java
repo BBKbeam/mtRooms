@@ -4,7 +4,7 @@ import bbk_beam.mtRooms.admin.dto.AccountType;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.exception.LoginException;
-import bbk_beam.mtRooms.network.IRmiServices;
+import bbk_beam.mtRooms.network.IRmiAdministrationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
@@ -56,7 +56,7 @@ public class UserAccountController implements Initializable {
      * @throws RemoteException when network issues occur during the remote call
      */
     private void loadAccountTypeChoiceBox() throws LoginException, Unauthorised, RemoteException {
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiAdministrationServices services = this.sessionManager.getAdministrationServices();
         List<AccountType> accountTypeList = services.getAccountTypes(this.sessionManager.getToken());
         ObservableList<AccountType> accountTypeObservableList = FXCollections.observableList(accountTypeList);
         this.accountType_choiceBox.setItems(accountTypeObservableList);
@@ -97,7 +97,7 @@ public class UserAccountController implements Initializable {
             );
             return false;
         }
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiAdministrationServices services = this.sessionManager.getAdministrationServices();
         try {
             services.createNewAccount(
                     this.sessionManager.getToken(),
@@ -128,7 +128,7 @@ public class UserAccountController implements Initializable {
      * @return Success
      */
     private boolean saveModifiedAccount() {
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiAdministrationServices services = this.sessionManager.getAdministrationServices();
         try {
             if (!this.pwd_field.getText().isEmpty()) {
                 String password = this.pwd_field.getText();

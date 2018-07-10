@@ -1,7 +1,7 @@
 package bbk_beam.mtRooms.ui.controller.frontdesk;
 
 import bbk_beam.mtRooms.exception.LoginException;
-import bbk_beam.mtRooms.network.IRmiServices;
+import bbk_beam.mtRooms.network.IRmiReservationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Membership;
@@ -72,7 +72,7 @@ public class CustomerCreationController implements Initializable {
      * @throws RemoteException when network issues occur during the remote call
      */
     private void loadMembershipChoiceBox() throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
         List<Membership> membershipList = services.getMemberships(sessionManager.getToken());
         ObservableList<Membership> membershipObservableList = FXCollections.observableList(membershipList);
         membership_ChoiceBox.setItems(membershipObservableList);
@@ -122,7 +122,7 @@ public class CustomerCreationController implements Initializable {
                 email_field.getText()
         );
 
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
         try {
             this.customer = services.createNewCustomer(this.sessionManager.getToken(), new_customer);
             log.log("New customer created: [", this.customer.customerID(), "].");
@@ -158,7 +158,7 @@ public class CustomerCreationController implements Initializable {
         this.customer.setEmail(email_field.getText());
         this.customer.setMembershipTypeID(membership_ChoiceBox.getSelectionModel().getSelectedItem().id());
 
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
         try {
             services.saveCustomerChangesToDB(this.sessionManager.getToken(), this.customer);
         } catch (FailedDbWrite e) {
@@ -336,7 +336,7 @@ public class CustomerCreationController implements Initializable {
         } else {
             controllerRole = ControllerRole.EDIT_CUSTOMER;
             customerIdLabel_Pane.setVisible(true);
-            IRmiServices services = this.sessionManager.getServices();
+            IRmiReservationServices services = this.sessionManager.getReservationServices();
 
             try {
                 Membership membership = services.getMembership(sessionManager.getToken(), customer.membershipTypeID());

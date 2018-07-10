@@ -3,7 +3,7 @@ package bbk_beam.mtRooms.ui.controller.frontdesk;
 import bbk_beam.mtRooms.MtRoomsGUI;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.exception.LoginException;
-import bbk_beam.mtRooms.network.IRmiServices;
+import bbk_beam.mtRooms.network.IRmiReservationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
@@ -251,7 +251,7 @@ public class CustomerSearchController implements Initializable {
     @FXML
     public void handleSearchIDAction(ActionEvent actionEvent) {
         surname_field.clear();
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
         try {
             Customer customer = services.getCustomerAccount(this.sessionManager.getToken(), Integer.valueOf(id_field.getText()));
             showCustomerAccountView(customer);
@@ -278,7 +278,7 @@ public class CustomerSearchController implements Initializable {
     @FXML
     public void handleSearchSurnameAction(ActionEvent actionEvent) {
         id_field.clear();
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
         try {
             List<Pair<Integer, String>> list = services.findCustomer(this.sessionManager.getToken(), surname_field.getText());
             if (!list.isEmpty())
@@ -306,7 +306,7 @@ public class CustomerSearchController implements Initializable {
     @FXML
     public void handleOkAction(ActionEvent actionEvent) {
         try {
-            IRmiServices services = this.sessionManager.getServices();
+            IRmiReservationServices services = this.sessionManager.getReservationServices();
             Integer customer_id = customer_choiceBox.getSelectionModel().getSelectedItem().id;
             Customer customer = services.getCustomerAccount(this.sessionManager.getToken(), customer_id);
             showCustomerAccountView(customer);

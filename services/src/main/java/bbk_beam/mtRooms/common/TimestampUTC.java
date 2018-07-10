@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.common;
 import eadjlib.logger.Logger;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class TimestampUTC implements Comparable<TimestampUTC>, Serializable {
@@ -79,6 +80,15 @@ public class TimestampUTC implements Comparable<TimestampUTC>, Serializable {
      */
     public Integer seconds() {
         return Integer.parseInt(this.timestamp.substring(17, 19));
+    }
+
+    /**
+     * Gets the numbers of milliseconds UTC since EPOCH
+     *
+     * @return the number of milliseconds since January 1, 1970, 00:00:00 GMT represented by this timestamp
+     */
+    public Long getTime() {
+        return Timestamp.valueOf(this.timestamp).getTime();
     }
 
     /**

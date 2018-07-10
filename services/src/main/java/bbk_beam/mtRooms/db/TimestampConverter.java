@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.db;
 
 import eadjlib.logger.Logger;
 
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,6 +26,16 @@ public class TimestampConverter {
     }
 
     /**
+     * Translate a UTC time into a database formatted UTC timestamp string
+     *
+     * @param time Time expressed as numbers of milliseconds UTC since EPOCH
+     * @return Formatted database timestamp string
+     */
+    public static String getUTCTimestampString(Long time) {
+        return new Timestamp(time).toString();
+    }
+
+    /**
      * Translate a UTC timestamp string into a default Locale Date object
      *
      * @param utc_timestamp Timestamp to parse as a Date object
@@ -32,7 +43,7 @@ public class TimestampConverter {
      * @throws RuntimeException when string to Date parsing fails
      */
     public static Date getDateObject(String utc_timestamp) throws RuntimeException {
-        if( utc_timestamp == null)
+        if (utc_timestamp == null)
             return Date.from(Instant.EPOCH);
         try {
             DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

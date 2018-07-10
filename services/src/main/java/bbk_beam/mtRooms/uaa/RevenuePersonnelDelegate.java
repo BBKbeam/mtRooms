@@ -12,11 +12,25 @@ import bbk_beam.mtRooms.revenue.dto.CustomerBalance;
 import bbk_beam.mtRooms.revenue.dto.Occupancy;
 import bbk_beam.mtRooms.revenue.dto.SimpleCustomerBalance;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
+import bbk_beam.mtRooms.revenue.revenue.IRevenueReporter;
+import eadjlib.logger.Logger;
 
 import java.util.Date;
 import java.util.List;
 
-public interface IAuthenticatedRevenuePersonnel {
+public class RevenuePersonnelDelegate {
+    private final Logger log = Logger.getLoggerInstance(RevenuePersonnelDelegate.class.getName());
+    private IRevenueReporter revenueReporter;
+
+    /**
+     * Constructor
+     *
+     * @param revenueReporter IRevenueReporter instance
+     */
+    RevenuePersonnelDelegate(IRevenueReporter revenueReporter) {
+        this.revenueReporter = revenueReporter;
+    }
+
     /**
      * Gets all buildings in real estate portfolio
      *
@@ -26,7 +40,9 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public List<Building> getBuildings(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    public List<Building> getBuildings(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.revenueReporter.getBuildings(session_token);
+    }
 
     /**
      * Gets all floors in a building
@@ -38,7 +54,9 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public List<Floor> getFloors(Token session_token, Building building) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    public List<Floor> getFloors(Token session_token, Building building) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.revenueReporter.getFloors(session_token, building);
+    }
 
     /**
      * Gets all rooms ina floor
@@ -50,7 +68,9 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public List<Room> getRooms(Token session_token, Floor floor) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    public List<Room> getRooms(Token session_token, Floor floor) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.revenueReporter.getRooms(session_token, floor);
+    }
 
     /**
      * Gets the balance for all customers in records.
@@ -61,7 +81,9 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public List<SimpleCustomerBalance> getCustomerBalance(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    public List<SimpleCustomerBalance> getCustomerBalance(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.revenueReporter.getCustomerBalance(session_token);
+    }
 
     /**
      * Gets the balance for a Customer
@@ -73,7 +95,9 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public CustomerBalance getCustomerBalance(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    public CustomerBalance getCustomerBalance(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.revenueReporter.getCustomerBalance(session_token, customer);
+    }
 
     /**
      * Gets the occupancy stats for all rooms
@@ -87,7 +111,9 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Occupancy getOccupancy(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    public Occupancy getOccupancy(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.revenueReporter.getOccupancy(session_token, from, to);
+    }
 
     /**
      * Gets the occupancy stats for all rooms in a building
@@ -102,7 +128,9 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Occupancy getOccupancy(Token session_token, Building building, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    public Occupancy getOccupancy(Token session_token, Building building, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.revenueReporter.getOccupancy(session_token, building, from, to);
+    }
 
     /**
      * Gets the occupancy stats for all rooms on a floor
@@ -117,7 +145,9 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Occupancy getOccupancy(Token session_token, Floor floor, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    public Occupancy getOccupancy(Token session_token, Floor floor, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.revenueReporter.getOccupancy(session_token, floor, from, to);
+    }
 
     /**
      * Gets the occupancy stats for a room
@@ -132,5 +162,7 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Occupancy getOccupancy(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    public Occupancy getOccupancy(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.revenueReporter.getOccupancy(session_token, room, from, to);
+    }
 }

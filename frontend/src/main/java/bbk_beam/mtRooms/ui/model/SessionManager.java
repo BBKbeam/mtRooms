@@ -6,9 +6,7 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.exception.ClientInitFailure;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.exception.RemoteFailure;
-import bbk_beam.mtRooms.network.IRmiClient;
-import bbk_beam.mtRooms.network.IRmiServices;
-import bbk_beam.mtRooms.network.RmiClient;
+import bbk_beam.mtRooms.network.*;
 import bbk_beam.mtRooms.uaa.exception.ServerSessionInactive;
 import eadjlib.logger.Logger;
 
@@ -20,6 +18,10 @@ import java.rmi.RemoteException;
 public class SessionManager {
     private final Logger log = Logger.getLoggerInstance(SessionManager.class.getName());
     private IRmiServices services;
+    private IRmiAdministrationServices administration_services;
+    private IRmiReservationServices reservation_services;
+    private IRmiLogisticsServices logistics_services;
+    private IRmiRevenueServices revenue_services;
     private IRmiClient rmiClient;
     private boolean login_flag;
     private Token token;
@@ -32,10 +34,19 @@ public class SessionManager {
      */
     public SessionManager(String address, Integer port) throws ClientInitFailure {
         this.login_flag = false;
-        String url = "//" + address + ":" + port + "/RmiServices";
+        String url = "//" + address + ":" + port + "/";
         try {
-            log.log("Trying to connect to services on ", url);
-            this.services = (IRmiServices) Naming.lookup(url);
+            log.log("Trying to connect to services on ", url + "RmiServices");
+            this.services = (IRmiServices) Naming.lookup(url + "RmiServices");
+            log.log("Trying to connect to services on ", url + "RmiAdministrationServices");
+            this.administration_services = (IRmiAdministrationServices) Naming.lookup(url + "RmiAdministrationServices");
+            log.log("Trying to connect to services on ", url + "RmiReservationServices");
+            this.reservation_services = (IRmiReservationServices) Naming.lookup(url + "RmiReservationServices");
+            log.log("Trying to connect to services on ", url + "RmiLogisticsServices");
+            this.logistics_services = (IRmiLogisticsServices) Naming.lookup(url + "RmiLogisticsServices");
+            log.log("Trying to connect to services on ", url + "RmiRevenueServices");
+            this.revenue_services = (IRmiRevenueServices) Naming.lookup(url + "RmiRevenueServices");
+
             this.rmiClient = new RmiClient();
         } catch (NotBoundException e) {
             log.log_Fatal("Server services does not look to be bound to RMI registry.");
@@ -132,7 +143,43 @@ public class SessionManager {
      *
      * @return IRmiServices instance
      */
-    public IRmiServices getServices() {
+    public IRmiServices getMainServices() {
         return this.services;
+    }
+
+    /**
+     * Gets the IRmiAdministrationServices instance
+     *
+     * @return IRmiAdministrationServices instance
+     */
+    public IRmiAdministrationServices getAdministrationServices() {
+        return this.administration_services;
+    }
+
+    /**
+     * Gets the IRmiReservationServices instance
+     *
+     * @return IRmiReservationServices instance
+     */
+    public IRmiReservationServices getReservationServices() {
+        return this.reservation_services;
+    }
+
+    /**
+     * Gets the IRmiLogisticsServices instance
+     *
+     * @return IRmiLogisticsServices instance
+     */
+    public IRmiLogisticsServices getLogisticsServices() {
+        return this.logistics_services;
+    }
+
+    /**
+     * Gets the IRmiRevenueServices instance
+     *
+     * @return IRmiRevenueServices instance
+     */
+    public IRmiRevenueServices getRevenueServices() {
+        return this.revenue_services;
     }
 }

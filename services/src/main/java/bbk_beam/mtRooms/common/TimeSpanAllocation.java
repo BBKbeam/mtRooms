@@ -4,6 +4,7 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import eadjlib.datastructure.AVLTree;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -19,6 +20,17 @@ import java.util.concurrent.TimeUnit;
 public class TimeSpanAllocation<U, T extends TimeSpan> implements Serializable {
     protected TimeSpanInterval interval;
     protected HashMap<U, AVLTree<TimestampUTC, T>> allocations = new HashMap<>();
+
+    /**
+     * Work out the number of intervals between two interval rounded time expressed as numbers of milliseconds since EPOCH
+     *
+     * @param start Start time
+     * @param end   End time
+     * @return Number of intervals
+     */
+    private Long intervalCount(Long start, Long end) {
+        return TimeUnit.MILLISECONDS.toMinutes(Math.abs(end - start)) / this.interval.mns();
+    }
 
     /**
      * Default constructor
@@ -47,9 +59,45 @@ public class TimeSpanAllocation<U, T extends TimeSpan> implements Serializable {
      * @return Number of intervals
      */
     protected Long intervalCount(Date from, Date to) {
-        Long start = from.getTime();
-        Long end = to.getTime();
-        return TimeUnit.MILLISECONDS.toMinutes(Math.abs(end - start)) / this.interval.mns();
+        return intervalCount(from.getTime(), to.getTime());
+    }
+
+    /**
+     * Work out the number of intervals in a interval rounded TimeSpan
+     *
+     * @param time_span TimeSpan
+     * @return Number of intervals
+     */
+    protected Long intervalCount(TimeSpan time_span) {
+        return intervalCount(
+                Timestamp.valueOf(time_span.start().get()).getTime(),
+                Timestamp.valueOf(time_span.end().get()).getTime()
+        );
+    }
+
+    /**
+     * Creates a list of time spans covering the range given
+     *
+     * @param span TimeSpan range to break into interval spans
+     * @return List of time spans of length=interval
+     */
+    protected List<TimeSpan> convertToUTCSlotIntervals(TimeSpan span) {
+        Long start = this.interval.floorToInterval(span.start().getTime());
+        Long n = intervalCount(span);
+
+        List<TimeSpan> spans = new ArrayList<>();
+        Long slot_start = start;
+        Long slot_end = slot_start + TimeUnit.MINUTES.toMillis(this.interval.mns());
+        for (long i = 0; i < n; i++) {
+            TimeSpan span_slot = new TimeSpan(
+                    TimestampConverter.getUTCTimestampString(slot_start),
+                    TimestampConverter.getUTCTimestampString(slot_end)
+            );
+            spans.add(span_slot);
+            slot_start = slot_end;
+            slot_end = slot_start + TimeUnit.MINUTES.toMillis(this.interval.mns());
+        }
+        return spans;
     }
 
     /**
@@ -115,5 +163,14 @@ public class TimeSpanAllocation<U, T extends TimeSpan> implements Serializable {
             return this.allocations.get(object).size();
         else
             return 0;
+    }
+
+    @Override
+    public String toString() {
+        String sb = "TimeSpanAllocation{\n" +
+                "\tinterval=" + interval + ",\n" +
+                "\tallocations=" + allocations + "\n" +
+                "}";
+        return sb;
     }
 }

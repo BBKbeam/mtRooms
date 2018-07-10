@@ -4,6 +4,7 @@ import bbk_beam.mtRooms.MtRoomsGUI;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.exception.RemoteFailure;
+import bbk_beam.mtRooms.network.IRmiAdministrationServices;
 import bbk_beam.mtRooms.network.IRmiServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.ui.AlertDialog;
@@ -120,7 +121,7 @@ public class MainWindowController implements Initializable {
         if (this.sessionManager == null) {
             disableAllViewMenuOptions();
         } else {
-            IRmiServices services = this.sessionManager.getServices();
+            IRmiServices services = this.sessionManager.getMainServices();
             try {
                 this.reservation.setDisable(!services.hasFrontDeskAccess(this.sessionManager.getToken()));
                 this.revenue.setDisable(!services.hasFrontDeskAccess(this.sessionManager.getToken()));
@@ -276,7 +277,7 @@ public class MainWindowController implements Initializable {
 
     @FXML
     public void handleOptimiseReservationDbAction(ActionEvent actionEvent) {
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiAdministrationServices services = this.sessionManager.getAdministrationServices();
         if (services != null) {
             try {
                 services.optimiseReservationDatabase(this.sessionManager.getToken());
@@ -293,7 +294,7 @@ public class MainWindowController implements Initializable {
 
     @FXML
     public void handleOptimiseUserAccDbAction(ActionEvent actionEvent) {
-        IRmiServices services = this.sessionManager.getServices();
+        IRmiAdministrationServices services = this.sessionManager.getAdministrationServices();
         if (services != null) {
             try {
                 services.optimiseUserAccountDatabase(this.sessionManager.getToken());

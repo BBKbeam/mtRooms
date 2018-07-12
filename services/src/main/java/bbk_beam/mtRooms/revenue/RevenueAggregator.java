@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.revenue.revenue;
+package bbk_beam.mtRooms.revenue;
 
 
 import bbk_beam.mtRooms.admin.authentication.Token;
@@ -20,7 +20,7 @@ import java.util.Date;
  * RevenueAggregator
  * <p>
  * Acts as a DB delegate for getting the appropriate data
- * required from the records in order to generate revenue reports
+ * required from the records in order to generate invoices and revenue reports
  * </p>
  */
 public class RevenueAggregator {
@@ -83,6 +83,38 @@ public class RevenueAggregator {
     }
 
     /**
+     * Gets customer information
+     *
+     * @param session_token Session token
+     * @param customer_id   Customer ID
+     * @return ObjectTable {}
+     * @throws DbQueryException        when query failed
+     * @throws SessionExpiredException when current administrator session has expired
+     * @throws SessionInvalidException when administrator session is not valid
+     */
+    ObjectTable getCustomerAccount(Token session_token, Integer customer_id) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT "
+                + "id, "
+                + "membership_type_id, "
+                + "customer_since, "
+                + "title, "
+                + "name, "
+                + "surname, "
+                + "address_1, "
+                + "address_2, "
+                + "city, "
+                + "county, "
+                + "country, "
+                + "postcode, "
+                + "telephone_1, "
+                + "telephone_2, "
+                + "email "
+                + "FROM Customer WHERE id = " + customer_id;
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+
+    /**
      * Gets all reservation IDs linked to a customer
      *
      * @param session_token Session token
@@ -94,6 +126,26 @@ public class RevenueAggregator {
      */
     ObjectTable getCustomerReservationIDs(Token session_token, Customer customer) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         String query = "SELECT id FROM Reservation WHERE Reservation.customer_id = " + customer.customerID();
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    /**
+     * Gets all IDs of reservations made in a time frame
+     *
+     * @param session_token Session token
+     * @param from          Start of date range
+     * @param to            End of date range
+     * @return ObjectTable { id }
+     * @throws DbQueryException        when query failed
+     * @throws SessionExpiredException when current administrator session has expired
+     * @throws SessionInvalidException when administrator session is not valid
+     */
+    ObjectTable getReservationIDs(Token session_token, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT id " +
+                "FROM Reservation " +
+                "WHERE created_timestamp >= \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
+                " AND created_timestamp <= \"" + TimestampConverter.getUTCTimestampString(to) + "\" " +
+                "ORDER BY id ASC";
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 
@@ -612,7 +664,7 @@ public class RevenueAggregator {
                 " AND Room_has_Reservation.timestamp_in >= \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
                 " AND Room_has_Reservation.timestamp_in <= \"" + TimestampConverter.getUTCTimestampString(to) + "\"" +
                 " AND Room_has_Reservation.building_id = " + room.buildingID() +
-                " AND Room_has_Reservation.room_id = " + room.floorID() +
+                " AND Room_has_Reservation.floor_id = " + room.floorID() +
                 " AND Room_has_Reservation.room_id = " + room.id() + " " +
                 "ORDER BY" +
                 " Room_has_Reservation.building_id," +
@@ -621,131 +673,6 @@ public class RevenueAggregator {
                 " strftime( '%w', Room_has_Reservation.timestamp_in )," +
                 " time( Room_has_Reservation.timestamp_in )," +
                 " time( Room_has_Reservation.timestamp_out )";
-        return this.db_access.pullFromDB(session_token.getSessionId(), query);
-    }
-
-    /**
-     * Gets revenue data from records needed to build a summary report
-     *
-     * @param session_token Session token
-     * @param from          Start of the date range for the report
-     * @param to            End of the date range for the report
-     * @return ObjectTable
-     * @throws DbQueryException        when a problem was encountered whilst processing the query
-     * @throws SessionExpiredException when the session for the id provided has expired
-     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
-     */
-    ObjectTable getReservationData(Token session_token, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO Day -> #bookings #cancelled
-        //TODO Add payments for date range in ReportCreator
-
-
-        String query = "SELECT " +
-                "Room_has_Reservation.building_id, " +
-                "Room_has_Reservation.floor_id, " +
-                "Room_has_Reservation.room_id, " +
-                "Reservation.id AS reservation_id, " +
-                "Payment.id, " +
-                "SUM( Payment.amount ) " +
-                "FROM Room_has_Reservation " +
-                "LEFT OUTER JOIN Reservation ON Reservation.id = Room_has_Reservation.reservation_id " +
-                "LEFT OUTER JOIN Reservation_has_Payment ON Reservation_has_Payment.reservation_id = Reservation.id " +
-                "LEFT OUTER JOIN Payment ON Payment.id = Reservation_has_Payment.payment_id " +
-                "WHERE Room_has_Reservation.timestamp_in >= \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
-                " AND Room_has_Reservation.timestamp_in <= \"" + TimestampConverter.getUTCTimestampString(to) + "\" " +
-                "GROUP BY building_id, floor_id, room_id";
-        return this.db_access.pullFromDB(session_token.getSessionId(), query);
-    }
-
-    /**
-     * Gets revenue data from records needed to build a building-specific report
-     *
-     * @param session_token Session token
-     * @param building      Building DTO
-     * @param from          Start of the date range for the report
-     * @param to            End of the date range for the report
-     * @return ObjectTable
-     * @throws DbQueryException        when a problem was encountered whilst processing the query
-     * @throws SessionExpiredException when the session for the id provided has expired
-     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
-     */
-    ObjectTable getReservationData(Token session_token, Building building, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO Floor/Room -> #bookings #cancelled #revenue_total
-        //TODO argument injection into the query to actually get the records we want
-        String query = "SELECT " +
-                "Room_has_Reservation.reservation_id, " +
-                "Room_has_Reservation.cancelled_flag, " +
-                "Reservation_has_Payment.payment_id, " +
-                "Payment.amount, " +
-                "strftime('%m', Payment.timestamp) as month, " +
-                "strftime('%Y', Payment.timestamp) as year " +
-                "FROM Room_has_Reservation " +
-                "LEFT OUTER JOIN Reservation_has_Payment " +
-                "ON Room_has_Reservation.reservation_id = Reservation_has_Payment.reservation_id " +
-                "LEFT OUTER JOIN Payment " +
-                "ON Payment.id = Reservation_has_Payment.payment_id " +
-                "WHERE Room_has_Reservation.cancelled_flag = 0" +
-                " AND Payment.amount NOT NULL " +
-                " AND Room_has_Reservation.building_id = " + building.id();
-        return this.db_access.pullFromDB(session_token.getSessionId(), query);
-    }
-
-    /**
-     * Gets revenue data from records needed to build a floor-specific report
-     *
-     * @param session_token Session token
-     * @param floor         Floor DTO
-     * @param from          Start of the date range for the report
-     * @param to            End of the date range for the report
-     * @return ObjectTable
-     * @throws DbQueryException        when a problem was encountered whilst processing the query
-     * @throws SessionExpiredException when the session for the id provided has expired
-     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
-     */
-    ObjectTable getReservationData(Token session_token, Floor floor, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO argument injection into the query to actually get the records we want
-        String query = "SELECT " +
-                "Room_has_Reservation.reservation_id," +
-                "Room_has_Reservation.cancelled_flag," +
-                "Room_has_Reservation.building_id," +
-                "Room_has_Reservation.floor_id," +
-                "Reservation_has_Payment.payment_id," +
-                "strftime('%m', Payment.timestamp) as month," +
-                "strftime('%Y', Payment.timestamp) as year" +
-                "FROM Room_has_Reservation" +
-                "LEFT OUTER JOIN Reservation_has_Payment ON Room_has_Reservation.reservation_id = Reservation_has_Payment.reservation_id" +
-                "LEFT OUTER JOIN Payment on Payment.id = Reservation_has_Payment.payment_id" +
-                "WHERE Room_has_Reservation.cancelled_flag=0 and Payment.amount NOTNULL";
-        return this.db_access.pullFromDB(session_token.getSessionId(), query);
-    }
-
-    /**
-     * Gets revenue data from records needed to build a room-specific report
-     *
-     * @param session_token Session token
-     * @param room          Room DTO
-     * @param from          Start of the date range for the report
-     * @param to            End of the date range for the report
-     * @return ObjectTable
-     * @throws DbQueryException        when a problem was encountered whilst processing the query
-     * @throws SessionExpiredException when the session for the id provided has expired
-     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
-     */
-    ObjectTable getReservationData(Token session_token, Room room, Date from, Date to) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        //TODO argument injection into the query to actually get the records we want
-        String query = "SELECT " +
-                "Room_has_Reservation.reservation_id," +
-                "Room_has_Reservation.cancelled_flag," +
-                "Room_has_Reservation.building_id," +
-                "Room_has_Reservation.floor_id," +
-                "Room_has_Reservation.room_id," +
-                "Reservation_has_Payment.payment_id," +
-                "strftime('%m', Payment.timestamp) as month," +
-                "strftime('%Y', Payment.timestamp) as year" +
-                "FROM Room_has_Reservation" +
-                "LEFT OUTER JOIN Reservation_has_Payment ON Room_has_Reservation.reservation_id = Reservation_has_Payment.reservation_id" +
-                "LEFT OUTER JOIN Payment on Payment.id = Reservation_has_Payment.payment_id" +
-                "WHERE Room_has_Reservation.cancelled_flag=0 and Payment.amount NOTNULL";
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 }

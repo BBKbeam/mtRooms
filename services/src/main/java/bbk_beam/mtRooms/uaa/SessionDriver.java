@@ -18,9 +18,9 @@ import bbk_beam.mtRooms.reservation.processing.OptimisedSearch;
 import bbk_beam.mtRooms.reservation.processing.PaymentProcessing;
 import bbk_beam.mtRooms.reservation.processing.ReservationProcessing;
 import bbk_beam.mtRooms.reservation.scheduling.ScheduleCache;
-import bbk_beam.mtRooms.revenue.revenue.IRevenueReporter;
-import bbk_beam.mtRooms.revenue.revenue.ReportCreator;
-import bbk_beam.mtRooms.revenue.revenue.RevenueAggregator;
+import bbk_beam.mtRooms.revenue.IRevenueReporter;
+import bbk_beam.mtRooms.revenue.ReportCreator;
+import bbk_beam.mtRooms.revenue.RevenueAggregator;
 import bbk_beam.mtRooms.uaa.exception.*;
 import eadjlib.logger.Logger;
 

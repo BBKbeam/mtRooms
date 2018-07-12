@@ -10,25 +10,16 @@ skinparam package {
 
 frame "Business Logic Layer" #orange {
     package "revenue" {
-        component RevenueSystem #white {
             IRevenueReporter -- [ReportCreator]
+            IInvoice -- [InvoiceCreator]
             [RevenueAggregator]
 
             ReportCreator --> RevenueAggregator
-        }
+            InvoiceCreator --> RevenueAggregator
 
-        component InvoiceSystem #white {
-            IInvoice -- [InvoiceCreator]
-            [InvoiceAggregator]
-            [Mailer]
-
-            InvoiceCreator --> InvoiceAggregator
-            InvoiceCreator --> Mailer
-        }
     }
 }
 
-InvoiceAggregator --( IReservationDbAccess
 RevenueAggregator --( IReservationDbAccess
 
 @enduml

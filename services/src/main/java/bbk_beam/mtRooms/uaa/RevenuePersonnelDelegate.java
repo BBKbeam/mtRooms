@@ -8,11 +8,11 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Floor;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
+import bbk_beam.mtRooms.revenue.IRevenueReporter;
 import bbk_beam.mtRooms.revenue.dto.CustomerBalance;
 import bbk_beam.mtRooms.revenue.dto.Occupancy;
 import bbk_beam.mtRooms.revenue.dto.SimpleCustomerBalance;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
-import bbk_beam.mtRooms.revenue.revenue.IRevenueReporter;
 import eadjlib.logger.Logger;
 
 import java.util.Date;

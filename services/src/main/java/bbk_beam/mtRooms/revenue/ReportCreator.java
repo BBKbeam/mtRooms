@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.revenue.revenue;
+package bbk_beam.mtRooms.revenue;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.common.TimeSpan;
@@ -382,49 +382,25 @@ public class ReportCreator implements IRevenueReporter {
 
     @Override
     public RevenueReport getRevenueReport(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        try {
-            checkDate(from, to);
-            ObjectTable table = this.aggregator.getReservationData(session_token, from, to);
-            return null;
-        } catch (DbQueryException e) {
-            log.log_Error("");
-            throw new FailedDbFetch("", e);
-        }
+        checkDate(from, to);
+        return null;
     }
 
     @Override
     public RevenueReport getRevenueReport(Token session_token, Building building, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        try {
-            checkDate(from, to);
-            ObjectTable table = this.aggregator.getReservationData(session_token, building, from, to);
-            return null;
-        } catch (DbQueryException e) {
-            log.log_Error("");
-            throw new FailedDbFetch("", e);
-        }
+        checkDate(from, to);
+        return null;
     }
 
     @Override
     public RevenueReport getRevenueReport(Token session_token, Floor floor, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        try {
-            checkDate(from, to);
-            ObjectTable table = this.aggregator.getReservationData(session_token, floor, from, to);
-            return null;
-        } catch (DbQueryException e) {
-            log.log_Error("");
-            throw new FailedDbFetch("", e);
-        }
+        checkDate(from, to);
+        return null;
     }
 
     @Override
     public RevenueReport getRevenueReport(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        try {
-            checkDate(from, to);
-            ObjectTable table = this.aggregator.getReservationData(session_token, room, from, to);
-            return null;
-        } catch (DbQueryException e) {
-            log.log_Error("");
-            throw new FailedDbFetch("", e);
-        }
+        checkDate(from, to);
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.revenue.revenue;
+package bbk_beam.mtRooms.revenue;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
@@ -17,6 +17,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.HashMap;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -87,6 +88,28 @@ public class RevenueAggregatorTest {
     }
 
     @Test
+    public void getCustomerAccount() throws Exception {
+        ObjectTable table = this.revenue_aggregator.getCustomerAccount(this.token, 1);
+        Assert.assertEquals(1, table.rowCount());
+        HashMap<String, Object> row = table.getRow(1);
+        Assert.assertEquals(1, row.get("id"));
+        Assert.assertEquals(1, row.get("membership_type_id"));
+        Assert.assertEquals("2015-10-15 16:15:12", row.get("customer_since"));
+        Assert.assertEquals("Mrs", row.get("title"));
+        Assert.assertEquals("Joanne", row.get("name"));
+        Assert.assertEquals("Bouvier", row.get("surname"));
+        Assert.assertEquals("Flat 4", row.get("address_1"));
+        Assert.assertEquals("21 big road", row.get("address_2"));
+        Assert.assertEquals("London", row.get("city"));
+        Assert.assertEquals("London", row.get("county"));
+        Assert.assertEquals("UK", row.get("country"));
+        Assert.assertEquals("W1 4AQ", row.get("postcode"));
+        Assert.assertEquals("+44 9876 532 123", row.get("telephone_1"));
+        Assert.assertNull(row.get("telephone_2"));
+        Assert.assertEquals("jbouvier@mail.com", row.get("email"));
+    }
+
+    @Test
     public void getCustomerReservationIDs() throws Exception {
         Customer customer = mock(Customer.class);
         when(customer.customerID()).thenReturn(3);
@@ -95,6 +118,19 @@ public class RevenueAggregatorTest {
         Assert.assertEquals(1, table.columnCount());
         Assert.assertEquals(1, table.getInteger(1, 1));
         Assert.assertEquals(3, table.getInteger(1, 2));
+    }
+
+    @Test
+    public void getReservationIDs() throws Exception {
+        Date from = TimestampConverter.getDateObject("2018-01-01 00:00:00");
+        Date to = TimestampConverter.getDateObject("2018-12-30 23:59:59");
+        ObjectTable table = this.revenue_aggregator.getReservationIDs(this.token, from, to);
+        Assert.assertEquals(1, table.columnCount());
+        Assert.assertEquals(4, table.rowCount());
+        Assert.assertEquals(1, table.getInteger(1, 1));
+        Assert.assertEquals(2, table.getInteger(1, 2));
+        Assert.assertEquals(3, table.getInteger(1, 3));
+        Assert.assertEquals(6, table.getInteger(1, 4));
     }
 
     @Test
@@ -249,92 +285,51 @@ public class RevenueAggregatorTest {
     }
 
     @Test
-    public void getReservationScheduleData() throws Exception { //TODO
-        Date from = TimestampConverter.getDateObject("2000-03-10 00:00:00");
+    public void getReservationScheduleData() throws Exception {
+        Date from = TimestampConverter.getDateObject("2000-01-01 00:00:00");
         Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
         ObjectTable table = this.revenue_aggregator.getReservationScheduleData(this.token, from, to);
-        System.out.println(table);
-        Assert.fail();
+//        System.out.println(table);
+        Assert.assertEquals(7, table.columnCount());
+        Assert.assertEquals(17, table.rowCount());
     }
 
     @Test
-    public void getReservationScheduleData_for_Building() throws Exception { //TODO
+    public void getReservationScheduleData_for_Building() throws Exception {
         Building building = mock(Building.class);
         when(building.id()).thenReturn(1);
-        Date from = TimestampConverter.getDateObject("2000-03-10 00:00:00");
+        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
         Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
         ObjectTable table = this.revenue_aggregator.getReservationScheduleData(this.token, building, from, to);
-        System.out.println(table);
-        Assert.fail();
+//        System.out.println(table);
+        Assert.assertEquals(7, table.columnCount());
+        Assert.assertEquals(13, table.rowCount());
     }
 
     @Test
     public void getReservationScheduleData_for_Floor() throws Exception { //TODO
         Floor floor = mock(Floor.class);
         when(floor.buildingID()).thenReturn(1);
-        when(floor.floorID()).thenReturn(1);
-        Date from = TimestampConverter.getDateObject("2000-03-10 00:00:00");
+        when(floor.floorID()).thenReturn(2);
+        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
         Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
         ObjectTable table = this.revenue_aggregator.getReservationScheduleData(this.token, floor, from, to);
-        System.out.println(table);
-        Assert.fail();
+//        System.out.println(table);
+        Assert.assertEquals(7, table.columnCount());
+        Assert.assertEquals(7, table.rowCount());
     }
 
     @Test
     public void getReservationScheduleData_for_Room() throws Exception { //TODO
         Room room = mock(Room.class);
         when(room.buildingID()).thenReturn(1);
-        when(room.floorID()).thenReturn(1);
-        when(room.id()).thenReturn(1);
-        Date from = TimestampConverter.getDateObject("2000-03-10 00:00:00");
+        when(room.floorID()).thenReturn(2);
+        when(room.id()).thenReturn(5);
+        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
         Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
         ObjectTable table = this.revenue_aggregator.getReservationScheduleData(this.token, room, from, to);
-        System.out.println(table);
-        Assert.fail();
-    }
-
-    @Test
-    public void getReservationData() throws Exception { //TODO
-        Date from = TimestampConverter.getDateObject("2000-03-10 00:00:00");
-        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
-        ObjectTable table = this.revenue_aggregator.getReservationData(this.token, from, to);
-        System.out.println(table);
-        Assert.fail();
-    }
-
-    @Test
-    public void getReservationData_for_Building() throws Exception { //TODO
-        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
-        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
-        Building building = mock(Building.class);
-        when(building.id()).thenReturn(1);
-        ObjectTable table = this.revenue_aggregator.getReservationData(this.token, building, from, to);
-        System.out.println(table);
-        Assert.fail();
-    }
-
-    @Test
-    public void getReservationData_for_Floor() throws Exception { //TODO
-        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
-        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
-        Floor floor = mock(Floor.class);
-        when(floor.buildingID()).thenReturn(1);
-        when(floor.floorID()).thenReturn(1);
-        ObjectTable table = this.revenue_aggregator.getReservationData(this.token, floor, from, to);
-        System.out.println(table);
-        Assert.fail();
-    }
-
-    @Test
-    public void getReservationData_for_Room() throws Exception { //TODO
-        Date from = TimestampConverter.getDateObject("2018-03-10 00:00:00");
-        Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
-        Room room = mock(Room.class);
-        when(room.buildingID()).thenReturn(1);
-        when(room.floorID()).thenReturn(1);
-        when(room.floorID()).thenReturn(1);
-        ObjectTable table = this.revenue_aggregator.getReservationData(this.token, room, from, to);
-        System.out.println(table);
-        Assert.fail();
+//        System.out.println(table);
+        Assert.assertEquals(7, table.columnCount());
+        Assert.assertEquals(5, table.rowCount());
     }
 }

@@ -9,6 +9,8 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
+import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
+import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.revenue.dto.*;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
 import eadjlib.datastructure.ObjectTable;
@@ -50,6 +52,42 @@ public class ReportCreator implements IRevenueReporter {
     }
 
     /**
+     * Gets the Customer account details
+     *
+     * @param session_token Session token
+     * @param customerID    Customer ID
+     * @return Customer details
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     */
+    private Customer getCustomerAccount(Token session_token, Integer customerID) throws InvalidCustomer, DbQueryException, SessionExpiredException, SessionInvalidException {
+        ObjectTable table = this.aggregator.getCustomerAccount(session_token, customerID);
+        try {
+            HashMap<String, Object> row = table.getRow(1);
+            return new Customer(
+                    (Integer) row.get("id"),
+                    (Integer) row.get("membership_type_id"),
+                    TimestampConverter.getDateObject((String) row.get("customer_since")),
+                    (String) row.get("title"),
+                    (String) row.get("name"),
+                    (String) row.get("surname"),
+                    (String) row.get("address_1"),
+                    (String) row.get("address_2"),
+                    (String) row.get("postcode"),
+                    (String) row.get("city"),
+                    (String) row.get("county"),
+                    (String) row.get("country"),
+                    (String) row.get("telephone_1"),
+                    (String) row.get("telephone_2"),
+                    (String) row.get("email"));
+        } catch (IndexOutOfBoundsException e) {
+            log.log_Error("Customer [", customerID, "] does not exist in records.");
+            throw new InvalidCustomer("Customer [" + customerID + "] does not exist in records.", e);
+        }
+    }
+
+    /**
      * Gets the discount associated with a reservation
      *
      * @param session_token  Session token
@@ -74,6 +112,68 @@ public class ReportCreator implements IRevenueReporter {
         } catch (DbQueryException e) {
             log.log_Error("Could not fetch Discount from records for Reservation[", reservation_id, "].");
             throw new FailedDbFetch("Could not fetch Discount from records for Reservation[" + reservation_id + "].", e);
+        }
+    }
+
+    /**
+     * Gets a reservation's details
+     *
+     * @param session_token  Session's token
+     * @param reservation_id Reservation ID
+     * @return Reservation DTO
+     * @throws InvalidReservation      when the reservation ID does not match any within the records
+     * @throws FailedDbFetch           when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    private Reservation getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable reservation_table = this.aggregator.getReservation(session_token, reservation_id);
+            HashMap<String, Object> reservation_row = reservation_table.getRow(1);
+
+            Discount discount = new Discount(
+                    (Integer) reservation_row.get("discount_id"),
+                    (Double) reservation_row.get("discount_rate"),
+                    new DiscountCategory(
+                            (Integer) reservation_row.get("discount_category_id"),
+                            (String) reservation_row.get("discount_category_description")
+                    )
+            );
+            Reservation reservation = new Reservation(
+                    (Integer) reservation_row.get("id"),
+                    TimestampConverter.getDateObject((String) reservation_row.get("created_timestamp")),
+                    (Integer) reservation_row.get("customer_id"),
+                    discount
+            );
+
+            ObjectTable rooms_table = this.aggregator.getReservedRooms(session_token, reservation);
+            for (int i = 1; i <= rooms_table.rowCount(); i++) {
+                HashMap<String, Object> reserved_room_row = rooms_table.getRow(i);
+                reservation.addRoomReservation(new RoomReservation(
+                        new Room(
+                                (Integer) reserved_room_row.get("room_id"),
+                                (Integer) reserved_room_row.get("floor_id"),
+                                (Integer) reserved_room_row.get("building_id"),
+                                (Integer) reserved_room_row.get("room_category_id"),
+                                (String) reserved_room_row.get("room_description")
+                        ),
+                        TimestampConverter.getDateObject((String) reserved_room_row.get("timestamp_in")),
+                        TimestampConverter.getDateObject((String) reserved_room_row.get("timestamp_out")),
+                        (Integer) reserved_room_row.get("seated_count"),
+                        ((Integer) reserved_room_row.get("catering") != 0),
+                        (String) reserved_room_row.get("notes"),
+                        new RoomPrice(
+                                (Integer) reserved_room_row.get("price_id"),
+                                (Double) reserved_room_row.get("price"),
+                                (Integer) reserved_room_row.get("price_year")
+                        ),
+                        ((Integer) reserved_room_row.get("cancelled_flag") != 0)
+                ));
+            }
+            return reservation;
+        } catch (DbQueryException e) {
+            log.log_Error("Fetching of Reservation [", reservation_id, "]'s details unsuccessful: SQL Query issue.", e);
+            throw new FailedDbFetch("Fetching of Reservation [" + reservation_id + "]'s details unsuccessful: SQL Query issue.", e);
         }
     }
 
@@ -333,14 +433,37 @@ public class ReportCreator implements IRevenueReporter {
     }
 
     @Override
+    public SimpleCustomerBalance getSimpleCustomerBalance(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable table = this.aggregator.getBalance(session_token, customer);
+            if (!table.isEmpty()) {
+                HashMap<String, Object> row = table.getRow(1);
+                return new SimpleCustomerBalance(
+                        (Integer) row.get("customer_id"),
+                        (Integer) row.get("reservation_count"),
+                        (Double) row.get("total_cost"),
+                        (Double) row.get("total_paid"),
+                        (Double) row.get("final_balance")
+                );
+            } else {
+                log.log_Error("No balance records found for customer [", customer.customerID(), "].");
+                throw new FailedDbFetch("No balance records found for customer [" + customer.customerID() + "].");
+            }
+        } catch (DbQueryException e) {
+            log.log_Error("Could not fetch balance records for customers.");
+            throw new FailedDbFetch("Could not fetch balance records for customers.", e);
+        }
+    }
+
+    @Override
     public Occupancy getOccupancy(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
         try {
             checkDate(from, to);
             ObjectTable table = this.aggregator.getReservationScheduleData(session_token, from, to);
             return getOccupancy(table);
         } catch (DbQueryException e) {
-            log.log_Error(""); //TODO
-            throw new FailedDbFetch("", e);
+            log.log_Error("Could not fetch occupancy data from records: ", from, " -> ", to);
+            throw new FailedDbFetch("Could not fetch occupancy data from records: " + from + " -> " + to, e);
         }
     }
 
@@ -351,8 +474,8 @@ public class ReportCreator implements IRevenueReporter {
             ObjectTable table = this.aggregator.getReservationScheduleData(session_token, building, from, to);
             return getOccupancy(table);
         } catch (DbQueryException e) {
-            log.log_Error(""); //TODO
-            throw new FailedDbFetch("", e);
+            log.log_Error("Could not fetch building [", building.id(), "] occupancy data from records: ", from, " -> ", to);
+            throw new FailedDbFetch("Could not fetch building [" + building.id() + "] occupancy data from records: " + from + " -> " + to, e);
         }
     }
 
@@ -363,8 +486,8 @@ public class ReportCreator implements IRevenueReporter {
             ObjectTable table = this.aggregator.getReservationScheduleData(session_token, floor, from, to);
             return getOccupancy(table);
         } catch (DbQueryException e) {
-            log.log_Error(""); //TODO
-            throw new FailedDbFetch("", e);
+            log.log_Error("Could not fetch floor [", floor.buildingID(), ".", floor.floorID(), "] occupancy data from records: ", from, " -> ", to);
+            throw new FailedDbFetch("Could not fetch floor [" + floor.buildingID() + "." + floor.floorID() + "] occupancy data from records: " + from + " -> " + to, e);
         }
     }
 
@@ -375,32 +498,48 @@ public class ReportCreator implements IRevenueReporter {
             ObjectTable table = this.aggregator.getReservationScheduleData(session_token, room, from, to);
             return getOccupancy(table);
         } catch (DbQueryException e) {
-            log.log_Error(""); //TODO
-            throw new FailedDbFetch("", e);
+            log.log_Error("Could not fetch room [", room.buildingID(), ".", room.floorID(), ".", room.id(), "] occupancy data from records: ", from, " -> ", to);
+            throw new FailedDbFetch("Could not fetch room [" + room.buildingID() + "." + room.floorID() + "." + room.id() + "] occupancy data from records: " + from + " -> " + to, e);
         }
     }
 
     @Override
-    public RevenueReport getRevenueReport(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        checkDate(from, to);
-        return null;
-    }
+    public Invoice createInvoice(Token session_token, Integer reservation_id) throws InvalidReservation, InvalidCustomer, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable customerID_table = this.aggregator.getCustomerID(session_token, reservation_id);
+            if (!customerID_table.isEmpty()) {
+                Customer customer = this.getCustomerAccount(session_token, customerID_table.getInteger(1, 1));
 
-    @Override
-    public RevenueReport getRevenueReport(Token session_token, Building building, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        checkDate(from, to);
-        return null;
-    }
+                //Reservation details
+                Reservation reservation = this.getReservation(session_token, reservation_id);
 
-    @Override
-    public RevenueReport getRevenueReport(Token session_token, Floor floor, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        checkDate(from, to);
-        return null;
-    }
+                //Reservation balance
+                ReservationCost reservation_cost = this.getTotalReservationCost(session_token, reservation_id);
+                Discount discount = this.getDiscount(session_token, reservation_id);
+                ReservationBalance reservation_balance = new ReservationBalance(
+                        reservation_id,
+                        reservation_cost.getRoomCount(),
+                        reservation_cost.getTotalCost(),
+                        discount,
+                        this.getPayments(session_token, reservation_id)
+                );
 
-    @Override
-    public RevenueReport getRevenueReport(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        checkDate(from, to);
-        return null;
+                //Customer account balance
+                SimpleCustomerBalance customer_balance = this.getSimpleCustomerBalance(session_token, customer);
+
+                return new Invoice(
+                        customer,
+                        reservation,
+                        reservation_balance,
+                        customer_balance
+                );
+            } else {
+                log.log_Fatal("Customer in Reservation [", reservation_id, "] does not exist in records.");
+                throw new FailedDbFetch("Customer in Reservation [" + reservation_id + "] does not exist in records.");
+            }
+        } catch (DbQueryException e) {
+            log.log_Error("Could not fetch information to create Invoice for Reservation [", reservation_id, "]");
+            throw new FailedDbFetch("Could not fetch information to create Invoice for Reservation [" + reservation_id + "]", e);
+        }
     }
 }

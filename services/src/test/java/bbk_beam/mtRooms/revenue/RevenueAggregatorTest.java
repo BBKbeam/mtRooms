@@ -110,6 +110,74 @@ public class RevenueAggregatorTest {
     }
 
     @Test
+    public void getReservation() throws Exception {
+        ObjectTable table = this.revenue_aggregator.getReservation(this.token, 1);
+        HashMap<String, Object> row = table.getRow(1);
+        Assert.assertEquals(1, row.get("id"));
+        Assert.assertEquals("2018-02-09 10:00:00", row.get("created_timestamp"));
+        Assert.assertEquals(3, row.get("customer_id"));
+        Assert.assertEquals(3, row.get("discount_id"));
+        Assert.assertEquals(10.0, row.get("discount_rate"));
+        Assert.assertEquals(3, row.get("discount_category_id"));
+        Assert.assertEquals("Member", row.get("discount_category_description"));
+    }
+
+    @Test
+    public void getReservedRooms() throws Exception {
+        Reservation mock_reservation = mock(Reservation.class);
+        when(mock_reservation.id()).thenReturn(1);
+        ObjectTable table = this.revenue_aggregator.getReservedRooms(this.token, mock_reservation);
+        Assert.assertEquals(3, table.rowCount());
+        for (int i = 1; i <= table.rowCount(); i++) {
+            HashMap<String, Object> row = table.getRow(i);
+            Integer r = (Integer) row.get("room_id");
+            Integer f = (Integer) row.get("floor_id");
+            Integer b = (Integer) row.get("building_id");
+            if (r == 7 && f == 3 && b == 1) {
+                Assert.assertEquals("2018-02-09 10:05:00", row.get("timestamp_in"));
+                Assert.assertEquals("2018-02-09 11:00:00", row.get("timestamp_out"));
+                Assert.assertEquals("nothing to note", row.get("notes"));
+                Assert.assertEquals(0, row.get("cancelled_flag"));
+                Assert.assertEquals("Large room 2", row.get("description"));
+                Assert.assertEquals(5, row.get("room_category_id"));
+                Assert.assertEquals(11, row.get("price_id"));
+                Assert.assertEquals(85.00, row.get("price"));
+                Assert.assertEquals(2008, row.get("price_year"));
+            } else if (r == 4 && f == 2 && b == 1) {
+                Assert.assertEquals("2018-02-09 11:00:00", row.get("timestamp_in"));
+                Assert.assertEquals("2018-02-09 12:00:00", row.get("timestamp_out"));
+                Assert.assertEquals("nothing to note", row.get("notes"));
+                Assert.assertEquals(0, row.get("cancelled_flag"));
+                Assert.assertEquals("Medium room 2", row.get("description"));
+                Assert.assertEquals(3, row.get("room_category_id"));
+                Assert.assertEquals(9, row.get("price_id"));
+                Assert.assertEquals(65.00, row.get("price"));
+                Assert.assertEquals(2008, row.get("price_year"));
+            } else if (r == 1 && f == 1 && b == 1) {
+                Assert.assertEquals("2018-02-09 11:00:00", row.get("timestamp_in"));
+                Assert.assertEquals("2018-02-09 12:00:00", row.get("timestamp_out"));
+                Assert.assertEquals("nothing to note", row.get("notes"));
+                Assert.assertEquals(1, row.get("cancelled_flag"));
+                Assert.assertEquals("Small room 1", row.get("description"));
+                Assert.assertEquals(1, row.get("room_category_id"));
+                Assert.assertEquals(7, row.get("price_id"));
+                Assert.assertEquals(45.00, row.get("price"));
+                Assert.assertEquals(2008, row.get("price_year"));
+            } else {
+                Assert.fail("Found an unexpected ReservedRoom (r=" + r + ", f=" + f + ", b=" + b + ").");
+            }
+        }
+    }
+
+    @Test
+    public void getCustomerID() throws Exception {
+        ObjectTable table = this.revenue_aggregator.getCustomerID(this.token, 2);
+        Assert.assertEquals(1, table.rowCount());
+        Assert.assertEquals(1, table.columnCount());
+        Assert.assertEquals(1, table.getInteger(1, 1));
+    }
+
+    @Test
     public void getCustomerReservationIDs() throws Exception {
         Customer customer = mock(Customer.class);
         when(customer.customerID()).thenReturn(3);
@@ -307,7 +375,7 @@ public class RevenueAggregatorTest {
     }
 
     @Test
-    public void getReservationScheduleData_for_Floor() throws Exception { //TODO
+    public void getReservationScheduleData_for_Floor() throws Exception {
         Floor floor = mock(Floor.class);
         when(floor.buildingID()).thenReturn(1);
         when(floor.floorID()).thenReturn(2);
@@ -320,7 +388,7 @@ public class RevenueAggregatorTest {
     }
 
     @Test
-    public void getReservationScheduleData_for_Room() throws Exception { //TODO
+    public void getReservationScheduleData_for_Room() throws Exception {
         Room room = mock(Room.class);
         when(room.buildingID()).thenReturn(1);
         when(room.floorID()).thenReturn(2);

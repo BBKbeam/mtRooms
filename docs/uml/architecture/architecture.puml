@@ -196,15 +196,6 @@ package mtRooms {
 
                 ReportCreator --> RevenueAggregator
             }
-
-            component InvoiceSystem #white {
-                IInvoice -- [InvoiceCreator]
-                [InvoiceAggregator]
-                [Mailer]
-
-                InvoiceCreator --> InvoiceAggregator
-                InvoiceCreator --> Mailer
-            }
         }
 
         package "operation" {
@@ -316,7 +307,6 @@ package mtRooms {
     FrontDeskDelegate --( IReservationSession
 
     RevenuePersonnelDelegate --( IRevenueReporter
-    RevenuePersonnelDelegate --( IInvoice
 
     LogisticsPersonnelDelegate --( ILogisticReportGenerator
 
@@ -333,7 +323,6 @@ package mtRooms {
     ReservationDbDelegate --( IReservationDbAccess
 
     LogisticAggregator --( IReservationDbAccess
-    InvoiceAggregator --( IReservationDbAccess
     RevenueAggregator --( IReservationDbAccess
 }
 

@@ -8,9 +8,11 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Floor;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
+import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
+import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.revenue.dto.CustomerBalance;
+import bbk_beam.mtRooms.revenue.dto.Invoice;
 import bbk_beam.mtRooms.revenue.dto.Occupancy;
-import bbk_beam.mtRooms.revenue.dto.RevenueReport;
 import bbk_beam.mtRooms.revenue.dto.SimpleCustomerBalance;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
 
@@ -27,7 +29,7 @@ public interface IRevenueReporter {
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public List<Building> getBuildings(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<Building> getBuildings(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets all floors in a building
@@ -39,7 +41,7 @@ public interface IRevenueReporter {
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public List<Floor> getFloors(Token session_token, Building building) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<Floor> getFloors(Token session_token, Building building) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets all rooms ina floor
@@ -51,7 +53,7 @@ public interface IRevenueReporter {
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public List<Room> getRooms(Token session_token, Floor floor) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<Room> getRooms(Token session_token, Floor floor) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the balance for all customers in records.
@@ -62,19 +64,31 @@ public interface IRevenueReporter {
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public List<SimpleCustomerBalance> getCustomerBalance(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    List<SimpleCustomerBalance> getCustomerBalance(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the balance for a Customer
      *
      * @param session_token Session token
      * @param customer      Customer DTO
-     * @return CustomerBalance DTO
+     * @return CustomerBalance DTO (detailed)
      * @throws FailedDbFetch           when error occurred during fetching of data from DB
      * @throws SessionExpiredException when current user session has expired
      * @throws SessionInvalidException when user session is not valid
      */
-    public CustomerBalance getCustomerBalance(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    CustomerBalance getCustomerBalance(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Gets the balance for a customer
+     *
+     * @param session_token Session token
+     * @param customer      Customer DTO
+     * @return SimpleCustomerBalance DTO (summary)
+     * @throws FailedDbFetch
+     * @throws SessionExpiredException
+     * @throws SessionInvalidException
+     */
+    SimpleCustomerBalance getSimpleCustomerBalance(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the occupancy stats for all rooms
@@ -88,7 +102,7 @@ public interface IRevenueReporter {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Occupancy getOccupancy(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Occupancy getOccupancy(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the occupancy stats for all rooms in a building
@@ -103,7 +117,7 @@ public interface IRevenueReporter {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Occupancy getOccupancy(Token session_token, Building building, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Occupancy getOccupancy(Token session_token, Building building, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the occupancy stats for all rooms on a floor
@@ -118,7 +132,7 @@ public interface IRevenueReporter {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Occupancy getOccupancy(Token session_token, Floor floor, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Occupancy getOccupancy(Token session_token, Floor floor, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets the occupancy stats for a room
@@ -133,64 +147,19 @@ public interface IRevenueReporter {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public Occupancy getOccupancy(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Occupancy getOccupancy(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
-     * Gets a general revenue summary report in a date range for all booking assets
+     * Creates an invoice for a reservation
      *
-     * @param session_token Session token
-     * @param from          Start of the date range for the report
-     * @param to            End of the date range for the report
-     * @return Revenue report
-     * @throws InvalidPeriodException  when the date period is not valid
-     * @throws FailedDbFetch           when an error occurred getting the record
-     * @throws SessionExpiredException When the session for the id provided has expired
-     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     * @param session_token  Session token
+     * @param reservation_id Reservation ID
+     * @return Invoice DTO
+     * @throws InvalidReservation      when reservation ID does not match any in records
+     * @throws InvalidCustomer         when the customer ID linked to the reservation is not in records
+     * @throws FailedDbFetch           when error occurred during fetching of data from DB
+     * @throws SessionExpiredException when current user session has expired
+     * @throws SessionInvalidException when user session is not valid
      */
-    RevenueReport getRevenueReport(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
-
-    /**
-     * Generate a building specific revenue report
-     *
-     * @param session_token Session token
-     * @param building      Building DTO
-     * @param from          Start of the date range for the report
-     * @param to            End of the date range for the report
-     * @return Revenue report
-     * @throws InvalidPeriodException  when the date period is not valid
-     * @throws FailedDbFetch           when an error occurred getting the record
-     * @throws SessionExpiredException When the session for the id provided has expired
-     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
-     */
-    RevenueReport getRevenueReport(Token session_token, Building building, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
-
-    /**
-     * Generate a floor-specific revenue report
-     *
-     * @param session_token Session token
-     * @param floor         Floor DTO
-     * @param from          Start of the date range for the report
-     * @param to            End of the date range for the report
-     * @return Revenue report
-     * @throws InvalidPeriodException  when the date period is not valid
-     * @throws FailedDbFetch           when an error occurred getting the record
-     * @throws SessionExpiredException When the session for the id provided has expired
-     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
-     */
-    RevenueReport getRevenueReport(Token session_token, Floor floor, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
-
-    /**
-     * Generate a Room-specific revenue report
-     *
-     * @param session_token Session token
-     * @param room          Room DTO
-     * @param from          Start of the date range for the report
-     * @param to            End of the date range for the report
-     * @return Revenue report
-     * @throws InvalidPeriodException  when the date period is not valid
-     * @throws FailedDbFetch           when an error occurred getting the record
-     * @throws SessionExpiredException When the session for the id provided has expired
-     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
-     */
-    RevenueReport getRevenueReport(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    Invoice createInvoice(Token session_token, Integer reservation_id) throws InvalidReservation, InvalidCustomer, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 }

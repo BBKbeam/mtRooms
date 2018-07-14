@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Occupancy extends TimeSpanAllocation<Room, ReservationSlot> implements Serializable {
-    private final Logger log = Logger.getLoggerInstance(Occupancy.class.getName());
+    transient private final Logger log = Logger.getLoggerInstance(Occupancy.class.getName());
 
     /**
      * Constructor

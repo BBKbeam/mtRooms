@@ -7,10 +7,8 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
-import bbk_beam.mtRooms.reservation.dto.Building;
-import bbk_beam.mtRooms.reservation.dto.Customer;
-import bbk_beam.mtRooms.reservation.dto.Floor;
-import bbk_beam.mtRooms.reservation.dto.Room;
+import bbk_beam.mtRooms.reservation.dto.*;
+import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
@@ -34,6 +32,113 @@ public class RevenueAggregator {
      */
     public RevenueAggregator(IReservationDbAccess db_access) {
         this.db_access = db_access;
+    }
+
+    /**
+     * Gets the Customer account details
+     *
+     * @param session_token Session token
+     * @param customerID    Customer ID
+     * @return ObjectTable
+     * { id, membership_type_id, customer_since, title, name, surname, address_1, address_2, city, county, country, postcode, telephone_1, telephone_2, email }
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException When the session for the id provided has expired
+     * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
+     */
+    ObjectTable getCustomerAccount(Token session_token, Integer customerID) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT "
+                + "id, "
+                + "membership_type_id, "
+                + "customer_since, "
+                + "title, "
+                + "name, "
+                + "surname, "
+                + "address_1, "
+                + "address_2, "
+                + "city, "
+                + "county, "
+                + "country, "
+                + "postcode, "
+                + "telephone_1, "
+                + "telephone_2, "
+                + "email "
+                + "FROM Customer WHERE id = " + customerID;
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    /**
+     * Gets a reservation's details
+     *
+     * @param session_token  Session's token
+     * @param reservation_id Reservation ID
+     * @return Reservation DTO
+     * @throws InvalidReservation      when the reservation ID does not match any within the records
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    ObjectTable getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "Reservation.id, " +
+                "Reservation.created_timestamp, " +
+                "Reservation.customer_id, " +
+                "Discount.id AS discount_id, " +
+                "Discount.discount_rate, " +
+                "Discount.discount_category_id, " +
+                "DiscountCategory.description AS discount_category_description " +
+                "FROM Reservation " +
+                "LEFT OUTER JOIN Discount ON Reservation.discount_id = Discount.id " +
+                "LEFT OUTER JOIN DiscountCategory ON Discount.discount_category_id = DiscountCategory.id " +
+                "WHERE Reservation.id = " + reservation_id;
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (!table.isEmpty()) {
+            return table;
+        } else {
+            log.log_Error("Reservation [", reservation_id, "] does not exist in records.");
+            throw new InvalidReservation("Reservation [" + reservation_id + "] does not exist in records.");
+        }
+    }
+
+    /**
+     * Gets the rooms listed for a reservation
+     *
+     * @param session_token Session's token
+     * @param reservation   Reservation
+     * @return List or rooms for the reservation
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    ObjectTable getReservedRooms(Token session_token, Reservation reservation) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT " +
+                "Room_has_Reservation.room_id, " +
+                "Room_has_Reservation.floor_id, " +
+                "Room_has_Reservation.building_id, " +
+                "Room.description AS room_description, " +
+                "Room_has_Reservation.timestamp_in, " +
+                "Room_has_Reservation.timestamp_out, " +
+                "Room_has_Reservation.seated_count, " +
+                "Room_has_Reservation.catering, " +
+                "Room_has_Reservation.notes, " +
+                "Room_has_Reservation.cancelled_flag, " +
+                "Room.description, " +
+                "Room.room_category_id, " +
+                "RoomPrice.id AS price_id, " +
+                "RoomPrice.price, " +
+                "RoomPrice.year AS price_year " +
+                "FROM Room_has_Reservation " +
+                "LEFT OUTER JOIN RoomPrice " +
+                "ON RoomPrice.id = Room_has_Reservation.room_price_id " +
+                "LEFT OUTER JOIN Room " +
+                "ON Room_has_Reservation.room_id = Room.id" +
+                " AND Room_has_Reservation.floor_id = Room.floor_id" +
+                " AND Room_has_Reservation.building_id = Room.building_id " +
+                "WHERE reservation_id = " + reservation.id();
+        ObjectTable table = this.db_access.pullFromDB(session_token.getSessionId(), query);
+        if (table.isEmpty()) {
+            log.log_Debug("No rooms were found for Reservation [", reservation.id(), "] in records.");
+        }
+        return table;
     }
 
     /**
@@ -83,36 +188,19 @@ public class RevenueAggregator {
     }
 
     /**
-     * Gets customer information
+     * Gets the customer ID linked to  a reservation
      *
-     * @param session_token Session token
-     * @param customer_id   Customer ID
-     * @return ObjectTable {}
+     * @param session_token  Session token
+     * @param reservation_id Reservation ID
+     * @return ObjectTable { customer_id }
      * @throws DbQueryException        when query failed
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    ObjectTable getCustomerAccount(Token session_token, Integer customer_id) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query = "SELECT "
-                + "id, "
-                + "membership_type_id, "
-                + "customer_since, "
-                + "title, "
-                + "name, "
-                + "surname, "
-                + "address_1, "
-                + "address_2, "
-                + "city, "
-                + "county, "
-                + "country, "
-                + "postcode, "
-                + "telephone_1, "
-                + "telephone_2, "
-                + "email "
-                + "FROM Customer WHERE id = " + customer_id;
+    ObjectTable getCustomerID(Token session_token, Integer reservation_id) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT customer_id FROM Reservation WHERE id = " + reservation_id;
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
-
 
     /**
      * Gets all reservation IDs linked to a customer

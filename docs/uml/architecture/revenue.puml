@@ -11,11 +11,9 @@ skinparam package {
 frame "Business Logic Layer" #orange {
     package "revenue" {
             IRevenueReporter -- [ReportCreator]
-            IInvoice -- [InvoiceCreator]
             [RevenueAggregator]
 
             ReportCreator --> RevenueAggregator
-            InvoiceCreator --> RevenueAggregator
 
     }
 }

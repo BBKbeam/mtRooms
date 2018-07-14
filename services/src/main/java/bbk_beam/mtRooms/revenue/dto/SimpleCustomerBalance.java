@@ -32,6 +32,15 @@ public class SimpleCustomerBalance implements Serializable {
     }
 
     /**
+     * Gets the customer's ID
+     *
+     * @return Customer ID for the balance
+     */
+    public Integer getCustomerID() {
+        return this.customer_id;
+    }
+
+    /**
      * Gets the final balance for the customer
      *
      * @return End balance

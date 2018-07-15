@@ -246,8 +246,8 @@ public class ReportCreator implements IRevenueReporter {
             }
             return payments;
         } catch (DbQueryException e) {
-            log.log_Error("");
-            throw new FailedDbFetch("", e);
+            log.log_Error("Could not fetch payments for Reservation[", reservation_id, "].");
+            throw new FailedDbFetch("Could not fetch payments for Reservation[" + reservation_id + "].", e);
         }
     }
 
@@ -284,7 +284,7 @@ public class ReportCreator implements IRevenueReporter {
      *
      * @param db_access IReservationDbAccess instance
      */
-    public ReportCreator(IReservationDbAccess db_access) {
+    ReportCreator(IReservationDbAccess db_access) {
         this.aggregator = new RevenueAggregator(db_access);
     }
 

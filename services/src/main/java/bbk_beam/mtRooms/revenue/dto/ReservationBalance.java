@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ReservationBalance implements Serializable {
     private Integer reservation_id;
@@ -147,6 +148,24 @@ public class ReservationBalance implements Serializable {
      */
     public Discount getDiscount() {
         return this.discount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReservationBalance that = (ReservationBalance) o;
+        return Objects.equals(reservation_id, that.reservation_id) &&
+                Objects.equals(reserved_room_count, that.reserved_room_count) &&
+                Objects.equals(reserved_room_cost, that.reserved_room_cost) &&
+                Objects.equals(payments, that.payments) &&
+                Objects.equals(payment_total, that.payment_total) &&
+                Objects.equals(discount, that.discount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reservation_id, reserved_room_count, reserved_room_cost, payments, payment_total, discount);
     }
 
     @Override

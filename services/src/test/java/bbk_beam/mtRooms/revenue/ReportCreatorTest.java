@@ -4,12 +4,9 @@ import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
-import bbk_beam.mtRooms.reservation.dto.Building;
-import bbk_beam.mtRooms.reservation.dto.Customer;
-import bbk_beam.mtRooms.reservation.dto.Floor;
-import bbk_beam.mtRooms.reservation.dto.Room;
+import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.revenue.dto.CustomerBalance;
-import bbk_beam.mtRooms.revenue.dto.ReservationBalance;
+import bbk_beam.mtRooms.revenue.dto.Invoice;
 import bbk_beam.mtRooms.revenue.dto.RoomOccupancy;
 import bbk_beam.mtRooms.revenue.dto.SimpleCustomerBalance;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
@@ -22,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -86,22 +84,76 @@ public class ReportCreatorTest {
     }
 
     @Test
-    public void getCustomerBalance_for_all_customers() throws Exception { //TODO
+    public void getCustomerBalance_for_all_customers() throws Exception {
         List<SimpleCustomerBalance> list = this.report_creator.getCustomerBalance(this.token);
-        for (SimpleCustomerBalance balance : list)
-            System.out.println(balance);
-        Assert.fail();
+//        for (SimpleCustomerBalance balance : list)
+//            System.out.println(balance);
+        Assert.assertEquals(5, list.size());
+        int check_count = 0;
+        for (SimpleCustomerBalance balance : list) {
+            if (balance.getCustomerID().equals(1)) {
+                Assert.assertEquals("Wrong reservation count for customer[1]", 1, balance.getReservationCount());
+                Assert.assertEquals("Wrong total cost for customer [1]", (Double) 75.9375, balance.getTotalCost());
+                Assert.assertEquals("Wrong total paid for customer [1]", (Double) 34., balance.getTotalPaid());
+                Assert.assertEquals("Wrong account balance for customer [1]", (Double) (-41.9375), balance.getBalance());
+                check_count++;
+            }
+            if (balance.getCustomerID().equals(2)) {
+                Assert.assertEquals("Wrong reservation count for customer[2]", 1, balance.getReservationCount());
+                Assert.assertEquals("Wrong total cost for customer [2]", (Double) 0., balance.getTotalCost());
+                Assert.assertEquals("Wrong total paid for customer [2]", (Double) 63., balance.getTotalPaid());
+                Assert.assertEquals("Wrong account balance for customer [2]", (Double) 63., balance.getBalance());
+                check_count++;
+            }
+            if (balance.getCustomerID().equals(3)) {
+                Assert.assertEquals("Wrong reservation count for customer[3]", 2, balance.getReservationCount());
+                Assert.assertEquals("Wrong total cost for customer [3]", 191.625, balance.getTotalCost(), 0.0001);
+                Assert.assertEquals("Wrong total paid for customer [3]", (Double) 77., balance.getTotalPaid());
+                Assert.assertEquals("Wrong account balance for customer [3]", -114.625, balance.getBalance(), 0.0001);
+                check_count++;
+            }
+            if (balance.getCustomerID().equals(4)) {
+                Assert.assertEquals("Wrong reservation count for customer[4]", 1, balance.getReservationCount());
+                Assert.assertEquals("Wrong total cost for customer [4]", (Double) 63., balance.getTotalCost());
+                Assert.assertEquals("Wrong total paid for customer [4]", (Double) 0., balance.getTotalPaid());
+                Assert.assertEquals("Wrong account balance for customer [4]", (Double) (-63.), balance.getBalance());
+                check_count++;
+            }
+            if (balance.getCustomerID().equals(5)) {
+                Assert.assertEquals("Wrong reservation count for customer[5]", 1, balance.getReservationCount());
+                Assert.assertEquals("Wrong total cost for customer [5]", (Double) 2035., balance.getTotalCost());
+                Assert.assertEquals("Wrong total paid for customer [5]", (Double) 0., balance.getTotalPaid());
+                Assert.assertEquals("Wrong account balance for customer [5]", (Double) (-2035.), balance.getBalance());
+                check_count++;
+            }
+        }
+        Assert.assertEquals("Number of items checked not equal to list content.", list.size(), check_count);
     }
 
     @Test
-    public void getCustomerBalance_for_single_customer() throws Exception { //TODO
+    public void getCustomerBalance_for_single_customer() throws Exception {
         Customer customer = mock(Customer.class);
         when(customer.customerID()).thenReturn(3);
         CustomerBalance customerBalance = this.report_creator.getCustomerBalance(this.token, customer);
-        for (ReservationBalance balance : customerBalance.getReservationBalances())
-            System.out.println(balance);
-        System.out.println("Balance=" + customerBalance.getBalance());
-        Assert.fail();
+//        for (ReservationBalance balance : customerBalance.getReservationBalances())
+//            System.out.println(balance);
+        Assert.assertEquals("Wrong number of reservations", 2, customerBalance.getReservationBalances().size());
+        Assert.assertEquals("Wrong reservation count", 2, customerBalance.getReservationCount());
+        Assert.assertEquals("Wrong total cost", 191.625, customerBalance.getTotalCost(), 0.0001);
+        Assert.assertEquals("Wrong total paid", (Double) 77., customerBalance.getTotalPaid());
+        Assert.assertEquals("Wrong account balance", -114.625, customerBalance.getBalance(), 0.0001);
+    }
+
+    @Test
+    public void getSimpleCustomerBalance_for_single_customer() throws Exception {
+        Customer customer = mock(Customer.class);
+        when(customer.customerID()).thenReturn(3);
+        SimpleCustomerBalance customerBalance = this.report_creator.getSimpleCustomerBalance(this.token, customer);
+//        System.out.println(customerBalance);
+        Assert.assertEquals("Wrong reservation count", 2, customerBalance.getReservationCount());
+        Assert.assertEquals("Wrong total cost", 191.625, customerBalance.getTotalCost(), 0.0001);
+        Assert.assertEquals("Wrong total paid", (Double) 77., customerBalance.getTotalPaid());
+        Assert.assertEquals("Wrong account balance", -114.625, customerBalance.getBalance(), 0.0001);
     }
 
     @Test
@@ -109,9 +161,15 @@ public class ReportCreatorTest {
         Date from = TimestampConverter.getDateObject("2000-03-10 00:00:00");
         Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
         List<RoomOccupancy> occupancies = this.report_creator.getOccupancy(this.token, from, to).getOccupancies();
-        for (RoomOccupancy occupancy : occupancies)
-            System.out.println(occupancy);
-        Assert.fail();
+//        for (RoomOccupancy occupancy : occupancies)
+//            System.out.println(occupancy);
+        Assert.assertEquals(6, occupancies.size());
+        Assert.assertEquals(12, occupancies.get(0).getOccupancy().size());
+        Assert.assertEquals(8, occupancies.get(1).getOccupancy().size());
+        Assert.assertEquals(14, occupancies.get(2).getOccupancy().size());
+        Assert.assertEquals(16, occupancies.get(3).getOccupancy().size());
+        Assert.assertEquals(9, occupancies.get(4).getOccupancy().size());
+        Assert.assertEquals(8, occupancies.get(5).getOccupancy().size());
     }
 
     @Test
@@ -121,26 +179,34 @@ public class ReportCreatorTest {
         Building building = mock(Building.class);
         when(building.id()).thenReturn(1);
         List<RoomOccupancy> occupancies = this.report_creator.getOccupancy(this.token, building, from, to).getOccupancies();
-        for (RoomOccupancy occupancy : occupancies)
-            System.out.println(occupancy);
-        Assert.fail();
+//        for (RoomOccupancy occupancy : occupancies)
+//            System.out.println(occupancy);
+        Assert.assertEquals(6, occupancies.size());
+        Assert.assertEquals(12, occupancies.get(0).getOccupancy().size());
+        Assert.assertEquals(8, occupancies.get(1).getOccupancy().size());
+        Assert.assertEquals(14, occupancies.get(2).getOccupancy().size());
+        Assert.assertEquals(16, occupancies.get(3).getOccupancy().size());
+        Assert.assertEquals(9, occupancies.get(4).getOccupancy().size());
+        Assert.assertEquals(8, occupancies.get(5).getOccupancy().size());
     }
 
     @Test
-    public void getOccupancy_for_Floor() throws Exception { //TODO
+    public void getOccupancy_for_Floor() throws Exception {
         Date from = TimestampConverter.getDateObject("2000-03-10 00:00:00");
         Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
         Floor floor = mock(Floor.class);
         when(floor.buildingID()).thenReturn(1);
         when(floor.floorID()).thenReturn(1);
         List<RoomOccupancy> occupancies = this.report_creator.getOccupancy(this.token, floor, from, to).getOccupancies();
-        for (RoomOccupancy occupancy : occupancies)
-            System.out.println(occupancy);
-        Assert.fail();
+//        for (RoomOccupancy ro : occupancies)
+//            System.out.println(ro);
+        Assert.assertEquals(2, occupancies.size());
+        Assert.assertEquals(12, occupancies.get(0).getOccupancy().size());
+        Assert.assertEquals(8, occupancies.get(1).getOccupancy().size());
     }
 
     @Test
-    public void getOccupancy_for_Room() throws Exception { //TODO
+    public void getOccupancy_for_Room() throws Exception {
         Date from = TimestampConverter.getDateObject("2000-03-10 00:00:00");
         Date to = TimestampConverter.getDateObject("2018-03-10 23:59:59");
         Room room = mock(Room.class);
@@ -148,28 +214,53 @@ public class ReportCreatorTest {
         when(room.floorID()).thenReturn(1);
         when(room.id()).thenReturn(1);
         List<RoomOccupancy> occupancies = this.report_creator.getOccupancy(this.token, room, from, to).getOccupancies();
-        for (RoomOccupancy occupancy : occupancies)
-            System.out.println(occupancy);
-        Assert.fail();
+//        for (RoomOccupancy ro : occupancies)
+//            System.out.println(ro);
+        Assert.assertEquals(1, occupancies.size());
+        RoomOccupancy occupancy = occupancies.get(0);
+        Assert.assertEquals(12, occupancy.getOccupancy().size());
     }
 
     @Test
-    public void getRevenueReport() throws Exception { //TODO
-        Assert.fail();
-    }
+    public void createInvoice() throws Exception {
+        Customer expected_customer = new Customer(
+                1, 1,
+                TimestampConverter.getDateObject("2015-10-15 16:15:12"),
+                "Mrs", "Joanne", "Bouvier",
+                "Flat 4", "21 big road", "W1 4AQ", "London", "London", "UK",
+                "+44 9876 532 123", null, "jbouvier@mail.com"
+        );
 
-    @Test
-    public void getRevenueReport_for_Building() throws Exception { //TODO
-        Assert.fail();
-    }
+        List<RoomReservation> expected_room_reservations = new ArrayList<>();
+        expected_room_reservations.add(new RoomReservation(
+                new Room(1, 1, 1, 1, "Small room 1"),
+                TimestampConverter.getDateObject("2018-02-09 10:15:00"),
+                TimestampConverter.getDateObject("2018-02-09 12:30:00"),
+                10, false, "",
+                new RoomPrice(7, 45., 2008),
+                false
 
-    @Test
-    public void getRevenueReport_for_Floor() throws Exception { //TODO
-        Assert.fail();
-    }
+        ));
+        Reservation expected_reservation = new Reservation(
+                2, TimestampConverter.getDateObject("2018-02-09 10:00:00"), 1,
+                new Discount(2, 25., new DiscountCategory(2, "Student")),
+                expected_room_reservations
+        );
 
-    @Test
-    public void getRevenueReport_for_Room() throws Exception { //TODO
-        Assert.fail();
+        //Testing
+        Invoice invoice = this.report_creator.createInvoice(this.token, 2);
+        Assert.assertEquals(expected_customer, invoice.customer());
+        Assert.assertEquals(expected_reservation, invoice.reservation());
+        Assert.assertEquals(1, invoice.reservationBalance().getPayments().size());
+        Assert.assertEquals((Double) 101.25, invoice.reservationBalance().getRawCost());
+        Assert.assertEquals((Double) 25., invoice.reservationBalance().getDiscount().rate());
+        Assert.assertEquals((Double) 75.9375, invoice.reservationBalance().getDiscountedCost());
+        Assert.assertEquals((Double) 34., invoice.reservationBalance().getPaymentsTotal());
+        Assert.assertEquals((Double) (-41.9375), invoice.reservationBalance().getBalance());
+        Assert.assertEquals((Integer) 1, invoice.customerBalance().getCustomerID());
+        Assert.assertEquals(1, invoice.customerBalance().getReservationCount());
+        Assert.assertEquals((Double) 75.9375, invoice.customerBalance().getTotalCost());
+        Assert.assertEquals((Double) 34., invoice.customerBalance().getTotalPaid());
+        Assert.assertEquals((Double) (-41.9375), invoice.customerBalance().getBalance());
     }
 }

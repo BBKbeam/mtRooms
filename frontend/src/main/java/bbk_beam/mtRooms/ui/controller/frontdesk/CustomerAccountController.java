@@ -3,6 +3,7 @@ package bbk_beam.mtRooms.ui.controller.frontdesk;
 import bbk_beam.mtRooms.MtRoomsGUI;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiReservationServices;
+import bbk_beam.mtRooms.network.IRmiRevenueServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Membership;
@@ -11,13 +12,11 @@ import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
+import bbk_beam.mtRooms.revenue.dto.CustomerBalance;
 import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
-import bbk_beam.mtRooms.ui.model.frontdesk.ReservationModel;
-import bbk_beam.mtRooms.ui.model.frontdesk.ReservationTable;
-import bbk_beam.mtRooms.ui.model.frontdesk.RoomReservationModel;
-import bbk_beam.mtRooms.ui.model.frontdesk.RoomReservationTable;
+import bbk_beam.mtRooms.ui.model.frontdesk.*;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -90,6 +89,15 @@ public class CustomerAccountController implements Initializable {
     public TableColumn<RoomReservationModel, Integer> seated_col;
     public TableColumn<RoomReservationModel, String> catering_col;
     public TableColumn<RoomReservationModel, String> cancelled_col;
+    //Payments tab
+    public Text accountCreditField_Text;
+    public TableView<CustomerPaymentsModel> payments_TableView;
+    public TableColumn<CustomerPaymentsModel, Integer> paymentID_col;
+    public TableColumn<CustomerPaymentsModel, String> paymentTimestamp_col;
+    public TableColumn<CustomerPaymentsModel, Double> paymentAmount_col;
+    public TableColumn<CustomerPaymentsModel, Integer> paymentReservationID_col;
+    public TableColumn<CustomerPaymentsModel, String> paymentMethod_col;
+    public TableColumn<CustomerPaymentsModel, String> paymentNote_col;
 
     /**
      * Shows the customer edit dialog
@@ -255,6 +263,8 @@ public class CustomerAccountController implements Initializable {
         this.discountRate_field.setText(String.valueOf(this.membership.discount().rate()));
 
         loadReservationTable(this.customer);
+        loadCustomerPaymentsTable(this.customer);
+        loadCustomerCreditField(this.customer);
     }
 
     /**
@@ -286,6 +296,21 @@ public class CustomerAccountController implements Initializable {
         this.reservationDetails_Table.setItems(table.getData());
     }
 
+    private void loadCustomerPaymentsTable(Customer customer) throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
+        CustomerPaymentsTable table = new CustomerPaymentsTable(this.sessionManager);
+        IRmiReservationServices services = this.sessionManager.getReservationServices();
+        List<Reservation> reservations = services.getReservations(this.sessionManager.getToken(), customer);
+        for (Reservation reservation : reservations)
+            table.loadData(reservation.id(), services.getPayments(this.sessionManager.getToken(), reservation));
+        this.payments_TableView.setItems(table.getData());
+    }
+
+    private void loadCustomerCreditField(Customer customer) throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
+        IRmiRevenueServices service = this.sessionManager.getRevenueServices();
+        CustomerBalance balance = service.getCustomerBalance(this.sessionManager.getToken(), customer);
+        this.accountCreditField_Text.setText(String.valueOf(balance.getBalance()));
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
@@ -295,10 +320,9 @@ public class CustomerAccountController implements Initializable {
 
         customerAccount_TabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.equals(customer_Tab)) {
-                System.out.println("switched to customer tab");
+                System.out.println("switched to customer tab //TODO");
                 //TODO
             } else if (newValue.equals(reservation_Tab)) {
-                System.out.println("switched to reservation tab");
                 try {
                     loadCustomer(this.customer);
                 } catch (LoginException e) {
@@ -313,7 +337,7 @@ public class CustomerAccountController implements Initializable {
                     this.alertDialog.showGenericError(e);
                 }
             } else if (newValue.equals(payment_Tab)) {
-                System.out.println("switched to payment tab");
+                System.out.println("switched to payment tab //TODO");
                 //TODO
             }
         });
@@ -377,6 +401,14 @@ public class CustomerAccountController implements Initializable {
                 this.mainWindowController.status_right.setText("");
             }
         });
+
+        //Payment details table
+        paymentID_col.setCellValueFactory(cellData -> cellData.getValue().paymentIdProperty().asObject());
+        paymentTimestamp_col.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
+        paymentAmount_col.setCellValueFactory(cellData -> cellData.getValue().amountProperty().asObject());
+        paymentReservationID_col.setCellValueFactory(cellData -> cellData.getValue().reservationIdProperty().asObject());
+        paymentMethod_col.setCellValueFactory(cellData -> cellData.getValue().methodProperty());
+        paymentNote_col.setCellValueFactory(cellData -> cellData.getValue().noteProperty());
     }
 
     /**

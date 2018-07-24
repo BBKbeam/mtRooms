@@ -333,14 +333,15 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <TableView GridPane.rowIndex="2">
+                                     <TableView fx:id="payments_TableView" GridPane.rowIndex="2">
                                       <columns>
-                                          <TableColumn prefWidth="75.0" text="ID" />
-                                        <TableColumn prefWidth="102.0" text="Timestamp" />
-                                        <TableColumn prefWidth="94.0" text="Amount" />
-                                          <TableColumn prefWidth="106.0" text="Reservation" />
-                                          <TableColumn prefWidth="75.0" text="Method" />
-                                          <TableColumn prefWidth="75.0" text="Note" />
+                                          <TableColumn fx:id="paymentID_col" prefWidth="75.0" text="ID"/>
+                                          <TableColumn fx:id="paymentTimestamp_col" prefWidth="102.0" text="Timestamp"/>
+                                          <TableColumn fx:id="paymentAmount_col" prefWidth="94.0" text="Amount"/>
+                                          <TableColumn fx:id="paymentReservationID_col" prefWidth="106.0"
+                                                       text="Reservation"/>
+                                          <TableColumn fx:id="paymentMethod_col" prefWidth="75.0" text="Method"/>
+                                          <TableColumn fx:id="paymentNote_col" prefWidth="75.0" text="Note"/>
                                       </columns>
                                     </TableView>
                                     <GridPane>
@@ -380,8 +381,10 @@
                                               <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                             </rowConstraints>
                                              <children>
-                                                <Label styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css" text="Credit" />
-                                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Text" GridPane.columnIndex="1" />
+                                                 <Label styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css"
+                                                        text="%Label_Credit"/>
+                                                 <Text fx:id="accountCreditField_Text" strokeType="OUTSIDE"
+                                                       strokeWidth="0.0" text="Text" GridPane.columnIndex="1"/>
                                              </children>
                                           </GridPane>
                                        </children>

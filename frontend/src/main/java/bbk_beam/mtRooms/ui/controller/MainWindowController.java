@@ -167,7 +167,7 @@ public class MainWindowController implements Initializable {
             AnchorPane pane = loader.load();
             AdministrationController adminController = loader.getController();
             adminController.setSessionManager(sessionManager);
-            adminController.loadAccountTable();
+            adminController.populateAccountTable();
             main_pane.setFitToWidth(true);
             main_pane.setFitToHeight(true);
             main_pane.setContent(pane);

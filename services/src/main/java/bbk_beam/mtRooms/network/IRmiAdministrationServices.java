@@ -237,12 +237,13 @@ public interface IRmiAdministrationServices extends Remote {
      *
      * @param admin_token Administration session token
      * @param room        Room DTO
+     * @param price       RoomPrice DTO
      * @param fixtures    RoomFixtures DTO
      * @throws FailedRecordWrite when error occurred during writing of data to DB
      * @throws Unauthorised      when client is not authorised to access the resource
      * @throws RemoteException   when network issues occur during the remote call
      */
-    void add(Token admin_token, Room room, RoomFixtures fixtures) throws FailedRecordWrite, Unauthorised, RemoteException;
+    void add(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordWrite, Unauthorised, RemoteException;
 
     /**
      * Adds a new room price to the records
@@ -299,11 +300,12 @@ public interface IRmiAdministrationServices extends Remote {
      *
      * @param admin_token Administration session token
      * @param room        Room DTO
+     * @param price       RoomPrice DTO
      * @throws FailedRecordUpdate when error occurred during update on data in DB
      * @throws Unauthorised       when client is not authorised to access the resource
      * @throws RemoteException    when network issues occur during the remote call
      */
-    void update(Token admin_token, Room room) throws FailedRecordUpdate, Unauthorised, RemoteException;
+    void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, Unauthorised, RemoteException;
 
     /**
      * Remove a building from the records

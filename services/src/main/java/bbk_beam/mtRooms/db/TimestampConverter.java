@@ -7,11 +7,23 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
 public class TimestampConverter {
     private static final Logger log = Logger.getLoggerInstance(TimestampConverter.class.getName());
+
+    /**
+     * Gets the UTC timestamp of now
+     *
+     * @return Now as a database formatted UTC timestamp string
+     */
+    public static String nowUTC() {
+        return new Timestamp(
+                Calendar.getInstance(TimeZone.getTimeZone("UTC")).getTimeInMillis()
+        ).toString();
+    }
 
     /**
      * Translate a Locale Date object into a database formatted UTC timestamp string

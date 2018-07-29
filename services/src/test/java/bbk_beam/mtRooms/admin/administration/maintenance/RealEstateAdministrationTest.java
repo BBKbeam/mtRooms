@@ -207,18 +207,58 @@ public class RealEstateAdministrationTest {
     public void addRoom() throws Exception {
         Room room = new Room(666, 3, 1, 1, "Doom room");
         RoomFixtures fixtures = new RoomFixtures(-1, true, true, true, true);
-        this.realEstateAdministration.add(this.token, room, fixtures);
-        //Check room and fixtures were added to records
-        ObjectTable table1 = this.reservation_db_access.pullFromDB(
+        RoomPrice price = new RoomPrice(-1, 1000., 2018);
+        this.realEstateAdministration.add(this.token, room, price, fixtures);
+        //Check room was added to record
+        ObjectTable room_table = this.reservation_db_access.pullFromDB(
+                this.token.getSessionId(),
+                "SELECT * FROM Room WHERE id = " + room.id()
+        );
+        Assert.assertEquals("Room is missing new entry.", 1, room_table.rowCount());
+        Integer new_roomID = room_table.getInteger(1, 1);
+        Integer new_floorID = room_table.getInteger(2, 1);
+        Integer new_buildingID = room_table.getInteger(3, 1);
+        Integer new_categoryID = room_table.getInteger(4, 1);
+
+        //Check fixture and dependency were added to records
+        ObjectTable fixture_table = this.reservation_db_access.pullFromDB(
                 this.token.getSessionId(),
                 "SELECT * FROM RoomFixtures WHERE id = 7"
         );
-        Assert.assertEquals(1, table1.rowCount());
-        ObjectTable table2 = this.reservation_db_access.pullFromDB(
+        Assert.assertEquals("RoomFixture is missing new entry.", 1, fixture_table.rowCount());
+        Assert.assertEquals(1, fixture_table.getInteger(2, 1));
+        Assert.assertEquals(1, fixture_table.getInteger(3, 1));
+        Assert.assertEquals(1, fixture_table.getInteger(4, 1));
+        Assert.assertEquals(1, fixture_table.getInteger(5, 1));
+
+        ObjectTable fixture_dependency_table = this.reservation_db_access.pullFromDB(
                 this.token.getSessionId(),
-                "SELECT * FROM Room WHERE id = 666"
+                "SELECT * FROM Room_has_RoomFixtures " +
+                        "WHERE room_id = " + new_roomID +
+                        " AND floor_id = " + new_floorID +
+                        " AND building_id = " + new_buildingID +
+                        " AND room_fixture_id = 7"
         );
-        Assert.assertEquals(1, table2.rowCount());
+        Assert.assertEquals("Room_has_RoomFixture is missing new entry.", 1, fixture_dependency_table.rowCount());
+
+        //Check price and dependency were added to records
+        ObjectTable price_table = this.reservation_db_access.pullFromDB(
+                this.token.getSessionId(),
+                "SELECT * FROM RoomPrice " +
+                        "WHERE price = " + price.price()
+        );
+        Assert.assertEquals("RoomPrice is missing new entry.", 1, price_table.rowCount());
+        Integer price_id = price_table.getInteger(1, 1);
+
+        ObjectTable price_dependency_table = this.reservation_db_access.pullFromDB(
+                this.token.getSessionId(),
+                "SELECT * FROM Room_has_RoomPrice " +
+                        "WHERE room_id = " + new_roomID +
+                        " AND floor_id = " + new_floorID +
+                        " AND building_id = " + new_buildingID +
+                        " AND price_id = " + price_id
+        );
+        Assert.assertEquals("Room_has_RoomPrice is missing new entry.", 1, price_dependency_table.rowCount());
     }
 
     @Test
@@ -297,7 +337,8 @@ public class RealEstateAdministrationTest {
     @Test
     public void updateRoom() throws Exception {
         Room room = new Room(1, 1, 1, 3, "Updated description");
-        this.realEstateAdministration.update(this.token, room);
+        RoomPrice price = new RoomPrice(-1, 666.666, 2010);
+        this.realEstateAdministration.update(this.token, room, price);
         Floor mock_floor = mock(Floor.class);
         when(mock_floor.buildingID()).thenReturn(1);
         when(mock_floor.floorID()).thenReturn(1);
@@ -308,6 +349,25 @@ public class RealEstateAdministrationTest {
         Assert.assertEquals(1, table.getInteger(3, 1));
         Assert.assertEquals(3, table.getInteger(4, 1)); //category
         Assert.assertEquals("Updated description", table.getString(5, 1));
+
+        //Check price and dependency were added to records
+        ObjectTable price_table = this.reservation_db_access.pullFromDB(
+                this.token.getSessionId(),
+                "SELECT * FROM RoomPrice " +
+                        "WHERE price = " + price.price()
+        );
+        Assert.assertEquals("RoomPrice is missing new entry.", 1, price_table.rowCount());
+        Integer price_id = price_table.getInteger(1, 1);
+
+        ObjectTable price_dependency_table = this.reservation_db_access.pullFromDB(
+                this.token.getSessionId(),
+                "SELECT * FROM Room_has_RoomPrice " +
+                        "WHERE room_id = 1" +
+                        " AND floor_id = 1" +
+                        " AND building_id = 1" +
+                        " AND price_id = " + price_id
+        );
+        Assert.assertEquals("Room_has_RoomPrice is missing new entry.", 1, price_dependency_table.rowCount());
     }
 
     @Test
@@ -381,11 +441,13 @@ public class RealEstateAdministrationTest {
     @Test
     public void removeFloor_TiedToRoomFail() throws Exception {
         Floor floor = new Floor(1, 10, "Tester floor");
+        RoomPrice price = new RoomPrice(-1, 1000., 2018);
         Room room = new Room(1, 10, 1, 1, "Tester floor room");
         this.realEstateAdministration.add(this.token, floor);
         this.realEstateAdministration.add(
                 this.token,
                 room,
+                price,
                 new RoomFixtures(-1, true, true, true, false)
         );
         //Testing

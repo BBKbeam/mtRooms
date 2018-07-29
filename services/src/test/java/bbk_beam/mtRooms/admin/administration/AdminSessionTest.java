@@ -704,7 +704,8 @@ public class AdminSessionTest {
     public void addRoomWithRoomFixture() throws Exception {
         Room room = new Room(666, 3, 1, 1, "Doom room");
         RoomFixtures fixtures = new RoomFixtures(-1, true, true, true, true);
-        this.realAdminSession.add(this.admin_token, room, fixtures);
+        RoomPrice price = new RoomPrice(-1, 1000., 2018);
+        this.realAdminSession.add(this.admin_token, room, price, fixtures);
         Floor floor = mock(Floor.class);
         when(floor.buildingID()).thenReturn(1);
         when(floor.floorID()).thenReturn(3);
@@ -791,7 +792,8 @@ public class AdminSessionTest {
     @Test
     public void updateRoom() throws Exception {
         Room room = new Room(1, 1, 1, 1, "Updated description");
-        this.realAdminSession.update(this.admin_token, room);
+        RoomPrice price = new RoomPrice(-1, 70., 2008);
+        this.realAdminSession.update(this.admin_token, room, price);
         Floor mock_floor = mock(Floor.class);
         when(mock_floor.buildingID()).thenReturn(1);
         when(mock_floor.floorID()).thenReturn(1);

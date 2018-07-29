@@ -119,6 +119,34 @@ public class RealEstateAdministration {
     }
 
     /**
+     * Binds an existing Room with a new/existing RoomPrice in the Room_has_RoomPrice table
+     *
+     * @param admin_token Administration session token
+     * @param room        Room DTO
+     * @param price       Price DTO
+     * @throws DbQueryException        when query failed
+     * @throws SessionExpiredException when current administrator session has expired
+     * @throws SessionInvalidException when administrator session is not valid
+     */
+    private void bind(Token admin_token, Room room, RoomPrice price) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        Integer price_id = add(admin_token, price).getInteger(1, 1);
+        String check_query = "SELECT * FROM Room_has_RoomPrice " +
+                "WHERE room_id = " + room.id() +
+                " AND floor_id = " + room.floorID() +
+                " AND building_id = " + room.buildingID() +
+                " AND price_id = " + price_id;
+        if (this.reservation_db_access.pullFromDB(admin_token.getSessionId(), check_query).isEmpty()) {
+            String create_query = "INSERT INTO Room_has_RoomPrice( room_id, floor_id, building_id, price_id ) VALUES ( " +
+                    room.id() + ", " +
+                    room.floorID() + ", " +
+                    room.buildingID() + ", " +
+                    price_id + " " +
+                    ")";
+            this.reservation_db_access.pushToDB(admin_token.getSessionId(), create_query);
+        }
+    }
+
+    /**
      * Constructor
      *
      * @param reservation_db_access IReservationDbAccess instance
@@ -378,15 +406,17 @@ public class RealEstateAdministration {
 
     /**
      * Adds a new room to the records
+     * <p>Create if needed and links up the corresponding fixture and price entries</p>
      *
      * @param admin_token Administration session token
      * @param room        Room DTO
+     * @param price       RoomPrice DTO
      * @param fixtures    RoomFixtures DTO
      * @throws DbQueryException        when query failed
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    public void add(Token admin_token, Room room, RoomFixtures fixtures) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void add(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         Integer room_fixture_id = getRoomFixturesID(
                 admin_token,
                 fixtures.hasFixedChairs(),
@@ -403,6 +433,8 @@ public class RealEstateAdministration {
 
         Room created_room = add(admin_token, room);
 
+        bind(admin_token, room, price);
+
         String query = "INSERT INTO Room_has_RoomFixtures( room_id, floor_id, building_id, room_fixture_id ) VALUES ( " +
                 created_room.id() + ", " +
                 created_room.floorID() + ", " +
@@ -418,6 +450,7 @@ public class RealEstateAdministration {
      * @param admin_token Administration session token
      * @param roomPrice   RoomPrice DTO
      * @return ObjectTable of matching/created record
+     * { id, price, year }
      * @throws DbQueryException        when query failed
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
@@ -503,7 +536,7 @@ public class RealEstateAdministration {
 
     /**
      * Update a room in the records
-     * <p>Updated: Room.description</p>
+     * <p>Updated: Room.description, Room.room_category_id</p>
      *
      * @param admin_token Administration session token
      * @param room        Room DTO
@@ -511,7 +544,8 @@ public class RealEstateAdministration {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    public void update(Token admin_token, Room room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void update(Token admin_token, Room room, RoomPrice price) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        bind(admin_token, room, price);
         String query = "UPDATE Room SET " +
                 "description = \"" + room.description() + "\", " +
                 "room_category_id = " + room.category() + " " +

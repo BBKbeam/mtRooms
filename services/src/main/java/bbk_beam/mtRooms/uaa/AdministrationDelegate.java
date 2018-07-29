@@ -214,8 +214,8 @@ public class AdministrationDelegate implements IAdminSession {
     }
 
     @Override
-    public void add(Token admin_token, Room room, RoomFixtures fixtures) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
-        this.admin_session.add(admin_token, room, fixtures);
+    public void add(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.admin_session.add(admin_token, room, price, fixtures);
     }
 
     @Override
@@ -239,8 +239,8 @@ public class AdministrationDelegate implements IAdminSession {
     }
 
     @Override
-    public void update(Token admin_token, Room room) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
-        this.admin_session.update(admin_token, room);
+    public void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.admin_session.update(admin_token, room, price);
     }
 
     @Override

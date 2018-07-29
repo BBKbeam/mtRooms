@@ -367,10 +367,10 @@ public class RmiAdministrationServices implements IRmiAdministrationServices {
     }
 
     @Override
-    public void add(Token admin_token, Room room, RoomFixtures fixtures) throws FailedRecordWrite, Unauthorised, RemoteException {
+    public void add(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordWrite, Unauthorised, RemoteException {
         try {
             ClientWrapper client = sessions.getClient(admin_token);
-            client.getAdministrationAccess().add(admin_token, room, fixtures);
+            client.getAdministrationAccess().add(admin_token, room, price, fixtures);
         } catch (SessionInvalidException e) {
             log.log_Error("Client [", admin_token, "] is invalid.");
             throw new Unauthorised("Client [" + admin_token + "] is invalid.", e);
@@ -452,10 +452,10 @@ public class RmiAdministrationServices implements IRmiAdministrationServices {
     }
 
     @Override
-    public void update(Token admin_token, Room room) throws FailedRecordUpdate, Unauthorised, RemoteException {
+    public void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, Unauthorised, RemoteException {
         try {
             ClientWrapper client = sessions.getClient(admin_token);
-            client.getAdministrationAccess().update(admin_token, room);
+            client.getAdministrationAccess().update(admin_token, room, price);
         } catch (SessionInvalidException e) {
             log.log_Error("Client [", admin_token, "] is invalid.");
             throw new Unauthorised("Client [" + admin_token + "] is invalid.", e);

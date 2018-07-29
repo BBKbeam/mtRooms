@@ -553,10 +553,10 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public void add(Token admin_token, Room room, RoomFixtures fixtures) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+    public void add(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
         try {
             checkTokenValidity(admin_token);
-            this.real_estate.add(admin_token, room, fixtures);
+            this.real_estate.add(admin_token, room, price, fixtures);
         } catch (DbQueryException e) {
             log.log_Error("Couldn't add room to records: ", room, " with ", fixtures);
             throw new FailedRecordWrite("Couldn't add room to records: " + room + " with " + fixtures, e);
@@ -630,10 +630,10 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public void update(Token admin_token, Room room) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+    public void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
         try {
             checkTokenValidity(admin_token);
-            this.real_estate.update(admin_token, room);
+            this.real_estate.update(admin_token, room, price);
         } catch (DbQueryException e) {
             log.log_Error("Failed to update record entry: ", room);
             throw new FailedRecordUpdate("Failed to update record entry: " + room, e);

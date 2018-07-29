@@ -261,7 +261,7 @@ public class RealEstateAdministrationTest {
 
     @Test
     public void updateRoom() throws Exception {
-        Room room = new Room(1, 1, 1, 1, "Updated description");
+        Room room = new Room(1, 1, 1, 3, "Updated description");
         this.realEstateAdministration.update(this.token, room);
         Floor mock_floor = mock(Floor.class);
         when(mock_floor.buildingID()).thenReturn(1);
@@ -271,7 +271,7 @@ public class RealEstateAdministrationTest {
         Assert.assertEquals(1, table.getInteger(1, 1));
         Assert.assertEquals(1, table.getInteger(2, 1));
         Assert.assertEquals(1, table.getInteger(3, 1));
-        Assert.assertEquals(1, table.getInteger(4, 1));
+        Assert.assertEquals(3, table.getInteger(4, 1)); //category
         Assert.assertEquals("Updated description", table.getString(5, 1));
     }
 

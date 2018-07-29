@@ -453,7 +453,9 @@ public class RealEstateAdministration {
      * @throws SessionInvalidException when administrator session is not valid
      */
     public void update(Token admin_token, Room room) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        String query = "UPDATE Room SET description = \"" + room.description() + "\" " +
+        String query = "UPDATE Room SET " +
+                "description = \"" + room.description() + "\", " +
+                "room_category_id = " + room.category() + " " +
                 "WHERE id = " + room.id() +
                 " AND floor_id = " + room.floorID() +
                 " AND building_id = " + room.buildingID();

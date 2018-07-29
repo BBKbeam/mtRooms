@@ -36,7 +36,7 @@
                         <Label text="%Label_roomDimension" GridPane.rowIndex="4"/>
                         <TextField fx:id="roomDimension_TextField" promptText="m^2" GridPane.columnIndex="1"
                                    GridPane.rowIndex="4"/>
-                        <Label text="%Label_Price" GridPane.rowIndex="5"/>
+                        <Label fx:id="price_Label" text="%Label_Price" GridPane.rowIndex="5"/>
                         <TextField fx:id="price_TextField" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
                     </children>
                     <VBox.margin>

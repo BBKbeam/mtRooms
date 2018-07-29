@@ -115,6 +115,7 @@ public class RealEstateAdministrationTest {
     public void getMostRecentRoomPrice() throws Exception {
         Room room = new Room(1, 1, 1, 3, "Small room 1");
         ObjectTable table = this.realEstateAdministration.getMostRecentRoomPrice(this.token, room);
+//        System.out.println(table);
         Assert.assertEquals("Wrong number of rows", 4, table.rowCount());
         Assert.assertEquals("Wrong number of columns", 4, table.columnCount());
         Assert.assertEquals(7, table.getInteger(1, 1)); //room_price_id
@@ -128,13 +129,22 @@ public class RealEstateAdministrationTest {
 
     @Test
     public void getMostRecentRoomPrice_NoUsage() throws Exception {
+        //Setting up a price unused by any reservations
+        String query1 = "INSERT INTO RoomPrice( price, year ) VALUES " +
+                "( 666.00, 2018 )";
+        String query2 = "INSERT INTO Room_has_RoomPrice( room_id, floor_id, building_id, price_id ) VALUES " +
+                "( 2, 1, 1, 13 )";
+        this.reservation_db_access.pushToDB(this.token.getSessionId(), query1);
+        this.reservation_db_access.pushToDB(this.token.getSessionId(), query2);
+        //Testing
         Room room = new Room(2, 1, 1, 3, "Small room 2");
         ObjectTable table = this.realEstateAdministration.getMostRecentRoomPrice(this.token, room);
+//        System.out.println(table);
         Assert.assertEquals("Wrong number of rows", 1, table.rowCount());
         Assert.assertEquals("Wrong number of columns", 4, table.columnCount());
-        Assert.assertEquals(7, table.getInteger(1, 1)); //room_price_id
-        Assert.assertEquals((Double) 45., table.getDouble(2, 1)); //price
-        Assert.assertEquals(2008, table.getInteger(3, 1)); //year
+        Assert.assertEquals(13, table.getInteger(1, 1)); //room_price_id
+        Assert.assertEquals((Double) 666., table.getDouble(2, 1)); //price
+        Assert.assertEquals(2018, table.getInteger(3, 1)); //year
         Assert.assertNull(table.getObject(4, 1)); //reservation_id
     }
 

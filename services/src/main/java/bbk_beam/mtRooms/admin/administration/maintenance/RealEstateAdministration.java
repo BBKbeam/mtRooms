@@ -244,40 +244,29 @@ public class RealEstateAdministration {
      * @throws SessionInvalidException when administrator session is not valid
      */
     public ObjectTable getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, DbQueryException, SessionExpiredException, SessionInvalidException {
-        String recentYear_query = "SELECT " +
-                "MAX( RoomPrice.year ) " +
-                "FROM RoomPrice " +
-                "WHERE RoomPrice.year <= strftime( '%Y', \"" + TimestampConverter.getUTCTimestampString(Date.from(Instant.now())) + "\" )";
-        String priceUsage_query = "SELECT " +
-                "Room_has_Reservation.room_id, " +
-                "Room_has_Reservation.floor_id, " +
-                "Room_has_Reservation.building_id, " +
-                "Room_has_Reservation.reservation_id " +
-                "FROM Room_has_Reservation " +
-                "LEFT OUTER JOIN RoomPrice" +
-                " ON Room_has_Reservation.room_price_id = RoomPrice.id " +
-                "WHERE Room_has_Reservation.room_id = " + room.id() +
-                " AND Room_has_Reservation.floor_id = " + room.floorID() +
-                " AND Room_has_Reservation.building_id = " + room.buildingID() + " " +
-                " AND RoomPrice.year IN ( " + recentYear_query + " ) " +
-                "GROUP BY Room_has_Reservation.reservation_id";
-        String roomMatch_query = "SELECT " +
-                "RoomPrice.id AS room_price_id, " +
+        String roomPrice_query = "SELECT " +
+                "RoomPrice.id AS price_id, " +
                 "RoomPrice.price, " +
-                "RoomPrice.year, " +
-                "PriceUsage.reservation_id " +
+                "RoomPrice.year " +
                 "FROM Room_has_RoomPrice " +
                 "LEFT OUTER JOIN RoomPrice" +
                 " ON RoomPrice.id = Room_has_RoomPrice.price_id " +
-                "LEFT JOIN (" + priceUsage_query + ") PriceUsage" +
-                " ON PriceUsage.room_id = Room_has_RoomPrice.room_id" +
-                " AND PriceUsage.floor_id = Room_has_RoomPrice.floor_id" +
-                " AND PriceUsage.building_id = Room_has_RoomPrice.building_id " +
                 "WHERE Room_has_RoomPrice.room_id = " + room.id() +
                 " AND Room_has_RoomPrice.floor_id = " + room.floorID() +
                 " AND Room_has_RoomPrice.building_id = " + room.buildingID() +
-                " AND RoomPrice.year IN ( " + recentYear_query + " ) ";
-        ObjectTable table = this.reservation_db_access.pullFromDB(admin_token.getSessionId(), roomMatch_query);
+                " AND RoomPrice.year <= strftime( '%Y', \"" + TimestampConverter.getUTCTimestampString(Date.from(Instant.now())) + "\" ) " +
+                "ORDER BY RoomPrice.year DESC " +
+                "LIMIT 1";
+        String priceUsage_query = "SELECT " +
+                "RoomPriceSubQuery.price_id AS room_price_id, " +
+                "RoomPriceSubQuery.price, " +
+                "RoomPriceSubQuery.year, " +
+                "Room_has_Reservation.reservation_id " +
+                "FROM ( " + roomPrice_query + " ) RoomPriceSubQuery " +
+                "LEFT JOIN Room_has_Reservation " +
+                " ON Room_has_Reservation.room_price_id = RoomPriceSubQuery.price_id " +
+                "GROUP BY Room_has_Reservation.reservation_id";
+        ObjectTable table = this.reservation_db_access.pullFromDB(admin_token.getSessionId(), priceUsage_query);
         if (!table.isEmpty()) {
             return table;
         } else {

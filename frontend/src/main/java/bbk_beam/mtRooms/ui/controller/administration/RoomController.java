@@ -45,6 +45,7 @@ public class RoomController implements Initializable {
     public TextField roomDescription_TextField;
     public TextField roomCapacity_TextField;
     public TextField roomDimension_TextField;
+    public Label price_Label;
     public TextField price_TextField;
     public CheckBox fixedChairs_CheckBox;
     public CheckBox cateringSpace_CheckBox;
@@ -241,6 +242,9 @@ public class RoomController implements Initializable {
         });
 
         price_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            this.price_Label.setText(
+                    this.resourceBundle.getString("Label_Price") + " (" + new TimestampUTC(TimestampConverter.nowUTC()).year() + ")"
+            );
             if (newValue.isEmpty() || !newValue.matches("\\d+(\\.\\d+)?")) { //REGEX: integer or double
                 price_TextField.setStyle("-fx-control-inner-background: red;");
                 field_validation.put(price_TextField, false);
@@ -284,6 +288,7 @@ public class RoomController implements Initializable {
         try {
             Usage<RoomPrice, Integer> price_usage = services.getMostRecentRoomPrice(this.sessionManager.getToken(), room);
             this.price_TextField.setText(String.valueOf(price_usage.dto().price()));
+            this.price_Label.setText(this.resourceBundle.getString("Label_Price") + " (" + price_usage.dto().year() + ")");
         } catch (IncompleteRecord e) {
             price_TextField.setStyle("-fx-control-inner-background: red;");
             AlertDialog.showAlert(

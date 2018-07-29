@@ -624,10 +624,18 @@ public class AdminSessionTest {
 
     @Test
     public void getMostRecentRoomPrice_NoUsage() throws Exception {
+        //Setting up a price unused by any reservations
+        String query1 = "INSERT INTO RoomPrice( price, year ) VALUES " +
+                "( 666.00, 2018 )";
+        String query2 = "INSERT INTO Room_has_RoomPrice( room_id, floor_id, building_id, price_id ) VALUES " +
+                "( 2, 1, 1, 13 )";
+        this.reservation_db_access.pushToDB(this.admin_token.getSessionId(), query1);
+        this.reservation_db_access.pushToDB(this.admin_token.getSessionId(), query2);
+        //Testing
         Room room = new Room(2, 1, 1, 3, "Small room 2");
         Usage<RoomPrice, Integer> usage = this.realAdminSession.getMostRecentRoomPrice(this.admin_token, room);
 //        System.out.println(usage);
-        Assert.assertEquals((Integer) 7, usage.dto().id());
+        Assert.assertEquals((Integer) 13, usage.dto().id());
         Assert.assertEquals(0, usage.usage().size());
     }
 

@@ -12,7 +12,7 @@ __Note:__ _Under development_
     -  [ ] Administration
         -  [x] User account
         -  [ ] Memberships/Discounts
-        -  [ ] Inventory
+        -  [x] Inventory
     -  [ ] Reservation
         -  [ ] Client account
         -  [ ] Room Booking

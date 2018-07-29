@@ -15,6 +15,7 @@ import java.util.List;
 
 public interface IAdminSession {
     //--------------------------------------------------[ User Accounts ]-----------------------------------------------
+
     /**
      * Creates a new account
      *
@@ -189,6 +190,19 @@ public interface IAdminSession {
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
     public List<Usage<RoomPrice, Integer>> getRoomPrices(Token admin_token, Room room) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+
+    /**
+     * Gets the most recent price for a room with, if any, tied reservations
+     *
+     * @param admin_token Administration session token
+     * @param room        Room DTO
+     * @return RoomPrice DTO with Usage
+     * @throws IncompleteRecord        when Room is not associated with a RoomPrice
+     * @throws FailedRecordFetch       when error occurred during fetching of data from DB
+     * @throws SessionExpiredException when current administrator session has expired
+     * @throws SessionInvalidException when administrator session is not valid
+     */
+    public Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Gets all room categories on record

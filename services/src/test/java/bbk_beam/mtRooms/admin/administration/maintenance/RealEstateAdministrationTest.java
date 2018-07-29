@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.admin.administration.maintenance;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.admin.exception.IncompleteRecord;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
@@ -97,6 +98,7 @@ public class RealEstateAdministrationTest {
     public void getRoomPrices() throws Exception {
         Room room = new Room(1, 1, 1, 1, "Small room 1");
         ObjectTable table = this.realEstateAdministration.getRoomPrices(this.token, room);
+        System.out.println(table);
         Assert.assertEquals("Wrong number of rows", 6, table.rowCount());
         Assert.assertEquals("Wrong number of columns", 4, table.columnCount());
         Assert.assertEquals(1, table.getInteger(1, 1)); //id
@@ -107,6 +109,39 @@ public class RealEstateAdministrationTest {
         Assert.assertEquals(new Double(45.), table.getDouble(2, 2)); //price
         Assert.assertEquals(2008, table.getInteger(3, 2)); //year
         Assert.assertEquals(1, table.getInteger(4, 2)); //reservation_id
+    }
+
+    @Test
+    public void getMostRecentRoomPrice() throws Exception {
+        Room room = new Room(1, 1, 1, 3, "Small room 1");
+        ObjectTable table = this.realEstateAdministration.getMostRecentRoomPrice(this.token, room);
+        Assert.assertEquals("Wrong number of rows", 4, table.rowCount());
+        Assert.assertEquals("Wrong number of columns", 4, table.columnCount());
+        Assert.assertEquals(7, table.getInteger(1, 1)); //room_price_id
+        Assert.assertEquals((Double) 45., table.getDouble(2, 1)); //price
+        Assert.assertEquals(2008, table.getInteger(3, 1)); //year
+        Assert.assertEquals(1, table.getInteger(4, 1)); //reservation_id
+        Assert.assertEquals(2, table.getInteger(4, 2)); //reservation_id
+        Assert.assertEquals(4, table.getInteger(4, 3)); //reservation_id
+        Assert.assertEquals(6, table.getInteger(4, 4)); //reservation_id
+    }
+
+    @Test
+    public void getMostRecentRoomPrice_NoUsage() throws Exception {
+        Room room = new Room(2, 1, 1, 3, "Small room 2");
+        ObjectTable table = this.realEstateAdministration.getMostRecentRoomPrice(this.token, room);
+        Assert.assertEquals("Wrong number of rows", 1, table.rowCount());
+        Assert.assertEquals("Wrong number of columns", 4, table.columnCount());
+        Assert.assertEquals(7, table.getInteger(1, 1)); //room_price_id
+        Assert.assertEquals((Double) 45., table.getDouble(2, 1)); //price
+        Assert.assertEquals(2008, table.getInteger(3, 1)); //year
+        Assert.assertNull(table.getObject(4, 1)); //reservation_id
+    }
+
+    @Test(expected = IncompleteRecord.class)
+    public void getMostRecentRoomPrice_BadRoom() throws Exception {
+        Room room = new Room(10, 1, 1, 3, "Invalid room");
+        ObjectTable table = this.realEstateAdministration.getMostRecentRoomPrice(this.token, room);
     }
 
     @Test

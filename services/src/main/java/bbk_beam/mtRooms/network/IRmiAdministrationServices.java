@@ -175,6 +175,19 @@ public interface IRmiAdministrationServices extends Remote {
     public List<Usage<RoomPrice, Integer>> getRoomPrices(Token admin_token, Room room) throws FailedRecordFetch, Unauthorised, RemoteException;
 
     /**
+     * Gets the most recent price for a room with, if any, tied reservations
+     *
+     * @param admin_token Administration session token
+     * @param room        Room DTO
+     * @return RoomPrice DTO with Usage
+     * @throws IncompleteRecord  when Room is not associated with a RoomPrice
+     * @throws FailedRecordFetch when error occurred during fetching of data from DB
+     * @throws Unauthorised      when client is not authorised to access the resource
+     * @throws RemoteException   when network issues occur during the remote call
+     */
+    public Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, Unauthorised, RemoteException;
+
+    /**
      * Gets all room categories on record
      *
      * @param admin_token Administration session token

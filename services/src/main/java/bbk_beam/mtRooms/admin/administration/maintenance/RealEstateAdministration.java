@@ -1,7 +1,9 @@
 package bbk_beam.mtRooms.admin.administration.maintenance;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.admin.exception.IncompleteRecord;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
+import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
@@ -9,6 +11,8 @@ import bbk_beam.mtRooms.reservation.dto.*;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -194,6 +198,61 @@ public class RealEstateAdministration {
                 " AND Room_has_RoomPrice.building_id = " + room.buildingID() + " " +
                 "ORDER BY room_price_id, reservation_id ASC";
         return this.reservation_db_access.pullFromDB(admin_token.getSessionId(), query);
+    }
+
+    /**
+     * Gets the most recent price for a room with, if any, tied reservations
+     *
+     * @param admin_token Administration session token
+     * @param room        Room DTO
+     * @return ObjectTable of the most recent RoomPrice for a room
+     * { room_price_id, price, year, reservation_id }
+     * @throws IncompleteRecord        when Room is not associated with a RoomPrice
+     * @throws DbQueryException        when query failed
+     * @throws SessionExpiredException when current administrator session has expired
+     * @throws SessionInvalidException when administrator session is not valid
+     */
+    public ObjectTable getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, DbQueryException, SessionExpiredException, SessionInvalidException {
+        String recentYear_query = "SELECT " +
+                "MAX( RoomPrice.year ) " +
+                "FROM RoomPrice " +
+                "WHERE RoomPrice.year <= strftime( '%Y', \"" + TimestampConverter.getUTCTimestampString(Date.from(Instant.now())) + "\" )";
+        String priceUsage_query = "SELECT " +
+                "Room_has_Reservation.room_id, " +
+                "Room_has_Reservation.floor_id, " +
+                "Room_has_Reservation.building_id, " +
+                "Room_has_Reservation.reservation_id " +
+                "FROM Room_has_Reservation " +
+                "LEFT OUTER JOIN RoomPrice" +
+                " ON Room_has_Reservation.room_price_id = RoomPrice.id " +
+                "WHERE Room_has_Reservation.room_id = " + room.id() +
+                " AND Room_has_Reservation.floor_id = " + room.floorID() +
+                " AND Room_has_Reservation.building_id = " + room.buildingID() + " " +
+                " AND RoomPrice.year IN ( " + recentYear_query + " ) " +
+                "GROUP BY Room_has_Reservation.reservation_id";
+        String roomMatch_query = "SELECT " +
+                "RoomPrice.id AS room_price_id, " +
+                "RoomPrice.price, " +
+                "RoomPrice.year, " +
+                "PriceUsage.reservation_id " +
+                "FROM Room_has_RoomPrice " +
+                "LEFT OUTER JOIN RoomPrice" +
+                " ON RoomPrice.id = Room_has_RoomPrice.price_id " +
+                "LEFT JOIN (" + priceUsage_query + ") PriceUsage" +
+                " ON PriceUsage.room_id = Room_has_RoomPrice.room_id" +
+                " AND PriceUsage.floor_id = Room_has_RoomPrice.floor_id" +
+                " AND PriceUsage.building_id = Room_has_RoomPrice.building_id " +
+                "WHERE Room_has_RoomPrice.room_id = " + room.id() +
+                " AND Room_has_RoomPrice.floor_id = " + room.floorID() +
+                " AND Room_has_RoomPrice.building_id = " + room.buildingID() +
+                " AND RoomPrice.year IN ( " + recentYear_query + " ) ";
+        ObjectTable table = this.reservation_db_access.pullFromDB(admin_token.getSessionId(), roomMatch_query);
+        if (!table.isEmpty()) {
+            return table;
+        } else {
+            log.log_Error("No room price linked to room: ", room);
+            throw new IncompleteRecord("No room price linked to room: " + room);
+        }
     }
 
     /**

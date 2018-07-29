@@ -282,6 +282,23 @@ public class RmiAdministrationServices implements IRmiAdministrationServices {
     }
 
     @Override
+    public Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, Unauthorised, RemoteException {
+        try {
+            ClientWrapper client = sessions.getClient(admin_token);
+            return client.getAdministrationAccess().getMostRecentRoomPrice(admin_token, room);
+        } catch (SessionInvalidException e) {
+            log.log_Error("Client [", admin_token, "] is invalid.");
+            throw new Unauthorised("Client [" + admin_token + "] is invalid.", e);
+        } catch (SessionExpiredException e) {
+            log.log_Error("Client [", admin_token, "] token has expired..");
+            throw new Unauthorised("Client [" + admin_token + "] token has expired.", e);
+        } catch (SessionCorruptedException e) {
+            log.log_Error("Client [", admin_token, "] is using a corrupted Token.");
+            throw new Unauthorised("Client [" + admin_token + "] is using a corrupted Token.", e);
+        }
+    }
+
+    @Override
     public List<Usage<RoomCategory, Room>> getRoomCategories(Token admin_token) throws FailedRecordFetch, Unauthorised, RemoteException {
         try {
             ClientWrapper client = sessions.getClient(admin_token);

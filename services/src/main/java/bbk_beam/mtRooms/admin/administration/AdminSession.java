@@ -400,6 +400,37 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
+    public Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        try {
+            checkTokenValidity(admin_token);
+            Usage<RoomPrice, Integer> roomPriceUsage = null;
+            ObjectTable table = this.real_estate.getMostRecentRoomPrice(admin_token, room);
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                Optional<Integer> reservation_id = Optional.ofNullable((Integer) row.get("reservation_id"));
+
+                if (roomPriceUsage != null && reservation_id.isPresent()) {
+                    roomPriceUsage.addUsage(reservation_id.get());
+                } else {
+                    roomPriceUsage = new Usage<>(
+                            new RoomPrice(
+                                    (Integer) row.get("room_price_id"),
+                                    (Double) row.get("price"),
+                                    (Integer) row.get("year")
+                            )
+                    );
+                    if (reservation_id.isPresent())
+                        roomPriceUsage.addUsage(reservation_id.get());
+                }
+            }
+            return roomPriceUsage;
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not fetch most recent valid price from records for room: ", room);
+            throw new FailedRecordFetch("Could not fetch most recent valid price from records for room: " + room, e);
+        }
+    }
+
+    @Override
     public List<Usage<RoomCategory, Room>> getRoomCategories(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
         final UnaryOperator<Room> validateRoom = room -> {
             if (room.id() != null && room.floorID() != null && room.buildingID() != null && room.category() != null && room.description() != null)

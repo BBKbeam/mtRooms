@@ -91,6 +91,11 @@ public class AuthenticatedAdministration implements IAuthenticatedAdministration
     }
 
     @Override
+    public Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.delegate.getMostRecentRoomPrice(admin_token, room);
+    }
+
+    @Override
     public List<Usage<RoomCategory, Room>> getRoomCategories(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
         return this.delegate.getRoomCategories(admin_token);
     }

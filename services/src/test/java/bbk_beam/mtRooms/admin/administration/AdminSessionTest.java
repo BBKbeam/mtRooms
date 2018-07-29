@@ -13,6 +13,7 @@ import bbk_beam.mtRooms.admin.dto.Usage;
 import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
 import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.admin.exception.FailedRecordUpdate;
+import bbk_beam.mtRooms.admin.exception.IncompleteRecord;
 import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
@@ -610,6 +611,32 @@ public class AdminSessionTest {
         Assert.assertEquals(new Integer(7), list.get(1).dto().id());
         Assert.assertEquals(4, list.get(1).usage().size());
     }
+
+    @Test
+    public void getMostRecentRoomPrice() throws Exception {
+        Room room = new Room(1, 1, 1, 1, "Small room 1");
+        Usage<RoomPrice, Integer> usage = this.realAdminSession.getMostRecentRoomPrice(this.admin_token, room);
+//        System.out.println(usage);
+        Assert.assertEquals((Integer) 7, usage.dto().id());
+        Assert.assertEquals(4, usage.usage().size());
+    }
+
+
+    @Test
+    public void getMostRecentRoomPrice_NoUsage() throws Exception {
+        Room room = new Room(2, 1, 1, 3, "Small room 2");
+        Usage<RoomPrice, Integer> usage = this.realAdminSession.getMostRecentRoomPrice(this.admin_token, room);
+//        System.out.println(usage);
+        Assert.assertEquals((Integer) 7, usage.dto().id());
+        Assert.assertEquals(0, usage.usage().size());
+    }
+
+    @Test(expected = IncompleteRecord.class)
+    public void getMostRecentRoomPrice_BadRoom() throws Exception {
+        Room room = new Room(10, 1, 1, 3, "Invalid room");
+        Usage<RoomPrice, Integer> usage = this.realAdminSession.getMostRecentRoomPrice(this.admin_token, room);
+    }
+
 
     @Test
     public void getRoomCategories() throws Exception {

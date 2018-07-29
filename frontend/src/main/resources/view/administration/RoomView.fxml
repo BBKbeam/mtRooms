@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="350.0"
+            prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="bbk_beam.mtRooms.ui.controller.administration.RoomController">
+    <children>
+        <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <Label text="%Label_BuildingID"/>
+                        <TextField fx:id="buildingId_TextField" disable="true" text="-" GridPane.columnIndex="1"/>
+                        <Label text="%Label_FloorID" GridPane.rowIndex="1"/>
+                        <TextField fx:id="floorId_TextField" disable="true" text="-" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="1"/>
+                        <Label text="%Label_roomDescription" GridPane.rowIndex="2"/>
+                        <Label fx:id="roomDescriptionField_Text" text="%Label_roomCapacity" GridPane.rowIndex="3"/>
+                        <TextField fx:id="roomDescription_TextField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                        <TextField fx:id="roomCapacity_TextField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+                        <Label text="%Label_roomDimension" GridPane.rowIndex="4"/>
+                        <TextField fx:id="roomDimension_TextField" promptText="m^2" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="4"/>
+                        <Label text="%Label_Price" GridPane.rowIndex="5"/>
+                        <TextField fx:id="price_TextField" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </VBox.margin>
+                </GridPane>
+                <HBox prefHeight="40.0" prefWidth="200.0">
+                    <children>
+                        <VBox prefHeight="200.0" prefWidth="200.0">
+                            <children>
+                                <CheckBox fx:id="fixedChairs_CheckBox" mnemonicParsing="false"
+                                          text="%Label_FixedChairs">
+                                    <VBox.margin>
+                                        <Insets bottom="5.0" top="5.0"/>
+                                    </VBox.margin>
+                                </CheckBox>
+                                <CheckBox fx:id="cateringSpace_CheckBox" mnemonicParsing="false"
+                                          text="%Label_CateringSpace">
+                                    <VBox.margin>
+                                        <Insets bottom="5.0" top="5.0"/>
+                                    </VBox.margin>
+                                </CheckBox>
+                            </children>
+                            <HBox.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </HBox.margin>
+                        </VBox>
+                        <VBox prefHeight="200.0" prefWidth="200.0">
+                            <children>
+                                <CheckBox fx:id="whiteboard_CheckBox" mnemonicParsing="false" text="%Label_Whiteboard">
+                                    <VBox.margin>
+                                        <Insets bottom="5.0" top="5.0"/>
+                                    </VBox.margin>
+                                </CheckBox>
+                                <CheckBox fx:id="projector_CheckBox" mnemonicParsing="false" text="%Label_Projector">
+                                    <VBox.margin>
+                                        <Insets bottom="5.0" top="5.0"/>
+                                    </VBox.margin>
+                                </CheckBox>
+                            </children>
+                            <HBox.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </HBox.margin>
+                        </VBox>
+                    </children>
+                </HBox>
+                <ButtonBar maxHeight="-Infinity" prefHeight="40.0" prefWidth="200.0">
+                    <buttons>
+                        <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false"
+                                onAction="#handleCancelAction" text="%Button_Cancel"/>
+                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveAction"
+                                text="%Button_Save"/>
+                    </buttons>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                </ButtonBar>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

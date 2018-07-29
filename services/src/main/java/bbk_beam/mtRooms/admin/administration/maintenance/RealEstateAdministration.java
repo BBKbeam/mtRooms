@@ -136,6 +136,7 @@ public class RealEstateAdministration {
                 " AND building_id = " + room.buildingID() +
                 " AND price_id = " + price_id;
         if (this.reservation_db_access.pullFromDB(admin_token.getSessionId(), check_query).isEmpty()) {
+            log.log_Debug("Creating Room-RoomPrice binding: RoomPrice[", price_id, "] to ", room);
             String create_query = "INSERT INTO Room_has_RoomPrice( room_id, floor_id, building_id, price_id ) VALUES ( " +
                     room.id() + ", " +
                     room.floorID() + ", " +
@@ -143,6 +144,8 @@ public class RealEstateAdministration {
                     price_id + " " +
                     ")";
             this.reservation_db_access.pushToDB(admin_token.getSessionId(), create_query);
+        } else {
+            log.log_Debug("Room-RoomPrice binding already exists: RoomPrice[", price_id, "] to ", room);
         }
     }
 
@@ -465,6 +468,7 @@ public class RealEstateAdministration {
         ObjectTable table = this.reservation_db_access.pullFromDB(admin_token.getSessionId(), check_query);
         if (table.isEmpty()) {
             this.reservation_db_access.pushToDB(admin_token.getSessionId(), create_query);
+            log.log_Debug("Adding new RoomPrice entry: " + roomPrice.price() + " for ", roomPrice.year());
             table = this.reservation_db_access.pullFromDB(admin_token.getSessionId(), check_query);
         }
         return table;

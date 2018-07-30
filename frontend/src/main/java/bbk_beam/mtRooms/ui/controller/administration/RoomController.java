@@ -83,17 +83,25 @@ public class RoomController implements Initializable {
                         new TimestampUTC(TimestampConverter.nowUTC()).year()
                 );
 
+                RoomFixtures fixtures = new RoomFixtures(
+                        -1,
+                        fixedChairs_CheckBox.isSelected(),
+                        cateringSpace_CheckBox.isSelected(),
+                        whiteboard_CheckBox.isSelected(),
+                        projector_CheckBox.isSelected()
+                );
+
                 this.room = new Room(
                         this.room.id(),
-                        this.room.buildingID(),
                         this.room.floorID(),
+                        this.room.buildingID(),
                         category.id(),
                         roomDescription_TextField.getText()
 
                 );
 
                 if (response == ButtonType.OK) {
-                    services.update(this.sessionManager.getToken(), this.room, price);
+                    services.update(this.sessionManager.getToken(), this.room, price, fixtures);
                     success_flag.set(true);
                 }
             } catch (FailedRecordUpdate e) {
@@ -154,8 +162,8 @@ public class RoomController implements Initializable {
 
             this.room = new Room(
                     this.room.id(),
-                    this.room.buildingID(),
                     this.room.floorID(),
+                    this.room.buildingID(),
                     category.id(),
                     roomDescription_TextField.getText()
 
@@ -305,10 +313,6 @@ public class RoomController implements Initializable {
         this.roomDescription_TextField.setText(room.description());
         this.roomCapacity_TextField.setText(String.valueOf(detailedRoom.category().capacity()));
         this.roomDimension_TextField.setText(String.valueOf(detailedRoom.category().dimension()));
-        this.cateringSpace_CheckBox.setDisable(true);
-        this.fixedChairs_CheckBox.setDisable(true);
-        this.whiteboard_CheckBox.setDisable(true);
-        this.projector_CheckBox.setDisable(true);
         this.cateringSpace_CheckBox.setSelected(detailedRoom.fixtures().hasCateringSpace());
         this.fixedChairs_CheckBox.setSelected(detailedRoom.fixtures().hasFixedChairs());
         this.whiteboard_CheckBox.setSelected(detailedRoom.fixtures().hasWhiteboard());

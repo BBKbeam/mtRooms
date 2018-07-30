@@ -141,8 +141,8 @@ public class AuthenticatedAdministration implements IAuthenticatedAdministration
     }
 
     @Override
-    public void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
-        this.delegate.update(admin_token, room, price);
+    public void update(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.delegate.update(admin_token, room, price, fixtures);
     }
 
     @Override

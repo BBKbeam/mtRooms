@@ -136,7 +136,7 @@ public interface IRmiAdministrationServices extends Remote {
      * @throws Unauthorised      when client is not authorised to access the resource
      * @throws RemoteException   when network issues occur during the remote call
      */
-    public List<Building> getBuildings(Token admin_token) throws FailedRecordFetch, Unauthorised, RemoteException;
+    List<Building> getBuildings(Token admin_token) throws FailedRecordFetch, Unauthorised, RemoteException;
 
     /**
      * Gets all floors in a building
@@ -148,7 +148,7 @@ public interface IRmiAdministrationServices extends Remote {
      * @throws Unauthorised      when client is not authorised to access the resource
      * @throws RemoteException   when network issues occur during the remote call
      */
-    public List<Floor> getFloors(Token admin_token, Building building) throws FailedRecordFetch, Unauthorised, RemoteException;
+    List<Floor> getFloors(Token admin_token, Building building) throws FailedRecordFetch, Unauthorised, RemoteException;
 
     /**
      * Gets all rooms ina floor
@@ -160,7 +160,7 @@ public interface IRmiAdministrationServices extends Remote {
      * @throws Unauthorised      when client is not authorised to access the resource
      * @throws RemoteException   when network issues occur during the remote call
      */
-    public List<Room> getRooms(Token admin_token, Floor floor) throws FailedRecordFetch, Unauthorised, RemoteException;
+    List<Room> getRooms(Token admin_token, Floor floor) throws FailedRecordFetch, Unauthorised, RemoteException;
 
     /**
      * Gets all RoomPrice records for a Room with, if any, tied reservations
@@ -172,7 +172,7 @@ public interface IRmiAdministrationServices extends Remote {
      * @throws Unauthorised      when client is not authorised to access the resource
      * @throws RemoteException   when network issues occur during the remote call
      */
-    public List<Usage<RoomPrice, Integer>> getRoomPrices(Token admin_token, Room room) throws FailedRecordFetch, Unauthorised, RemoteException;
+    List<Usage<RoomPrice, Integer>> getRoomPrices(Token admin_token, Room room) throws FailedRecordFetch, Unauthorised, RemoteException;
 
     /**
      * Gets the most recent price for a room with, if any, tied reservations
@@ -185,7 +185,7 @@ public interface IRmiAdministrationServices extends Remote {
      * @throws Unauthorised      when client is not authorised to access the resource
      * @throws RemoteException   when network issues occur during the remote call
      */
-    public Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, Unauthorised, RemoteException;
+    Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, Unauthorised, RemoteException;
 
     /**
      * Gets all room categories on record
@@ -196,7 +196,7 @@ public interface IRmiAdministrationServices extends Remote {
      * @throws Unauthorised      when client is not authorised to access the resource
      * @throws RemoteException   when network issues occur during the remote call
      */
-    public List<Usage<RoomCategory, Room>> getRoomCategories(Token admin_token) throws FailedRecordFetch, Unauthorised, RemoteException;
+    List<Usage<RoomCategory, Room>> getRoomCategories(Token admin_token) throws FailedRecordFetch, Unauthorised, RemoteException;
 
     /**
      * Gets a room's detailed information
@@ -208,7 +208,7 @@ public interface IRmiAdministrationServices extends Remote {
      * @throws Unauthorised      when client is not authorised to access the resource
      * @throws RemoteException   when network issues occur during the remote call
      */
-    public DetailedRoom getRoomDetails(Token admin_token, Room room) throws FailedRecordFetch, Unauthorised, RemoteException;
+    DetailedRoom getRoomDetails(Token admin_token, Room room) throws FailedRecordFetch, Unauthorised, RemoteException;
 
     /**
      * Adds a new building to the records
@@ -301,11 +301,12 @@ public interface IRmiAdministrationServices extends Remote {
      * @param admin_token Administration session token
      * @param room        Room DTO
      * @param price       RoomPrice DTO
+     * @param fixtures    RoomFixtures DTO
      * @throws FailedRecordUpdate when error occurred during update on data in DB
      * @throws Unauthorised       when client is not authorised to access the resource
      * @throws RemoteException    when network issues occur during the remote call
      */
-    void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, Unauthorised, RemoteException;
+    void update(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordUpdate, Unauthorised, RemoteException;
 
     /**
      * Remove a building from the records

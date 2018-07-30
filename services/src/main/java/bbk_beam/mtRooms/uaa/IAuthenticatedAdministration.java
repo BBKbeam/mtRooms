@@ -325,12 +325,13 @@ public interface IAuthenticatedAdministration {
      * @param admin_token Administration session token
      * @param room        Room DTO
      * @param price       RoomPrice DTO
+     * @param fixtures    RoomFixtures DTO
      * @throws FailedRecordUpdate        when error occurred during update on data in DB
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+    void update(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Remove a building from the records

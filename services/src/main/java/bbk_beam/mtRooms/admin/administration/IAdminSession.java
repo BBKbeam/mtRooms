@@ -150,7 +150,7 @@ public interface IAdminSession {
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    public List<Building> getBuildings(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+    List<Building> getBuildings(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Gets all floors in a building
@@ -163,7 +163,7 @@ public interface IAdminSession {
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    public List<Floor> getFloors(Token admin_token, Building building) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+    List<Floor> getFloors(Token admin_token, Building building) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Gets all rooms ina floor
@@ -176,7 +176,7 @@ public interface IAdminSession {
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    public List<Room> getRooms(Token admin_token, Floor floor) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+    List<Room> getRooms(Token admin_token, Floor floor) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Gets all RoomPrice records for a Room with, if any, tied reservations
@@ -189,7 +189,7 @@ public interface IAdminSession {
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    public List<Usage<RoomPrice, Integer>> getRoomPrices(Token admin_token, Room room) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+    List<Usage<RoomPrice, Integer>> getRoomPrices(Token admin_token, Room room) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Gets the most recent price for a room with, if any, tied reservations
@@ -202,7 +202,7 @@ public interface IAdminSession {
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    public Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+    Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Gets all room categories on record
@@ -214,7 +214,7 @@ public interface IAdminSession {
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    public List<Usage<RoomCategory, Room>> getRoomCategories(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+    List<Usage<RoomCategory, Room>> getRoomCategories(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Gets a room's detailed information
@@ -227,7 +227,7 @@ public interface IAdminSession {
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    public DetailedRoom getRoomDetails(Token admin_token, Room room) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+    DetailedRoom getRoomDetails(Token admin_token, Room room) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Adds a new building to the records
@@ -327,12 +327,13 @@ public interface IAdminSession {
      * @param admin_token Administration session token
      * @param room        Room DTO
      * @param price       RoomPrice DTO
+     * @param fixtures    RoomFixture DTO
      * @throws FailedRecordUpdate        when error occurred during update on data in DB
      * @throws SessionExpiredException   when current administrator session has expired
      * @throws SessionInvalidException   when administrator session is not valid
      * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
      */
-    void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
+    void update(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException;
 
     /**
      * Remove a building from the records

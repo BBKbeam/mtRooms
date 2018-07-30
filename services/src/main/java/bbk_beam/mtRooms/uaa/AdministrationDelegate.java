@@ -239,8 +239,8 @@ public class AdministrationDelegate implements IAdminSession {
     }
 
     @Override
-    public void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
-        this.admin_session.update(admin_token, room, price);
+    public void update(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.admin_session.update(admin_token, room, price, fixtures);
     }
 
     @Override

@@ -150,6 +150,60 @@ public class RealEstateAdministration {
     }
 
     /**
+     * Binds an existing Room with a new/existing RoomFixture in the Room_has_RoomFixture table
+     *
+     * @param admin_token Administration session token
+     * @param room        Room DTO
+     * @param fixtures    RoomFixture DTO
+     * @throws DbQueryException        when query failed
+     * @throws SessionExpiredException when current administrator session has expired
+     * @throws SessionInvalidException when administrator session is not valid
+     */
+    private void bind(Token admin_token, Room room, RoomFixtures fixtures) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        Integer room_fixture_id = getRoomFixturesID(
+                admin_token,
+                fixtures.hasFixedChairs(),
+                fixtures.hasCateringSpace(),
+                fixtures.hasWhiteboard(),
+                fixtures.hasProjector()
+        ).orElse(addToRoomFixtures(
+                admin_token,
+                fixtures.hasFixedChairs(),
+                fixtures.hasCateringSpace(),
+                fixtures.hasWhiteboard(),
+                fixtures.hasProjector())
+        );
+
+        String check_query = "SELECT room_fixture_id " +
+                "FROM Room_has_RoomFixtures " +
+                "WHERE room_id = " + room.id() +
+                " AND floor_id = " + room.floorID() +
+                " AND building_id = " + room.buildingID();
+        ObjectTable table = this.reservation_db_access.pullFromDB(admin_token.getSessionId(), check_query);
+        if (table.isEmpty()) {
+            log.log_Debug("Creating Room-RoomFixtures binding: RoomFixtures[", room_fixture_id, "] to ", room);
+            String create_query = "INSERT INTO Room_has_RoomFixtures( room_id, floor_id, building_id, room_fixture_id ) VALUES ( " +
+                    room.id() + ", " +
+                    room.floorID() + ", " +
+                    room.buildingID() + ", " +
+                    room_fixture_id + " " +
+                    ")";
+            this.reservation_db_access.pushToDB(admin_token.getSessionId(), create_query);
+        } else {
+            Integer current_fixture_id = table.getInteger(1, 1);
+            log.log_Trace("A RoomFixtures[", current_fixture_id, "] binding already exists for the Room: ", room);
+            String update_query = "UPDATE Room_has_RoomFixtures " +
+                    "SET room_fixture_id = " + room_fixture_id + " " + //New RoomFixtures ID used by Room
+                    "WHERE room_fixture_id = " + current_fixture_id + //Current RoomFixtures ID used by Room
+                    " AND room_id = " + room.id() +
+                    " AND floor_id = " + room.floorID() +
+                    " AND building_id = " + room.buildingID();
+            this.reservation_db_access.pushToDB(admin_token.getSessionId(), update_query);
+            log.log_Debug("Room-RoomFixtures binding updated: RoomFixture[", room_fixture_id, "] to ", room);
+        }
+    }
+
+    /**
      * Constructor
      *
      * @param reservation_db_access IReservationDbAccess instance
@@ -409,31 +463,9 @@ public class RealEstateAdministration {
      * @throws SessionInvalidException when administrator session is not valid
      */
     public void add(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws DbQueryException, SessionExpiredException, SessionInvalidException {
-        Integer room_fixture_id = getRoomFixturesID(
-                admin_token,
-                fixtures.hasFixedChairs(),
-                fixtures.hasCateringSpace(),
-                fixtures.hasWhiteboard(),
-                fixtures.hasProjector()
-        ).orElse(addToRoomFixtures(
-                admin_token,
-                fixtures.hasFixedChairs(),
-                fixtures.hasCateringSpace(),
-                fixtures.hasWhiteboard(),
-                fixtures.hasProjector())
-        );
-
         Room created_room = add(admin_token, room);
-
-        bind(admin_token, room, price);
-
-        String query = "INSERT INTO Room_has_RoomFixtures( room_id, floor_id, building_id, room_fixture_id ) VALUES ( " +
-                created_room.id() + ", " +
-                created_room.floorID() + ", " +
-                created_room.buildingID() + ", " +
-                room_fixture_id + " " +
-                ")";
-        this.reservation_db_access.pushToDB(admin_token.getSessionId(), query);
+        bind(admin_token, created_room, price);
+        bind(admin_token, created_room, fixtures);
     }
 
     /**
@@ -533,12 +565,16 @@ public class RealEstateAdministration {
      *
      * @param admin_token Administration session token
      * @param room        Room DTO
+     * @param price       RoomPrice DTO
+     * @param fixtures    RoomFixtures DTO
      * @throws DbQueryException        when query failed
      * @throws SessionExpiredException when current administrator session has expired
      * @throws SessionInvalidException when administrator session is not valid
      */
-    public void update(Token admin_token, Room room, RoomPrice price) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+    public void update(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws DbQueryException, SessionExpiredException, SessionInvalidException {
         bind(admin_token, room, price);
+        bind(admin_token, room, fixtures);
+
         String query = "UPDATE Room SET " +
                 "description = \"" + room.description() + "\", " +
                 "room_category_id = " + room.category() + " " +

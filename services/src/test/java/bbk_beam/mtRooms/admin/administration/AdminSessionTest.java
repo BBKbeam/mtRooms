@@ -801,7 +801,8 @@ public class AdminSessionTest {
     public void updateRoom() throws Exception {
         Room room = new Room(1, 1, 1, 1, "Updated description");
         RoomPrice price = new RoomPrice(-1, 70., 2008);
-        this.realAdminSession.update(this.admin_token, room, price);
+        RoomFixtures fixtures = new RoomFixtures(-1, false, false, true, true); //id=2
+        this.realAdminSession.update(this.admin_token, room, price, fixtures);
         Floor mock_floor = mock(Floor.class);
         when(mock_floor.buildingID()).thenReturn(1);
         when(mock_floor.floorID()).thenReturn(1);

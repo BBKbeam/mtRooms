@@ -479,6 +479,10 @@ public class AdministrationController implements Initializable {
                 }
             }
 
+            this.newInventory_MenuItem.setVisible(false);
+            this.editInventory_Button.setDisable(true);
+            this.deleteInventory_Button.setDisable(true);
+
             this.inventory_TreeView.setRoot(root);
             this.inventory_TreeView.setShowRoot(false);
         } catch (FailedRecordFetch e) {

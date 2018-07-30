@@ -228,7 +228,6 @@ public class RealEstateAdministrationTest {
         Integer new_roomID = room_table.getInteger(1, 1);
         Integer new_floorID = room_table.getInteger(2, 1);
         Integer new_buildingID = room_table.getInteger(3, 1);
-        Integer new_categoryID = room_table.getInteger(4, 1);
 
         //Check fixture and dependency were added to records
         ObjectTable fixture_table = this.reservation_db_access.pullFromDB(
@@ -348,7 +347,8 @@ public class RealEstateAdministrationTest {
     public void updateRoom() throws Exception {
         Room room = new Room(1, 1, 1, 3, "Updated description");
         RoomPrice price = new RoomPrice(-1, 666.666, 2010);
-        this.realEstateAdministration.update(this.token, room, price);
+        RoomFixtures fixtures = new RoomFixtures(-1, true, true, true, true);
+        this.realEstateAdministration.update(this.token, room, price, fixtures);
         Floor mock_floor = mock(Floor.class);
         when(mock_floor.buildingID()).thenReturn(1);
         when(mock_floor.floorID()).thenReturn(1);

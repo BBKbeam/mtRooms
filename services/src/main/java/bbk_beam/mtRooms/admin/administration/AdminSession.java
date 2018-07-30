@@ -630,10 +630,10 @@ public class AdminSession implements IAdminSession {
     }
 
     @Override
-    public void update(Token admin_token, Room room, RoomPrice price) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+    public void update(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
         try {
             checkTokenValidity(admin_token);
-            this.real_estate.update(admin_token, room, price);
+            this.real_estate.update(admin_token, room, price, fixtures);
         } catch (DbQueryException e) {
             log.log_Error("Failed to update record entry: ", room);
             throw new FailedRecordUpdate("Failed to update record entry: " + room, e);

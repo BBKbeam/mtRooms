@@ -1,0 +1,62 @@
+.anchor-pane {
+    -fx-border-width: 0;
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.pane {
+    -fx-border-width: 0;
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.field_label {
+    -fx-font-size: 9pt;
+    -fx-font-family: "system";
+    -fx-font-style: italic;
+}
+
+.cell_middle_alignment {
+    -fx-alignment: center;
+}
+
+.close-button {
+    -fx-min-height: 32px;
+    -fx-min-width: 32px;
+    -fx-background-image: url("../icon/circle-x-8x.png");
+    -fx-background-size: 24px 24px;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+}
+
+#menu_file_logout > .label {
+    -fx-graphic: url("../icon/account-logout-8x.png");
+    -fx-width: 20px;
+    -fx-height: 20px;
+}
+
+#menu_file_quit > .label {
+    -fx-graphic: url("../icon/x-8x.png");
+}
+
+#menu_view_admin > .label {
+    -fx-graphic: url("../icon/wrench-8x.png");
+}
+
+#menu_view_reservation > .label {
+    -fx-graphic: url("../icon/clock-8x.png");
+}
+
+#menu_view_revenue > .label {
+    -fx-graphic: url("../icon/pie-chart-8x.png");
+}
+
+#menu_view_logistics > .label {
+    -fx-graphic: url("../icon/document-8x.png");
+}
+
+#menu_help_about > .label {
+    -fx-graphic: url("../icon/info-8x.png");
+}

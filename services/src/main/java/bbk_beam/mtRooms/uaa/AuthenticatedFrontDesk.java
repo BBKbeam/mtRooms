@@ -2,8 +2,8 @@ package bbk_beam.mtRooms.uaa;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.exception.AuthenticationFailureException;
-import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
+import bbk_beam.mtRooms.reservation.IReservationSession;
 import bbk_beam.mtRooms.reservation.ReservationSession;
 import bbk_beam.mtRooms.uaa.exception.DuplicateSession;
 import bbk_beam.mtRooms.uaa.exception.InvalidAccessRights;
@@ -45,7 +45,7 @@ public class AuthenticatedFrontDesk implements IAuthenticatedFrontDesk {
     }
 
     @Override
-    synchronized public void closeReservationSession(ReservationSession reservation_session) {
+    synchronized public void closeReservationSession(IReservationSession reservation_session) {
         this.delegate.removeSession(reservation_session.getToken());
     }
 

@@ -24,7 +24,7 @@ public interface IAuthenticatedLogisticsPersonnel {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public LogisticsInfo getInfo(Token session_token, Integer building_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    LogisticsInfo getInfo(Token session_token, Integer building_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets logistical information
@@ -40,7 +40,7 @@ public interface IAuthenticatedLogisticsPersonnel {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public LogisticsInfo getInfo(Token session_token, Integer building_id, Integer floor_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    LogisticsInfo getInfo(Token session_token, Integer building_id, Integer floor_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 
     /**
      * Gets logistical information
@@ -55,5 +55,5 @@ public interface IAuthenticatedLogisticsPersonnel {
      * @throws SessionExpiredException When the session for the id provided has expired
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
-    public LogisticsInfo getInfo(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+    LogisticsInfo getInfo(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 }

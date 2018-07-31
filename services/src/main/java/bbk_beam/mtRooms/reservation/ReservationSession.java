@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.reservation;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.common.TimeSpan;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
@@ -10,7 +11,6 @@ import bbk_beam.mtRooms.reservation.processing.CustomerAccountAccess;
 import bbk_beam.mtRooms.reservation.processing.OptimisedSearch;
 import bbk_beam.mtRooms.reservation.processing.PaymentProcessing;
 import bbk_beam.mtRooms.reservation.processing.ReservationProcessing;
-import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
 import eadjlib.logger.Logger;
 import javafx.util.Pair;
 
@@ -49,11 +49,7 @@ public class ReservationSession implements IReservationSession {
         this.optimisedSearch = optimisedSearch;
     }
 
-    /**
-     * Gets the User's reservation session token
-     *
-     * @return Session token
-     */
+    @Override
     public Token getToken() {
         return token;
     }
@@ -98,6 +94,16 @@ public class ReservationSession implements IReservationSession {
     @Override
     public void saveCustomerChangesToDB(Token session_token, Customer customer) throws FailedDbWrite, SessionExpiredException, SessionInvalidException {
         this.customerAccountAccess.saveCustomerChangesToDB(session_token, customer);
+    }
+
+    @Override
+    public Membership getMembership(Token session_token, Integer membership_id) throws InvalidMembership, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.customerAccountAccess.getMembership(session_token, membership_id);
+    }
+
+    @Override
+    public List<Membership> getMemberships(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.customerAccountAccess.getMemberships(session_token);
     }
 
     @Override
@@ -183,5 +189,15 @@ public class ReservationSession implements IReservationSession {
     @Override
     public RoomCategory getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, FailedDbFetch, SessionExpiredException, SessionInvalidException {
         return this.reservationProcessing.getRoomCategory(session_token, category_id);
+    }
+
+    @Override
+    public DetailedRoom getRoomDetails(Token session_token, Room room) throws InvalidRoom, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.reservationProcessing.getRoomDetails(session_token, room);
+    }
+
+    @Override
+    public List<RoomPrice> getRoomPrices(Token session_token, Room room) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.reservationProcessing.getRoomPrices(session_token, room);
     }
 }

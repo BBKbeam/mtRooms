@@ -73,7 +73,7 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals("UK", row.get("country"));
         Assert.assertEquals("W1 4AQ", row.get("postcode"));
         Assert.assertEquals("+44 9876 532 123", row.get("telephone_1"));
-        Assert.assertEquals(null, row.get("telephone_2"));
+        Assert.assertNull(row.get("telephone_2"));
         Assert.assertEquals("jbouvier@mail.com", row.get("email"));
     }
 
@@ -97,7 +97,7 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals("UK", row.get("country"));
         Assert.assertEquals("W1 4AQ", row.get("postcode"));
         Assert.assertEquals("+44 9876 532 123", row.get("telephone_1"));
-        Assert.assertEquals(null, row.get("telephone_2"));
+        Assert.assertNull(row.get("telephone_2"));
         Assert.assertEquals("jbouvier@mail.com", row.get("email"));
     }
 
@@ -136,7 +136,7 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals("UK", row.get("country"));
         Assert.assertEquals("W1 4AQ", row.get("postcode"));
         Assert.assertEquals("+44 9876 532 123", row.get("telephone_1"));
-        Assert.assertEquals(null, row.get("telephone_2"));
+        Assert.assertNull(row.get("telephone_2"));
         Assert.assertEquals("jbouvier@mail.com", row.get("email"));
     }
 
@@ -245,6 +245,47 @@ public class ReservationDbDelegateTest {
         this.reservationDbDelegate.saveCustomerChangesToDB(this.token, update);
     }
 
+
+    @Test
+    public void getMembership() throws Exception {
+        ObjectTable table = this.reservationDbDelegate.getMembership(this.token, 1);
+        Assert.assertFalse(table.isEmpty());
+        HashMap<String, Object> row = table.getRow(1);
+        Assert.assertEquals(1, row.get("id"));
+        Assert.assertEquals("None", row.get("description"));
+        Assert.assertEquals(1, row.get("discount_category_id"));
+        Assert.assertEquals("None", row.get("discount_category_desc"));
+        Assert.assertEquals(1, row.get("discount_id"));
+        Assert.assertEquals(0d, row.get("discount_rate"));
+    }
+
+    @Test
+    public void getMemberships() throws Exception {
+        ObjectTable table = this.reservationDbDelegate.getMemberships(this.token);
+        Assert.assertEquals(3, table.rowCount());
+        HashMap<String, Object> row1 = table.getRow(1);
+        Assert.assertEquals(1, row1.get("id"));
+        Assert.assertEquals("None", row1.get("description"));
+        Assert.assertEquals(1, row1.get("discount_category_id"));
+        Assert.assertEquals("None", row1.get("discount_category_desc"));
+        Assert.assertEquals(1, row1.get("discount_id"));
+        Assert.assertEquals(0d, row1.get("discount_rate"));
+        HashMap<String, Object> row2 = table.getRow(2);
+        Assert.assertEquals(2, row2.get("id"));
+        Assert.assertEquals("Student", row2.get("description"));
+        Assert.assertEquals(2, row2.get("discount_category_id"));
+        Assert.assertEquals("Student", row2.get("discount_category_desc"));
+        Assert.assertEquals(2, row2.get("discount_id"));
+        Assert.assertEquals(25d, row2.get("discount_rate"));
+        HashMap<String, Object> row3 = table.getRow(3);
+        Assert.assertEquals(3, row3.get("id"));
+        Assert.assertEquals("Full Member", row3.get("description"));
+        Assert.assertEquals(3, row3.get("discount_category_id"));
+        Assert.assertEquals("Member", row3.get("discount_category_desc"));
+        Assert.assertEquals(3, row3.get("discount_id"));
+        Assert.assertEquals(10d, row3.get("discount_rate"));
+    }
+
     @Test
     public void pay() throws Exception {
         Reservation mock_reservation = mock(Reservation.class);
@@ -315,8 +356,8 @@ public class ReservationDbDelegateTest {
 
     @Test
     public void createReservation() throws Exception {
-        Room room = new Room(8, 3, 1, 6);
-        Discount discount = new Discount(1, .0, 1, "None");
+        Room room = new Room(8, 3, 1, 6, "Theatre");
+        Discount discount = new Discount(1, .0, new DiscountCategory(1, "None"));
         Date created_date = new Date();
         Reservation reservation = new Reservation(-1, created_date, 1, discount);
         //Testing
@@ -338,9 +379,11 @@ public class ReservationDbDelegateTest {
     @Test
     public void createRoomReservation() throws Exception {
         String check_query = "SELECT * FROM Room_has_Reservation WHERE room_id = 8 AND floor_id = 3 AND building_id = 1 AND reservation_id = 4";
-        Assert.assertFalse(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+        Assert.assertNotEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
 
-        Room room = new Room(8, 3, 1, 6);
+        Room room = new Room(8, 3, 1, 6, "Theatre");
+        RoomPrice mock_roomPrice = mock(RoomPrice.class);
+        when(mock_roomPrice.id()).thenReturn(11);
         RoomReservation mock_roomReservation = mock(RoomReservation.class);
         Date reservation_start = new Date();
         Date reservation_end = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
@@ -349,10 +392,11 @@ public class ReservationDbDelegateTest {
         when(mock_roomReservation.room()).thenReturn(room);
         when(mock_roomReservation.reservationStart()).thenReturn(reservation_start);
         when(mock_roomReservation.reservationEnd()).thenReturn(reservation_end);
+        when(mock_roomReservation.price()).thenReturn(mock_roomPrice);
         when(mock_roomReservation.note()).thenReturn(note);
 
         this.reservationDbDelegate.createRoomReservation(this.token, 4, mock_roomReservation);
-        Assert.assertTrue(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+        Assert.assertEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
     }
 
     @Test
@@ -389,9 +433,9 @@ public class ReservationDbDelegateTest {
                 " AND timestamp_in = \"2018-02-09 10:05:00\"" +
                 " AND cancelled_flag = 1";
         //Test
-        Assert.assertFalse(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+        Assert.assertNotEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
         Assert.assertEquals(new Double(85.00), this.reservationDbDelegate.cancelReservedRoom(this.token, 1, mock_roomReservation));
-        Assert.assertTrue(this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount() == 1);
+        Assert.assertEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
     }
 
     @Test
@@ -444,7 +488,7 @@ public class ReservationDbDelegateTest {
             } else if ((Integer) row.get("id") == 3) {
                 Assert.assertEquals("2018-06-13 15:00:00", row.get("created_timestamp"));
             } else {
-                Assert.assertTrue("Found an unexpected reservation ID.", false);
+                Assert.fail("Found an unexpected reservation ID.");
             }
         }
     }
@@ -491,7 +535,7 @@ public class ReservationDbDelegateTest {
                 Assert.assertEquals(45.00, row.get("price"));
                 Assert.assertEquals(2008, row.get("price_year"));
             } else {
-                Assert.assertTrue("Found an unexpected ReservedRoom (r=" + r + ", f=" + f + ", b=" + b + ").", false);
+                Assert.fail("Found an unexpected ReservedRoom (r=" + r + ", f=" + f + ", b=" + b + ").");
             }
         }
     }
@@ -712,5 +756,33 @@ public class ReservationDbDelegateTest {
         Assert.assertEquals("2nd row building_id fail", 1, row2.get("building_id"));
         Assert.assertEquals("2nd row floor_id fail", 3, row2.get("floor_id"));
         Assert.assertEquals("2nd row room_id fail", 8, row2.get("room_id"));
+    }
+
+    @Test
+    public void getRoomDetails() throws Exception {
+        Room mock_room = mock(Room.class);
+        when(mock_room.id()).thenReturn(7);
+        when(mock_room.floorID()).thenReturn(3);
+        when(mock_room.buildingID()).thenReturn(1);
+        ObjectTable table = this.reservationDbDelegate.getRoomDetails(this.token, mock_room);
+        Assert.assertFalse(table.isEmpty());
+        HashMap<String, Object> row = table.getRow(1);
+        Assert.assertEquals(mock_room.id(), row.get("room_id"));
+        Assert.assertEquals(mock_room.floorID(), row.get("floor_id"));
+        Assert.assertEquals(mock_room.buildingID(), row.get("building_id"));
+        Assert.assertEquals(5, row.get("category_id"));
+        Assert.assertEquals(4, row.get("room_fixture_id"));
+    }
+
+    @Test
+    public void getRoomPrice() throws Exception {
+        Room mock_room = mock(Room.class);
+        when(mock_room.id()).thenReturn(7);
+        when(mock_room.floorID()).thenReturn(3);
+        when(mock_room.buildingID()).thenReturn(1);
+        ObjectTable table = this.reservationDbDelegate.getRoomPrices(this.token, mock_room);
+        Assert.assertEquals(2, table.rowCount());
+        Assert.assertEquals(5, table.getInteger(1, 1)); //id
+        Assert.assertEquals(11, table.getInteger(1, 2)); //id
     }
 }

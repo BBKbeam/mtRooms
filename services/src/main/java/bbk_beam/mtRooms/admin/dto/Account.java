@@ -105,15 +105,13 @@ public class Account implements Serializable {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("Account={ ");
-        sb.append("id: ").append(id);
-        sb.append(", username: '").append(username).append('\'');
-        sb.append(", created: ").append(created);
-        sb.append(", last_login: ").append(last_login);
-        sb.append(", last_pwd_change: ").append(last_pwd_change);
-        sb.append(", type: ").append(type);
-        sb.append(", is_active: ").append(is_active);
-        sb.append(" }");
-        return sb.toString();
+        return "Account={ " + "id: " + id +
+                ", username: '" + username + '\'' +
+                ", created: " + created +
+                ", last_login: " + last_login +
+                ", last_pwd_change: " + last_pwd_change +
+                ", type: " + type +
+                ", is_active: " + is_active +
+                " }";
     }
 }

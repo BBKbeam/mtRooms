@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="130.0"
+            prefWidth="400.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="bbk_beam.mtRooms.ui.controller.administration.DiscountController">
+    <children>
+        <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <Label text="%Label_DiscountCategoryDescription"/>
+                        <Label text="%Label_DiscountAmount" GridPane.rowIndex="1"/>
+                        <TextField fx:id="categoryDescription_TextField" GridPane.columnIndex="1"/>
+                        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <children>
+                                <TextField fx:id="discountRate_TextField" HBox.hgrow="ALWAYS">
+                                    <HBox.margin>
+                                        <Insets bottom="5.0" top="5.0"/>
+                                    </HBox.margin>
+                                </TextField>
+                            </children>
+                        </HBox>
+                    </children>
+                </GridPane>
+                <ButtonBar maxHeight="-Infinity" prefHeight="40.0" prefWidth="200.0">
+                    <buttons>
+                        <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false"
+                                onAction="#handleCancelAction" text="%Button_Cancel"/>
+                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveAction"
+                                text="%Button_Save"/>
+                    </buttons>
+                    <VBox.margin>
+                        <Insets bottom="5.0" top="5.0"/>
+                    </VBox.margin>
+                </ButtonBar>
+            </children>
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </padding>
+        </VBox>
+    </children>
+</AnchorPane>

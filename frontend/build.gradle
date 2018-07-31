@@ -1,5 +1,5 @@
 apply plugin: 'application'
-mainClassName = 'bbk_beam.mtRooms.ui.MtRoomsGUI'
+mainClassName = 'bbk_beam.mtRooms.MtRoomsGUI'
 
 buildscript {
     dependencies {
@@ -19,6 +19,6 @@ dependencies {
 apply plugin: 'javafx-gradle-plugin'
 
 jfx {
-    mainClass = 'bbk_beam.mtRooms.ui.MtRoomsGUI'
+    mainClass = 'bbk_beam.mtRooms.session.MtRoomsGUI'
     vendor = 'BBK_Beam'
 }

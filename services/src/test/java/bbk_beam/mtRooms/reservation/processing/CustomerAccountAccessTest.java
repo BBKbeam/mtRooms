@@ -8,6 +8,9 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.delegate.ReservationDbDelegate;
 import bbk_beam.mtRooms.reservation.dto.Customer;
+import bbk_beam.mtRooms.reservation.dto.Discount;
+import bbk_beam.mtRooms.reservation.dto.DiscountCategory;
+import bbk_beam.mtRooms.reservation.dto.Membership;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
@@ -68,7 +71,7 @@ public class CustomerAccountAccessTest {
         Assert.assertEquals("UK", customer.country());
         Assert.assertEquals("W1 4AQ", customer.postCode());
         Assert.assertEquals("+44 9876 532 123", customer.phone1());
-        Assert.assertEquals(null, customer.phone2());
+        Assert.assertNull(customer.phone2());
         Assert.assertEquals("jbouvier@mail.com", customer.email());
     }
 
@@ -107,7 +110,7 @@ public class CustomerAccountAccessTest {
         Customer post_commit_DTO = this.customerAccountAccess.createNewCustomer(this.token, pre_commit_DTO);
         Customer record_DTO = this.customerAccountAccess.getCustomerAccount(this.token, 6);
         Assert.assertEquals((Integer) 6, post_commit_DTO.customerID());
-        Assert.assertTrue(post_commit_DTO.equals(record_DTO));
+        Assert.assertEquals(post_commit_DTO, record_DTO);
     }
 
     @Test
@@ -149,7 +152,7 @@ public class CustomerAccountAccessTest {
         );
         this.customerAccountAccess.saveCustomerChangesToDB(this.token, update);
         Customer check = this.customerAccountAccess.getCustomerAccount(this.token, customer.customerID());
-        Assert.assertTrue(update.equals(check));
+        Assert.assertEquals(update, check);
     }
 
     @Test(expected = FailedDbWrite.class)
@@ -172,5 +175,22 @@ public class CustomerAccountAccessTest {
                 "jsmith@mail.com"
         );
         this.customerAccountAccess.saveCustomerChangesToDB(this.token, update);
+    }
+
+    @Test
+    public void getMembership() throws Exception {
+        Membership expected = new Membership(
+                3,
+                "Full Member",
+                new Discount(3, 10d, new DiscountCategory(3, "Member"))
+        );
+        Membership returned = this.customerAccountAccess.getMembership(this.token, 3);
+        Assert.assertEquals(expected, returned);
+    }
+
+    @Test
+    public void getMemberships() throws Exception {
+        List<Membership> list = this.customerAccountAccess.getMemberships(this.token);
+        Assert.assertEquals(3, list.size());
     }
 }

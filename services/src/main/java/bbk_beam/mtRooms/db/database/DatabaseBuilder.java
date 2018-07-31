@@ -80,9 +80,10 @@ class DatabaseBuilder {
                 + "name TEXT NOT NULL, "
                 + "address1 VARCHAR(255) NOT NULL, "
                 + "address2 VARCHAR(255), "
-                + "postcode VARCHAR(145), "
-                + "country VARCHAR(145), "
-                + "telephone VARCHAR(50) "
+                + "city VARCHAR(255) NOT NULL, "
+                + "postcode VARCHAR(145) NOT NULL, "
+                + "country VARCHAR(145) NOT NULL, "
+                + "telephone VARCHAR(50) NOT NULL "
                 + ")";
         return pushQuery(db, query);
     }
@@ -103,7 +104,8 @@ class DatabaseBuilder {
         String query = "CREATE TABLE RoomCategory( "
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
                 + "capacity INTEGER NOT NULL, "
-                + "dimension INTEGER "
+                + "dimension INTEGER, "
+                + "UNIQUE( capacity, dimension ) "
                 + ")";
         return pushQuery(db, query);
     }
@@ -280,13 +282,15 @@ class DatabaseBuilder {
                 + "reservation_id INTEGER NOT NULL, "
                 + "timestamp_in TIMESTAMP NOT NULL, "
                 + "timestamp_out TIMESTAMP NOT NULL, "
+                + "room_price_id INTEGER NOT NULL, "
                 + "seated_count INTEGER NOT NULL, "
                 + "catering BOOLEAN NOT NULL, "
                 + "notes TEXT, "
                 + "cancelled_flag BOOLEAN NOT NULL DEFAULT 0, "
                 + "PRIMARY KEY( room_id, floor_id, building_id, reservation_id, timestamp_in ), "
                 + "FOREIGN KEY( room_id, floor_id, building_id ) REFERENCES Room( id, floor_id, building_id ), "
-                + "FOREIGN KEY( reservation_id ) REFERENCES Reservation( id ) "
+                + "FOREIGN KEY( reservation_id ) REFERENCES Reservation( id ), "
+                + "FOREIGN KEY( room_price_id ) REFERENCES RoomPrice( id ) "
                 + ")";
         return pushQuery(db, query);
     }

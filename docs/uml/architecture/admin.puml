@@ -13,18 +13,25 @@ skinparam package {
         package "admin" {
             component AdministrationSystem #white {
                 IAdminSession -- [AdminSession]
-                IUserAccAdministration -- [UserAccAdministration]
-                IReservationDbMaintenance -- [ReservationDbMaintenance]
 
-                AdminSession --( IUserAccAdministration
-                AdminSession --( IReservationDbMaintenance
+                component Maintenance #white {
+                    [UserAccAdministration]
+                    [ReservationDbMaintenance]
+                    [RealEstateAdministration]
+                    [MembershipAdministration]
+                }
+
+                AdminSession --> UserAccAdministration
+                AdminSession --> ReservationDbMaintenance
+                AdminSession --> RealEstateAdministration
+                AdminSession --> MembershipAdministration
             }
 
             component AuthenticationSystem #white {
                 IAuthenticationSystem -- [UserAccountChecker]
-                ISessionIdGenerator -- [SessionIdGenerator]
+                [SessionIdGenerator]
 
-                UserAccountChecker --( ISessionIdGenerator
+                UserAccountChecker --> SessionIdGenerator
             }
         }
     }
@@ -36,5 +43,7 @@ skinparam package {
 
     UserAccAdministration --( IUserAccDbAccess
     ReservationDbMaintenance --( IReservationDbAccess
+    RealEstateAdministration --( IReservationDbAccess
+    MembershipAdministration --( IReservationDbAccess
 
 @enduml

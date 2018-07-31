@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="211.0" prefWidth="459.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bbk_beam.mtRooms.ui.controller.administration.UserAccountController">
+   <children>
+      <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <GridPane prefHeight="150.0" prefWidth="600.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="150.0" prefWidth="150.0" />
+                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" maxWidth="515.0" minWidth="10.0" prefWidth="430.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+              </rowConstraints>
+               <children>
+                  <TextField fx:id="username_field" GridPane.columnIndex="1" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Label_Username" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Label_Password" GridPane.rowIndex="1" />
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%Label_AccountType" GridPane.rowIndex="2" />
+                  <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <children>
+                        <TextField fx:id="pwd_field" HBox.hgrow="ALWAYS">
+                           <opaqueInsets>
+                              <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                           </opaqueInsets>
+                        </TextField>
+                     </children>
+                  </HBox>
+                  <ChoiceBox fx:id="accountType_choiceBox" GridPane.columnIndex="1" GridPane.hgrow="SOMETIMES" GridPane.rowIndex="2" />
+                  <CheckBox fx:id="active_field" mnemonicParsing="false" text="%TickBox_ActiveField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </GridPane>
+            <ButtonBar maxHeight="-Infinity" prefHeight="40.0" prefWidth="200.0">
+              <buttons>
+                  <Button fx:id="cancelButton" cancelButton="true" mnemonicParsing="false" onAction="#handleCancelAction" text="%Button_Cancel" />
+                  <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveAction" text="%Button_Save" />
+              </buttons>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </ButtonBar>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

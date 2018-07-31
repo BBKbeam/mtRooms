@@ -1,0 +1,23 @@
+@startuml
+
+'skinparam linetype ortho
+skinparam linetype polyline
+'skinparam monochrome true
+
+skinparam package {
+    backgroundColor lightgrey
+}
+
+frame "Business Logic Layer" #orange {
+    package "revenue" {
+            IRevenueReporter -- [ReportCreator]
+            [RevenueAggregator]
+
+            ReportCreator --> RevenueAggregator
+
+    }
+}
+
+RevenueAggregator --( IReservationDbAccess
+
+@enduml

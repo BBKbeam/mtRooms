@@ -22,14 +22,17 @@ public class LogisticReportGenerator implements ILogisticReportGenerator {
     private LogisticAggregator aggregator;
 
     /**
-     * Checker for dates
+     * Checks start and end dates are chronologically set
      *
-     * @param from Start date of period
-     * @param to   End date of period
-     * @return Start is before end state
+     * @param from Start timestamp
+     * @param to   End timestamp
+     * @throws InvalidPeriodException when Start timestamp is after the End timestamp
      */
-    private boolean periodIsValid(Date from, Date to) {
-        return to.after(from);
+    private void checkPeriod(Date from, Date to) throws InvalidPeriodException {
+        if (!to.after(from)) {
+            log.log_Error("Invalid period (from > to): ", from, " -> ", to);
+            throw new InvalidPeriodException("Start date is after end date for period.");
+        }
     }
 
     /**
@@ -48,6 +51,7 @@ public class LogisticReportGenerator implements ILogisticReportGenerator {
                                     (Integer) row.get("room_id"),
                                     (Integer) row.get("floor_id"),
                                     (Integer) row.get("building_id"),
+                                    (String) row.get("room_description"),
                                     (Integer) row.get("room_category_id"),
                                     (Integer) row.get("capacity")
                             ),
@@ -73,11 +77,8 @@ public class LogisticReportGenerator implements ILogisticReportGenerator {
 
     @Override
     public LogisticsInfo getInfo(Token session_token, Integer building_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        if (!periodIsValid(from, to)) {
-            log.log_Error("Period not valid: ", from, " -> ", to);
-            throw new InvalidPeriodException("Period not valid: " + from + " -> " + to);
-        }
         try {
+            checkPeriod(from, to);
             ObjectTable table = this.aggregator.getInfo(session_token, building_id, from, to);
             return processEntries(table);
         } catch (DbQueryException e) {
@@ -88,11 +89,8 @@ public class LogisticReportGenerator implements ILogisticReportGenerator {
 
     @Override
     public LogisticsInfo getInfo(Token session_token, Integer building_id, Integer floor_id, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        if (!periodIsValid(from, to)) {
-            log.log_Error("Period not valid: ", from, " -> ", to);
-            throw new InvalidPeriodException("Period not valid: " + from + " -> " + to);
-        }
         try {
+            checkPeriod(from, to);
             ObjectTable table = this.aggregator.getInfo(session_token, building_id, floor_id, from, to);
             return processEntries(table);
         } catch (DbQueryException e) {
@@ -103,11 +101,8 @@ public class LogisticReportGenerator implements ILogisticReportGenerator {
 
     @Override
     public LogisticsInfo getInfo(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
-        if (!periodIsValid(from, to)) {
-            log.log_Error("Period not valid: ", from, " -> ", to);
-            throw new InvalidPeriodException("Period not valid: " + from + " -> " + to);
-        }
         try {
+            checkPeriod(from, to);
             ObjectTable table = this.aggregator.getInfo(session_token, room, from, to);
             return processEntries(table);
         } catch (DbQueryException e) {

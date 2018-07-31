@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.text.Font?>
+
+<VBox id="main" prefHeight="600.0" prefWidth="900.0" stylesheets="@../css/MtRoomsGUI.css" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="bbk_beam.mtRooms.ui.controller.MainWindowController">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="%Menu_File">
+          <items>
+            <MenuItem fx:id="logout" mnemonicParsing="false" onAction="#handleLogoutAction" text="%MenuItem_Logout" visible="false">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="L" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+            <MenuItem fx:id="quit" mnemonicParsing="false" onAction="#handleExitAction" text="%MenuItem_Quit">
+                     <accelerator>
+                        <KeyCodeCombination alt="UP" code="Q" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                     </accelerator></MenuItem>
+          </items>
+        </Menu>
+            <Menu mnemonicParsing="false" text="%Menu_View">
+              <items>
+                <MenuItem fx:id="reservation" mnemonicParsing="false" onAction="#handleViewReservationAction" text="%MenuItem_Reservation" />
+                  <MenuItem fx:id="revenue" mnemonicParsing="false" onAction="#handleViewRevenueAction" text="%MenuItem_Revenue" />
+                  <MenuItem fx:id="logistics" mnemonicParsing="false" onAction="#handleViewLogisticsAction" text="%MenuItem_Logistics" />
+                  <MenuItem fx:id="administration" mnemonicParsing="false" onAction="#handleViewAdministrationAction" text="%MenuItem_Administration" />
+              </items>
+            </Menu>
+            <Menu fx:id="administration_menu" mnemonicParsing="false" text="%Menu_Administration" visible="false">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#handleOptimiseReservationDbAction" text="%MenuItem_OptimiseResDb" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleOptimiseUserAccDbAction" text="%MenuItem_OptimiseAccDb" />
+              </items>
+            </Menu>
+        <Menu mnemonicParsing="false" text="%Menu_Help">
+          <items>
+            <MenuItem fx:id="about" mnemonicParsing="false" onAction="#handleAboutAction" text="%MenuItem_About" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+    <HBox id="main" alignment="TOP_CENTER" VBox.vgrow="ALWAYS">
+        <ScrollPane id="main_pane" fx:id="main_pane" styleClass="pane" stylesheets="@../css/MtRoomsGUI.css" HBox.hgrow="ALWAYS" />
+    </HBox>
+    <HBox id="status_bar" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+      <children>
+        <Label fx:id="status_left" maxHeight="1.7976931348623157E308" maxWidth="-1.0" text="Left status" HBox.hgrow="ALWAYS">
+          <font>
+            <Font size="11.0" fx:id="x3" />
+          </font>
+          <textFill>
+            <Color blue="0.625" green="0.625" red="0.625" fx:id="x4" />
+          </textFill>
+        </Label>
+        <Pane prefHeight="-1.0" prefWidth="-1.0" HBox.hgrow="ALWAYS" />
+        <Label fx:id="status_right" font="$x3" maxWidth="-1.0" text="Right status" textFill="$x4" HBox.hgrow="NEVER" />
+      </children>
+      <padding>
+        <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+      </padding>
+    </HBox>
+  </children>
+</VBox>

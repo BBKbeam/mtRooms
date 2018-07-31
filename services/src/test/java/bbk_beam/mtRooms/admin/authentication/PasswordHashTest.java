@@ -18,7 +18,7 @@ public class PasswordHashTest {
     public void createSalt() {
         String salt = PasswordHash.createSalt();
         for (int i = 0; i < 100; i++) {
-            Assert.assertFalse(salt.equals(PasswordHash.createSalt()));
+            Assert.assertNotEquals(salt, PasswordHash.createSalt());
         }
     }
 

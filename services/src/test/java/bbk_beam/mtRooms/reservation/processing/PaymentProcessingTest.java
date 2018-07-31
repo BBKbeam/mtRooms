@@ -81,7 +81,7 @@ public class PaymentProcessingTest {
             );
             total_check -= incremental_payment.amount();
             payment_date = Date.from(payment_date.toInstant().plus(1, ChronoUnit.MINUTES));
-            Assert.assertEquals(new Double(total_check), this.paymentProcessing.pay(this.token, mock_reservation, incremental_payment));
+            Assert.assertEquals(total_check, this.paymentProcessing.pay(this.token, mock_reservation, incremental_payment));
         }
     }
 
@@ -96,18 +96,18 @@ public class PaymentProcessingTest {
                 Assert.assertEquals("TestHashID0000003", p.hashID());
                 Assert.assertEquals(new Double(40.5), p.amount());
                 Assert.assertEquals("2018-02-10 01:58:00", TimestampConverter.getUTCTimestampString(p.timestamp()));
-                Assert.assertEquals(null, p.note());
+                Assert.assertNull(p.note());
                 Assert.assertEquals(new Integer(2), p.paymentMethod().id());
                 Assert.assertEquals("Debit Card", p.paymentMethod().description());
             } else if (p.id() == 4) {
                 Assert.assertEquals("TestHashID0000004", p.hashID());
                 Assert.assertEquals(new Double(22.5), p.amount());
                 Assert.assertEquals("2018-02-11 13:12:50", TimestampConverter.getUTCTimestampString(p.timestamp()));
-                Assert.assertEquals(null, p.note());
+                Assert.assertNull(p.note());
                 Assert.assertEquals(new Integer(2), p.paymentMethod().id());
                 Assert.assertEquals("Debit Card", p.paymentMethod().description());
             } else {
-                Assert.assertTrue("Unexpected payment ID found (not 3 or 4).", false);
+                Assert.fail("Unexpected payment ID found (not 3 or 4).");
             }
         }
     }
@@ -128,7 +128,7 @@ public class PaymentProcessingTest {
                 Assert.assertEquals(new Integer(3), t.id());
                 Assert.assertEquals("Credit Card", t.description());
             } else {
-                Assert.assertTrue("Unexpected PaymentType.id found (>3).", false);
+                Assert.fail("Unexpected PaymentType.id found (>3).");
             }
         }
     }

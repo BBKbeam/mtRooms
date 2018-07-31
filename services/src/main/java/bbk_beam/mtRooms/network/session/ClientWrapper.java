@@ -6,11 +6,10 @@ import bbk_beam.mtRooms.network.IRmiClient;
 import bbk_beam.mtRooms.network.exception.FailedAllocation;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.IReservationSession;
-import bbk_beam.mtRooms.reservation.ReservationSession;
 import bbk_beam.mtRooms.uaa.*;
 import bbk_beam.mtRooms.uaa.exception.DuplicateSession;
 import bbk_beam.mtRooms.uaa.exception.InvalidAccessRights;
-import bbk_beam.mtRooms.uaa.exception.SessionInactive;
+import bbk_beam.mtRooms.uaa.exception.ServerSessionInactive;
 import eadjlib.logger.Logger;
 
 import java.io.Serializable;
@@ -28,7 +27,7 @@ public class ClientWrapper implements Serializable {
     private IRmiClient client;
     private IAuthenticatedAdministration administration = null;
     private IAuthenticatedFrontDesk front_desk = null;
-    private ReservationSession reservation_session;
+    private IReservationSession reservation_session;
     private IAuthenticatedLogisticsPersonnel logistics = null;
     private IAuthenticatedRevenuePersonnel revenues = null;
 
@@ -38,9 +37,9 @@ public class ClientWrapper implements Serializable {
      * @param driver SessionDriver instance
      * @param client RmiClient
      * @throws RemoteException when communication failure occured with the client
-     * @throws SessionInactive when the SessionDriver has not been initialised
+     * @throws ServerSessionInactive when the SessionDriver has not been initialised
      */
-    public ClientWrapper(ISessionDriver driver, IRmiClient client, EventWatcherDelegate watcher_delegate) throws RemoteException, SessionInactive {
+    public ClientWrapper(ISessionDriver driver, IRmiClient client, EventWatcherDelegate watcher_delegate) throws RemoteException, ServerSessionInactive {
         this.client = client;
         this.event_watcher_delegate = watcher_delegate;
         try {

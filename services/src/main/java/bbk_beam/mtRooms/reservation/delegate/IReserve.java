@@ -6,9 +6,11 @@ import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
+import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
 import bbk_beam.mtRooms.reservation.exception.InvalidDiscount;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
+import bbk_beam.mtRooms.reservation.exception.InvalidRoom;
 import bbk_beam.mtRooms.reservation.exception.InvalidRoomCategory;
 import eadjlib.datastructure.ObjectTable;
 
@@ -140,4 +142,27 @@ public interface IReserve {
      * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
      */
     ObjectTable getRoomCategory(Token session_token, Integer category_id) throws InvalidRoomCategory, DbQueryException, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Gets details for a Room
+     *
+     * @param session_token Session's token
+     * @param room          Room DTO
+     * @return Details for the room
+     * @throws InvalidRoom             when the room does not match any within the records
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    ObjectTable getRoomDetails(Token session_token, Room room) throws InvalidRoom, DbQueryException, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * @param session_token Session's token
+     * @param room          Room DTO
+     * @return Prices for the room in the records
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    ObjectTable getRoomPrices(Token session_token, Room room) throws DbQueryException, SessionExpiredException, SessionInvalidException;
 }

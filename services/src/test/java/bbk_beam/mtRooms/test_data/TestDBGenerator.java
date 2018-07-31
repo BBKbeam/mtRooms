@@ -7,6 +7,7 @@ import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.session.SessionType;
 import eadjlib.logger.Logger;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.nio.file.Files;
@@ -20,14 +21,15 @@ public class TestDBGenerator {
 
     @After
     public void tearDown() throws Exception {
-        Files.deleteIfExists(Paths.get("mtRoomsTestData.db"));
+//        Files.deleteIfExists(Paths.get("mtRoomsTestData.db"));
     }
 
     /**
      * Run this test to create a database with test data
      *
-     * @throws Exception
+     * @throws Exception when something goes wrong...
      */
+    @Ignore("Used to manually create a basic DB template.")
     @Test
     public void createTestDB() throws Exception {
         createTestDB("mtRoomsTestData.db");
@@ -37,7 +39,7 @@ public class TestDBGenerator {
      * Test data generation method that can be called by unit tests creating a database with some basic data
      *
      * @param file_name Database file name
-     * @throws Exception
+     * @throws Exception when something goes wrong...
      */
     public void createTestDB(String file_name) throws Exception {
         DbSystemBootstrap DbBootstrapper = new DbSystemBootstrap();

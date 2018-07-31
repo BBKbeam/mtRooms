@@ -66,4 +66,9 @@ public class Membership implements Serializable {
         result = 31 * result + discount.hashCode();
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "[" + id + "] " + description;
+    }
 }

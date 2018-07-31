@@ -1,7 +1,8 @@
 package bbk_beam.mtRooms.reservation.scheduling.datastructure;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
-import bbk_beam.mtRooms.reservation.scheduling.timing.TimestampUTC;
+import bbk_beam.mtRooms.common.TimeSpan;
+import bbk_beam.mtRooms.common.TimestampUTC;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,7 +63,7 @@ class ScheduleSlot extends TimeSpan {
     /**
      * Adds a watcher to this exact schedule slot
      *
-     * @param watcher_token
+     * @param watcher_token Session token that needs to be updated of any changes
      * @return Watcher list changed status
      */
     public boolean addWatcher(Token watcher_token) {
@@ -89,7 +90,7 @@ class ScheduleSlot extends TimeSpan {
     }
 
     /**
-     * Gets a read-only view of the watchers
+     * Gets a read-only session of the watchers
      *
      * @return List of watchers on the schedule slot
      */

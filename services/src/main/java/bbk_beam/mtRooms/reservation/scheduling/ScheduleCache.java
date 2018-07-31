@@ -1,12 +1,12 @@
 package bbk_beam.mtRooms.reservation.scheduling;
 
 import bbk_beam.mtRooms.admin.authentication.Token;
+import bbk_beam.mtRooms.common.TimeSpan;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.reservation.ReservationSession;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.dto.RoomReservation;
 import bbk_beam.mtRooms.reservation.scheduling.datastructure.Schedule;
-import bbk_beam.mtRooms.reservation.scheduling.datastructure.TimeSpan;
 import eadjlib.logger.Logger;
 
 import java.util.*;

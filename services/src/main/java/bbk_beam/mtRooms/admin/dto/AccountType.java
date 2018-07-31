@@ -1,11 +1,14 @@
 package bbk_beam.mtRooms.admin.dto;
 
+import bbk_beam.mtRooms.db.session.SessionType;
+
 import java.io.Serializable;
 import java.util.Objects;
 
 public class AccountType implements Serializable {
     private Integer id;
     private String description;
+    private SessionType sessionType;
 
     /**
      * Constructor
@@ -36,13 +39,18 @@ public class AccountType implements Serializable {
         return this.description;
     }
 
+    /**
+     * Gets the SessionType of the AccountType
+     *
+     * @return SessionType
+     */
+    public SessionType getSessionType() {
+        return SessionType.valueOf(this.description);
+    }
+
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer("AccountType={ ");
-        sb.append("id: ").append(id);
-        sb.append(", description: '").append(description).append("\' ");
-        sb.append('}');
-        return sb.toString();
+        return description;
     }
 
     @Override

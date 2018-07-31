@@ -21,7 +21,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.HashMap;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class UserAccountCheckerTest {
@@ -110,17 +109,7 @@ public class UserAccountCheckerTest {
 
     @Test(expected = AuthenticationFailureException.class)
     public void login_bad_sql() throws Exception {
-        ObjectTable mocked_table = mock(ObjectTable.class);
         UserAccountChecker accountChecker = new UserAccountChecker(mocked_user_access);
-        HashMap<String, Object> account_row = new HashMap<>();
-        //Account info required for login
-        String salt = PasswordHash.createSalt();
-        String hash = PasswordHash.createHash("password", salt);
-        account_row.put("id", 1);
-        account_row.put("pwd_hash", hash);
-        account_row.put("pwd_salt", salt);
-        account_row.put("active_state", 1);
-        account_row.put("description", "USER");
         //Mock for inner dependency calls
         when(mocked_user_access.pullFromDB(any(String.class))).thenThrow(new DbQueryException(""));
         //Login

@@ -4,8 +4,6 @@ import bbk_beam.mtRooms.network.exception.FailedServerInit;
 import eadjlib.logger.Logger;
 import org.apache.commons.cli.*;
 
-import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.rmi.AlreadyBoundException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
@@ -26,7 +24,118 @@ public class RmiServer extends RmiServices {
     private Integer port = 9999; //default
     private Registry rmiRegistry;
     private IRmiServices rmiServices;
+    private IRmiAdministrationServices rmiAdministrationServices;
+    private IRmiReservationServices rmiReservationServices;
+    private IRmiLogisticsServices rmiLogisticsServices;
+    private IRmiRevenueServices rmiRevenueServices;
 
+    private synchronized void loadAdministrationServices() throws RemoteException, AlreadyBoundException {
+        try {
+            rmiAdministrationServices = (IRmiAdministrationServices) UnicastRemoteObject.exportObject(new RmiAdministrationServices(sessions), port);
+            rmiRegistry.bind("RmiAdministrationServices", rmiAdministrationServices);
+        } catch (AlreadyBoundException e) {
+            log.log_Fatal("RmiAdministrationServices is already bound.");
+            throw e;
+        }
+    }
+
+    private synchronized void loadReservationServices() throws RemoteException, AlreadyBoundException {
+        try {
+            rmiReservationServices = (IRmiReservationServices) UnicastRemoteObject.exportObject(new RmiReservationServices(sessions), port);
+            rmiRegistry.bind("RmiReservationServices", rmiReservationServices);
+        } catch (AlreadyBoundException e) {
+            log.log_Fatal("RmiReservationServices is already bound.");
+            throw e;
+        }
+    }
+
+    private synchronized void loadLogisticsServices() throws RemoteException, AlreadyBoundException {
+        try {
+            rmiLogisticsServices = (IRmiLogisticsServices) UnicastRemoteObject.exportObject(new RmiLogisticsServices(sessions), port);
+            rmiRegistry.bind("RmiLogisticsServices", rmiLogisticsServices);
+        } catch (AlreadyBoundException e) {
+            log.log_Fatal("RmiLogisticsServices is already bound.");
+            throw e;
+        }
+    }
+
+    private synchronized void loadRevenueServices() throws RemoteException, AlreadyBoundException {
+        try {
+            rmiRevenueServices = (IRmiRevenueServices) UnicastRemoteObject.exportObject(new RmiRevenueServices(sessions), port);
+            rmiRegistry.bind("RmiRevenueServices", rmiRevenueServices);
+        } catch (AlreadyBoundException e) {
+            log.log_Fatal("RmiRevenueServices is already bound.");
+            throw e;
+        }
+    }
+
+    private synchronized void shutdownAdministrationServices() throws RemoteException {
+        try {
+            rmiRegistry.unbind("RmiAdministrationServices");
+            log.log_Debug("RmiAdministrationServices unbound from RMI registry.");
+            UnicastRemoteObject.unexportObject(rmiAdministrationServices, true);
+            log.log_Debug("RmiAdministrationServices un-exported.");
+        } catch (NotBoundException e) {
+            log.log_Warning("An RmiAdministrationServices instance was not bound to registry.");
+            try {
+                UnicastRemoteObject.unexportObject(rmiAdministrationServices, true);
+                log.log_Debug("RmiAdministrationServices un-exported.");
+            } catch (NoSuchObjectException e1) {
+                log.log_Error("Could terminate RmiAdministrationServices: not found.");
+            }
+        }
+    }
+
+    private synchronized void shutdownReservationServices() throws RemoteException {
+        try {
+            rmiRegistry.unbind("RmiReservationServices");
+            log.log_Debug("RmiReservationServices unbound from RMI registry.");
+            UnicastRemoteObject.unexportObject(rmiReservationServices, true);
+            log.log_Debug("RmiReservationServices un-exported.");
+        } catch (NotBoundException e) {
+            log.log_Warning("An RmiReservationServices instance was not bound to registry.");
+            try {
+                UnicastRemoteObject.unexportObject(rmiReservationServices, true);
+                log.log_Debug("RmiReservationServices un-exported.");
+            } catch (NoSuchObjectException e1) {
+                log.log_Error("Could terminate RmiReservationServices: not found.");
+            }
+        }
+    }
+
+    private synchronized void shutdownLogisticsServices() throws RemoteException {
+        try {
+            rmiRegistry.unbind("RmiLogisticsServices");
+            log.log_Debug("RmiLogisticsServices unbound from RMI registry.");
+            UnicastRemoteObject.unexportObject(rmiLogisticsServices, true);
+            log.log_Debug("RmiLogisticsServices un-exported.");
+        } catch (NotBoundException e) {
+            log.log_Warning("An RmiLogisticsServices instance was not bound to registry.");
+            try {
+                UnicastRemoteObject.unexportObject(rmiLogisticsServices, true);
+                log.log_Debug("RmiLogisticsServices un-exported.");
+            } catch (NoSuchObjectException e1) {
+                log.log_Error("Could terminate RmiLogisticsServices: not found.");
+            }
+        }
+    }
+
+    private synchronized void shutdownRevenueServices() throws RemoteException {
+        try {
+            rmiRegistry.unbind("RmiRevenueServices");
+            log.log_Debug("RmiReservationServices unbound from RMI registry.");
+            UnicastRemoteObject.unexportObject(rmiRevenueServices, true);
+            log.log_Debug("RmiRevenueServices un-exported.");
+        } catch (NotBoundException e) {
+            log.log_Warning("An RmiRevenueServices instance was not bound to registry.");
+            try {
+                UnicastRemoteObject.unexportObject(rmiRevenueServices, true);
+                log.log_Debug("RmiRevenueServices un-exported.");
+            } catch (NoSuchObjectException e1) {
+                log.log_Error("Could terminate RmiRevenueServices: not found.");
+            }
+        }
+    }
     /**
      * Constructor
      *
@@ -48,6 +157,11 @@ public class RmiServer extends RmiServices {
         rmiServices = (IRmiServices) UnicastRemoteObject.exportObject(this, port);
         log.log("Loading RMI services on port: ", port);
         rmiRegistry.bind("RmiServices", rmiServices);
+        log.log("Loading component services...");
+        loadAdministrationServices();
+        loadReservationServices();
+        loadLogisticsServices();
+        loadRevenueServices();
     }
 
     /**
@@ -59,14 +173,18 @@ public class RmiServer extends RmiServices {
         Logger log = Logger.getLoggerInstance(RmiServer.class.getName());
         try {
             log.log("Terminating server...");
+            shutdownRevenueServices();
+            shutdownLogisticsServices();
+            shutdownReservationServices();
+            shutdownAdministrationServices();
+
             rmiRegistry.unbind("RmiServices");
             log.log_Debug("RmiServices unbound from RMI registry.");
-            UnicastRemoteObject.unexportObject(this, true);
-            log.log_Debug("RmiServices un-exported.");
             UnicastRemoteObject.unexportObject(rmiRegistry, true);
             log.log_Debug("RMI registry un-exported.");
+
             int count;
-            if((count = sessions.countObservers()) > 0) {
+            if ((count = sessions.countObservers()) > 0) {
                 sessions.deleteClients();
                 log.log_Debug("Cleared ", count, " clients from RmiServices session tracker.");
             }
@@ -76,12 +194,12 @@ public class RmiServer extends RmiServices {
             log.log_Exception(e);
             return false;
         } catch (NotBoundException e) {
-            log.log_Warning("RmiServices instance was not bound to registry.");
+            log.log_Warning("An RMI service instance was not bound to registry.");
             try {
                 UnicastRemoteObject.unexportObject(this, true);
                 log.log_Debug("RmiServices un-exported.");
             } catch (NoSuchObjectException e1) {
-                log.log_Error("Could terminate RmiServices: note found.");
+                log.log_Error("Could terminate RmiServices: not found.");
             }
             try {
                 UnicastRemoteObject.unexportObject(rmiRegistry, true);
@@ -95,6 +213,7 @@ public class RmiServer extends RmiServices {
 
     /**
      * Sets the port for the server
+     *
      * @param port Port to use
      */
     public void setPort(Integer port) {
@@ -135,7 +254,7 @@ public class RmiServer extends RmiServices {
                 server.setPort(Integer.parseInt(cmd.getOptionValue("port")));
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                if( server.shutdown() ) {
+                if (server.shutdown()) {
                     try {
                         mainThread.join();
                         System.out.println("Server shutdown successfully.");
@@ -146,6 +265,7 @@ public class RmiServer extends RmiServices {
                 }
             }));
 
+            log.log("Server working directory: ", System.getProperty("user.dir"));
             server.init();
             log.log("mtRooms server init successful.");
             System.out.println("mtRooms server ready... Press Ctrl+C to terminate.");

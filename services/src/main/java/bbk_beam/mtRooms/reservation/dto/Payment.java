@@ -60,7 +60,7 @@ public class Payment implements Serializable {
      * @param timestamp     Transaction timestamp
      * @param note          Note
      * @param paymentMethod Method used for payment
-     * @throw FailedPaymentHashing when failure occurs during HashID generation
+     * @throws FailedPaymentHashing when failure occurs during HashID generation
      */
     public Payment(Reservation reservation, Double amount, Date timestamp, String note, PaymentMethod paymentMethod) throws FailedPaymentHashing {
         this.id = -1;

@@ -3,12 +3,14 @@ package bbk_beam.mtRooms.uaa;
 import bbk_beam.mtRooms.admin.administration.IAdminSession;
 import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.admin.dto.Account;
-import bbk_beam.mtRooms.admin.exception.AccountExistenceException;
-import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
+import bbk_beam.mtRooms.admin.dto.AccountType;
+import bbk_beam.mtRooms.admin.dto.Usage;
+import bbk_beam.mtRooms.admin.exception.*;
 import bbk_beam.mtRooms.db.exception.SessionCorruptedException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.db.session.SessionType;
+import bbk_beam.mtRooms.reservation.dto.*;
 
 import java.util.List;
 
@@ -150,6 +152,140 @@ public class AdministrationDelegate implements IAdminSession {
      */
     public Account getAccount(Token admin_token, String account_username) throws AccountExistenceException, SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
         return this.admin_session.getAccount(admin_token, account_username);
+    }
+
+    /**
+     * Gets the list of account types
+     *
+     * @param admin_token Administrator session token
+     * @return List of AccountType DTOs
+     * @throws SessionInvalidException   when administrator session is not valid
+     * @throws SessionExpiredException   when current administrator session has expired
+     * @throws SessionCorruptedException when tracked and token expiry timestamps do not match for the token's ID
+     * @throws RuntimeException          when non-standard failure occurred during account fetching from records
+     */
+    public List<AccountType> getAccountTypes(Token admin_token) throws SessionInvalidException, SessionExpiredException, SessionCorruptedException, RuntimeException {
+        return this.admin_session.getAccountTypes(admin_token);
+    }
+
+    @Override
+    public List<Building> getBuildings(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.getBuildings(admin_token);
+    }
+
+    @Override
+    public List<Floor> getFloors(Token admin_token, Building building) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.getFloors(admin_token, building);
+    }
+
+    @Override
+    public List<Room> getRooms(Token admin_token, Floor floor) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.getRooms(admin_token, floor);
+    }
+
+    @Override
+    public List<Usage<RoomPrice, Integer>> getRoomPrices(Token admin_token, Room room) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.getRoomPrices(admin_token, room);
+    }
+
+    @Override
+    public Usage<RoomPrice, Integer> getMostRecentRoomPrice(Token admin_token, Room room) throws IncompleteRecord, FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.getMostRecentRoomPrice(admin_token, room);
+    }
+
+    @Override
+    public List<Usage<RoomCategory, Room>> getRoomCategories(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.getRoomCategories(admin_token);
+    }
+
+    @Override
+    public DetailedRoom getRoomDetails(Token admin_token, Room room) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.getRoomDetails(admin_token, room);
+    }
+
+    @Override
+    public void add(Token admin_token, Building building) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.admin_session.add(admin_token, building);
+    }
+
+    @Override
+    public void add(Token admin_token, Floor floor) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.admin_session.add(admin_token, floor);
+    }
+
+    @Override
+    public void add(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.admin_session.add(admin_token, room, price, fixtures);
+    }
+
+    @Override
+    public RoomPrice add(Token admin_token, RoomPrice roomPrice) throws FailedRecordWrite, FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.add(admin_token, roomPrice);
+    }
+
+    @Override
+    public RoomCategory add(Token admin_token, RoomCategory roomCategory) throws FailedRecordWrite, FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.add(admin_token, roomCategory);
+    }
+
+    @Override
+    public void update(Token admin_token, Building building) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.admin_session.update(admin_token, building);
+    }
+
+    @Override
+    public void update(Token admin_token, Floor floor) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.admin_session.update(admin_token, floor);
+    }
+
+    @Override
+    public void update(Token admin_token, Room room, RoomPrice price, RoomFixtures fixtures) throws FailedRecordUpdate, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        this.admin_session.update(admin_token, room, price, fixtures);
+    }
+
+    @Override
+    public boolean remove(Token admin_token, Building building) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.remove(admin_token, building);
+    }
+
+    @Override
+    public boolean remove(Token admin_token, Floor floor) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.remove(admin_token, floor);
+    }
+
+    @Override
+    public boolean remove(Token admin_token, Room room) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.remove(admin_token, room);
+    }
+
+    @Override
+    public boolean remove(Token admin_token, RoomPrice roomPrice) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.remove(admin_token, roomPrice);
+    }
+
+    @Override
+    public boolean remove(Token admin_token, RoomCategory roomCategory) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.remove(admin_token, roomCategory);
+    }
+
+    @Override
+    public List<Usage<Membership, Integer>> getMemberships(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.getMemberships(admin_token);
+    }
+
+    @Override
+    public List<Discount> getDiscounts(Token admin_token) throws FailedRecordFetch, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.getDiscounts(admin_token);
+    }
+
+    @Override
+    public Membership add(Token admin_token, Membership membership) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.add(admin_token, membership);
+    }
+
+    @Override
+    public boolean remove(Token admin_token, Membership membership) throws FailedRecordWrite, SessionExpiredException, SessionInvalidException, SessionCorruptedException {
+        return this.admin_session.remove(admin_token, membership);
     }
 
     /**

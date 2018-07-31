@@ -1,7 +1,7 @@
 package bbk_beam.mtRooms.ui.controller;
 
 import bbk_beam.mtRooms.exception.RemoteFailure;
-import bbk_beam.mtRooms.ui.AlertDialog;
+import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;

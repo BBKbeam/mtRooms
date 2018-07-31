@@ -1,4 +1,4 @@
-package bbk_beam.mtRooms.ui;
+package bbk_beam.mtRooms.ui.controller.common;
 
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.exception.LoginException;

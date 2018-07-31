@@ -6,8 +6,9 @@ import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiAdministrationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Building;
-import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
+import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
+import bbk_beam.mtRooms.ui.controller.common.FieldValidator;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
@@ -19,8 +20,6 @@ import javafx.scene.control.TextField;
 
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,7 +32,7 @@ public class BuildingController implements Initializable {
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
     private ResourceBundle resourceBundle;
-    private HashMap<TextField, Boolean> field_validation = new HashMap<>();
+    private FieldValidator fieldValidator;
     private Building building = null;
     private ControllerRole controllerRole;
 
@@ -129,102 +128,87 @@ public class BuildingController implements Initializable {
         return success_flag.get();
     }
 
-    /**
-     * Checks the field validation HashMap
-     *
-     * @return Field validation state (true = all valid, false = 1+ invalid)
-     */
-    private boolean checkValidationFlags() {
-        boolean valid_flag = true;
-        for (Map.Entry<TextField, Boolean> entry : this.field_validation.entrySet()) {
-            if (!entry.getValue()) {
-                entry.getKey().setStyle("-fx-control-inner-background: red;");
-                valid_flag = false;
-            }
-        }
-        return valid_flag;
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
         this.alertDialog = new AlertDialog(resources);
+        this.fieldValidator = new FieldValidator();
 
-        field_validation.put(name_TextField, false);
-        field_validation.put(address1_TextField, false);
-        field_validation.put(address2_TextField, true); //empty at start is valid
-        field_validation.put(city_TextField, false);
-        field_validation.put(postcode_TextField, false);
-        field_validation.put(country_TextField, false);
-        field_validation.put(telephone_TextField, false);
+        fieldValidator.set(name_TextField, false);
+        fieldValidator.set(address1_TextField, false);
+        fieldValidator.set(address2_TextField, true); //empty at start is valid
+        fieldValidator.set(city_TextField, false);
+        fieldValidator.set(postcode_TextField, false);
+        fieldValidator.set(country_TextField, false);
+        fieldValidator.set(telephone_TextField, false);
 
         name_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 3) {
                 name_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(name_TextField, false);
+                fieldValidator.set(name_TextField, false);
             } else {
                 name_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(name_TextField, true);
+                fieldValidator.set(name_TextField, true);
             }
         });
 
         address1_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 3) {
                 address1_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(address1_TextField, false);
+                fieldValidator.set(address1_TextField, false);
             } else {
                 address1_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(address1_TextField, true);
+                fieldValidator.set(address1_TextField, true);
             }
         });
 
         address2_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() > 0 && newValue.length() < 3) {
                 address2_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(address2_TextField, false);
+                fieldValidator.set(address2_TextField, false);
             } else {
                 address2_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(address2_TextField, true);
+                fieldValidator.set(address2_TextField, true);
             }
         });
 
         city_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 3) {
                 city_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(city_TextField, false);
+                fieldValidator.set(city_TextField, false);
             } else {
                 city_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(city_TextField, true);
+                fieldValidator.set(city_TextField, true);
             }
         });
 
         postcode_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 3) {
                 postcode_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(postcode_TextField, false);
+                fieldValidator.set(postcode_TextField, false);
             } else {
                 postcode_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(postcode_TextField, true);
+                fieldValidator.set(postcode_TextField, true);
             }
         });
 
         country_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 2) {
                 country_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(country_TextField, false);
+                fieldValidator.set(country_TextField, false);
             } else {
                 country_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(country_TextField, true);
+                fieldValidator.set(country_TextField, true);
             }
         });
 
         telephone_TextField.textProperty().addListener((observable, oldValue, newValue) -> {  //TODO regex
             if (newValue.length() < 3) {
                 telephone_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(telephone_TextField, false);
+                fieldValidator.set(telephone_TextField, false);
             } else {
                 telephone_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(telephone_TextField, true);
+                fieldValidator.set(telephone_TextField, true);
             }
         });
     }
@@ -278,7 +262,7 @@ public class BuildingController implements Initializable {
     }
 
     public void handleSaveAction(ActionEvent actionEvent) {
-        if (checkValidationFlags()) {
+        if (this.fieldValidator.check()) {
             switch (this.controllerRole) {
                 case NEW_BUILDING:
                     if (addBuilding()) {

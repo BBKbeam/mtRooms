@@ -6,7 +6,7 @@ import javafx.beans.property.*;
 
 import java.util.Date;
 
-public class UserAccount {
+public class UserAccountItem {
     private IntegerProperty id;
     private StringProperty username;
     private ObjectProperty<Date> created;
@@ -20,7 +20,7 @@ public class UserAccount {
      *
      * @param account Account DTO from backend services
      */
-    public UserAccount(Account account) {
+    public UserAccountItem(Account account) {
         this.id = new SimpleIntegerProperty(account.id());
         this.username = new SimpleStringProperty(account.username());
         this.created = new SimpleObjectProperty<>(account.created());
@@ -41,7 +41,7 @@ public class UserAccount {
      * @param type            Account type_desc DTO
      * @param is_active       Active account flag
      */
-    public UserAccount(Integer id, String username, Date created, Date last_login, Date last_pwd_change, AccountType type, boolean is_active) {
+    public UserAccountItem(Integer id, String username, Date created, Date last_login, Date last_pwd_change, AccountType type, boolean is_active) {
         this.id = new SimpleIntegerProperty(id);
         this.username = new SimpleStringProperty(username);
         this.created = new SimpleObjectProperty<>(created);

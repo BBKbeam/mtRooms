@@ -6,9 +6,9 @@ import bbk_beam.mtRooms.admin.exception.AccountOverrideException;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiAdministrationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
-import bbk_beam.mtRooms.ui.AlertDialog;
+import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
-import bbk_beam.mtRooms.ui.model.administration.UserAccount;
+import bbk_beam.mtRooms.ui.model.administration.UserAccountItem;
 import eadjlib.logger.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,7 +33,7 @@ public class UserAccountController implements Initializable {
     private AlertDialog alertDialog;
     private SessionManager sessionManager;
     private ScenarioType scenarioType;
-    private UserAccount userAccount;
+    private UserAccountItem userAccountItem;
     private ResourceBundle resourceBundle;
     public TextField username_field;
     public TextField pwd_field;
@@ -144,7 +144,7 @@ public class UserAccountController implements Initializable {
                 try {
                     services.updateAccountPassword(
                             this.sessionManager.getToken(),
-                            userAccount.getId(),
+                            userAccountItem.getId(),
                             password
                     );
                 } catch (AccountOverrideException e) {
@@ -156,17 +156,17 @@ public class UserAccountController implements Initializable {
                     return false;
                 }
             }
-            if (this.userAccount.isActive() != this.active_field.isSelected()) {
+            if (this.userAccountItem.isActive() != this.active_field.isSelected()) {
                 try {
                     if (this.active_field.isSelected()) {
                         services.activateAccount(
                                 this.sessionManager.getToken(),
-                                this.userAccount.getId()
+                                this.userAccountItem.getId()
                         );
                     } else
                         services.deactivateAccount(
                                 this.sessionManager.getToken(),
-                                this.userAccount.getId()
+                                this.userAccountItem.getId()
                         );
                 } catch (AccountOverrideException e) {
                     AlertDialog.showExceptionAlert(
@@ -206,21 +206,21 @@ public class UserAccountController implements Initializable {
     /**
      * Sets the fields for an edit account scenario
      *
-     * @param userAccount UserAccount DTO
+     * @param userAccountItem UserAccountItem DTO
      */
-    void setEditAccountFields(UserAccount userAccount) throws LoginException, Unauthorised, RemoteException {
-        this.userAccount = userAccount;
+    void setEditAccountFields(UserAccountItem userAccountItem) throws LoginException, Unauthorised, RemoteException {
+        this.userAccountItem = userAccountItem;
         this.scenarioType = ScenarioType.EDIT_ACCOUNT;
-        this.username_field.setText(userAccount.getUsername());
+        this.username_field.setText(userAccountItem.getUsername());
         this.username_field.setDisable(true);
         this.username_field.setFocusTraversable(false);
         this.pwd_field.setPromptText(this.resourceBundle.getString("PromptText_UserAccountPwd"));
         loadAccountTypeChoiceBox();
-        this.accountType_choiceBox.getSelectionModel().select(userAccount.getAccountType());
+        this.accountType_choiceBox.getSelectionModel().select(userAccountItem.getAccountType());
         this.accountType_choiceBox.setDisable(true);
         this.accountType_choiceBox.setFocusTraversable(false);
         this.active_field.setDisable(false);
-        this.active_field.setSelected(userAccount.isActive());
+        this.active_field.setSelected(userAccountItem.isActive());
         this.active_field.setFocusTraversable(true);
     }
 
@@ -228,7 +228,7 @@ public class UserAccountController implements Initializable {
      * Sets the fields for a new account scenario
      */
     void setNewAccountFields() throws LoginException, Unauthorised, RemoteException {
-        this.userAccount = null;
+        this.userAccountItem = null;
         this.scenarioType = ScenarioType.NEW_ACCOUNT;
         this.username_field.setDisable(false);
         this.username_field.setFocusTraversable(true);

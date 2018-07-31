@@ -6,8 +6,9 @@ import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiAdministrationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Floor;
-import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
+import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
+import bbk_beam.mtRooms.ui.controller.common.FieldValidator;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
@@ -19,8 +20,6 @@ import javafx.scene.control.TextField;
 
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -33,7 +32,7 @@ public class FloorController implements Initializable {
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
     private ResourceBundle resourceBundle;
-    private HashMap<TextField, Boolean> field_validation = new HashMap<>();
+    private FieldValidator fieldValidator;
     private Floor floor = null;
     private ControllerRole controllerRole;
 
@@ -115,36 +114,21 @@ public class FloorController implements Initializable {
         return success_flag.get();
     }
 
-    /**
-     * Checks the field validation HashMap
-     *
-     * @return Field validation state (true = all valid, false = 1+ invalid)
-     */
-    private boolean checkValidationFlags() {
-        boolean valid_flag = true;
-        for (Map.Entry<TextField, Boolean> entry : this.field_validation.entrySet()) {
-            if (!entry.getValue()) {
-                entry.getKey().setStyle("-fx-control-inner-background: red;");
-                valid_flag = false;
-            }
-        }
-        return valid_flag;
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
         this.alertDialog = new AlertDialog(resources);
+        this.fieldValidator = new FieldValidator();
 
-        field_validation.put(floorDescription_TextField, false);
+        fieldValidator.set(floorDescription_TextField, false);
 
         floorDescription_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 3) {
                 floorDescription_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(floorDescription_TextField, false);
+                fieldValidator.set(floorDescription_TextField, false);
             } else {
                 floorDescription_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(floorDescription_TextField, true);
+                fieldValidator.set(floorDescription_TextField, true);
             }
         });
     }
@@ -204,7 +188,7 @@ public class FloorController implements Initializable {
     }
 
     public void handleSaveAction(ActionEvent actionEvent) {
-        if (checkValidationFlags()) {
+        if (this.fieldValidator.check()) {
             switch (this.controllerRole) {
                 case NEW_FLOOR:
                     if (addFloor()) {

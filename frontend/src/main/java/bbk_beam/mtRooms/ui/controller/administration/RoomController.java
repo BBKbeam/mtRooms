@@ -11,8 +11,9 @@ import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiAdministrationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.*;
-import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
+import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
+import bbk_beam.mtRooms.ui.controller.common.FieldValidator;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
@@ -21,8 +22,6 @@ import javafx.scene.control.*;
 
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,7 +34,7 @@ public class RoomController implements Initializable {
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
     private ResourceBundle resourceBundle;
-    private HashMap<TextField, Boolean> field_validation = new HashMap<>();
+    private FieldValidator fieldValidator;
     private Room room = null;
     private ControllerRole controllerRole;
 
@@ -193,59 +192,44 @@ public class RoomController implements Initializable {
         return success_flag.get();
     }
 
-    /**
-     * Checks the field validation HashMap
-     *
-     * @return Field validation state (true = all valid, false = 1+ invalid)
-     */
-    private boolean checkValidationFlags() {
-        boolean valid_flag = true;
-        for (Map.Entry<TextField, Boolean> entry : this.field_validation.entrySet()) {
-            if (!entry.getValue()) {
-                entry.getKey().setStyle("-fx-control-inner-background: red;");
-                valid_flag = false;
-            }
-        }
-        return valid_flag;
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
         this.alertDialog = new AlertDialog(resources);
+        this.fieldValidator = new FieldValidator();
 
-        field_validation.put(roomDescription_TextField, false);
-        field_validation.put(roomCapacity_TextField, false);
-        field_validation.put(roomDimension_TextField, false);
-        field_validation.put(price_TextField, false);
+        fieldValidator.add(roomDescription_TextField);
+        fieldValidator.add(roomCapacity_TextField);
+        fieldValidator.add(roomDimension_TextField);
+        fieldValidator.add(price_TextField);
 
         roomDescription_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 3) {
                 roomDescription_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(roomDescription_TextField, false);
+                fieldValidator.set(roomDescription_TextField, false);
             } else {
                 roomDescription_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(roomDescription_TextField, true);
+                fieldValidator.set(roomDescription_TextField, true);
             }
         });
 
         roomCapacity_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.isEmpty() || !newValue.matches("^\\d*$")) { //REGEX: integer
                 roomCapacity_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(roomCapacity_TextField, false);
+                fieldValidator.set(roomCapacity_TextField, false);
             } else {
                 roomCapacity_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(roomCapacity_TextField, true);
+                fieldValidator.set(roomCapacity_TextField, true);
             }
         });
 
         roomDimension_TextField.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.isEmpty() || !newValue.matches("^\\d*$")) { //REGEX: integer
                 roomDimension_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(roomDimension_TextField, false);
+                fieldValidator.set(roomDimension_TextField, false);
             } else {
                 roomDimension_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(roomDimension_TextField, true);
+                fieldValidator.set(roomDimension_TextField, true);
             }
         });
 
@@ -255,10 +239,10 @@ public class RoomController implements Initializable {
             );
             if (newValue.isEmpty() || !newValue.matches("\\d+(\\.\\d+)?")) { //REGEX: integer or double
                 price_TextField.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(price_TextField, false);
+                fieldValidator.set(price_TextField, false);
             } else {
                 price_TextField.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(price_TextField, true);
+                fieldValidator.set(price_TextField, true);
             }
         });
     }
@@ -350,7 +334,7 @@ public class RoomController implements Initializable {
     }
 
     public void handleSaveAction(ActionEvent actionEvent) {
-        if (checkValidationFlags()) {
+        if (this.fieldValidator.check()) {
             switch (this.controllerRole) {
                 case NEW_ROOM:
                     if (addRoom()) {

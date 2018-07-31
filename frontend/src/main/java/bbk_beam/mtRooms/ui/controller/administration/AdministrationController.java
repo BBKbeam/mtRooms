@@ -2,6 +2,7 @@ package bbk_beam.mtRooms.ui.controller.administration;
 
 import bbk_beam.mtRooms.MtRoomsGUI;
 import bbk_beam.mtRooms.admin.dto.Account;
+import bbk_beam.mtRooms.admin.dto.Usage;
 import bbk_beam.mtRooms.admin.exception.FailedRecordFetch;
 import bbk_beam.mtRooms.admin.exception.FailedRecordWrite;
 import bbk_beam.mtRooms.exception.LoginException;
@@ -9,9 +10,10 @@ import bbk_beam.mtRooms.network.IRmiAdministrationServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Building;
 import bbk_beam.mtRooms.reservation.dto.Floor;
+import bbk_beam.mtRooms.reservation.dto.Membership;
 import bbk_beam.mtRooms.reservation.dto.Room;
-import bbk_beam.mtRooms.ui.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
+import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import bbk_beam.mtRooms.ui.model.administration.*;
 import eadjlib.logger.Logger;
@@ -37,20 +39,33 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class AdministrationController implements Initializable {
     private final Logger log = Logger.getLoggerInstance(AdministrationController.class.getName());
     private AlertDialog alertDialog;
+    private ResourceBundle resourceBundle;
+    private MainWindowController mainWindowController;
+    private SessionManager sessionManager;
+    //Parent UI elements
     public TabPane admin_TabPane;
     public Tab userAccount_Tab;
     public Tab membership_Tab;
     public Tab inventory_Tab;
-    public TableView<UserAccount> account_table; //UI Accounts Table
-    public TableColumn<UserAccount, Integer> id_col;
-    public TableColumn<UserAccount, String> username_col;
-    public TableColumn<UserAccount, String> created_col;
-    public TableColumn<UserAccount, String> login_col;
-    public TableColumn<UserAccount, String> pwd_change_col;
-    public TableColumn<UserAccount, String> type_col;
-    public TableColumn<UserAccount, Boolean> active_col;
+    //User account tab UI elements
+    private UserAccountTable userAccountTable; //Model
+    public TableView<UserAccountItem> account_table; //UI Accounts Table
+    public TableColumn<UserAccountItem, Integer> id_col;
+    public TableColumn<UserAccountItem, String> username_col;
+    public TableColumn<UserAccountItem, String> created_col;
+    public TableColumn<UserAccountItem, String> login_col;
+    public TableColumn<UserAccountItem, String> pwd_change_col;
+    public TableColumn<UserAccountItem, String> type_col;
+    public TableColumn<UserAccountItem, Boolean> active_col;
     public Button newAccount_Button;
     public Button editAccount_Button;
+    //Membership & Discount tab UI elements
+    private MembershipList membershipList; //Model
+    public ListView<CustomerMembershipItem> membership_ListView;
+    public Button addMembership_Button;
+    public Button removeMembership_Button;
+    public TextArea membershipDescription_TextArea;
+    //Inventory tab UI elements
     public MenuButton newInventory_MenuButton;
     public MenuItem newBuilding_MenuItem;
     public MenuItem newInventory_MenuItem;
@@ -58,10 +73,74 @@ public class AdministrationController implements Initializable {
     public Button deleteInventory_Button;
     public TreeView<InventoryTreeItem> inventory_TreeView;
     public TextArea inventoryDescription_TextArea;
-    private ResourceBundle resourceBundle;
-    private UserAccountTable userAccountTable; //Model
-    private MainWindowController mainWindowController;
-    private SessionManager sessionManager;
+
+    /**
+     * Opens the edit dialog window for a user account
+     *
+     * @param event           ActionEvent
+     * @param userAccountItem UserAccountItem DTO to edit
+     */
+    private void openEditAccountDialog(ActionEvent event, UserAccountItem userAccountItem) {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MtRoomsGUI.class.getResource("/view/administration/UserAccountView.fxml"));
+        loader.setResources(this.resourceBundle);
+        try {
+            Stage stage = new Stage();
+            stage.initModality(Modality.WINDOW_MODAL);
+            stage.initOwner(((Node) event.getTarget()).getScene().getWindow());
+            stage.setScene(new Scene(loader.load()));
+            stage.setOnHidden(e -> populateAccountTable());
+            UserAccountController userAccountController = loader.getController();
+            userAccountController.setSessionManager(this.sessionManager);
+            if (userAccountItem != null) {
+                stage.setTitle("Edit user account");
+                userAccountController.setEditAccountFields(userAccountItem);
+            } else {
+                stage.setTitle("Add user account");
+                userAccountController.setNewAccountFields();
+            }
+            stage.show();
+        } catch (RemoteException e) {
+            this.alertDialog.showGenericError(e);
+        } catch (IOException e) {
+            log.log_Error("Could not load UI scene.");
+            log.log_Exception(e);
+            this.alertDialog.showGenericError(e);
+        } catch (LoginException e) {
+            this.alertDialog.showGenericError(e);
+        } catch (Unauthorised e) {
+            this.alertDialog.showGenericError(e);
+        }
+    }
+
+    /**
+     * Shows the Membership create dialog
+     */
+    private void showMembershipDialog() {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MtRoomsGUI.class.getResource("/view/administration/MembershipView.fxml"));
+        loader.setResources(this.resourceBundle);
+        try {
+            AnchorPane pane = loader.load();
+            MembershipController membershipController = loader.getController();
+            membershipController.setMainWindowController(this.mainWindowController);
+            membershipController.setSessionManager(this.sessionManager);
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setOnHiding(event -> {
+                if (membershipController.getMembership().isPresent())
+                    populateMembershipListView();
+            });
+            dialog.setTitle("New Membership");
+            Scene scene = new Scene(pane);
+            dialog.setScene(scene);
+            dialog.show();
+        } catch (IOException e) {
+            log.log_Error("Could not load the 'Create membership' dialog.");
+            log.log_Exception(e);
+            this.alertDialog.showGenericError(e);
+        }
+    }
 
     /**
      * Shows the Building create/edit dialog
@@ -91,7 +170,7 @@ public class AdministrationController implements Initializable {
             dialog.setScene(scene);
             dialog.show();
         } catch (IOException e) {
-            log.log_Error("Could not load the 'Create/Edit building dialog.");
+            log.log_Error("Could not load the 'Create/Edit building' dialog.");
             log.log_Exception(e);
             this.alertDialog.showGenericError(e);
         }
@@ -381,7 +460,20 @@ public class AdministrationController implements Initializable {
         active_col.setCellValueFactory(cellData -> cellData.getValue().isActiveProperty().asObject());
 
         this.userAccount_Tab.setOnSelectionChanged(value -> populateAccountTable());
+        this.membership_Tab.setOnSelectionChanged(value -> populateMembershipListView());
         this.inventory_Tab.setOnSelectionChanged(value -> populateInventoryTree());
+
+        this.membership_ListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                this.removeMembership_Button.setDisable(
+                        newValue.getMembership().id() == 1 || !newValue.getUsageByCustomerID().isEmpty() //Membership 'NONE' || Membership used by customer(s)
+                );
+                this.membershipDescription_TextArea.setText(
+                        newValue.getMembership().discount().rate() + "%\n\n" +
+                                (newValue.getUsageByCustomerID().isEmpty() ? "" : newValue.getUsageByCustomerID().toString())
+                );
+            }
+        }));
 
         this.inventory_TreeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null)
@@ -414,7 +506,6 @@ public class AdministrationController implements Initializable {
                     inventoryDescription_TextArea.setText(room.description() + "\n" + "(Cat. " + room.category() + ")");
                 }
         });
-
     }
 
     /**
@@ -482,6 +573,7 @@ public class AdministrationController implements Initializable {
             this.newInventory_MenuItem.setVisible(false);
             this.editInventory_Button.setDisable(true);
             this.deleteInventory_Button.setDisable(true);
+            this.inventoryDescription_TextArea.clear();
 
             this.inventory_TreeView.setRoot(root);
             this.inventory_TreeView.setShowRoot(false);
@@ -501,36 +593,25 @@ public class AdministrationController implements Initializable {
     }
 
     /**
-     * Opens the edit dialog window for a user account
-     *
-     * @param event       ActionEvent
-     * @param userAccount UserAccount DTO to edit
+     * Loads the membership model into the UI membership ListView
      */
-    public void openEditDialog(ActionEvent event, UserAccount userAccount) {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(MtRoomsGUI.class.getResource("/view/administration/UserAccountView.fxml"));
-        loader.setResources(this.resourceBundle);
+    public void populateMembershipListView() {
         try {
-            Stage stage = new Stage();
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(((Node) event.getTarget()).getScene().getWindow());
-            stage.setScene(new Scene(loader.load()));
-            stage.setOnHidden(e -> populateAccountTable());
-            UserAccountController userAccountController = loader.getController();
-            userAccountController.setSessionManager(this.sessionManager);
-            if (userAccount != null) {
-                stage.setTitle("Edit user account");
-                userAccountController.setEditAccountFields(userAccount);
-            } else {
-                stage.setTitle("Add user account");
-                userAccountController.setNewAccountFields();
-            }
-            stage.show();
+            IRmiAdministrationServices services = this.sessionManager.getAdministrationServices();
+            List<Usage<Membership, Integer>> list = services.getMemberships(this.sessionManager.getToken());
+            this.membershipList = new MembershipList(this.sessionManager);
+            this.membershipList.loadData(list);
+            this.membership_ListView.setItems(this.membershipList.getData());
+
+            this.removeMembership_Button.setDisable(true);
+            this.membershipDescription_TextArea.clear();
+        } catch (FailedRecordFetch e) {
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_FailedRecordFetch")
+            );
         } catch (RemoteException e) {
-            this.alertDialog.showGenericError(e);
-        } catch (IOException e) {
-            log.log_Error("Could not load UI scene.");
-            log.log_Exception(e);
             this.alertDialog.showGenericError(e);
         } catch (LoginException e) {
             this.alertDialog.showGenericError(e);
@@ -541,14 +622,14 @@ public class AdministrationController implements Initializable {
 
     @FXML
     public void handleEditAccountAction(ActionEvent actionEvent) {
-        UserAccount userAccount = this.account_table.getSelectionModel().getSelectedItem();
-        if (userAccount != null)
-            openEditDialog(actionEvent, userAccount);
+        UserAccountItem userAccountItem = this.account_table.getSelectionModel().getSelectedItem();
+        if (userAccountItem != null)
+            openEditAccountDialog(actionEvent, userAccountItem);
     }
 
     @FXML
     public void handleNewAccountAction(ActionEvent actionEvent) {
-        openEditDialog(actionEvent, null);
+        openEditAccountDialog(actionEvent, null);
     }
 
     public void handleAddBuildingAction(ActionEvent actionEvent) {
@@ -586,6 +667,31 @@ public class AdministrationController implements Initializable {
             showFloorDialog(((FloorTreeItem) selected.getValue()).getFloor());
         } else if (selected.getValue() instanceof RoomTreeItem) {
             showRoomDialog(((RoomTreeItem) selected.getValue()).getRoom());
+        }
+    }
+
+    public void handleAddMembershipAction(ActionEvent actionEvent) {
+        showMembershipDialog();
+    }
+
+    public void handleRemoveMembershipAction(ActionEvent actionEvent) {
+        IRmiAdministrationServices services = this.sessionManager.getAdministrationServices();
+        CustomerMembershipItem customerMembershipItem = this.membership_ListView.getSelectionModel().getSelectedItem();
+        try {
+            services.remove(this.sessionManager.getToken(), customerMembershipItem.getMembership());
+            populateMembershipListView();
+        } catch (FailedRecordWrite e) {
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_FailedRecordWrite")
+            );
+        } catch (RemoteException e) {
+            this.alertDialog.showGenericError(e);
+        } catch (LoginException e) {
+            this.alertDialog.showGenericError(e);
+        } catch (Unauthorised e) {
+            this.alertDialog.showGenericError(e);
         }
     }
 }

@@ -29,7 +29,7 @@ public class Usage<DTO, UsageType> implements Serializable {
     /**
      * Gets the collection of users of the DTO
      *
-     * @return User list
+     * @return Unmodifiable collection of users
      */
     public Collection<UsageType> usage() {
         return Collections.unmodifiableCollection(this.usage_list);

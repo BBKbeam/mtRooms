@@ -6,7 +6,7 @@ import bbk_beam.mtRooms.ui.model.SessionManager;
 
 import java.util.Collection;
 
-public class UserAccountTable extends GenericModelTable<Account, UserAccount> {
+public class UserAccountTable extends GenericModelTable<Account, UserAccountItem> {
 
     /**
      * Constructor
@@ -22,7 +22,7 @@ public class UserAccountTable extends GenericModelTable<Account, UserAccount> {
         if (!this.observableList.isEmpty())
             this.observableList.clear();
         for (Account account : accounts) {
-            this.observableList.add(new UserAccount(account));
+            this.observableList.add(new UserAccountItem(account));
         }
     }
 }

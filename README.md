@@ -9,10 +9,7 @@ mtRooms is a desktop room booking software.
 __Note:__ _Under development_
 
 - [ ] Frontend (client/UI)
-    -  [ ] Administration
-        -  [x] User account
-        -  [ ] Memberships/Discounts
-        -  [x] Inventory
+    -  [x] Administration
     -  [ ] Reservation
         -  [ ] Client account
         -  [ ] Room Booking

@@ -6,7 +6,7 @@
 
 mtRooms is a desktop/LAN room booking software.
 
-![Login window](https://github.com/BBKbeam/mtRooms/docs/screenshots/login.png)
+![Login window](docs/screenshots/login.png)
 
 __Note:__ _Under development_
 
@@ -18,7 +18,6 @@ __Note:__ _Under development_
     - [ ] Revenue
     - [ ] Logistics
 - [x] Backend (server)
-
 
 
 ## Installation

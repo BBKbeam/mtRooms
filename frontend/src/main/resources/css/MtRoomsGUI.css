@@ -22,6 +22,10 @@
     -fx-alignment: center;
 }
 
+.cell_right_alignment {
+    -fx-alignment: center-right;
+}
+
 .close-button {
     -fx-min-height: 32px;
     -fx-min-width: 32px;

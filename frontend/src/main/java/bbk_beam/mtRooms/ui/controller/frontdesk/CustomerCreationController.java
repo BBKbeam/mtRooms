@@ -276,7 +276,7 @@ public class CustomerCreationController implements Initializable {
         });
 
         membership_ChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            discountRate_field.setText(String.valueOf(newValue.discount().rate()));
+            discountRate_field.setText(newValue.discount().rate() + "%");
         });
 
     }

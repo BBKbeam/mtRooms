@@ -5,10 +5,7 @@ import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiReservationServices;
 import bbk_beam.mtRooms.network.IRmiRevenueServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
-import bbk_beam.mtRooms.reservation.dto.Customer;
-import bbk_beam.mtRooms.reservation.dto.Membership;
-import bbk_beam.mtRooms.reservation.dto.Reservation;
-import bbk_beam.mtRooms.reservation.dto.RoomReservation;
+import bbk_beam.mtRooms.reservation.dto.*;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
@@ -33,6 +30,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -72,8 +71,10 @@ public class CustomerAccountController implements Initializable {
     public Text discountRate_field;
     //Reservation tab
     public Button cancelReservation_button;
+    public Button addReservationPayment_Button;
     public Button newReservation_button;
     public Button cancelRoomReservation_button;
+    public Button viewRoomReservationDetails_Button;
     public TableView<ReservationModel> reservation_Table;
     public TableColumn<ReservationModel, Integer> reservationId_col;
     public TableColumn<ReservationModel, String> created_col;
@@ -92,6 +93,7 @@ public class CustomerAccountController implements Initializable {
     public TableColumn<RoomReservationModel, String> cancelled_col;
     public TableColumn<RoomReservationModel, String> hasNote_col;
     //Payments tab
+    public Button viewPaymentDetails_Button;
     public Text accountCreditField_Text;
     public TableView<CustomerPaymentsModel> payments_TableView;
     public TableColumn<CustomerPaymentsModel, Integer> paymentID_col;
@@ -189,6 +191,31 @@ public class CustomerAccountController implements Initializable {
             dialog.show();
         } catch (IOException e) {
             log.log_Error("Could not load the 'Show RoomReservation details' dialog.");
+            log.log_Exception(e);
+        }
+    }
+
+    /**
+     * Shows the Payment details dialog
+     *
+     * @param payment Payment DTO
+     */
+    private void showPaymentDetailsDialog(Payment payment) { //TODO
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MtRoomsGUI.class.getResource("/view/frontdesk/PaymentDetailsView.fxml"));
+        loader.setResources(this.resourceBundle);
+        try {
+            AnchorPane pane = loader.load();
+            PaymentDetailsController paymentDetailsController = loader.getController();
+            paymentDetailsController.setMainWindowController(this.mainWindowController);
+            paymentDetailsController.load(payment);
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            Scene scene = new Scene(pane);
+            dialog.setScene(scene);
+            dialog.show();
+        } catch (IOException e) {
+            log.log_Error("Could not load the 'Show Payment details' dialog.");
             log.log_Exception(e);
         }
     }
@@ -304,7 +331,7 @@ public class CustomerAccountController implements Initializable {
         this.email_field.setText(customer.email());
         this.creationDate_field.setText(customer.accountCreationDate().toString());
         this.membershipType_field.setText(this.membership.description());
-        this.discountRate_field.setText(String.valueOf(this.membership.discount().rate()));
+        this.discountRate_field.setText(this.membership.discount().rate() + "%");
 
         loadReservationTable(this.customer);
         loadCustomerPaymentsTable(this.customer);
@@ -368,6 +395,8 @@ public class CustomerAccountController implements Initializable {
                     loadCustomer(this.customer);
                 } else if (newValue.equals(reservation_Tab)) {
                     loadReservationTable(this.customer);
+                    viewRoomReservationDetails_Button.setDisable(true);
+                    cancelRoomReservation_button.setDisable(true);
                 } else if (newValue.equals(payment_Tab)) {
                     loadCustomerPaymentsTable(this.customer);
                     loadCustomerCreditField(this.customer);
@@ -408,7 +437,15 @@ public class CustomerAccountController implements Initializable {
 
         reservation_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
+                this.mainWindowController.status_right.setText("");
                 loadReservationDetailsTable(reservation_Table.getSelectionModel().getSelectedItem().getReservation());
+
+                boolean tooLateForFullCancellation_flag = false;
+                for (RoomReservationModel model : reservationDetails_Table.getItems()) {
+                    if (model.inTimestamp().compareTo(Date.from(Instant.now())) <= 0)
+                        tooLateForFullCancellation_flag = true;
+                }
+                cancelReservation_button.setDisable(tooLateForFullCancellation_flag);
             }
         });
 
@@ -427,29 +464,45 @@ public class CustomerAccountController implements Initializable {
         reservationDetails_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 menuItem_CancelRoomReservation.setDisable(newValue.getRoomReservation().isCancelled());
+                viewRoomReservationDetails_Button.setDisable(false);
                 cancelRoomReservation_button.setDisable(newValue.getRoomReservation().isCancelled());
+                cancelRoomReservation_button.setDisable(newValue.inTimestamp().compareTo(Date.from(Instant.now())) <= 0);
 
                 Double roomPrice = newValue.getRoomReservation().price().price();
                 Double discountRate = membership.discount().rate();
                 this.mainWindowController.status_right.setText(
                         this.resourceBundle.getString("InfoMsg_RoomPricePostDiscount") + (roomPrice * (100 - discountRate) / 100)
                 );
-            }
-        });
-
-        reservation_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                this.mainWindowController.status_right.setText("");
+            } else {
+                viewRoomReservationDetails_Button.setDisable(true);
             }
         });
 
         //Payment details table
         paymentID_col.setCellValueFactory(cellData -> cellData.getValue().paymentIdProperty().asObject());
         paymentTimestamp_col.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
+        paymentAmount_col.setCellFactory(cell -> new TableCell<CustomerPaymentsModel, Double>() {
+            @Override
+            protected void updateItem(Double amount, boolean empty) {
+                super.updateItem(amount, empty);
+                if (empty)
+                    setText(null);
+                else
+                    setText(String.format("%.2f", amount));
+            }
+        });
         paymentAmount_col.setCellValueFactory(cellData -> cellData.getValue().amountProperty().asObject());
         paymentReservationID_col.setCellValueFactory(cellData -> cellData.getValue().reservationIdProperty().asObject());
         paymentMethod_col.setCellValueFactory(cellData -> cellData.getValue().methodProperty());
         paymentNote_col.setCellValueFactory(cellData -> cellData.getValue().noteProperty());
+
+        payments_TableView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                viewPaymentDetails_Button.setDisable(false);
+            } else {
+                viewPaymentDetails_Button.setDisable(true);
+            }
+        });
     }
 
     /**
@@ -481,13 +534,7 @@ public class CustomerAccountController implements Initializable {
     }
 
     @FXML
-    public void handleViewReservationAction(ActionEvent actionEvent) { //TODO
-        System.out.println("handleViewReservationAction");
-    }
-
-    @FXML
     public void handleCancelReservationAction(ActionEvent actionEvent) {
-        //TODO check current date/time is before start of earliest booking in reservation
         Optional<ButtonType> result = AlertDialog.showConfirmation(
                 resourceBundle.getString("ConfirmationDialogTitle_Generic"),
                 resourceBundle.getString("ConfirmationDialog_CancelReservation"),
@@ -507,7 +554,6 @@ public class CustomerAccountController implements Initializable {
 
     @FXML
     public void handleCancelRoomReservationAction(ActionEvent actionEvent) {
-        //TODO check current date/time is before start of room booking -> maybe do it at selection and disable button?
         Optional<ButtonType> result = AlertDialog.showConfirmation(
                 resourceBundle.getString("ConfirmationDialogTitle_Generic"),
                 resourceBundle.getString("ConfirmationDialog_CancelRoomReservation"),
@@ -521,15 +567,27 @@ public class CustomerAccountController implements Initializable {
     }
 
     @FXML
-    public void handleAddPaymentAction(ActionEvent actionEvent) { //TODO
-        System.out.println("handleAddPaymentAction");
-    }
-
-    @FXML
     public void handleViewRoomDetailsAction(ActionEvent actionEvent) {
         showRoomReservationDetailsDialog(
                 this.reservation_Table.getSelectionModel().getSelectedItem().getReservation(),
                 this.reservationDetails_Table.getSelectionModel().getSelectedItem().getRoomReservation()
         );
+    }
+
+    @FXML
+    public void handleViewPaymentDetailsAction(ActionEvent actionEvent) {
+        showPaymentDetailsDialog(
+                this.payments_TableView.getSelectionModel().getSelectedItem().getPayment()
+        );
+    }
+
+    @FXML
+    public void handleAddReservationPaymentAction(ActionEvent actionEvent) { //TODO
+        System.out.println("handleAddReservationPaymentAction");
+    }
+
+    @FXML
+    public void handleCreateRefundButton(ActionEvent actionEvent) { //TODO
+        System.out.println("handleCreateRefundButton");
     }
 }

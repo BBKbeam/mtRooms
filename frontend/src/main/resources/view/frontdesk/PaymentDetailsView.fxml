@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="bbk_beam.mtRooms.ui.controller.frontdesk.PaymentDetailsController">
+    <children>
+        <VBox layoutX="269.0" layoutY="106.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <GridPane>
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="100.0" prefWidth="150.0"/>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="60.0" valignment="TOP" vgrow="SOMETIMES"/>
+                        <RowConstraints minHeight="10.0" prefHeight="100.0" valignment="TOP" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <Label styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css" text="%Label_Amount">
+                            <padding>
+                                <Insets right="5.0"/>
+                            </padding>
+                        </Label>
+                        <Text fx:id="amount_Text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+                              GridPane.columnIndex="1"/>
+                        <Label styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css" text="%Label_Method"
+                               GridPane.rowIndex="1">
+                            <padding>
+                                <Insets right="5.0"/>
+                            </padding>
+                        </Label>
+                        <Label styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css" text="%Label_Notes"
+                               GridPane.rowIndex="4">
+                            <padding>
+                                <Insets right="5.0"/>
+                            </padding>
+                            <GridPane.margin>
+                                <Insets top="10.0"/>
+                            </GridPane.margin>
+                        </Label>
+                        <Text fx:id="method_Text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+                              GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                        <Label styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css" text="%Label_Hash"
+                               GridPane.rowIndex="3">
+                            <padding>
+                                <Insets right="5.0"/>
+                            </padding>
+                            <GridPane.margin>
+                                <Insets top="10.0"/>
+                            </GridPane.margin>
+                        </Label>
+                        <TextArea fx:id="hash_TextArea" editable="false" prefHeight="200.0" prefWidth="200.0"
+                                  wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" top="5.0"/>
+                            </GridPane.margin>
+                        </TextArea>
+                        <TextArea fx:id="notes_TextArea" editable="false" prefHeight="200.0" prefWidth="200.0"
+                                  wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" top="5.0"/>
+                            </GridPane.margin>
+                        </TextArea>
+                        <Label styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css" text="%Label_Timestamp"
+                               GridPane.rowIndex="2">
+                            <padding>
+                                <Insets right="5.0"/>
+                            </padding>
+                        </Label>
+                        <Text fx:id="timestamp_Text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text"
+                              GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+                    </children>
+                    <opaqueInsets>
+                        <Insets/>
+                    </opaqueInsets>
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </VBox.margin>
+                </GridPane>
+                <HBox/>
+                <ButtonBar maxHeight="-Infinity" prefHeight="40.0" prefWidth="200.0">
+                    <buttons>
+                        <Button fx:id="closeButton" cancelButton="true" mnemonicParsing="false"
+                                onAction="#handleCloseAction" text="%Button_Close"/>
+                    </buttons>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                </ButtonBar>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

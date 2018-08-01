@@ -8,6 +8,7 @@ import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Membership;
 import bbk_beam.mtRooms.reservation.dto.Reservation;
+import bbk_beam.mtRooms.reservation.dto.RoomReservation;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
@@ -70,13 +71,13 @@ public class CustomerAccountController implements Initializable {
     public Text membershipType_field;
     public Text discountRate_field;
     //Reservation tab
-    public Button viewReservation_button;
     public Button cancelReservation_button;
     public Button newReservation_button;
     public Button cancelRoomReservation_button;
     public TableView<ReservationModel> reservation_Table;
     public TableColumn<ReservationModel, Integer> reservationId_col;
     public TableColumn<ReservationModel, String> created_col;
+    public TableColumn<ReservationModel, String> discount_col;
     public TableView<RoomReservationModel> reservationDetails_Table;
     public TableColumn room_col;
     public TableColumn<RoomReservationModel, Integer> buildingId_col;
@@ -89,6 +90,7 @@ public class CustomerAccountController implements Initializable {
     public TableColumn<RoomReservationModel, Integer> seated_col;
     public TableColumn<RoomReservationModel, String> catering_col;
     public TableColumn<RoomReservationModel, String> cancelled_col;
+    public TableColumn<RoomReservationModel, String> hasNote_col;
     //Payments tab
     public Text accountCreditField_Text;
     public TableView<CustomerPaymentsModel> payments_TableView;
@@ -146,6 +148,48 @@ public class CustomerAccountController implements Initializable {
             this.alertDialog.showGenericError(e);
         } catch (InvalidMembership e) {
             this.alertDialog.showGenericError(e);
+        }
+    }
+
+    /**
+     * Shows the RoomReservation details dialog
+     *
+     * @param reservation      Reservation DTO
+     * @param room_reservation RoomReservation DTO
+     */
+    private void showRoomReservationDetailsDialog(Reservation reservation, RoomReservation room_reservation) {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MtRoomsGUI.class.getResource("/view/frontdesk/RoomReservationDetailsView.fxml"));
+        loader.setResources(this.resourceBundle);
+        try {
+            AnchorPane pane = loader.load();
+            RoomReservationDetailsController roomReservationDetailsController = loader.getController();
+            roomReservationDetailsController.setSessionManager(sessionManager);
+            roomReservationDetailsController.setMainWindowController(this.mainWindowController);
+            roomReservationDetailsController.load(reservation, room_reservation);
+            Stage dialog = new Stage();
+            dialog.initModality(Modality.APPLICATION_MODAL);
+            dialog.setOnHiding(event -> {
+                if (roomReservationDetailsController.getRoomReservation().isPresent()) {
+                    try {
+                        loadReservationTable(this.customer);
+                    } catch (LoginException e) {
+                        this.alertDialog.showGenericError(e);
+                    } catch (FailedDbFetch e) {
+                        this.alertDialog.showGenericError(e);
+                    } catch (Unauthorised e) {
+                        this.alertDialog.showGenericError(e);
+                    } catch (RemoteException e) {
+                        this.alertDialog.showGenericError(e);
+                    }
+                }
+            });
+            Scene scene = new Scene(pane);
+            dialog.setScene(scene);
+            dialog.show();
+        } catch (IOException e) {
+            log.log_Error("Could not load the 'Show RoomReservation details' dialog.");
+            log.log_Exception(e);
         }
     }
 
@@ -319,26 +363,25 @@ public class CustomerAccountController implements Initializable {
         closeAccount_Button.setMaxSize(64, 64);
 
         customerAccount_TabPane.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.equals(customer_Tab)) {
-                System.out.println("switched to customer tab //TODO");
-                //TODO
-            } else if (newValue.equals(reservation_Tab)) {
-                try {
+            try {
+                if (newValue.equals(customer_Tab)) {
                     loadCustomer(this.customer);
-                } catch (LoginException e) {
-                    this.alertDialog.showGenericError(e);
-                } catch (Unauthorised e) {
-                    this.alertDialog.showGenericError(e);
-                } catch (RemoteException e) {
-                    this.alertDialog.showGenericError(e);
-                } catch (InvalidMembership e) {
-                    this.alertDialog.showGenericError(e);
-                } catch (FailedDbFetch e) {
-                    this.alertDialog.showGenericError(e);
+                } else if (newValue.equals(reservation_Tab)) {
+                    loadReservationTable(this.customer);
+                } else if (newValue.equals(payment_Tab)) {
+                    loadCustomerPaymentsTable(this.customer);
+                    loadCustomerCreditField(this.customer);
                 }
-            } else if (newValue.equals(payment_Tab)) {
-                System.out.println("switched to payment tab //TODO");
-                //TODO
+            } catch (FailedDbFetch e) {
+                this.alertDialog.showGenericError(e);
+            } catch (InvalidMembership e) {
+                this.alertDialog.showGenericError(e);
+            } catch (LoginException e) {
+                this.alertDialog.showGenericError(e);
+            } catch (RemoteException e) {
+                this.alertDialog.showGenericError(e);
+            } catch (Unauthorised e) {
+                this.alertDialog.showGenericError(e);
             }
         });
 
@@ -359,16 +402,13 @@ public class CustomerAccountController implements Initializable {
         menuItem_CancelRoomReservation.setOnAction(this::handleCancelRoomReservationAction);
 
         //Reservation table
-        reservationId_col.prefWidthProperty().bind(reservation_Table.widthProperty().multiply(0.25));
-        created_col.prefWidthProperty().bind(reservation_Table.widthProperty().multiply(0.74));
-
         reservationId_col.setCellValueFactory(cellData -> cellData.getValue().reservationIdProperty().asObject());
         created_col.setCellValueFactory(cellData -> cellData.getValue().createdProperty());
+        discount_col.setCellValueFactory(cellData -> cellData.getValue().discountRateProperty());
 
         reservation_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 loadReservationDetailsTable(reservation_Table.getSelectionModel().getSelectedItem().getReservation());
-                viewReservation_button.setText("View reservation");
             }
         });
 
@@ -382,6 +422,7 @@ public class CustomerAccountController implements Initializable {
         seated_col.setCellValueFactory(cellData -> cellData.getValue().seatedProperty().asObject());
         catering_col.setCellValueFactory(cellData -> cellData.getValue().cateringProperty());
         cancelled_col.setCellValueFactory(cellData -> cellData.getValue().cancelledProperty());
+        hasNote_col.setCellValueFactory(cellData -> cellData.getValue().hasNoteProperty());
 
         reservationDetails_Table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
@@ -440,13 +481,13 @@ public class CustomerAccountController implements Initializable {
     }
 
     @FXML
-    public void handleViewReservationAction(ActionEvent actionEvent) {
+    public void handleViewReservationAction(ActionEvent actionEvent) { //TODO
         System.out.println("handleViewReservationAction");
-        //TODO
     }
 
     @FXML
     public void handleCancelReservationAction(ActionEvent actionEvent) {
+        //TODO check current date/time is before start of earliest booking in reservation
         Optional<ButtonType> result = AlertDialog.showConfirmation(
                 resourceBundle.getString("ConfirmationDialogTitle_Generic"),
                 resourceBundle.getString("ConfirmationDialog_CancelReservation"),
@@ -460,13 +501,13 @@ public class CustomerAccountController implements Initializable {
     }
 
     @FXML
-    public void handleNewReservationAction(ActionEvent actionEvent) {
+    public void handleNewReservationAction(ActionEvent actionEvent) { //TODO
         System.out.println("handleNewReservationAction");
-        //TODO
     }
 
     @FXML
     public void handleCancelRoomReservationAction(ActionEvent actionEvent) {
+        //TODO check current date/time is before start of room booking -> maybe do it at selection and disable button?
         Optional<ButtonType> result = AlertDialog.showConfirmation(
                 resourceBundle.getString("ConfirmationDialogTitle_Generic"),
                 resourceBundle.getString("ConfirmationDialog_CancelRoomReservation"),
@@ -480,14 +521,15 @@ public class CustomerAccountController implements Initializable {
     }
 
     @FXML
-    public void handleAddPaymentAction(ActionEvent actionEvent) {
+    public void handleAddPaymentAction(ActionEvent actionEvent) { //TODO
         System.out.println("handleAddPaymentAction");
-        //TODO
     }
 
     @FXML
     public void handleViewRoomDetailsAction(ActionEvent actionEvent) {
-        System.out.println("handleViewRoomDetailsAction");
-        //TODO
+        showRoomReservationDetailsDialog(
+                this.reservation_Table.getSelectionModel().getSelectedItem().getReservation(),
+                this.reservationDetails_Table.getSelectionModel().getSelectedItem().getRoomReservation()
+        );
     }
 }

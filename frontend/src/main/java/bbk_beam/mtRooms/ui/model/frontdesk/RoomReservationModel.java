@@ -26,6 +26,7 @@ public class RoomReservationModel {
     private IntegerProperty seated = new SimpleIntegerProperty();
     private StringProperty has_catering = new SimpleStringProperty();
     private StringProperty is_cancelled = new SimpleStringProperty();
+    private StringProperty has_note = new SimpleStringProperty();
 
     /**
      * Calculates the difference between 2 Dates and returns the duration
@@ -60,6 +61,7 @@ public class RoomReservationModel {
         seated.set(roomReservation.seatedCount());
         has_catering.set(roomReservation.hasCateringRequired() ? CHECK : "");
         is_cancelled.set(roomReservation.isCancelled() ? CROSS : "");
+        has_note.set(roomReservation.note().isEmpty() ? "" : CHECK);
     }
 
     /**
@@ -216,9 +218,9 @@ public class RoomReservationModel {
     }
 
     /**
-     * Gets the cancelled status
+     * Gets the cancelled status mark
      *
-     * @return Cancelled status
+     * @return Cancelled status mark
      */
     public String isCancelled() {
         return is_cancelled.get();
@@ -231,5 +233,23 @@ public class RoomReservationModel {
      */
     public StringProperty cancelledProperty() {
         return is_cancelled;
+    }
+
+    /**
+     * Gets the note status mark
+     *
+     * @return Note status mark
+     */
+    public String hasNote() {
+        return has_note.get();
+    }
+
+    /**
+     * Gets the note mark property
+     *
+     * @return Has note mark property
+     */
+    public StringProperty hasNoteProperty() {
+        return has_note;
     }
 }

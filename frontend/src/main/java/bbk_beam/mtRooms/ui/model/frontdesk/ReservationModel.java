@@ -7,11 +7,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 
 public class ReservationModel {
     Reservation reservation;
     private IntegerProperty reservationId = new SimpleIntegerProperty();
     private StringProperty created = new SimpleStringProperty("");
+    private StringProperty discount_rate = new SimpleStringProperty();
 
     /**
      * Constructor
@@ -23,6 +25,7 @@ public class ReservationModel {
         this.reservationId.set(reservation.id());
         SimpleDateFormat df = new SimpleDateFormat("YYYY/MM/dd - HH:mm:ss");
         this.created.set(df.format(reservation.createdTimestamp()));
+        this.discount_rate.set(reservation.discount().rate() + "%");
     }
 
     /**
@@ -68,5 +71,36 @@ public class ReservationModel {
      */
     public StringProperty createdProperty() {
         return this.created;
+    }
+
+    /**
+     * Gets the discount rate applied to the reservation
+     *
+     * @return Discount rate string
+     */
+    public String discountRate() {
+        return this.discount_rate.get();
+    }
+
+    /**
+     * Gets the discount rate property of the discount applied to the reservation
+     *
+     * @return Discount rate property
+     */
+    public StringProperty discountRateProperty() {
+        return this.discount_rate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ReservationModel that = (ReservationModel) o;
+        return Objects.equals(reservationId, that.reservationId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(reservationId);
     }
 }

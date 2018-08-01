@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="bbk_beam.mtRooms.ui.controller.frontdesk.RoomReservationDetailsController">
+    <children>
+        <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+              AnchorPane.topAnchor="0.0">
+            <children>
+                <HBox prefHeight="30.0">
+                    <children>
+                        <Label fx:id="price_Label" styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css"
+                               text="%Label_Price">
+                            <HBox.margin>
+                                <Insets bottom="5.0" top="5.0"/>
+                            </HBox.margin>
+                            <padding>
+                                <Insets right="5.0"/>
+                            </padding>
+                        </Label>
+                        <Text fx:id="price_Text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+                            <HBox.margin>
+                                <Insets bottom="5.0" top="5.0"/>
+                            </HBox.margin>
+                        </Text>
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </VBox.margin>
+                </HBox>
+                <HBox VBox.vgrow="ALWAYS">
+                    <children>
+                        <TextArea fx:id="note_TextArea" maxHeight="1.7976931348623157E308"
+                                  maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="590.0"
+                                  wrapText="true">
+                            <HBox.margin>
+                                <Insets/>
+                            </HBox.margin>
+                        </TextArea>
+                    </children>
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0"/>
+                    </VBox.margin>
+                </HBox>
+                <ButtonBar maxHeight="-Infinity" prefHeight="40.0" prefWidth="200.0">
+                    <buttons>
+                        <Button fx:id="closeButton" cancelButton="true" mnemonicParsing="false"
+                                onAction="#handleCloseAction" text="%Button_Close"/>
+                        <Button fx:id="saveButton" mnemonicParsing="false" onAction="#handleSaveAction"
+                                text="%Button_Save"/>
+                    </buttons>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
+                </ButtonBar>
+            </children>
+        </VBox>
+    </children>
+</AnchorPane>

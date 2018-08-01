@@ -298,6 +298,19 @@ public interface IRmiReservationServices extends Remote {
     Double cancelReservedRoom(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, Unauthorised, RemoteException;
 
     /**
+     * Updates the note on a RoomReservation
+     *
+     * @param session_token    Session's token
+     * @param reservation      Reservation DTO
+     * @param room_reservation RoomReservation DTO with updated note
+     * @throws InvalidReservation when Reservation cannot be validated with the records
+     * @throws FailedDbWrite      when a problem was encountered whilst processing the query
+     * @throws Unauthorised       when client is not authorised to access the resource
+     * @throws RemoteException    when network issues occur during the remote call
+     */
+    void updateReservedRoomNote(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, Unauthorised, RemoteException;
+
+    /**
      * Gets a reservation's details
      *
      * @param session_token  Session's token

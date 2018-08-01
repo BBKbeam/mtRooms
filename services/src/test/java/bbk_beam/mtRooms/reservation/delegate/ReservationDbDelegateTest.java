@@ -430,12 +430,42 @@ public class ReservationDbDelegateTest {
                 " AND room_id = 7" +
                 " AND floor_id = 3" +
                 " AND building_id = 1" +
-                " AND timestamp_in = \"2018-02-09 10:05:00\"" +
-                " AND cancelled_flag = 1";
+                " AND timestamp_in = \"2018-02-09 10:05:00\"";
         //Test
-        Assert.assertNotEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
+        ObjectTable table1 = this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query);
+        Assert.assertEquals(1, table1.rowCount());
+        Assert.assertEquals(0, table1.getInteger(1, 1));
         Assert.assertEquals(new Double(85.00), this.reservationDbDelegate.cancelReservedRoom(this.token, 1, mock_roomReservation));
-        Assert.assertEquals(1, this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query).rowCount());
+        ObjectTable table2 = this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query);
+        Assert.assertEquals(1, table2.rowCount());
+        Assert.assertEquals(1, table2.getInteger(1, 1));
+    }
+
+    @Test
+    public void updateReservedRoomNote() throws Exception {
+        RoomReservation mock_roomReservation = mock(RoomReservation.class);
+        Room mock_room = mock(Room.class);
+        when(mock_roomReservation.room()).thenReturn(mock_room);
+        when(mock_roomReservation.reservationStart()).thenReturn(TimestampConverter.getDateObject("2018-02-09 10:05:00"));
+        when(mock_room.id()).thenReturn(7);
+        when(mock_room.floorID()).thenReturn(3);
+        when(mock_room.buildingID()).thenReturn(1);
+        when(mock_roomReservation.note()).thenReturn("Shiny new note...");
+
+        String check_query = "SELECT notes FROM Room_has_Reservation " +
+                "WHERE reservation_id = 1" +
+                " AND room_id = 7" +
+                " AND floor_id = 3" +
+                " AND building_id = 1" +
+                " AND timestamp_in = \"2018-02-09 10:05:00\"";
+        //Test
+        ObjectTable table1 = this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query);
+        Assert.assertEquals(1, table1.rowCount());
+        Assert.assertEquals("nothing to note", table1.getString(1, 1));
+        this.reservationDbDelegate.updateReservedRoomNote(this.token, 1, mock_roomReservation);
+        ObjectTable table2 = this.reservationDbAccess.pullFromDB(this.token.getSessionId(), check_query);
+        Assert.assertEquals(1, table2.rowCount());
+        Assert.assertEquals("Shiny new note...", table2.getString(1, 1));
     }
 
     @Test

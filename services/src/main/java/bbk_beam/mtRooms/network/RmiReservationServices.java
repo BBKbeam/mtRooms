@@ -447,6 +447,26 @@ public class RmiReservationServices implements IRmiReservationServices {
     }
 
     @Override
+    public void updateReservedRoomNote(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, Unauthorised, RemoteException {
+        try {
+            ClientWrapper client = sessions.getClient(session_token);
+            client.getReservationAccess().updateReservedRoomNote(session_token, reservation, room_reservation);
+        } catch (IllegalArgumentException e) {
+            log.log_Error("Client [", session_token, "] is not tracked in ClientSessions.");
+            throw new Unauthorised("Client [" + session_token + "] is not tracked in ClientSessions.", e);
+        } catch (SessionExpiredException e) {
+            log.log_Error("Client [", session_token, "] token has expired..");
+            throw new Unauthorised("Client [" + session_token + "] token has expired.", e);
+        } catch (SessionInvalidException e) {
+            log.log_Error("Client [", session_token, "] is invalid.");
+            throw new Unauthorised("Client [" + session_token + "] is invalid.", e);
+        } catch (FailedAllocation e) {
+            log.log_Error("Could not allocated a ReservationSession for client [", session_token, "].");
+            throw new Unauthorised("Could not allocated a ReservationSession for client [" + session_token + "].", e);
+        }
+    }
+
+    @Override
     public synchronized Reservation getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, FailedDbFetch, Unauthorised, RemoteException {
         try {
             ClientWrapper client = sessions.getClient(session_token);

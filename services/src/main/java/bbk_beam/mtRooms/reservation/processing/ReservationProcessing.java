@@ -129,6 +129,26 @@ public class ReservationProcessing {
     }
 
     /**
+     * Updates the note on a RoomReservation
+     *
+     * @param session_token    Session's token
+     * @param reservation      Reservation DTO
+     * @param room_reservation RoomReservation DTO
+     * @throws InvalidReservation      when Reservation cannot be validated with the records
+     * @throws FailedDbWrite           when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    public void updateReservedRoomNote(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
+        try {
+            this.db_delegate.updateReservedRoomNote(session_token, reservation.id(), room_reservation);
+        } catch (DbQueryException e) {
+            log.log_Error("Could not update RoomReservation's note: ", room_reservation);
+            throw new FailedDbWrite("Could not update RoomReservation's note: " + room_reservation);
+        }
+    }
+
+    /**
      * Gets a reservation's details
      *
      * @param session_token  Session's token

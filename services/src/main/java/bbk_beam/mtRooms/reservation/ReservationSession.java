@@ -177,6 +177,11 @@ public class ReservationSession implements IReservationSession {
     }
 
     @Override
+    public void updateReservedRoomNote(Token session_token, Reservation reservation, RoomReservation room_reservation) throws InvalidReservation, FailedDbWrite, SessionExpiredException, SessionInvalidException {
+        this.reservationProcessing.updateReservedRoomNote(session_token, reservation, room_reservation);
+    }
+
+    @Override
     public Reservation getReservation(Token session_token, Integer reservation_id) throws InvalidReservation, FailedDbFetch, SessionExpiredException, SessionInvalidException {
         return this.reservationProcessing.getReservation(session_token, reservation_id);
     }

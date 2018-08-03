@@ -4,7 +4,6 @@ import bbk_beam.mtRooms.network.exception.FailedServerInit;
 import eadjlib.logger.Logger;
 import org.apache.commons.cli.*;
 
-import java.rmi.AlreadyBoundException;
 import java.rmi.NoSuchObjectException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -29,44 +28,24 @@ public class RmiServer extends RmiServices {
     private IRmiLogisticsServices rmiLogisticsServices;
     private IRmiRevenueServices rmiRevenueServices;
 
-    private synchronized void loadAdministrationServices() throws RemoteException, AlreadyBoundException {
-        try {
-            rmiAdministrationServices = (IRmiAdministrationServices) UnicastRemoteObject.exportObject(new RmiAdministrationServices(sessions), port);
-            rmiRegistry.bind("RmiAdministrationServices", rmiAdministrationServices);
-        } catch (AlreadyBoundException e) {
-            log.log_Fatal("RmiAdministrationServices is already bound.");
-            throw e;
-        }
+    private synchronized void loadAdministrationServices() throws RemoteException {
+        rmiAdministrationServices = (IRmiAdministrationServices) UnicastRemoteObject.exportObject(new RmiAdministrationServices(sessions), port);
+        rmiRegistry.rebind("RmiAdministrationServices", rmiAdministrationServices);
     }
 
-    private synchronized void loadReservationServices() throws RemoteException, AlreadyBoundException {
-        try {
-            rmiReservationServices = (IRmiReservationServices) UnicastRemoteObject.exportObject(new RmiReservationServices(sessions), port);
-            rmiRegistry.bind("RmiReservationServices", rmiReservationServices);
-        } catch (AlreadyBoundException e) {
-            log.log_Fatal("RmiReservationServices is already bound.");
-            throw e;
-        }
+    private synchronized void loadReservationServices() throws RemoteException {
+        rmiReservationServices = (IRmiReservationServices) UnicastRemoteObject.exportObject(new RmiReservationServices(sessions), port);
+        rmiRegistry.rebind("RmiReservationServices", rmiReservationServices);
     }
 
-    private synchronized void loadLogisticsServices() throws RemoteException, AlreadyBoundException {
-        try {
-            rmiLogisticsServices = (IRmiLogisticsServices) UnicastRemoteObject.exportObject(new RmiLogisticsServices(sessions), port);
-            rmiRegistry.bind("RmiLogisticsServices", rmiLogisticsServices);
-        } catch (AlreadyBoundException e) {
-            log.log_Fatal("RmiLogisticsServices is already bound.");
-            throw e;
-        }
+    private synchronized void loadLogisticsServices() throws RemoteException {
+        rmiLogisticsServices = (IRmiLogisticsServices) UnicastRemoteObject.exportObject(new RmiLogisticsServices(sessions), port);
+        rmiRegistry.rebind("RmiLogisticsServices", rmiLogisticsServices);
     }
 
-    private synchronized void loadRevenueServices() throws RemoteException, AlreadyBoundException {
-        try {
-            rmiRevenueServices = (IRmiRevenueServices) UnicastRemoteObject.exportObject(new RmiRevenueServices(sessions), port);
-            rmiRegistry.bind("RmiRevenueServices", rmiRevenueServices);
-        } catch (AlreadyBoundException e) {
-            log.log_Fatal("RmiRevenueServices is already bound.");
-            throw e;
-        }
+    private synchronized void loadRevenueServices() throws RemoteException {
+        rmiRevenueServices = (IRmiRevenueServices) UnicastRemoteObject.exportObject(new RmiRevenueServices(sessions), port);
+        rmiRegistry.rebind("RmiRevenueServices", rmiRevenueServices);
     }
 
     private synchronized void shutdownAdministrationServices() throws RemoteException {
@@ -136,6 +115,7 @@ public class RmiServer extends RmiServices {
             }
         }
     }
+
     /**
      * Constructor
      *
@@ -149,14 +129,13 @@ public class RmiServer extends RmiServices {
      * Starts the remote services
      *
      * @throws RemoteException       when issues occurred during network communication
-     * @throws AlreadyBoundException when the RmiService instance is already bound to the registry
      */
-    public synchronized void init() throws RemoteException, AlreadyBoundException {
+    public synchronized void init() throws RemoteException {
         Logger log = Logger.getLoggerInstance(RmiServer.class.getName());
         rmiRegistry = LocateRegistry.createRegistry(port);
         rmiServices = (IRmiServices) UnicastRemoteObject.exportObject(this, port);
         log.log("Loading RMI services on port: ", port);
-        rmiRegistry.bind("RmiServices", rmiServices);
+        rmiRegistry.rebind("RmiServices", rmiServices);
         log.log("Loading component services...");
         loadAdministrationServices();
         loadReservationServices();
@@ -278,10 +257,6 @@ public class RmiServer extends RmiServices {
             e.printStackTrace();
         } catch (FailedServerInit e) {
             log.log_Fatal("Could not fully instantiate a new RmiServer.");
-            log.log_Exception(e);
-            e.printStackTrace();
-        } catch (AlreadyBoundException e) {
-            log.log_Fatal("An instance of RmiServices is already bound to the registry.");
             log.log_Exception(e);
             e.printStackTrace();
         }

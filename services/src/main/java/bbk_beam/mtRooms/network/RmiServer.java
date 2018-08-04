@@ -20,13 +20,13 @@ import java.rmi.server.UnicastRemoteObject;
 public class RmiServer extends RmiServices {
     private final Logger log = Logger.getLoggerInstance(RmiServer.class.getName());
     private static final Thread mainThread = Thread.currentThread();
-    private Integer port = 9999; //default
-    private Registry rmiRegistry;
-    private IRmiServices rmiServices;
-    private IRmiAdministrationServices rmiAdministrationServices;
-    private IRmiReservationServices rmiReservationServices;
-    private IRmiLogisticsServices rmiLogisticsServices;
-    private IRmiRevenueServices rmiRevenueServices;
+    private static Integer port = 9999; //default
+    private static Registry rmiRegistry;
+    private static IRmiServices rmiServices;
+    private static IRmiAdministrationServices rmiAdministrationServices;
+    private static IRmiReservationServices rmiReservationServices;
+    private static IRmiLogisticsServices rmiLogisticsServices;
+    private static IRmiRevenueServices rmiRevenueServices;
 
     private synchronized void loadAdministrationServices() throws RemoteException {
         rmiAdministrationServices = (IRmiAdministrationServices) UnicastRemoteObject.exportObject(new RmiAdministrationServices(sessions), port);

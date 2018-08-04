@@ -8,14 +8,18 @@ import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.operation.dto.LogisticsEntry;
 import bbk_beam.mtRooms.operation.dto.LogisticsInfo;
 import bbk_beam.mtRooms.operation.dto.OpsRoom;
+import bbk_beam.mtRooms.reservation.dto.Building;
+import bbk_beam.mtRooms.reservation.dto.Floor;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class LogisticReportGenerator implements ILogisticReportGenerator {
     private final Logger log = Logger.getLoggerInstance(LogisticReportGenerator.class.getName());
@@ -73,6 +77,85 @@ public class LogisticReportGenerator implements ILogisticReportGenerator {
      */
     public LogisticReportGenerator(LogisticAggregator logisticAggregator) {
         this.aggregator = logisticAggregator;
+    }
+
+    @Override
+    public List<Building> getBuildings(Token admin_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            List<Building> list = new ArrayList<>();
+            ObjectTable table = this.aggregator.getBuildings(admin_token);
+            if (!table.isEmpty()) {
+                for (int i = 1; i <= table.rowCount(); i++) {
+                    HashMap<String, Object> row = table.getRow(i);
+                    list.add(
+                            new Building(
+                                    (Integer) row.get("id"),
+                                    (String) row.get("name"),
+                                    (String) row.get("address1"),
+                                    (String) row.get("address2"),
+                                    (String) row.get("postcode"),
+                                    (String) row.get("city"),
+                                    (String) row.get("country"),
+                                    (String) row.get("telephone")
+                            )
+                    );
+                }
+            }
+            return list;
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not fetch buildings from records.");
+            throw new FailedDbFetch("Could not fetch buildings from records.", e);
+        }
+    }
+
+    @Override
+    public List<Floor> getFloors(Token admin_token, Building building) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            List<Floor> list = new ArrayList<>();
+            ObjectTable table = this.aggregator.getFloors(admin_token, building);
+            if (!table.isEmpty()) {
+                for (int i = 1; i <= table.rowCount(); i++) {
+                    HashMap<String, Object> row = table.getRow(i);
+                    list.add(
+                            new Floor(
+                                    (Integer) row.get("building_id"),
+                                    (Integer) row.get("id"),
+                                    (String) row.get("description")
+                            )
+                    );
+                }
+            }
+            return list;
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not fetch floors for Building[", building.id(), "] from records.");
+            throw new FailedDbFetch("Could not fetch floors for Buildings[" + building.id() + "] from records.", e);
+        }
+    }
+
+    @Override
+    public List<Room> getRooms(Token admin_token, Floor floor) throws FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            List<Room> list = new ArrayList<>();
+            ObjectTable table = this.aggregator.getRooms(admin_token, floor);
+            if (!table.isEmpty()) {
+                for (int i = 1; i <= table.rowCount(); i++) {
+                    HashMap<String, Object> row = table.getRow(i);
+                    list.add(
+                            new Room(
+                                    (Integer) row.get("id"),
+                                    (Integer) row.get("floor_id"),
+                                    (Integer) row.get("building_id"),
+                                    (Integer) row.get("room_category_id"),
+                                    (String) row.get("description")
+                            )
+                    );
+                }
+            }
+            return list;
+        } catch (DbQueryException e) {
+            log.log_Fatal("Could not fetch rooms from records for floor: ", floor);
+            throw new FailedDbFetch("Could not fetch rooms from records for floor: " + floor, e);
+        }
     }
 
     @Override

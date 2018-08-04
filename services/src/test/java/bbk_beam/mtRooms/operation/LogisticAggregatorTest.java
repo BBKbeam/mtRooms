@@ -6,6 +6,8 @@ import bbk_beam.mtRooms.db.IReservationDbAccess;
 import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
+import bbk_beam.mtRooms.reservation.dto.Building;
+import bbk_beam.mtRooms.reservation.dto.Floor;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import eadjlib.datastructure.ObjectTable;
@@ -49,6 +51,49 @@ public class LogisticAggregatorTest {
         this.reservationDbAccess = null;
         this.logisticAggregator = null;
         Files.deleteIfExists(Paths.get("logistic_aggregator_test.db"));
+    }
+
+    @Test
+    public void getBuildings() throws Exception {
+        ObjectTable table = this.logisticAggregator.getBuildings(this.token);
+        Assert.assertEquals("Wrong number of rows", 1, table.rowCount());
+        Assert.assertEquals("Wrong number of columns", 8, table.columnCount());
+        Assert.assertEquals(1, table.getInteger(1, 1)); //id
+        Assert.assertEquals("Test Building", table.getString(2, 1)); //name
+    }
+
+    @Test
+    public void getFloors() throws Exception {
+        Building mock_building = mock(Building.class);
+        when(mock_building.id()).thenReturn(1);
+        ObjectTable table = this.logisticAggregator.getFloors(this.token, mock_building);
+        Assert.assertEquals("Wrong number of rows", 3, table.rowCount());
+        Assert.assertEquals("Wrong number of columns", 3, table.columnCount());
+        Assert.assertEquals(1, table.getInteger(1, 1)); //id
+        Assert.assertEquals(1, table.getInteger(2, 1)); //building_id
+        Assert.assertEquals("Ground level", table.getString(3, 1)); //description
+        Assert.assertEquals(2, table.getInteger(1, 2)); //id
+        Assert.assertEquals(1, table.getInteger(2, 2)); //building_id
+        Assert.assertEquals("First floor", table.getString(3, 2)); //description
+        Assert.assertEquals(3, table.getInteger(1, 3)); //id
+        Assert.assertEquals(1, table.getInteger(2, 3)); //building_id
+        Assert.assertEquals("Second floor", table.getString(3, 3)); //description
+    }
+
+    @Test
+    public void getRooms() throws Exception {
+        Floor mock_floor = mock(Floor.class);
+        when(mock_floor.buildingID()).thenReturn(1);
+        when(mock_floor.floorID()).thenReturn(2);
+        ObjectTable table = this.logisticAggregator.getRooms(this.token, mock_floor);
+        Assert.assertEquals("Wrong number of rows", 3, table.rowCount());
+        Assert.assertEquals("Wrong number of columns", 5, table.columnCount());
+        Assert.assertEquals(4, table.getInteger(1, 1)); //id
+        Assert.assertEquals("Medium room 2", table.getString(5, 1)); //description
+        Assert.assertEquals(5, table.getInteger(1, 2)); //id
+        Assert.assertEquals("Medium room 3", table.getString(5, 2)); //description
+        Assert.assertEquals(6, table.getInteger(1, 3)); //id
+        Assert.assertEquals("Large room 1", table.getString(5, 3)); //description
     }
 
     @Test

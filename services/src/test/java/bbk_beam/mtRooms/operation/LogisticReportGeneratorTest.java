@@ -7,6 +7,8 @@ import bbk_beam.mtRooms.db.IUserAccDbAccess;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.operation.dto.LogisticsInfo;
+import bbk_beam.mtRooms.reservation.dto.Building;
+import bbk_beam.mtRooms.reservation.dto.Floor;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import org.junit.After;
@@ -19,6 +21,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -52,6 +55,41 @@ public class LogisticReportGeneratorTest {
         this.logisticAggregator = null;
         this.logisticReportGenerator = null;
         Files.deleteIfExists(Paths.get("logistic_report_generator_test.db"));
+    }
+
+    @Test
+    public void getBuildings() throws Exception {
+        List<Building> buildings = this.logisticReportGenerator.getBuildings(this.token);
+        Assert.assertEquals(1, buildings.size());
+        Assert.assertEquals(new Integer(1), buildings.get(0).id());
+        Assert.assertEquals("Test Building", buildings.get(0).name());
+    }
+
+    @Test
+    public void getFloors() throws Exception {
+        Building building = mock(Building.class);
+        when(building.id()).thenReturn(1);
+        List<Floor> floors = this.logisticReportGenerator.getFloors(this.token, building);
+//        for(Floor floor : floors)
+//            System.out.println(floor);
+        Assert.assertEquals(3, floors.size());
+        Assert.assertEquals("Ground level", floors.get(0).description());
+        Assert.assertEquals("First floor", floors.get(1).description());
+        Assert.assertEquals("Second floor", floors.get(2).description());
+    }
+
+    @Test
+    public void getRooms() throws Exception {
+        Floor floor = mock(Floor.class);
+        when(floor.floorID()).thenReturn(1);
+        when(floor.buildingID()).thenReturn(1);
+        List<Room> rooms = this.logisticReportGenerator.getRooms(this.token, floor);
+//        for (Room room : rooms)
+//            System.out.println(room);
+        Assert.assertEquals(3, rooms.size());
+        Assert.assertEquals(new Integer(1), rooms.get(0).id());
+        Assert.assertEquals(new Integer(2), rooms.get(1).id());
+        Assert.assertEquals(new Integer(3), rooms.get(2).id());
     }
 
     @Test

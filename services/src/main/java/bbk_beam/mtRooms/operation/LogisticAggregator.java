@@ -6,6 +6,8 @@ import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
+import bbk_beam.mtRooms.reservation.dto.Building;
+import bbk_beam.mtRooms.reservation.dto.Floor;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import eadjlib.datastructure.ObjectTable;
 import eadjlib.logger.Logger;
@@ -23,6 +25,52 @@ public class LogisticAggregator {
      */
     public LogisticAggregator(IReservationDbAccess reservationDbAccess) {
         this.db_access = reservationDbAccess;
+    }
+
+    /**
+     * Gets all buildings in real estate portfolio
+     *
+     * @param session_token Session token
+     * @return ObjectTable of the building records
+     * @throws DbQueryException        when query failed
+     * @throws SessionExpiredException when current administrator session has expired
+     * @throws SessionInvalidException when administrator session is not valid
+     */
+    ObjectTable getBuildings(Token session_token) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT * FROM Building";
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    /**
+     * Gets all floors in a building
+     *
+     * @param session_token Session token
+     * @param building      Building DTO
+     * @return ObjectTable of the floor records for the building
+     * @throws DbQueryException        when query failed
+     * @throws SessionExpiredException when current administrator session has expired
+     * @throws SessionInvalidException when administrator session is not valid
+     */
+    ObjectTable getFloors(Token session_token, Building building) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT * FROM Floor WHERE building_id = " + building.id();
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
+    }
+
+    /**
+     * Gets all rooms in a floor
+     *
+     * @param session_token Session token
+     * @param floor         Floor DTO
+     * @return ObjectTable of the room records on a floor
+     * @throws DbQueryException        when query failed
+     * @throws SessionExpiredException when current administrator session has expired
+     * @throws SessionInvalidException when administrator session is not valid
+     */
+    ObjectTable getRooms(Token session_token, Floor floor) throws DbQueryException, SessionExpiredException, SessionInvalidException {
+        String query = "SELECT * FROM Room " +
+                "WHERE building_id = " + floor.buildingID() +
+                " AND floor_id = " + floor.floorID();
+        return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 
     /**

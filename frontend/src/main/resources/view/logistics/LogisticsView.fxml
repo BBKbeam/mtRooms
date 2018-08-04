@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+            prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="bbk_beam.mtRooms.ui.controller.logistics.LogisticsController">
+    <top>
+        <HBox alignment="TOP_CENTER" prefHeight="70.0" BorderPane.alignment="CENTER">
+            <children>
+                <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="40.0"
+                                           prefWidth="50.0"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0" vgrow="SOMETIMES"/>
+                    </rowConstraints>
+                    <children>
+                        <Label text="%Label_FromDate"/>
+                        <Label text="%Label_ToDate" GridPane.columnIndex="1"/>
+                        <Label text="%Label_Building" GridPane.columnIndex="2"/>
+                        <Label text="%Label_Floor" GridPane.columnIndex="3"/>
+                        <Label text="%Label_Room" GridPane.columnIndex="4"/>
+                        <DatePicker fx:id="fromDate_DatePicker" GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </GridPane.margin>
+                        </DatePicker>
+                        <DatePicker fx:id="toDate_DatePicker" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </GridPane.margin>
+                        </DatePicker>
+                        <Button fx:id="go_Button" mnemonicParsing="false" onAction="#handleGoAction" text="Go"
+                                GridPane.columnIndex="5" GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </GridPane.margin>
+                        </Button>
+                        <ChoiceBox fx:id="building_ChoiceBox" prefWidth="150.0" GridPane.columnIndex="2"
+                                   GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </GridPane.margin>
+                        </ChoiceBox>
+                        <ChoiceBox fx:id="floor_ChoiceBox" prefWidth="150.0" GridPane.columnIndex="3"
+                                   GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </GridPane.margin>
+                        </ChoiceBox>
+                        <ChoiceBox fx:id="room_ChoiceBox" prefWidth="150.0" GridPane.columnIndex="4"
+                                   GridPane.rowIndex="1">
+                            <GridPane.margin>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </GridPane.margin>
+                        </ChoiceBox>
+                    </children>
+                </GridPane>
+            </children>
+            <BorderPane.margin>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </BorderPane.margin>
+        </HBox>
+    </top>
+    <center>
+        <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+            <children>
+                <Text fx:id="searchParam_Text" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </VBox.margin>
+                </Text>
+                <TableView fx:id="info_TableView" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn editable="false" prefWidth="75.0" text="Location ID">
+                            <columns>
+                                <TableColumn fx:id="building_col" prefWidth="75.0" text="Building"/>
+                                <TableColumn fx:id="floor_col" prefWidth="75.0" text="Floor"/>
+                                <TableColumn fx:id="room_col" prefWidth="75.0" text="Room"/>
+                            </columns>
+                        </TableColumn>
+                        <TableColumn fx:id="seating_col" editable="false" prefWidth="75.0" text="Seating"/>
+                        <TableColumn editable="false" prefWidth="75.0" text="Timestamps">
+                            <columns>
+                                <TableColumn fx:id="timestampIn_col" editable="false" prefWidth="75.0" text="In"/>
+                                <TableColumn fx:id="timestampOut_col" editable="false" prefWidth="75.0" text="Out"/>
+                            </columns>
+                        </TableColumn>
+                        <TableColumn fx:id="catering_col" editable="false" prefWidth="75.0" text="Catering"/>
+                        <TableColumn fx:id="notes_col" editable="false" prefWidth="75.0" text="Notes"/>
+                    </columns>
+                    <VBox.margin>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </VBox.margin>
+                </TableView>
+            </children>
+        </VBox>
+    </center>
+</BorderPane>

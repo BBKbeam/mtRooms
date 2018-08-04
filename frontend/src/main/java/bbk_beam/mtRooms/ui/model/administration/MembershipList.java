@@ -2,8 +2,8 @@ package bbk_beam.mtRooms.ui.model.administration;
 
 import bbk_beam.mtRooms.admin.dto.Usage;
 import bbk_beam.mtRooms.reservation.dto.Membership;
-import bbk_beam.mtRooms.ui.model.GenericModelTable;
 import bbk_beam.mtRooms.ui.model.SessionManager;
+import bbk_beam.mtRooms.ui.model.common.GenericModelTable;
 
 import java.util.Collection;
 
@@ -26,5 +26,10 @@ public class MembershipList extends GenericModelTable<Usage<Membership, Integer>
         }
     }
 
-
+    @Override
+    public void appendData(Collection<Usage<Membership, Integer>> collection) {
+        for (Usage<Membership, Integer> usage : collection) {
+            this.observableList.add(new CustomerMembershipItem(usage));
+        }
+    }
 }

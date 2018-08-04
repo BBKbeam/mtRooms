@@ -6,6 +6,7 @@ import javafx.beans.property.*;
 import java.text.SimpleDateFormat;
 
 public class CustomerPaymentsModel {
+    static private final String CHECK = "\u2713";
     static private final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY/MM/dd - HH:mm:ss");
     private Payment payment;
     private IntegerProperty payment_id = new SimpleIntegerProperty();
@@ -28,7 +29,7 @@ public class CustomerPaymentsModel {
         this.amount.set(payment.amount());
         this.reservation_id.set(reservation_id);
         this.method.set(payment.paymentMethod().description());
-        this.note.set(payment.note());
+        this.note.set(payment.note() == null || payment.note().isEmpty() ? "" : CHECK);
     }
 
     /**

@@ -4,13 +4,51 @@ import bbk_beam.mtRooms.admin.authentication.Token;
 import bbk_beam.mtRooms.db.exception.SessionExpiredException;
 import bbk_beam.mtRooms.db.exception.SessionInvalidException;
 import bbk_beam.mtRooms.operation.dto.LogisticsInfo;
+import bbk_beam.mtRooms.reservation.dto.Building;
+import bbk_beam.mtRooms.reservation.dto.Floor;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
 
 import java.util.Date;
+import java.util.List;
 
 public interface ILogisticReportGenerator {
+    /**
+     * Gets all buildings in real estate portfolio
+     *
+     * @param session_token Administration session token
+     * @return List of Building DTOs
+     * @throws FailedDbFetch           when error occurred during fetching of data from DB
+     * @throws SessionExpiredException when current user session has expired
+     * @throws SessionInvalidException when user session is not valid
+     */
+    List<Building> getBuildings(Token session_token) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Gets all floors in a building
+     *
+     * @param session_token Administration session token
+     * @param building      Building DTO
+     * @return List of Floor DTOs
+     * @throws FailedDbFetch           when error occurred during fetching of data from DB
+     * @throws SessionExpiredException when current user session has expired
+     * @throws SessionInvalidException when user session is not valid
+     */
+    List<Floor> getFloors(Token session_token, Building building) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Gets all rooms ina floor
+     *
+     * @param session_token Administration session token
+     * @param floor         Floor DTO
+     * @return List of Room DTOs
+     * @throws FailedDbFetch           when error occurred during fetching of data from DB
+     * @throws SessionExpiredException when current user session has expired
+     * @throws SessionInvalidException when user session is not valid
+     */
+    List<Room> getRooms(Token session_token, Floor floor) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
+
     /**
      * Gets logistical information
      *

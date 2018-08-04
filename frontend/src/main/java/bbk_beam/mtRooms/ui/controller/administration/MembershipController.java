@@ -101,7 +101,7 @@ public class MembershipController implements Initializable {
                     this.discount_ComboBox.getSelectionModel().selectLast();
                 }
             });
-            dialog.setTitle("New Discount"); //TODO resourceBundle
+            dialog.setTitle(this.resourceBundle.getString("DialogTitle_NewDiscount"));
             Scene scene = new Scene(pane);
             dialog.setScene(scene);
             dialog.show();

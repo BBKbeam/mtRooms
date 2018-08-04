@@ -67,6 +67,19 @@ public interface IReserve {
     Double cancelReservedRoom(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
 
     /**
+     * Updates the note on a RoomReservation
+     *
+     * @param session_token  Session's token
+     * @param reservation_id Reservation ID
+     * @param reserved_room  RoomReservation DTO
+     * @throws InvalidReservation      when Reservation cannot be validated with the records
+     * @throws DbQueryException        when a problem was encountered whilst processing the query
+     * @throws SessionExpiredException when the session for the id provided has expired
+     * @throws SessionInvalidException when the session for the id provided does not exist in the tracker
+     */
+    void updateReservedRoomNote(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException;
+
+    /**
      * Deletes the record of a reservation and its reserved rooms
      * WARNING: This will orphan payments made for the reservation! Use at own discretion for cleaning.
      *

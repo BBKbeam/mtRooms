@@ -10,6 +10,7 @@ import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
 import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
 import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
+import bbk_beam.mtRooms.ui.controller.common.FieldValidator;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.collections.FXCollections;
@@ -24,7 +25,10 @@ import javafx.scene.text.Text;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
 
 public class CustomerCreationController implements Initializable {
     private enum ControllerRole {NEW_CUSTOMER, EDIT_CUSTOMER}
@@ -34,7 +38,7 @@ public class CustomerCreationController implements Initializable {
     private SessionManager sessionManager;
     private MainWindowController mainWindowController;
     private ResourceBundle resourceBundle;
-    private HashMap<TextField, Boolean> field_validation = new HashMap<>();
+    private FieldValidator fieldValidator;
     private Customer customer = null;
     private ControllerRole controllerRole;
 
@@ -77,22 +81,6 @@ public class CustomerCreationController implements Initializable {
         ObservableList<Membership> membershipObservableList = FXCollections.observableList(membershipList);
         membership_ChoiceBox.setItems(membershipObservableList);
         membership_ChoiceBox.getSelectionModel().selectFirst();
-    }
-
-    /**
-     * Checks the field validation HashMap
-     *
-     * @return Field validation state (true = all valid, false = 1+ invalid)
-     */
-    private boolean checkValidationFlags() {
-        boolean valid_flag = true;
-        for (Map.Entry<TextField, Boolean> entry : this.field_validation.entrySet()) {
-            if (!entry.getValue()) {
-                entry.getKey().setStyle("-fx-control-inner-background: red;");
-                valid_flag = false;
-            }
-        }
-        return valid_flag;
     }
 
     /**
@@ -172,122 +160,123 @@ public class CustomerCreationController implements Initializable {
         //TODO add regex for special fields (email, phone..)
         this.resourceBundle = resources;
         this.alertDialog = new AlertDialog(resources);
+        this.fieldValidator = new FieldValidator();
 
         accordion_section.setExpandedPane(personalDetails_TitlePane);
 
-        field_validation.put(title_field, false);
-        field_validation.put(name_field, false);
-        field_validation.put(surname_field, false);
-        field_validation.put(address1_field, false);
-        field_validation.put(city_field, false);
-        field_validation.put(postcode_field, false);
-        field_validation.put(country_field, false);
-        field_validation.put(phone1_field, false);
-        field_validation.put(phone2_field, true); //empty at start is valid
-        field_validation.put(email_field, false);
+        fieldValidator.set(title_field, false);
+        fieldValidator.set(name_field, false);
+        fieldValidator.set(surname_field, false);
+        fieldValidator.set(address1_field, false);
+        fieldValidator.set(city_field, false);
+        fieldValidator.set(postcode_field, false);
+        fieldValidator.set(country_field, false);
+        fieldValidator.set(phone1_field, false);
+        fieldValidator.set(phone2_field, true); //empty at start is valid
+        fieldValidator.set(email_field, false);
 
         title_field.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 2) {
                 title_field.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(title_field, false);
+                fieldValidator.set(title_field, false);
             } else {
                 title_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(title_field, true);
+                fieldValidator.set(title_field, true);
             }
         });
 
         name_field.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 2) {
                 name_field.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(name_field, false);
+                fieldValidator.set(name_field, false);
             } else {
                 name_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(name_field, true);
+                fieldValidator.set(name_field, true);
             }
         });
 
         surname_field.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 2) {
                 surname_field.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(surname_field, false);
+                fieldValidator.set(surname_field, false);
             } else {
                 surname_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(surname_field, true);
+                fieldValidator.set(surname_field, true);
             }
         });
 
         address1_field.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 3) {
                 address1_field.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(address1_field, false);
+                fieldValidator.set(address1_field, false);
             } else {
                 address1_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(address1_field, true);
+                fieldValidator.set(address1_field, true);
             }
         });
 
         city_field.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 3) {
                 city_field.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(city_field, false);
+                fieldValidator.set(city_field, false);
             } else {
                 city_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(city_field, true);
+                fieldValidator.set(city_field, true);
             }
         });
 
         postcode_field.textProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.length() < 3) {
                 postcode_field.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(postcode_field, false);
+                fieldValidator.set(postcode_field, false);
             } else {
                 postcode_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(postcode_field, true);
+                fieldValidator.set(postcode_field, true);
             }
         });
 
         country_field.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.length() < 3) {
+            if (newValue.length() < 2) {
                 country_field.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(country_field, false);
+                fieldValidator.set(country_field, false);
             } else {
                 country_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(country_field, true);
+                fieldValidator.set(country_field, true);
             }
         });
 
         phone1_field.textProperty().addListener((observable, oldValue, newValue) -> { //TODO regex
             if (newValue.length() < 3) {
                 phone1_field.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(phone1_field, false);
+                fieldValidator.set(phone1_field, false);
             } else {
                 phone1_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(phone1_field, true);
+                fieldValidator.set(phone1_field, true);
             }
         });
 
         phone2_field.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
                 //TODO regex
-//                field_validation.put(phone2_field, true);//or false
+//                fieldValidator.set(phone2_field, true);//or false
             } else {
                 phone2_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(phone2_field, true);
+                fieldValidator.set(phone2_field, true);
             }
         });
 
         email_field.textProperty().addListener((observable, oldValue, newValue) -> { //TODO regex
             if (newValue.length() < 3) {
                 email_field.setStyle("-fx-control-inner-background: red;");
-                field_validation.put(email_field, false);
+                fieldValidator.set(email_field, false);
             } else {
                 email_field.setStyle("-fx-control-inner-background: white;");
-                field_validation.put(email_field, true);
+                fieldValidator.set(email_field, true);
             }
         });
 
         membership_ChoiceBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            discountRate_field.setText(String.valueOf(newValue.discount().rate()));
+            discountRate_field.setText(newValue.discount().rate() + "%");
         });
 
     }
@@ -382,7 +371,7 @@ public class CustomerCreationController implements Initializable {
     @FXML
     public void handleSaveAction(ActionEvent actionEvent) {
         try {
-            if (checkValidationFlags()) {
+            if (this.fieldValidator.check()) {
                 switch (this.controllerRole) {
                     case NEW_CUSTOMER:
                         saveNewCustomer();

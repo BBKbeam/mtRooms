@@ -1,8 +1,8 @@
 package bbk_beam.mtRooms.ui.model.frontdesk;
 
 import bbk_beam.mtRooms.reservation.dto.Payment;
-import bbk_beam.mtRooms.ui.model.GenericModelTable;
 import bbk_beam.mtRooms.ui.model.SessionManager;
+import bbk_beam.mtRooms.ui.model.common.GenericModelTable;
 import javafx.util.Pair;
 
 import java.util.Collection;
@@ -23,6 +23,14 @@ public class CustomerPaymentsTable extends GenericModelTable<Pair<Integer, List<
     public void loadData(Collection<Pair<Integer, List<Payment>>> payments) {
         if (!this.observableList.isEmpty())
             this.observableList.clear();
+        for (Pair<Integer, List<Payment>> reservation_payments : payments) {
+            for (Payment payment : reservation_payments.getValue())
+                this.observableList.add(new CustomerPaymentsModel(reservation_payments.getKey(), payment));
+        }
+    }
+
+    @Override
+    public void appendData(Collection<Pair<Integer, List<Payment>>> payments) {
         for (Pair<Integer, List<Payment>> reservation_payments : payments) {
             for (Payment payment : reservation_payments.getValue())
                 this.observableList.add(new CustomerPaymentsModel(reservation_payments.getKey(), payment));

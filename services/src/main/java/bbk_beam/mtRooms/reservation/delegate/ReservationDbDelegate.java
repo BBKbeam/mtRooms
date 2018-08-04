@@ -475,6 +475,30 @@ public class ReservationDbDelegate implements ICustomerAccount, IPay, IReserve, 
         return table.getDouble(1, 1);
     }
 
+    @Override
+    public void updateReservedRoomNote(Token session_token, Integer reservation_id, RoomReservation reserved_room) throws InvalidReservation, DbQueryException, SessionExpiredException, SessionInvalidException {
+        //Checking Reservation exists
+        ObjectTable check = this.db_access.pullFromDB(
+                session_token.getSessionId(),
+                "SELECT COUNT(*) FROM Reservation WHERE id = " + reservation_id
+        );
+        if (check.isEmpty())
+            throw new InvalidReservation("Reservation [" + reservation_id + "] does not exists in records.");
+        //Updating Room_has_Reservation entry's note
+        String query1 = "UPDATE " +
+                "Room_has_Reservation " +
+                "SET notes = \"" + reserved_room.note() + "\" " +
+                "WHERE room_id = " + reserved_room.room().id() +
+                " AND floor_id = " + reserved_room.room().floorID() +
+                " AND building_id = " + reserved_room.room().buildingID() +
+                " AND reservation_id = " + reservation_id +
+                " AND timestamp_in = \"" + TimestampConverter.getUTCTimestampString(reserved_room.reservationStart()) + "\"";
+        if (!this.db_access.pushToDB(session_token.getSessionId(), query1)) {
+            log.log_Error("Could not update notes on RoomReservation: ", reserved_room);
+            throw new DbQueryException("Could not update notes on RoomReservation: : " + reserved_room);
+        }
+    }
+
     /**
      * Deletes the record of a RoomReservation
      *

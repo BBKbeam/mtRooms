@@ -10,6 +10,7 @@ import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.ui.controller.administration.AdministrationController;
 import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.frontdesk.CustomerSearchController;
+import bbk_beam.mtRooms.ui.controller.logistics.LogisticsController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.application.Platform;
@@ -22,6 +23,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -197,6 +199,26 @@ public class MainWindowController implements Initializable {
         }
     }
 
+    /**
+     * Shows the logistics pane
+     */
+    public void showLogisticsPane() {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MtRoomsGUI.class.getResource("/view/logistics/LogisticsView.fxml"));
+        loader.setResources(resourceBundle);
+        try {
+            Pane pane = loader.load();
+            LogisticsController logisticsController = loader.getController();
+            logisticsController.setSessionManager(sessionManager);
+            logisticsController.setMainWindowController(this);
+            main_pane.setFitToWidth(true);
+            main_pane.setFitToHeight(true);
+            main_pane.setContent(pane);
+        } catch (IOException e) {
+            this.alertDialog.showGenericError(e);
+        }
+    }
+
     @FXML
     public void handleLogoutAction(ActionEvent actionEvent) {
         try {
@@ -263,6 +285,7 @@ public class MainWindowController implements Initializable {
     public void handleViewLogisticsAction(ActionEvent actionEvent) {
         this.administration_menu.setVisible(false);
         this.status_left.setText("");
+        this.showLogisticsPane();
     }
 
     @FXML

@@ -1,6 +1,7 @@
 package bbk_beam.mtRooms.operation.dto;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 /**
  * Logistics information container class
  */
-public class LogisticsInfo {
+public class LogisticsInfo implements Serializable {
     private List<LogisticsEntry> entries;
 
     /**

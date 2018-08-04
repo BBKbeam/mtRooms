@@ -31,7 +31,7 @@
                                     </HBox.margin>
                                 </ComboBox>
                                 <Button fx:id="addDiscount_Button" mnemonicParsing="false"
-                                        onAction="#handleNewDiscountAction" prefWidth="80.0" text="%Button_New">
+                                        onAction="#handleNewDiscountAction" prefWidth="80.0" text="%Button_NewGeneric">
                                     <HBox.margin>
                                         <Insets bottom="5.0" right="5.0" top="5.0"/>
                                     </HBox.margin>

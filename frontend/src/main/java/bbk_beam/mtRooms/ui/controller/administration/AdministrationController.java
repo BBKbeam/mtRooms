@@ -93,10 +93,10 @@ public class AdministrationController implements Initializable {
             UserAccountController userAccountController = loader.getController();
             userAccountController.setSessionManager(this.sessionManager);
             if (userAccountItem != null) {
-                stage.setTitle("Edit user account");
+                stage.setTitle(this.resourceBundle.getString("DialogTitle_EditUserAccount"));
                 userAccountController.setEditAccountFields(userAccountItem);
             } else {
-                stage.setTitle("Add user account");
+                stage.setTitle(this.resourceBundle.getString("DialogTitle_NewUserAccount"));
                 userAccountController.setNewAccountFields();
             }
             stage.show();
@@ -131,7 +131,7 @@ public class AdministrationController implements Initializable {
                 if (membershipController.getMembership().isPresent())
                     populateMembershipListView();
             });
-            dialog.setTitle("New Membership");
+            dialog.setTitle(this.resourceBundle.getString("DialogTitle_NewMembership"));
             Scene scene = new Scene(pane);
             dialog.setScene(scene);
             dialog.show();
@@ -165,7 +165,9 @@ public class AdministrationController implements Initializable {
                     populateInventoryTree();
                 }
             });
-            dialog.setTitle((building == null ? "New building" : "Edit building [" + building.id() + "]"));
+            dialog.setTitle((building == null
+                    ? this.resourceBundle.getString("DialogTitle_NewBuilding")
+                    : this.resourceBundle.getString("DialogTitle_EditBuilding") + " [" + building.id() + "]"));
             Scene scene = new Scene(pane);
             dialog.setScene(scene);
             dialog.show();
@@ -199,7 +201,7 @@ public class AdministrationController implements Initializable {
                     populateInventoryTree();
                 }
             });
-            dialog.setTitle("New floor");
+            dialog.setTitle(this.resourceBundle.getString("DialogTitle_NewFloor"));
             Scene scene = new Scene(pane);
             dialog.setScene(scene);
             dialog.show();
@@ -233,7 +235,7 @@ public class AdministrationController implements Initializable {
                     populateInventoryTree();
                 }
             });
-            dialog.setTitle("Edit floor [" + floor.buildingID() + "." + floor.floorID() + "]");
+            dialog.setTitle(this.resourceBundle.getString("DialogTitle_EditFloor") + " [" + floor.buildingID() + "." + floor.floorID() + "]");
             Scene scene = new Scene(pane);
             dialog.setScene(scene);
             dialog.show();
@@ -267,7 +269,7 @@ public class AdministrationController implements Initializable {
                     populateInventoryTree();
                 }
             });
-            dialog.setTitle("New room");
+            dialog.setTitle(this.resourceBundle.getString("DialogTitle_NewRoom"));
             Scene scene = new Scene(pane);
             dialog.setScene(scene);
             dialog.show();
@@ -301,7 +303,7 @@ public class AdministrationController implements Initializable {
                     populateInventoryTree();
                 }
             });
-            dialog.setTitle("Edit room [" + room.buildingID() + "." + room.floorID() + "." + room.id() + "]");
+            dialog.setTitle(this.resourceBundle.getString("DialogTitle_EditRoom") + " [" + room.buildingID() + "." + room.floorID() + "." + room.id() + "]");
             Scene scene = new Scene(pane);
             dialog.setScene(scene);
             dialog.show();
@@ -469,8 +471,11 @@ public class AdministrationController implements Initializable {
                         newValue.getMembership().id() == 1 || !newValue.getUsageByCustomerID().isEmpty() //Membership 'NONE' || Membership used by customer(s)
                 );
                 this.membershipDescription_TextArea.setText(
-                        newValue.getMembership().discount().rate() + "%\n\n" +
-                                (newValue.getUsageByCustomerID().isEmpty() ? "" : newValue.getUsageByCustomerID().toString())
+                        this.resourceBundle.getString("Label_Discount") + ": " + newValue.getMembership().discount().rate() + "%" +
+                                (newValue.getUsageByCustomerID().isEmpty()
+                                        ? ""
+                                        : "\n\n" + this.resourceBundle.getString("Label_MembershipUsingCustomers") + "\n" + newValue.getUsageByCustomerID().toString()
+                                )
                 );
             }
         }));

@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class ClientSessions {
     private final Logger log = Logger.getLoggerInstance(ClientSessions.class.getName());
-    private HashMap<Token, ClientWrapper> sessions;
+    private static HashMap<Token, ClientWrapper> sessions;
 
     /**
      * Constructor

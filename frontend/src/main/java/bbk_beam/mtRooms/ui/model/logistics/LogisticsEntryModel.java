@@ -8,7 +8,7 @@ import javafx.beans.property.StringProperty;
 
 import java.text.SimpleDateFormat;
 
-public class LogisticsModel {
+public class LogisticsEntryModel {
     static private final String CHECK = "\u2713";
     static private final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY/MM/dd - HH:mm:ss");
     private IntegerProperty building_id = new SimpleIntegerProperty();
@@ -26,7 +26,7 @@ public class LogisticsModel {
      *
      * @param entry LogisticsEntry DTO
      */
-    public LogisticsModel(LogisticsEntry entry) {
+    public LogisticsEntryModel(LogisticsEntry entry) {
         this.building_id.set(entry.getRoom().buildingID());
         this.floor_id.set(entry.getRoom().floorID());
         this.room_id.set(entry.getRoom().id());

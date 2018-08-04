@@ -4,20 +4,20 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Text?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
-            prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1"
+<BorderPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="450.0" prefWidth="600.0"
+            xmlns="http://javafx.com/javafx/8.0.162-ea" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="bbk_beam.mtRooms.ui.controller.logistics.LogisticsController">
     <top>
         <HBox alignment="TOP_CENTER" prefHeight="70.0" BorderPane.alignment="CENTER">
             <children>
                 <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                     <columnConstraints>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
-                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="40.0"
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="150.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="150.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="150.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="150.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="150.0" prefWidth="100.0"/>
+                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="50.0"
                                            prefWidth="50.0"/>
                     </columnConstraints>
                     <rowConstraints>
@@ -84,20 +84,28 @@
                     <columns>
                         <TableColumn editable="false" prefWidth="75.0" text="Location ID">
                             <columns>
-                                <TableColumn fx:id="building_col" prefWidth="75.0" text="Building"/>
-                                <TableColumn fx:id="floor_col" prefWidth="75.0" text="Floor"/>
-                                <TableColumn fx:id="room_col" prefWidth="75.0" text="Room"/>
+                                <TableColumn fx:id="building_col" prefWidth="75.0" styleClass="cell_middle_alignment"
+                                             text="Building"/>
+                                <TableColumn fx:id="floor_col" prefWidth="75.0" styleClass="cell_middle_alignment"
+                                             text="Floor"/>
+                                <TableColumn fx:id="room_col" prefWidth="75.0" styleClass="cell_middle_alignment"
+                                             text="Room"/>
                             </columns>
                         </TableColumn>
-                        <TableColumn fx:id="seating_col" editable="false" prefWidth="75.0" text="Seating"/>
+                        <TableColumn fx:id="seating_col" editable="false" prefWidth="75.0"
+                                     styleClass="cell_middle_alignment" text="Seating"/>
                         <TableColumn editable="false" prefWidth="75.0" text="Timestamps">
                             <columns>
-                                <TableColumn fx:id="timestampIn_col" editable="false" prefWidth="75.0" text="In"/>
-                                <TableColumn fx:id="timestampOut_col" editable="false" prefWidth="75.0" text="Out"/>
+                                <TableColumn fx:id="timestampIn_col" editable="false" minWidth="-Infinity"
+                                             prefWidth="160.0" text="In"/>
+                                <TableColumn fx:id="timestampOut_col" editable="false" minWidth="-Infinity"
+                                             prefWidth="160.0" text="Out"/>
                             </columns>
                         </TableColumn>
-                        <TableColumn fx:id="catering_col" editable="false" prefWidth="75.0" text="Catering"/>
-                        <TableColumn fx:id="notes_col" editable="false" prefWidth="75.0" text="Notes"/>
+                        <TableColumn fx:id="catering_col" editable="false" minWidth="-Infinity" prefWidth="75.0"
+                                     styleClass="cell_middle_alignment" text="Catering"/>
+                        <TableColumn fx:id="notes_col" editable="false" maxWidth="1.7976931348623157E308"
+                                     minWidth="180.0" prefWidth="-1.0" text="Notes"/>
                     </columns>
                     <VBox.margin>
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>

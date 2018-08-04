@@ -6,7 +6,7 @@ import bbk_beam.mtRooms.ui.model.common.GenericModelTable;
 
 import java.util.Collection;
 
-public class LogisticsTable extends GenericModelTable<LogisticsEntry, LogisticsModel> {
+public class LogisticsTable extends GenericModelTable<LogisticsEntry, LogisticsEntryModel> {
     /**
      * Constructor
      *
@@ -21,14 +21,14 @@ public class LogisticsTable extends GenericModelTable<LogisticsEntry, LogisticsM
         if (!this.observableList.isEmpty())
             this.observableList.clear();
         for (LogisticsEntry entry : collection) {
-            this.observableList.add(new LogisticsModel(entry));
+            this.observableList.add(new LogisticsEntryModel(entry));
         }
     }
 
     @Override
     public void appendData(Collection<LogisticsEntry> collection) {
         for (LogisticsEntry entry : collection) {
-            this.observableList.add(new LogisticsModel(entry));
+            this.observableList.add(new LogisticsEntryModel(entry));
         }
     }
 }

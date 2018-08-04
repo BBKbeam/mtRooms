@@ -16,7 +16,7 @@ __Note:__ _Under development_
         -  [ ] Client account
         -  [ ] Room Booking
     - [ ] Revenue
-    - [ ] Logistics
+    - [x] Logistics
 - [x] Backend (server)
 
 ## Requirements

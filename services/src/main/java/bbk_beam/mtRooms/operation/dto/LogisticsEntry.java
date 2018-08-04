@@ -1,11 +1,12 @@
 package bbk_beam.mtRooms.operation.dto;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Container class holding details of a logistic entry for the report
  */
-public class LogisticsEntry {
+public class LogisticsEntry implements Serializable {
     OpsRoom room;
     private Date timestamp_in;
     private Date timestamp_out;

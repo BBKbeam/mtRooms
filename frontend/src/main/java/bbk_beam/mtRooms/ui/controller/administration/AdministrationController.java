@@ -56,7 +56,7 @@ public class AdministrationController implements Initializable {
     public TableColumn<UserAccountItem, String> login_col;
     public TableColumn<UserAccountItem, String> pwd_change_col;
     public TableColumn<UserAccountItem, String> type_col;
-    public TableColumn<UserAccountItem, Boolean> active_col;
+    public TableColumn<UserAccountItem, String> active_col;
     public Button newAccount_Button;
     public Button editAccount_Button;
     //Membership & Discount tab UI elements
@@ -454,12 +454,12 @@ public class AdministrationController implements Initializable {
 
         id_col.setCellValueFactory(cellData -> cellData.getValue().idProperty().asObject());
         username_col.setCellValueFactory(cellData -> cellData.getValue().usernameProperty());
-        created_col.setCellValueFactory(cellData -> cellData.getValue().createdProperty().asString());
-        login_col.setCellValueFactory(cellData -> cellData.getValue().LastLoginProperty().asString());
-        pwd_change_col.setCellValueFactory(cellData -> cellData.getValue().lastPwdChangeProperty().asString());
-        created_col.setCellValueFactory(cellData -> cellData.getValue().createdProperty().asString());
+        created_col.setCellValueFactory(cellData -> cellData.getValue().createdProperty());
+        login_col.setCellValueFactory(cellData -> cellData.getValue().LastLoginProperty());
+        pwd_change_col.setCellValueFactory(cellData -> cellData.getValue().lastPwdChangeProperty());
+        created_col.setCellValueFactory(cellData -> cellData.getValue().createdProperty());
         type_col.setCellValueFactory(cellData -> cellData.getValue().accountTypeDescProperty().asString());
-        active_col.setCellValueFactory(cellData -> cellData.getValue().isActiveProperty().asObject());
+        active_col.setCellValueFactory(cellData -> cellData.getValue().isActiveProperty());
 
         this.userAccount_Tab.setOnSelectionChanged(value -> populateAccountTable());
         this.membership_Tab.setOnSelectionChanged(value -> populateMembershipListView());
@@ -637,6 +637,7 @@ public class AdministrationController implements Initializable {
         openEditAccountDialog(actionEvent, null);
     }
 
+    @FXML
     public void handleAddBuildingAction(ActionEvent actionEvent) {
         showBuildingDialog(null);
     }
@@ -650,6 +651,7 @@ public class AdministrationController implements Initializable {
         }
     }
 
+    @FXML
     public void handleDeleteInventoryAction(ActionEvent actionEvent) {
         TreeItem<InventoryTreeItem> selected = this.inventory_TreeView.getSelectionModel().getSelectedItem();
         if (selected.getValue() instanceof BuildingTreeItem) {
@@ -664,6 +666,7 @@ public class AdministrationController implements Initializable {
         }
     }
 
+    @FXML
     public void handleEditInventoryAction(ActionEvent actionEvent) {
         TreeItem<InventoryTreeItem> selected = this.inventory_TreeView.getSelectionModel().getSelectedItem();
         if (selected.getValue() instanceof BuildingTreeItem) {
@@ -675,10 +678,12 @@ public class AdministrationController implements Initializable {
         }
     }
 
+    @FXML
     public void handleAddMembershipAction(ActionEvent actionEvent) {
         showMembershipDialog();
     }
 
+    @FXML
     public void handleRemoveMembershipAction(ActionEvent actionEvent) {
         IRmiAdministrationServices services = this.sessionManager.getAdministrationServices();
         CustomerMembershipItem customerMembershipItem = this.membership_ListView.getSelectionModel().getSelectedItem();

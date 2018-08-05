@@ -70,11 +70,11 @@ public class CustomerAccountController implements Initializable {
     public Text membershipType_field;
     public Text discountRate_field;
     //Reservation tab
-    public Button cancelReservation_button;
-    public Button addReservationPayment_Button;
     public Button newReservation_button;
-    public Button cancelRoomReservation_button;
+    public Button cancelReservation_button;
+    public Button invoice_Button;
     public Button viewRoomReservationDetails_Button;
+    public Button cancelRoomReservation_button;
     public TableView<ReservationModel> reservation_Table;
     public TableColumn<ReservationModel, Integer> reservationId_col;
     public TableColumn<ReservationModel, String> created_col;
@@ -93,8 +93,11 @@ public class CustomerAccountController implements Initializable {
     public TableColumn<RoomReservationModel, String> cancelled_col;
     public TableColumn<RoomReservationModel, String> hasNote_col;
     //Payments tab
+    public Button addReservationPayment_Button;
+    public Button createRefund_Button;
     public Button viewPaymentDetails_Button;
-    public Text accountCreditField_Text;
+    public Button detailedBalance_Button;
+    public TextField customerCreditField_TextField;
     public TableView<CustomerPaymentsModel> payments_TableView;
     public TableColumn<CustomerPaymentsModel, Integer> paymentID_col;
     public TableColumn<CustomerPaymentsModel, String> paymentTimestamp_col;
@@ -200,7 +203,7 @@ public class CustomerAccountController implements Initializable {
      *
      * @param payment Payment DTO
      */
-    private void showPaymentDetailsDialog(Payment payment) { //TODO
+    private void showPaymentDetailsDialog(Payment payment) {
         FXMLLoader loader = new FXMLLoader();
         loader.setLocation(MtRoomsGUI.class.getResource("/view/frontdesk/PaymentDetailsView.fxml"));
         loader.setResources(this.resourceBundle);
@@ -379,7 +382,11 @@ public class CustomerAccountController implements Initializable {
     private void loadCustomerCreditField(Customer customer) throws LoginException, FailedDbFetch, Unauthorised, RemoteException {
         IRmiRevenueServices service = this.sessionManager.getRevenueServices();
         CustomerBalance balance = service.getCustomerBalance(this.sessionManager.getToken(), customer);
-        this.accountCreditField_Text.setText(String.valueOf(balance.getBalance()));
+        this.customerCreditField_TextField.setText(String.format("%.2f", balance.getBalance()));
+        if (balance.getBalance() < 0)
+            this.customerCreditField_TextField.setStyle("-fx-text-fill: red;");
+        else
+            this.customerCreditField_TextField.setStyle("-fx-text-fill: black;");
     }
 
     @Override
@@ -445,6 +452,7 @@ public class CustomerAccountController implements Initializable {
                     if (model.inTimestamp().compareTo(Date.from(Instant.now())) <= 0)
                         tooLateForFullCancellation_flag = true;
                 }
+                invoice_Button.setDisable(false);
                 cancelReservation_button.setDisable(tooLateForFullCancellation_flag);
             }
         });
@@ -567,6 +575,11 @@ public class CustomerAccountController implements Initializable {
     }
 
     @FXML
+    public void handleInvoiceAction(ActionEvent actionEvent) { //TODO
+        System.out.println("handleInvoiceAction");
+    }
+
+    @FXML
     public void handleViewRoomDetailsAction(ActionEvent actionEvent) {
         showRoomReservationDetailsDialog(
                 this.reservation_Table.getSelectionModel().getSelectedItem().getReservation(),
@@ -589,5 +602,10 @@ public class CustomerAccountController implements Initializable {
     @FXML
     public void handleCreateRefundButton(ActionEvent actionEvent) { //TODO
         System.out.println("handleCreateRefundButton");
+    }
+
+    @FXML
+    public void handleViewDetailedBalanceAction(ActionEvent actionEvent) { //TODO
+        System.out.println("handleViewDetailedBalanceAction");
     }
 }

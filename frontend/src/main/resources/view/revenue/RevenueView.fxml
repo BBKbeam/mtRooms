@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
+         prefHeight="450.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.162-ea"
+         xmlns:fx="http://javafx.com/fxml/1" fx:controller="bbk_beam.mtRooms.ui.controller.revenue.RevenueController">
+    <tabs>
+        <Tab fx:id="revenues_Tab" text="%Tab_Revenues">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+            </content>
+        </Tab>
+        <Tab fx:id="customerBalances_Tab" text="%Tab_CustomerBalance">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <TableView fx:id="customerBalance_TableView" maxHeight="1.7976931348623157E308"
+                                   maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="0.0"
+                                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <columns>
+                                <TableColumn fx:id="customerId_col" editable="false" minWidth="50.0" prefWidth="50.0"
+                                             styleClass="cell_middle_alignment" text="ID"/>
+                                <TableColumn fx:id="reservationCount_col" editable="false" prefWidth="120.0"
+                                             styleClass="cell_middle_alignment" text="Reservations"/>
+                                <TableColumn fx:id="cost_col" editable="false" minWidth="100.0" prefWidth="100.0"
+                                             styleClass="cell_right_alignment" text="Cost"/>
+                                <TableColumn fx:id="paid_col" editable="false" minWidth="100.0" prefWidth="100.0"
+                                             styleClass="cell_right_alignment" text="Paid"/>
+                                <TableColumn fx:id="balance_col" editable="false" minWidth="100.0" prefWidth="100.0"
+                                             styleClass="cell_right_alignment" text="Balance"/>
+                            </columns>
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                            </padding>
+                        </TableView>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+        <Tab fx:id="occupancy_Tab" text="%Tab_Occupancy">
+            <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <top>
+                                <HBox alignment="CENTER" prefHeight="70.0" BorderPane.alignment="CENTER">
+                                    <children>
+                                        <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                            <columnConstraints>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   minWidth="150.0" prefWidth="100.0"/>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   minWidth="150.0" prefWidth="100.0"/>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   minWidth="150.0" prefWidth="100.0"/>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   minWidth="150.0" prefWidth="100.0"/>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   minWidth="150.0" prefWidth="100.0"/>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   minWidth="150.0" prefWidth="100.0"/>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   maxWidth="-Infinity" minWidth="50.0"
+                                                                   prefWidth="50.0"/>
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints maxHeight="-Infinity" minHeight="20.0" prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0"
+                                                                vgrow="SOMETIMES"/>
+                                            </rowConstraints>
+                                            <children>
+                                                <Label text="%Label_FromDate"/>
+                                                <Label text="%Label_ToDate" GridPane.columnIndex="1"/>
+                                                <Label text="%Label_Building" GridPane.columnIndex="2"/>
+                                                <Label text="%Label_Floor" GridPane.columnIndex="3"/>
+                                                <Label text="%Label_Room" GridPane.columnIndex="4"/>
+                                                <DatePicker fx:id="fromDate_DatePicker" GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </DatePicker>
+                                                <DatePicker fx:id="toDate_DatePicker" GridPane.columnIndex="1"
+                                                            GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </DatePicker>
+                                                <Button fx:id="showOccupancy_Button" defaultButton="true" disable="true"
+                                                        mnemonicParsing="false" onAction="#handleShowOccupancyAction"
+                                                        text="Go" GridPane.columnIndex="6" GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </Button>
+                                                <ChoiceBox fx:id="building_ChoiceBox" disable="true" prefWidth="150.0"
+                                                           GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </ChoiceBox>
+                                                <ChoiceBox fx:id="floor_ChoiceBox" disable="true" prefWidth="150.0"
+                                                           GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </ChoiceBox>
+                                                <ChoiceBox fx:id="room_ChoiceBox" disable="true" prefWidth="150.0"
+                                                           GridPane.columnIndex="4" GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </ChoiceBox>
+                                                <ChoiceBox fx:id="granularity_ChoiceBox" prefWidth="150.0"
+                                                           GridPane.columnIndex="5" GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </ChoiceBox>
+                                                <Label text="%Label_Granularity" GridPane.columnIndex="5"/>
+                                            </children>
+                                        </GridPane>
+                                    </children>
+                                    <padding>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                    </padding>
+                                </HBox>
+                            </top>
+                            <center>
+                                <LineChart maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                                           BorderPane.alignment="TOP_LEFT">
+                                    <xAxis>
+                                        <CategoryAxis side="BOTTOM"/>
+                                    </xAxis>
+                                    <yAxis>
+                                        <NumberAxis side="LEFT"/>
+                                    </yAxis>
+                                    <BorderPane.margin>
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                    </BorderPane.margin>
+                                </LineChart>
+                            </center>
+                        </BorderPane>
+                    </children>
+                </AnchorPane>
+            </content>
+        </Tab>
+    </tabs>
+</TabPane>

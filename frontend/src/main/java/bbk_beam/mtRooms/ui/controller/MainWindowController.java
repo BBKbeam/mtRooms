@@ -11,6 +11,7 @@ import bbk_beam.mtRooms.ui.controller.administration.AdministrationController;
 import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
 import bbk_beam.mtRooms.ui.controller.frontdesk.CustomerSearchController;
 import bbk_beam.mtRooms.ui.controller.logistics.LogisticsController;
+import bbk_beam.mtRooms.ui.controller.revenue.RevenueController;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.application.Platform;
@@ -200,6 +201,26 @@ public class MainWindowController implements Initializable {
     }
 
     /**
+     * Shows the revenue pane
+     */
+    public void showRevenuePane() {
+        FXMLLoader loader = new FXMLLoader();
+        loader.setLocation(MtRoomsGUI.class.getResource("/view/revenue/RevenueView.fxml"));
+        loader.setResources(resourceBundle);
+        try {
+            TabPane pane = loader.load();
+            RevenueController revenueController = loader.getController();
+            revenueController.setSessionManager(sessionManager);
+            revenueController.setMainWindowController(this);
+            main_pane.setFitToWidth(true);
+            main_pane.setFitToHeight(true);
+            main_pane.setContent(pane);
+        } catch (IOException e) {
+            this.alertDialog.showGenericError(e);
+        }
+    }
+
+    /**
      * Shows the logistics pane
      */
     public void showLogisticsPane() {
@@ -279,6 +300,7 @@ public class MainWindowController implements Initializable {
     public void handleViewRevenueAction(ActionEvent actionEvent) {
         this.administration_menu.setVisible(false);
         this.status_left.setText("");
+        showRevenuePane();
     }
 
     @FXML

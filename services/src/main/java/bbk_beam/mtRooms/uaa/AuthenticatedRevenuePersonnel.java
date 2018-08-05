@@ -8,7 +8,10 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Floor;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
+import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
+import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
 import bbk_beam.mtRooms.revenue.dto.CustomerBalance;
+import bbk_beam.mtRooms.revenue.dto.Invoice;
 import bbk_beam.mtRooms.revenue.dto.Occupancy;
 import bbk_beam.mtRooms.revenue.dto.SimpleCustomerBalance;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
@@ -71,5 +74,10 @@ public class AuthenticatedRevenuePersonnel implements IAuthenticatedRevenuePerso
     @Override
     public Occupancy getOccupancy(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
         return this.delegate.getOccupancy(session_token, room, from, to);
+    }
+
+    @Override
+    public Invoice createInvoice(Token session_token, Integer reservation_id) throws InvalidReservation, InvalidCustomer, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        return this.delegate.createInvoice(session_token, reservation_id);
     }
 }

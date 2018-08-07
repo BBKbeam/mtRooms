@@ -144,39 +144,22 @@ public class LogisticsController implements Initializable {
     }
 
     /**
-     * Validate the start date from the DatePicker
+     * Validate a DatePicker date
      *
-     * @param date DatePicker date
+     * @param date    DatePicker date
+     * @param err_msg Error message to display in AlertDialog
      * @throws InvalidDate when date is null (i.e. nothing is picked)
      */
-    private void validateFromDate(LocalDate date) throws InvalidDate {
+    private void validateDate(LocalDate date, String err_msg) throws InvalidDate {
         if (date != null)
             return;
 
         AlertDialog.showAlert(
                 Alert.AlertType.ERROR,
                 this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                this.resourceBundle.getString("ErrorMsg_NoFromDateSelected")
+                err_msg
         );
         throw new InvalidDate("Start date not selected.");
-    }
-
-    /**
-     * Validate the end date from the DatePicker
-     *
-     * @param date DatePicker date
-     * @throws InvalidDate when date is null (i.e. nothing is picked)
-     */
-    private void validateToDate(LocalDate date) throws InvalidDate {
-        if (date != null)
-            return;
-
-        AlertDialog.showAlert(
-                Alert.AlertType.ERROR,
-                this.resourceBundle.getString("ErrorDialogTitle_Generic"),
-                this.resourceBundle.getString("ErrorMsg_NoToDateSelected")
-        );
-        throw new InvalidDate("End date not selected.");
     }
 
     /**
@@ -269,8 +252,8 @@ public class LogisticsController implements Initializable {
         LocalDate fromLocalDate = this.fromDate_DatePicker.getValue();
         LocalDate toLocalDate = this.toDate_DatePicker.getValue();
         try {
-            validateFromDate(fromLocalDate);
-            validateToDate(toLocalDate);
+            validateDate(fromLocalDate, this.resourceBundle.getString("ErrorMsg_NoFromDateSelected"));
+            validateDate(toLocalDate, this.resourceBundle.getString("ErrorMsg_NoToDateSelected"));
 
             Date fromDate = Date.from(Instant.from(fromLocalDate.atStartOfDay(ZoneId.systemDefault())));
             Date toDate = Date.from(Instant.from(toLocalDate.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault())));

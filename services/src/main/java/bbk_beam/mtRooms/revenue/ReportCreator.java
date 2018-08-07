@@ -542,4 +542,34 @@ public class ReportCreator implements IRevenueReporter {
             throw new FailedDbFetch("Could not fetch information to create Invoice for Reservation [" + reservation_id + "]", e);
         }
     }
+
+    @Override
+    public List<DetailedPayment> getPayments(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException {
+        try {
+            ObjectTable table = this.aggregator.getPayments(session_token, from, to);
+            List<DetailedPayment> list = new ArrayList<>();
+            for (int i = 1; i <= table.rowCount(); i++) {
+                HashMap<String, Object> row = table.getRow(i);
+                list.add(
+                        new DetailedPayment(
+                                (Integer) row.get("customer_id"),
+                                (Integer) row.get("reservation_id"),
+                                (Integer) row.get("payment_id"),
+                                (String) row.get("hash_id"),
+                                (Double) row.get("amount"),
+                                TimestampConverter.getDateObject((String) row.get("timestamp")),
+                                (String) row.get("note"),
+                                new PaymentMethod(
+                                        (Integer) row.get("method_id"),
+                                        (String) row.get("method_description")
+                                )
+                        )
+                );
+            }
+            return list;
+        } catch (DbQueryException e) {
+            log.log_Error("Could not fetch payment information for ", TimestampConverter.getUTCTimestampString(from), " -> ", TimestampConverter.getUTCTimestampString(to));
+            throw new FailedDbFetch("Could not fetch payment information for " + from + " to " + to, e);
+        }
+    }
 }

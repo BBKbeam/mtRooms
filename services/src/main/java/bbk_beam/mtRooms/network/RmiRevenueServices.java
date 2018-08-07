@@ -13,10 +13,7 @@ import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
 import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
 import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
-import bbk_beam.mtRooms.revenue.dto.CustomerBalance;
-import bbk_beam.mtRooms.revenue.dto.Invoice;
-import bbk_beam.mtRooms.revenue.dto.Occupancy;
-import bbk_beam.mtRooms.revenue.dto.SimpleCustomerBalance;
+import bbk_beam.mtRooms.revenue.dto.*;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
 import eadjlib.logger.Logger;
 
@@ -195,6 +192,23 @@ public class RmiRevenueServices implements IRmiRevenueServices {
         try {
             ClientWrapper client = sessions.getClient(session_token);
             return client.getRevenuesAccess().createInvoice(session_token, reservation_id);
+        } catch (IllegalArgumentException e) {
+            log.log_Error("Client [", session_token, "] is not tracked in ClientSessions.");
+            throw new Unauthorised("Client [" + session_token + "] is not tracked in ClientSessions.", e);
+        } catch (SessionExpiredException e) {
+            log.log_Error("Client [", session_token, "] token has expired..");
+            throw new Unauthorised("Client [" + session_token + "] token has expired.", e);
+        } catch (SessionInvalidException e) {
+            log.log_Error("Client [", session_token, "] is invalid.");
+            throw new Unauthorised("Client [" + session_token + "] is invalid.", e);
+        }
+    }
+
+    @Override
+    public List<DetailedPayment> getPayments(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, Unauthorised, RemoteException {
+        try {
+            ClientWrapper client = sessions.getClient(session_token);
+            return client.getRevenuesAccess().getPayments(session_token, from, to);
         } catch (IllegalArgumentException e) {
             log.log_Error("Client [", session_token, "] is not tracked in ClientSessions.");
             throw new Unauthorised("Client [" + session_token + "] is not tracked in ClientSessions.", e);

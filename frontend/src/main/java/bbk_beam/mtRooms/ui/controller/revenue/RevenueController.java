@@ -1,24 +1,34 @@
 package bbk_beam.mtRooms.ui.controller.revenue;
 
+import bbk_beam.mtRooms.exception.InvalidDate;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.network.IRmiRevenueServices;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
+import bbk_beam.mtRooms.revenue.dto.DetailedPayment;
 import bbk_beam.mtRooms.revenue.dto.SimpleCustomerBalance;
+import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
 import bbk_beam.mtRooms.ui.controller.MainWindowController;
 import bbk_beam.mtRooms.ui.controller.common.AlertDialog;
 import bbk_beam.mtRooms.ui.model.SessionManager;
-import bbk_beam.mtRooms.ui.model.revenue.CustomerBalanceTable;
-import bbk_beam.mtRooms.ui.model.revenue.SimpleCustomerBalanceModel;
+import bbk_beam.mtRooms.ui.model.revenue.*;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.chart.BarChart;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -33,6 +43,22 @@ public class RevenueController implements Initializable {
     public Tab revenues_Tab;
     public Tab customerBalances_Tab;
     public Tab occupancy_Tab;
+    //Revenues Tab
+    private RevenuesChart revenuesChart_cache;
+    private DetailedPaymentTable detailedPaymentTable;
+    public Button showPayments_Button;
+    public DatePicker paymentsFrom_DatePicker;
+    public DatePicker paymentsTo_DatePicker;
+    public TextField revenueTotal_TextField;
+    public TableView<DetailedPaymentModel> revenues_TableView;
+    public TableColumn<DetailedPaymentModel, Integer> paymentId_col;
+    public TableColumn<DetailedPaymentModel, Integer> customerId2_col;
+    public TableColumn<DetailedPaymentModel, Integer> reservationId2_col;
+    public TableColumn<DetailedPaymentModel, Double> amount_col;
+    public TableColumn<DetailedPaymentModel, String> timestamp_col;
+    public TableColumn<DetailedPaymentModel, String> paymentMethod_col;
+    public MenuButton revenuesChartTypes_MenuButton;
+    public Pane revenuesChart_Pane;
     //Customer Balances Tab
     private CustomerBalanceTable customerBalanceTable;
     public TableView<SimpleCustomerBalanceModel> customerBalance_TableView;
@@ -42,13 +68,80 @@ public class RevenueController implements Initializable {
     public TableColumn<SimpleCustomerBalanceModel, Double> paid_col;
     public TableColumn<SimpleCustomerBalanceModel, Double> balance_col;
     //Occupancy Tab
-    public DatePicker fromDate_DatePicker;
-    public DatePicker toDate_DatePicker;
+    public DatePicker occupancyFrom_DatePicker;
+    public DatePicker occupancyTo_DatePicker;
     public Button showOccupancy_Button;
     public ChoiceBox building_ChoiceBox;
     public ChoiceBox floor_ChoiceBox;
     public ChoiceBox room_ChoiceBox;
     public ChoiceBox granularity_ChoiceBox;
+
+    /**
+     * Validate a DatePicker date
+     *
+     * @param date    DatePicker date
+     * @param err_msg Error message to display in AlertDialog
+     * @throws InvalidDate when date is null (i.e. nothing is picked)
+     */
+    private void validateDate(LocalDate date, String err_msg) throws InvalidDate {
+        if (date != null)
+            return;
+
+        AlertDialog.showAlert(
+                Alert.AlertType.ERROR,
+                this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                err_msg
+        );
+        throw new InvalidDate("Start date not selected.");
+    }
+
+    /**
+     * Populates the revenues_TableView UI TableView
+     */
+    private void populateRevenuesTable() {
+        IRmiRevenueServices services = this.sessionManager.getRevenueServices();
+        LocalDate fromLocalDate = this.paymentsFrom_DatePicker.getValue();
+        LocalDate toLocalDate = this.paymentsTo_DatePicker.getValue();
+        this.revenueTotal_TextField.setText("");
+        try {
+            validateDate(fromLocalDate, this.resourceBundle.getString("ErrorMsg_NoFromDateSelected"));
+            validateDate(toLocalDate, this.resourceBundle.getString("ErrorMsg_NoToDateSelected"));
+
+            Date fromDate = Date.from(Instant.from(fromLocalDate.atStartOfDay(ZoneId.systemDefault())));
+            Date toDate = Date.from(Instant.from(toLocalDate.atTime(LocalTime.MAX).atZone(ZoneId.systemDefault())));
+            List<DetailedPayment> payments = services.getPayments(this.sessionManager.getToken(), fromDate, toDate);
+
+            this.detailedPaymentTable = new DetailedPaymentTable(this.sessionManager);
+            this.detailedPaymentTable.loadData(payments);
+            this.revenues_TableView.setItems(this.detailedPaymentTable.getData());
+
+            this.revenueTotal_TextField.setText(String.format("%.2f", this.detailedPaymentTable.getPaymentTotal()));
+            if (this.detailedPaymentTable.getPaymentTotal() < 0)
+                this.revenueTotal_TextField.setStyle("-fx-text-fill: red;");
+            else
+                this.revenueTotal_TextField.setStyle("-fx-text-fill: black;");
+
+            this.revenuesChart_cache = new RevenuesChart(this.resourceBundle, payments);
+            this.revenuesChartTypes_MenuButton.setDisable(false);
+            this.revenuesChart_Pane.getChildren().clear();
+        } catch (InvalidPeriodException e) {
+            AlertDialog.showAlert(
+                    Alert.AlertType.ERROR,
+                    this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                    this.resourceBundle.getString("ErrorMsg_InvalidPeriodException")
+            );
+        } catch (FailedDbFetch e) {
+            this.alertDialog.showGenericError(e);
+        } catch (LoginException e) {
+            this.alertDialog.showGenericError(e);
+        } catch (RemoteException e) {
+            this.alertDialog.showGenericError(e);
+        } catch (Unauthorised e) {
+            this.alertDialog.showGenericError(e);
+        } catch (InvalidDate e) {
+            log.log_Debug("User forgot to select from/to date(s)");
+        }
+    }
 
     /**
      * Populates the customerBalance_TableView UI TableView
@@ -77,6 +170,25 @@ public class RevenueController implements Initializable {
         this.resourceBundle = resources;
         this.alertDialog = new AlertDialog(resources);
 
+        //Detailed payments TableView
+        this.paymentId_col.setCellValueFactory(cellData -> cellData.getValue().paymentIdProperty().asObject());
+        this.customerId2_col.setCellValueFactory(cellData -> cellData.getValue().customerIdProperty().asObject());
+        this.reservationId2_col.setCellValueFactory(cellData -> cellData.getValue().reservationIdProperty().asObject());
+        this.amount_col.setCellFactory(cell -> new TableCell<DetailedPaymentModel, Double>() {
+            @Override
+            protected void updateItem(Double amount, boolean empty) {
+                super.updateItem(amount, empty);
+                if (empty)
+                    setText(null);
+                else
+                    setText(String.format("%.2f", amount));
+            }
+        });
+        this.amount_col.setCellValueFactory(cellData -> cellData.getValue().amountProperty().asObject());
+        this.timestamp_col.setCellValueFactory(cellData -> cellData.getValue().timestampProperty());
+        this.paymentMethod_col.setCellValueFactory(cellData -> cellData.getValue().methodProperty());
+
+        //Customer balance TableView
         this.customerBalances_Tab.setOnSelectionChanged(value -> populateCustomerBalancesTable());
 
         this.customerId_col.setCellValueFactory(cellData -> cellData.getValue().customerIdProperty().asObject());
@@ -142,5 +254,65 @@ public class RevenueController implements Initializable {
     @FXML
     public void handleShowOccupancyAction(ActionEvent actionEvent) { //TODO
         System.out.println("handleShowOccupancyAction");
+    }
+
+    @FXML
+    public void handleShowPaymentsAction(ActionEvent actionEvent) {
+        populateRevenuesTable();
+    }
+
+    @FXML
+    public void handleShowRevenueGraphOptionsAction(ActionEvent actionEvent) { //TODO
+        System.out.println("handleShowRevenueGraphOptionsAction");
+    }
+
+    @FXML
+    public void handleRevenuesZoomInAction(ActionEvent actionEvent) { //TODO
+        System.out.println("handleRevenuesZoomInAction");
+    }
+
+    @FXML
+    public void handleRevenuesZoomOutAction(ActionEvent actionEvent) { //TODO
+        System.out.println("handleRevenuesZoomOutAction");
+    }
+
+    @FXML
+    public void handleShowPaymentMethodChartAction(ActionEvent actionEvent) {
+        BarChart chart = this.revenuesChart_cache.getMethodBarChart();
+        this.revenuesChart_Pane.getChildren().clear();
+        this.revenuesChart_Pane.getChildren().add(chart);
+        chart.setPadding(new Insets(5, 5, 5, 5));
+        chart.prefWidthProperty().bind(this.revenuesChart_Pane.widthProperty());
+        chart.prefHeightProperty().bind(this.revenuesChart_Pane.heightProperty());
+    }
+
+    @FXML
+    public void handleShowHourlyPaymentChartAction(ActionEvent actionEvent) {
+        BarChart chart = this.revenuesChart_cache.getHourlyBarChart();
+        this.revenuesChart_Pane.getChildren().clear();
+        this.revenuesChart_Pane.getChildren().add(chart);
+        chart.setPadding(new Insets(5, 5, 5, 5));
+        chart.prefWidthProperty().bind(this.revenuesChart_Pane.widthProperty());
+        chart.prefHeightProperty().bind(this.revenuesChart_Pane.heightProperty());
+    }
+
+    @FXML
+    public void handleShowWeekdayPaymentChartAction(ActionEvent actionEvent) {
+        BarChart chart = this.revenuesChart_cache.getWeekdayBarChart();
+        this.revenuesChart_Pane.getChildren().clear();
+        this.revenuesChart_Pane.getChildren().add(chart);
+        chart.setPadding(new Insets(5, 5, 5, 5));
+        chart.prefWidthProperty().bind(this.revenuesChart_Pane.widthProperty());
+        chart.prefHeightProperty().bind(this.revenuesChart_Pane.heightProperty());
+    }
+
+    @FXML
+    public void handleShowWeeklyRevenueBarChartAction(ActionEvent actionEvent) {
+        BarChart chart = this.revenuesChart_cache.getWeekInYearBarChart();
+        this.revenuesChart_Pane.getChildren().clear();
+        this.revenuesChart_Pane.getChildren().add(chart);
+        chart.setPadding(new Insets(5, 5, 5, 5));
+        chart.prefWidthProperty().bind(this.revenuesChart_Pane.widthProperty());
+        chart.prefHeightProperty().bind(this.revenuesChart_Pane.heightProperty());
     }
 }

@@ -12,7 +12,177 @@
     <tabs>
         <Tab fx:id="revenues_Tab" text="%Tab_Revenues">
             <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0"/>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                    <children>
+                        <BorderPane layoutX="190.0" layoutY="45.0" prefHeight="200.0" prefWidth="200.0"
+                                    AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                                    AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                            <top>
+                                <HBox prefHeight="70.0" BorderPane.alignment="CENTER">
+                                    <children>
+                                        <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+                                            <columnConstraints>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   maxWidth="200.0" minWidth="150.0" prefWidth="100.0"/>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   maxWidth="200.0" minWidth="150.0" prefWidth="100.0"/>
+                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES"
+                                                                   maxWidth="-Infinity" minWidth="50.0"
+                                                                   prefWidth="50.0"/>
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                                <RowConstraints maxHeight="-Infinity" minHeight="20.0" prefHeight="30.0"
+                                                                vgrow="SOMETIMES"/>
+                                                <RowConstraints maxHeight="-Infinity" minHeight="40.0" prefHeight="40.0"
+                                                                vgrow="SOMETIMES"/>
+                                            </rowConstraints>
+                                            <children>
+                                                <Label text="%Label_FromDate"/>
+                                                <Label text="%Label_ToDate" GridPane.columnIndex="1"/>
+                                                <DatePicker fx:id="paymentsFrom_DatePicker" GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </DatePicker>
+                                                <DatePicker fx:id="paymentsTo_DatePicker" GridPane.columnIndex="1"
+                                                            GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </DatePicker>
+                                                <Button fx:id="showPayments_Button" defaultButton="true"
+                                                        mnemonicParsing="false" onAction="#handleShowPaymentsAction"
+                                                        text="Go" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                    <GridPane.margin>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                    </GridPane.margin>
+                                                </Button>
+                                            </children>
+                                            <HBox.margin>
+                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                            </HBox.margin>
+                                        </GridPane>
+                                    </children>
+                                </HBox>
+                            </top>
+                            <center>
+                                <SplitPane dividerPositions="0.4899665551839465" prefHeight="160.0" prefWidth="200.0"
+                                           BorderPane.alignment="CENTER">
+                                    <items>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0">
+                                            <children>
+                                                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
+                                                      AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                                      AnchorPane.topAnchor="0.0">
+                                                    <children>
+                                                        <HBox maxHeight="1.7976931348623157E308"
+                                                              maxWidth="1.7976931348623157E308" minHeight="-Infinity"
+                                                              prefHeight="40.0">
+                                                            <children>
+                                                                <Label styleClass="field_label"
+                                                                       stylesheets="@../../css/MtRoomsGUI.css"
+                                                                       text="%Label_Total">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="5.0" left="5.0" right="5.0"
+                                                                                top="5.0"/>
+                                                                    </HBox.margin>
+                                                                    <padding>
+                                                                        <Insets bottom="5.0" left="5.0" right="5.0"
+                                                                                top="5.0"/>
+                                                                    </padding>
+                                                                </Label>
+                                                                <TextField fx:id="revenueTotal_TextField"
+                                                                           editable="false">
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                                    </HBox.margin>
+                                                                </TextField>
+                                                            </children>
+                                                        </HBox>
+                                                        <TableView fx:id="revenues_TableView">
+                                                            <columns>
+                                                                <TableColumn fx:id="paymentId_col" minWidth="100.0"
+                                                                             prefWidth="100.0"
+                                                                             styleClass="cell_middle_alignment"
+                                                                             text="Payment ID"/>
+                                                                <TableColumn fx:id="customerId2_col" minWidth="100.0"
+                                                                             prefWidth="100.0"
+                                                                             styleClass="cell_middle_alignment"
+                                                                             text="Customer"/>
+                                                                <TableColumn fx:id="reservationId2_col" minWidth="100.0"
+                                                                             prefWidth="100.0"
+                                                                             styleClass="cell_middle_alignment"
+                                                                             text="Reservation"/>
+                                                                <TableColumn fx:id="amount_col" minWidth="100.0"
+                                                                             prefWidth="100.0"
+                                                                             styleClass="cell_right_alignment"
+                                                                             text="Amount"/>
+                                                                <TableColumn fx:id="timestamp_col" minWidth="-Infinity"
+                                                                             prefWidth="160.0"
+                                                                             styleClass="cell_middle_alignment"
+                                                                             text="Timestamp"/>
+                                                                <TableColumn fx:id="paymentMethod_col" minWidth="100.0"
+                                                                             prefWidth="100.0"
+                                                                             styleClass="cell_middle_alignment"
+                                                                             text="Method"/>
+                                                            </columns>
+                                                        </TableView>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </AnchorPane>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                            <children>
+                                                <VBox prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0"
+                                                      AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
+                                                      AnchorPane.topAnchor="0.0">
+                                                    <children>
+                                                        <HBox minHeight="-Infinity" prefHeight="40.0">
+                                                            <children>
+                                                                <MenuButton fx:id="revenuesChartTypes_MenuButton"
+                                                                            disable="true" mnemonicParsing="false"
+                                                                            text="%Button_Type">
+                                                                    <items>
+                                                                        <MenuItem mnemonicParsing="false"
+                                                                                  onAction="#handleShowPaymentMethodChartAction"
+                                                                                  text="%MenuItem_PaymentMethodChart"/>
+                                                                        <MenuItem mnemonicParsing="false"
+                                                                                  onAction="#handleShowHourlyPaymentChartAction"
+                                                                                  text="%MenuItem_HourlyChart"/>
+                                                                        <MenuItem mnemonicParsing="false"
+                                                                                  onAction="#handleShowWeekdayPaymentChartAction"
+                                                                                  text="%MenuItem_WeekdayChart"/>
+                                                                        <MenuItem mnemonicParsing="false"
+                                                                                  onAction="#handleShowWeeklyRevenueBarChartAction"
+                                                                                  text="%MenuItem_WeeklyChart"/>
+                                                                    </items>
+                                                                    <HBox.margin>
+                                                                        <Insets bottom="5.0" left="5.0" right="5.0"
+                                                                                top="5.0"/>
+                                                                    </HBox.margin>
+                                                                </MenuButton>
+                                                            </children>
+                                                        </HBox>
+                                                        <Pane fx:id="revenuesChart_Pane"
+                                                              maxHeight="1.7976931348623157E308"
+                                                              maxWidth="1.7976931348623157E308" VBox.vgrow="SOMETIMES">
+                                                            <VBox.margin>
+                                                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                            </VBox.margin>
+                                                        </Pane>
+                                                    </children>
+                                                </VBox>
+                                            </children>
+                                        </AnchorPane>
+                                    </items>
+                                </SplitPane>
+                            </center>
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0"/>
+                            </padding>
+                        </BorderPane>
+                    </children>
+                </AnchorPane>
             </content>
         </Tab>
         <Tab fx:id="customerBalances_Tab" text="%Tab_CustomerBalance">
@@ -34,11 +204,11 @@
                                 <TableColumn fx:id="balance_col" editable="false" minWidth="100.0" prefWidth="100.0"
                                              styleClass="cell_right_alignment" text="Balance"/>
                             </columns>
-                            <padding>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
-                            </padding>
                         </TableView>
                     </children>
+                    <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                    </padding>
                 </AnchorPane>
             </content>
         </Tab>
@@ -81,18 +251,18 @@
                                                 <Label text="%Label_Building" GridPane.columnIndex="2"/>
                                                 <Label text="%Label_Floor" GridPane.columnIndex="3"/>
                                                 <Label text="%Label_Room" GridPane.columnIndex="4"/>
-                                                <DatePicker fx:id="fromDate_DatePicker" GridPane.rowIndex="1">
+                                                <DatePicker fx:id="occupancyFrom_DatePicker" GridPane.rowIndex="1">
                                                     <GridPane.margin>
                                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                                     </GridPane.margin>
                                                 </DatePicker>
-                                                <DatePicker fx:id="toDate_DatePicker" GridPane.columnIndex="1"
+                                                <DatePicker fx:id="occupancyTo_DatePicker" GridPane.columnIndex="1"
                                                             GridPane.rowIndex="1">
                                                     <GridPane.margin>
                                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
                                                     </GridPane.margin>
                                                 </DatePicker>
-                                                <Button fx:id="showOccupancy_Button" defaultButton="true" disable="true"
+                                                <Button fx:id="showOccupancy_Button" defaultButton="true"
                                                         mnemonicParsing="false" onAction="#handleShowOccupancyAction"
                                                         text="Go" GridPane.columnIndex="6" GridPane.rowIndex="1">
                                                     <GridPane.margin>
@@ -133,8 +303,7 @@
                                 </HBox>
                             </top>
                             <center>
-                                <LineChart maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                           BorderPane.alignment="TOP_LEFT">
+                                <LineChart>
                                     <xAxis>
                                         <CategoryAxis side="BOTTOM"/>
                                     </xAxis>

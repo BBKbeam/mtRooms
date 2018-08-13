@@ -155,6 +155,15 @@
                                                                         <MenuItem mnemonicParsing="false"
                                                                                   onAction="#handleShowWeeklyRevenueBarChartAction"
                                                                                   text="%MenuItem_WeeklyChart"/>
+                                                                        <MenuItem mnemonicParsing="false"
+                                                                                  onAction="#handleShowDailyRevenueChartAction"
+                                                                                  text="%MenuItem_DailyChart"/>
+                                                                        <MenuItem mnemonicParsing="false"
+                                                                                  onAction="#handleShowMonthlyRevenueChartAction"
+                                                                                  text="%MenuItem_MonthlyChart"/>
+                                                                        <MenuItem mnemonicParsing="false"
+                                                                                  onAction="#handleShowYearlyRevenueChartAction"
+                                                                                  text="%MenuItem_YearlyChart"/>
                                                                     </items>
                                                                     <HBox.margin>
                                                                         <Insets bottom="5.0" left="5.0" right="5.0"

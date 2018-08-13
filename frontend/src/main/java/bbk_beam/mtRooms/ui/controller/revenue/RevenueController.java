@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.chart.BarChart;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -309,6 +310,36 @@ public class RevenueController implements Initializable {
     @FXML
     public void handleShowWeeklyRevenueBarChartAction(ActionEvent actionEvent) {
         BarChart chart = this.revenuesChart_cache.getWeekInYearBarChart();
+        this.revenuesChart_Pane.getChildren().clear();
+        this.revenuesChart_Pane.getChildren().add(chart);
+        chart.setPadding(new Insets(5, 5, 5, 5));
+        chart.prefWidthProperty().bind(this.revenuesChart_Pane.widthProperty());
+        chart.prefHeightProperty().bind(this.revenuesChart_Pane.heightProperty());
+    }
+
+    @FXML
+    public void handleShowDailyRevenueChartAction(ActionEvent actionEvent) {
+        LineChart chart = this.revenuesChart_cache.getDailyLineChart();
+        this.revenuesChart_Pane.getChildren().clear();
+        this.revenuesChart_Pane.getChildren().add(chart);
+        chart.setPadding(new Insets(5, 5, 5, 5));
+        chart.prefWidthProperty().bind(this.revenuesChart_Pane.widthProperty());
+        chart.prefHeightProperty().bind(this.revenuesChart_Pane.heightProperty());
+    }
+
+    @FXML
+    public void handleShowMonthlyRevenueChartAction(ActionEvent actionEvent) {
+        BarChart chart = this.revenuesChart_cache.getMonthlyBarChart();
+        this.revenuesChart_Pane.getChildren().clear();
+        this.revenuesChart_Pane.getChildren().add(chart);
+        chart.setPadding(new Insets(5, 5, 5, 5));
+        chart.prefWidthProperty().bind(this.revenuesChart_Pane.widthProperty());
+        chart.prefHeightProperty().bind(this.revenuesChart_Pane.heightProperty());
+    }
+
+    @FXML
+    public void handleShowYearlyRevenueChartAction(ActionEvent actionEvent) {
+        BarChart chart = this.revenuesChart_cache.getYearlyBarChart();
         this.revenuesChart_Pane.getChildren().clear();
         this.revenuesChart_Pane.getChildren().add(chart);
         chart.setPadding(new Insets(5, 5, 5, 5));

@@ -322,7 +322,7 @@ public class RevenueAggregator {
                 " ON Reservation.id = Reservation_has_Payment.reservation_id " +
                 "WHERE Payment.timestamp >= \"" + TimestampConverter.getUTCTimestampString(from) + "\"" +
                 " AND Payment.timestamp <= \"" + TimestampConverter.getUTCTimestampString(to) + "\" " +
-                "ORDER BY customer_id, reservation_id, timestamp ASC";
+                "ORDER BY timestamp ASC, customer_id, reservation_id";
         return this.db_access.pullFromDB(session_token.getSessionId(), query);
     }
 

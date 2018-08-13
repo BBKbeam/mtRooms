@@ -166,7 +166,7 @@ public interface IRevenueReporter {
      * @param session_token Session token
      * @param from          Start of the date range
      * @param to            End of the date range
-     * @return List of payments
+     * @return List of payments ordered by ascending Timestamp
      * @throws InvalidPeriodException  when the date period is not valid
      * @throws FailedDbFetch           when an error occurred getting the record
      * @throws SessionExpiredException when current user session has expired

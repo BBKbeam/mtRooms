@@ -193,10 +193,10 @@ public class RmiServer extends RmiServices {
     /**
      * Sets the port for the server
      *
-     * @param port Port to use
+     * @param port_number Port to use
      */
-    public void setPort(Integer port) {
-        this.port = port;
+    public void setPort(Integer port_number) {
+        port = port_number;
     }
 
 

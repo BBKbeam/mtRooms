@@ -81,9 +81,9 @@ public interface IRevenueReporter {
      * @param session_token Session token
      * @param customer      Customer DTO
      * @return SimpleCustomerBalance DTO (summary)
-     * @throws FailedDbFetch
-     * @throws SessionExpiredException
-     * @throws SessionInvalidException
+     * @throws FailedDbFetch           when error occurred during fetching of data from DB
+     * @throws SessionExpiredException when current user session has expired
+     * @throws SessionInvalidException when user session is not valid
      */
     SimpleCustomerBalance getSimpleCustomerBalance(Token session_token, Customer customer) throws FailedDbFetch, SessionExpiredException, SessionInvalidException;
 

@@ -239,21 +239,21 @@ public class RevenueAggregatorTest {
         Assert.assertEquals(4, table.rowCount());
         Assert.assertEquals(9, table.columnCount());
 
-        Assert.assertEquals(1, table.getInteger(1, 1)); //customer_id
-        Assert.assertEquals(2, table.getInteger(2, 1)); //reservation_id
-        Assert.assertEquals(new Double(34.0), table.getDouble(6, 1)); //amount
+        Assert.assertEquals(3, table.getInteger(1, 1)); //customer_id
+        Assert.assertEquals(1, table.getInteger(2, 1)); //reservation_id
+        Assert.assertEquals(new Double(77.0), table.getDouble(6, 1)); //amount
 
-        Assert.assertEquals(2, table.getInteger(1, 2)); //customer_id
-        Assert.assertEquals(4, table.getInteger(2, 2)); //reservation_id
-        Assert.assertEquals(new Double(40.5), table.getDouble(6, 2)); //amount
+        Assert.assertEquals(1, table.getInteger(1, 2)); //customer_id
+        Assert.assertEquals(2, table.getInteger(2, 2)); //reservation_id
+        Assert.assertEquals(new Double(34.0), table.getDouble(6, 2)); //amount
 
         Assert.assertEquals(2, table.getInteger(1, 3)); //customer_id
         Assert.assertEquals(4, table.getInteger(2, 3)); //reservation_id
-        Assert.assertEquals(new Double(22.5), table.getDouble(6, 3)); //amount
+        Assert.assertEquals(new Double(40.5), table.getDouble(6, 3)); //amount
 
-        Assert.assertEquals(3, table.getInteger(1, 4)); //customer_id
-        Assert.assertEquals(1, table.getInteger(2, 4)); //reservation_id
-        Assert.assertEquals(new Double(77.0), table.getDouble(6, 4)); //amount
+        Assert.assertEquals(2, table.getInteger(1, 4)); //customer_id
+        Assert.assertEquals(4, table.getInteger(2, 4)); //reservation_id
+        Assert.assertEquals(new Double(22.5), table.getDouble(6, 4)); //amount
     }
 
     @Test

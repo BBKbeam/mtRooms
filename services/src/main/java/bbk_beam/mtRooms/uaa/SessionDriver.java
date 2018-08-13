@@ -26,15 +26,15 @@ import eadjlib.logger.Logger;
 
 public class SessionDriver implements ISessionDriver {
     private final Logger log = Logger.getLoggerInstance(AuthenticatedFrontDesk.class.getName());
-    private static String db_file = "";
-    private static boolean instantiated_flag = false;
+    private String db_file = "";
+    private boolean instantiated_flag = false;
 
-    private static DbSystemBootstrap dbSystemBootstrap;
-    private static Authenticator authenticator;
-    private static IAuthenticatedAdministration authenticated_admin;
-    private static IAuthenticatedFrontDesk authenticated_front_desk;
-    private static IAuthenticatedLogisticsPersonnel authenticated_logistics_personnel;
-    private static IAuthenticatedRevenuePersonnel authenticated_revenue_personnel;
+    private DbSystemBootstrap dbSystemBootstrap;
+    private Authenticator authenticator;
+    private IAuthenticatedAdministration authenticated_admin;
+    private IAuthenticatedFrontDesk authenticated_front_desk;
+    private IAuthenticatedLogisticsPersonnel authenticated_logistics_personnel;
+    private IAuthenticatedRevenuePersonnel authenticated_revenue_personnel;
 
     /**
      * Creates an IAuthenticatedAdministration implementation instance + dependency chain

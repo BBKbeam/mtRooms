@@ -46,14 +46,14 @@ public class SessionDriver implements ISessionDriver {
         try {
             log.log("Creating [AuthenticatedAdministration] instance...");
             IAuthenticationSystem authenticationSystem = new UserAccountChecker(
-                    this.dbSystemBootstrap.getUserAccDbAccess()
+                    dbSystemBootstrap.getUserAccDbAccess()
             );
             AdminSession adminSession = new AdminSession(
-                    this.dbSystemBootstrap.getReservationDbAccess(),
-                    this.dbSystemBootstrap.getUserAccDbAccess(),
+                    dbSystemBootstrap.getReservationDbAccess(),
+                    dbSystemBootstrap.getUserAccDbAccess(),
                     authenticationSystem
             );
-            this.authenticator = new Authenticator(authenticationSystem);
+            authenticator = new Authenticator(authenticationSystem);
             return new AuthenticatedAdministration(
                     new AdministrationDelegate(adminSession)
             );
@@ -73,7 +73,7 @@ public class SessionDriver implements ISessionDriver {
         try {
             log.log("Creating [AuthenticatedFrontDesk] instance...");
             ReservationDbDelegate reservationDbDelegate = new ReservationDbDelegate(
-                    this.dbSystemBootstrap.getReservationDbAccess()
+                    dbSystemBootstrap.getReservationDbAccess()
             );
             ScheduleCache scheduleCache = new ScheduleCache();
 
@@ -100,7 +100,7 @@ public class SessionDriver implements ISessionDriver {
                     customerAccountAccess
             );
 
-            return new AuthenticatedFrontDesk(delegate, this.authenticator);
+            return new AuthenticatedFrontDesk(delegate, authenticator);
         } catch (DbBootstrapException e) {
             throw new FailedSessionSpooling("Could not spool AuthenticatedFrontDesk dependency chain.", e);
         }
@@ -116,7 +116,7 @@ public class SessionDriver implements ISessionDriver {
         try {
             log.log("Creating [AuthenticatedLogisticsPersonnel] instance...");
             ILogisticReportGenerator logisticReportGenerator = new LogisticReportGenerator(
-                    new LogisticAggregator(this.dbSystemBootstrap.getReservationDbAccess())
+                    new LogisticAggregator(dbSystemBootstrap.getReservationDbAccess())
             );
             return new AuthenticatedLogisticsPersonnel(
                     new LogisticsPersonnelDelegate(logisticReportGenerator)
@@ -136,7 +136,7 @@ public class SessionDriver implements ISessionDriver {
         try {
             log.log("Creating [AuthenticatedRevenuePersonnel] instance...");
             IRevenueReporter revenueReporter = new ReportCreator(
-                    new RevenueAggregator(this.dbSystemBootstrap.getReservationDbAccess())
+                    new RevenueAggregator(dbSystemBootstrap.getReservationDbAccess())
             );
             return new AuthenticatedRevenuePersonnel(
                     new RevenuePersonnelDelegate(revenueReporter)
@@ -149,26 +149,26 @@ public class SessionDriver implements ISessionDriver {
     @Override
     synchronized public void init(String db_file_name) throws SessionActive, FailedSessionSpooling {
         if (instantiated_flag) {
-            log.log_Error("Trying to initialise over already active Session (db='", this.db_file, "'). Reset first.");
-            throw new SessionActive("Trying to initialise over already active Session (db='" + this.db_file + "'). Reset first.");
+            log.log_Error("Trying to initialise over already active Session (db='", db_file, "'). Reset first.");
+            throw new SessionActive("Trying to initialise over already active Session (db='" + db_file + "'). Reset first.");
         }
         try {
             log.log("Spooling up session. Target db is '", db_file_name, "'.");
 
             //Database
-            this.dbSystemBootstrap = new DbSystemBootstrap();
-            this.dbSystemBootstrap.init(db_file_name);
-            this.db_file = db_file_name;
+            dbSystemBootstrap = new DbSystemBootstrap();
+            dbSystemBootstrap.init(db_file_name);
+            db_file = db_file_name;
             //Admin
-            this.authenticated_admin = createAuthenticatedAdmin();
+            authenticated_admin = createAuthenticatedAdmin();
             //Reservation system
-            this.authenticated_front_desk = createAuthenticatedFrontDesk();
+            authenticated_front_desk = createAuthenticatedFrontDesk();
             //Operation
-            this.authenticated_logistics_personnel = createAuthenticatedLogisticsPersonnel();
+            authenticated_logistics_personnel = createAuthenticatedLogisticsPersonnel();
             //Revenue
-            this.authenticated_revenue_personnel = createAuthenticatedRevenuePersonnel();
+            authenticated_revenue_personnel = createAuthenticatedRevenuePersonnel();
 
-            this.instantiated_flag = true;
+            instantiated_flag = true;
             log.log("SessionDriver spooled all dependency instances successfully...");
         } catch (DbBootstrapException e) {
             log.log_Fatal("SessionDriver failed spooling.");
@@ -178,95 +178,95 @@ public class SessionDriver implements ISessionDriver {
 
     @Override
     synchronized public void reset() throws SessionLocked {
-        if (this.authenticator.validTokenCount() > 0) {
+        if (authenticator.validTokenCount() > 0) {
             log.log_Error("Trying to reset with currently logged-in users.");
             throw new SessionLocked("Trying to reset with currently logged-in users.");
         }
-        this.authenticator.clearExpiredTokens();
-        if (!this.dbSystemBootstrap.closeConnection()) {
-            log.log_Error("Could not close the database connection to '", this.db_file, "'.");
+        authenticator.clearExpiredTokens();
+        if (!dbSystemBootstrap.closeConnection()) {
+            log.log_Error("Could not close the database connection to '", db_file, "'.");
             throw new SessionLocked("Couldn't close the database connection...");
         }
         //Database
-        this.dbSystemBootstrap = null;
-        this.db_file = "";
-        this.authenticated_admin = null;
-        this.authenticated_front_desk = null;
-        this.authenticated_logistics_personnel = null;
-        this.authenticated_revenue_personnel = null;
-        this.instantiated_flag = false;
+        dbSystemBootstrap = null;
+        db_file = "";
+        authenticated_admin = null;
+        authenticated_front_desk = null;
+        authenticated_logistics_personnel = null;
+        authenticated_revenue_personnel = null;
+        instantiated_flag = false;
         log.log("SessionDriver closed all dependency instances successfully...");
     }
 
     @Override
     synchronized public IAuthenticatedFrontDesk getFrontDeskInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException {
-        if (!this.instantiated_flag)
+        if (!instantiated_flag)
             throw new ServerSessionInactive("Session is inactive. It needs to be initialised.");
-        if (!this.authenticator.isLoggedIn(session_token))
+        if (!authenticator.isLoggedIn(session_token))
             throw new AuthenticationFailureException("Token [" + session_token + "] is not logged in.");
-        if (!this.authenticator.hasValidAccessRights(session_token, SessionType.USER))
+        if (!authenticator.hasValidAccessRights(session_token, SessionType.USER))
             throw new AuthenticationFailureException("Token [" + session_token + "] has not got access rights to this resource.");
-        return this.authenticated_front_desk;
+        return authenticated_front_desk;
     }
 
     @Override
     synchronized public IAuthenticatedAdministration getAdministrationInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException {
-        if (!this.instantiated_flag)
+        if (!instantiated_flag)
             throw new ServerSessionInactive("Session is inactive. It needs to be initialised.");
-        if (!this.authenticator.isLoggedIn(session_token))
+        if (!authenticator.isLoggedIn(session_token))
             throw new AuthenticationFailureException("Token [" + session_token + "] is not logged in.");
-        if (!this.authenticator.hasValidAccessRights(session_token, SessionType.ADMIN))
+        if (!authenticator.hasValidAccessRights(session_token, SessionType.ADMIN))
             throw new AuthenticationFailureException("Token [" + session_token + "] has not got access rights to this resource.");
-        return this.authenticated_admin;
+        return authenticated_admin;
     }
 
     @Override
     synchronized public IAuthenticatedRevenuePersonnel getRevenuePersonnelInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException {
-        if (!this.instantiated_flag)
+        if (!instantiated_flag)
             throw new ServerSessionInactive("Session is inactive. It needs to be initialised.");
-        if (!this.authenticator.isLoggedIn(session_token))
+        if (!authenticator.isLoggedIn(session_token))
             throw new AuthenticationFailureException("Token [" + session_token + "] is not logged in.");
-        if (!this.authenticator.hasValidAccessRights(session_token, SessionType.USER))
+        if (!authenticator.hasValidAccessRights(session_token, SessionType.USER))
             throw new AuthenticationFailureException("Token [" + session_token + "] has not got access rights to this resource.");
-        return this.authenticated_revenue_personnel;
+        return authenticated_revenue_personnel;
     }
 
     @Override
     synchronized public IAuthenticatedLogisticsPersonnel getLogisticsPersonnelInstance(Token session_token) throws ServerSessionInactive, AuthenticationFailureException {
-        if (!this.instantiated_flag)
+        if (!instantiated_flag)
             throw new ServerSessionInactive("Session is inactive. It needs to be initialised.");
-        if (!this.authenticator.isLoggedIn(session_token))
+        if (!authenticator.isLoggedIn(session_token))
             throw new AuthenticationFailureException("Token [" + session_token + "] is not logged in.");
-        if (!this.authenticator.hasValidAccessRights(session_token, SessionType.USER))
+        if (!authenticator.hasValidAccessRights(session_token, SessionType.USER))
             throw new AuthenticationFailureException("Token [" + session_token + "] has not got access rights to this resource.");
-        return this.authenticated_logistics_personnel;
+        return authenticated_logistics_personnel;
     }
 
     @Override
     synchronized public Token login(String username, String password) throws AuthenticationFailureException, ServerSessionInactive {
-        if (!this.instantiated_flag)
+        if (!instantiated_flag)
             throw new ServerSessionInactive("Server session is not initialised.");
         log.log("Login called for '", username, "'.");
-        return this.authenticator.login(username, password);
+        return authenticator.login(username, password);
     }
 
     @Override
     synchronized public void logout(Token session_token) throws SessionInvalidException, ServerSessionInactive {
-        if (!this.instantiated_flag)
+        if (!instantiated_flag)
             throw new ServerSessionInactive("Server session is not initialised.");
         log.log("Logout called for [", session_token, "].");
-        this.authenticator.logout(session_token);
+        authenticator.logout(session_token);
     }
 
     @Override
     public boolean isInstantiated() {
-        return this.instantiated_flag;
+        return instantiated_flag;
     }
 
     @Override
     public String currentDB() throws SessionReset {
         if (this.isInstantiated())
-            return this.db_file;
+            return db_file;
         else
             throw new SessionReset("Session has not been instantiated.");
     }

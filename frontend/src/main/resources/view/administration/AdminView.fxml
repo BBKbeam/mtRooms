@@ -12,7 +12,7 @@
                 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0"
                 AnchorPane.topAnchor="0.0">
            <tabs>
-               <Tab fx:id="userAccount_Tab" text="User Accounts">
+               <Tab fx:id="userAccount_Tab" text="%Tab_UserAccounts">
                    <content>
                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
@@ -32,17 +32,25 @@
                                                   GridPane.rowIndex="1" GridPane.valignment="TOP"
                                                   GridPane.vgrow="ALWAYS">
                                            <columns>
-                                               <TableColumn fx:id="id_col" maxWidth="1.7976931348623157E308"
-                                                            prefWidth="53.0" text="id"/>
+                                               <TableColumn fx:id="id_col" maxWidth="-1.0" minWidth="50.0"
+                                                            prefWidth="50.0" styleClass="cell_middle_alignment"
+                                                            text="id"/>
                                                <TableColumn fx:id="username_col" prefWidth="119.0" text="username"/>
-                                               <TableColumn fx:id="created_col" prefWidth="131.0" text="created"/>
-                                               <TableColumn fx:id="login_col" minWidth="0.0" prefWidth="111.0"
-                                                            text="last login"/>
-                                               <TableColumn fx:id="pwd_change_col" prefWidth="155.0"
-                                                            text="last pwd change"/>
-                                               <TableColumn fx:id="type_col" minWidth="0.0" prefWidth="107.0"
-                                                            text="type"/>
-                                               <TableColumn fx:id="active_col" prefWidth="64.0" text="active"/>
+                                               <TableColumn fx:id="created_col" maxWidth="1.7976931348623157E308"
+                                                            minWidth="-1.0" prefWidth="160.0"
+                                                            styleClass="cell_middle_alignment" text="created"/>
+                                               <TableColumn fx:id="login_col" maxWidth="1.7976931348623157E308"
+                                                            minWidth="-1.0" prefWidth="160.0"
+                                                            styleClass="cell_middle_alignment" text="last login"/>
+                                               <TableColumn fx:id="pwd_change_col" maxWidth="1.7976931348623157E308"
+                                                            minWidth="-1.0" prefWidth="160.0"
+                                                            styleClass="cell_middle_alignment" text="last pwd change"/>
+                                               <TableColumn fx:id="type_col" maxWidth="1.7976931348623157E308"
+                                                            minWidth="100.0" prefWidth="120.0"
+                                                            styleClass="cell_middle_alignment" text="type"/>
+                                               <TableColumn fx:id="active_col" maxWidth="1.7976931348623157E308"
+                                                            minWidth="40.0" styleClass="cell_middle_alignment"
+                                                            text="active"/>
                                            </columns>
                                            <GridPane.margin>
                                                <Insets left="5.0" right="5.0"/>
@@ -52,14 +60,14 @@
                                            <children>
                                                <Button fx:id="newAccount_Button" mnemonicParsing="false"
                                                        onAction="#handleNewAccountAction" prefHeight="26.0"
-                                                       prefWidth="80.0" text="New">
+                                                       prefWidth="80.0" text="%Button_NewGeneric">
                                                    <HBox.margin>
                                                        <Insets bottom="5.0" right="5.0" top="5.0"/>
                                                    </HBox.margin>
                                                </Button>
                                                <Button fx:id="editAccount_Button" mnemonicParsing="false"
                                                        onAction="#handleEditAccountAction" prefHeight="26.0"
-                                                       prefWidth="80.0" text="Edit">
+                                                       prefWidth="80.0" text="%Button_EditGeneric">
                                                    <HBox.margin>
                                                        <Insets bottom="5.0" right="5.0" top="5.0"/>
                                                    </HBox.margin>
@@ -75,7 +83,7 @@
                        </AnchorPane>
                    </content>
                </Tab>
-               <Tab fx:id="membership_Tab" text="Memberships &amp; Discounts">
+               <Tab fx:id="membership_Tab" text="%Tab_MembershipsAndDiscounts">
                    <content>
                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
@@ -106,14 +114,15 @@
                                                    <children>
                                                        <Button fx:id="addMembership_Button" mnemonicParsing="false"
                                                                onAction="#handleAddMembershipAction" prefHeight="26.0"
-                                                               prefWidth="80.0" text="Add">
+                                                               prefWidth="80.0" text="%Button_AddGeneric">
                                                            <HBox.margin>
                                                                <Insets bottom="5.0" right="5.0" top="5.0"/>
                                                            </HBox.margin>
                                                        </Button>
                                                        <Button fx:id="removeMembership_Button" mnemonicParsing="false"
                                                                onAction="#handleRemoveMembershipAction"
-                                                               prefHeight="26.0" prefWidth="80.0" text="Delete">
+                                                               prefHeight="26.0" prefWidth="80.0"
+                                                               text="%Button_RemoveGeneric">
                                                            <HBox.margin>
                                                                <Insets bottom="5.0" right="5.0" top="5.0"/>
                                                            </HBox.margin>
@@ -155,7 +164,7 @@
                        </AnchorPane>
                    </content>
                </Tab>
-               <Tab fx:id="inventory_Tab" text="Inventory">
+               <Tab fx:id="inventory_Tab" text="%Tab_Inventory">
                    <content>
                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>

@@ -8,9 +8,9 @@ import bbk_beam.mtRooms.reservation.dto.Customer;
 import bbk_beam.mtRooms.reservation.dto.Floor;
 import bbk_beam.mtRooms.reservation.dto.Room;
 import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
-import bbk_beam.mtRooms.revenue.dto.CustomerBalance;
-import bbk_beam.mtRooms.revenue.dto.Occupancy;
-import bbk_beam.mtRooms.revenue.dto.SimpleCustomerBalance;
+import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
+import bbk_beam.mtRooms.reservation.exception.InvalidReservation;
+import bbk_beam.mtRooms.revenue.dto.*;
 import bbk_beam.mtRooms.revenue.exception.InvalidPeriodException;
 
 import java.util.Date;
@@ -133,4 +133,32 @@ public interface IAuthenticatedRevenuePersonnel {
      * @throws SessionInvalidException When the session for the id provided does not exist in the tracker
      */
     public Occupancy getOccupancy(Token session_token, Room room, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Creates an invoice for a reservation
+     *
+     * @param session_token  Session token
+     * @param reservation_id Reservation ID
+     * @return Invoice DTO
+     * @throws InvalidReservation      when reservation ID does not match any in records
+     * @throws InvalidCustomer         when the customer ID linked to the reservation is not in records
+     * @throws FailedDbFetch           when error occurred during fetching of data from DB
+     * @throws SessionExpiredException when current user session has expired
+     * @throws SessionInvalidException when user session is not valid
+     */
+    Invoice createInvoice(Token session_token, Integer reservation_id) throws InvalidReservation, InvalidCustomer, FailedDbFetch, SessionExpiredException, SessionInvalidException;
+
+    /**
+     * Gets the list of payments made within a date range
+     *
+     * @param session_token Session token
+     * @param from          Start of the date range
+     * @param to            End of the date range
+     * @return List of payments
+     * @throws InvalidPeriodException  when the date period is not valid
+     * @throws FailedDbFetch           when an error occurred getting the record
+     * @throws SessionExpiredException when current user session has expired
+     * @throws SessionInvalidException when user session is not valid
+     */
+    List<DetailedPayment> getPayments(Token session_token, Date from, Date to) throws InvalidPeriodException, FailedDbFetch, SessionExpiredException, SessionInvalidException;
 }

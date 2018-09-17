@@ -17,6 +17,7 @@ import bbk_beam.mtRooms.ui.controller.common.FieldValidator;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
@@ -328,11 +329,13 @@ public class RoomController implements Initializable {
         return Optional.ofNullable(this.room);
     }
 
+    @FXML
     public void handleCancelAction(ActionEvent actionEvent) {
         this.room = null;
         cancelButton.getScene().getWindow().hide();
     }
 
+    @FXML
     public void handleSaveAction(ActionEvent actionEvent) {
         if (this.fieldValidator.check()) {
             switch (this.controllerRole) {

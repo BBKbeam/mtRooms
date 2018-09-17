@@ -4,10 +4,7 @@ import bbk_beam.mtRooms.db.exception.DbQueryException;
 import bbk_beam.mtRooms.exception.LoginException;
 import bbk_beam.mtRooms.exception.RemoteFailure;
 import bbk_beam.mtRooms.network.exception.Unauthorised;
-import bbk_beam.mtRooms.reservation.exception.FailedDbFetch;
-import bbk_beam.mtRooms.reservation.exception.FailedDbWrite;
-import bbk_beam.mtRooms.reservation.exception.InvalidCustomer;
-import bbk_beam.mtRooms.reservation.exception.InvalidMembership;
+import bbk_beam.mtRooms.reservation.exception.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
@@ -244,6 +241,19 @@ public class AlertDialog {
                 Alert.AlertType.ERROR,
                 this.resourceBundle.getString("ErrorDialogTitle_Generic"),
                 resourceBundle.getString("ErrorMsg_InvalidCustomerID")
+        );
+    }
+
+    /**
+     * Shows a generic alert dialog
+     *
+     * @param e InvalidReservation exception
+     */
+    public void showGenericError(InvalidReservation e) {
+        AlertDialog.showAlert(
+                Alert.AlertType.ERROR,
+                this.resourceBundle.getString("ErrorDialogTitle_Generic"),
+                resourceBundle.getString("ErrorMsg_ReservationID")
         );
     }
 

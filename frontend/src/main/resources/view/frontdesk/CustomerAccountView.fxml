@@ -32,7 +32,7 @@
                       prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0"
                       AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <tabs>
-                   <Tab fx:id="customer_Tab" text="Customer">
+                   <Tab fx:id="customer_Tab" text="%Tab_Customer">
                      <content>
                         <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                            <children>
@@ -215,7 +215,7 @@
                         </AnchorPane>
                      </content>
                   </Tab>
-                   <Tab fx:id="reservation_Tab" text="Reservations">
+                   <Tab fx:id="reservation_Tab" text="%Tab_Reservations">
                      <content>
                          <AnchorPane>
                            <children>
@@ -236,18 +236,25 @@
                                                  <Button fx:id="newReservation_button" minHeight="-Infinity"
                                                          mnemonicParsing="false" onAction="#handleNewReservationAction"
                                                          prefHeight="26.0" prefWidth="100.0" text="%Button_NewGeneric">
-                                                   <HBox.margin>
-                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
-                                                   </HBox.margin>
-                                                </Button>
+                                                     <HBox.margin>
+                                                         <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                     </HBox.margin>
+                                                 </Button>
                                                  <Button fx:id="cancelReservation_button" minHeight="-Infinity"
                                                          mnemonicParsing="false"
                                                          onAction="#handleCancelReservationAction" prefHeight="26.0"
                                                          prefWidth="100.0" text="%Button_CancelGeneric">
-                                                   <HBox.margin>
-                                                      <Insets bottom="5.0" right="5.0" top="5.0" />
-                                                   </HBox.margin>
-                                                </Button>
+                                                     <HBox.margin>
+                                                         <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                     </HBox.margin>
+                                                 </Button>
+                                                 <Button fx:id="invoice_Button" mnemonicParsing="false"
+                                                         onAction="#handleInvoiceAction" prefHeight="26.0"
+                                                         prefWidth="100.0" text="%Button_Invoice">
+                                                     <HBox.margin>
+                                                         <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                     </HBox.margin>
+                                                 </Button>
                                              </children>
                                           </HBox>
                                           <TableView fx:id="reservation_Table" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1">
@@ -336,7 +343,7 @@
                         </AnchorPane>
                      </content>
                   </Tab>
-                   <Tab fx:id="payment_Tab" text="Payments">
+                   <Tab fx:id="payment_Tab" text="%Tab_Payments">
                      <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                            <children>
@@ -387,14 +394,15 @@
                                                       <Insets bottom="5.0" right="5.0" top="5.0" />
                                                    </HBox.margin>
                                                 </Button>
-                                                 <Button fx:id="createRefund_Button1" mnemonicParsing="false"
-                                                         onAction="#handleCreateRefundButton" prefHeight="26.0"
-                                                         prefWidth="100.0" text="%Button_Refund">
+                                                 <Button fx:id="createRefund_Button" disable="true"
+                                                         mnemonicParsing="false" onAction="#handleCreateRefundButton"
+                                                         prefHeight="26.0" prefWidth="100.0" text="%Button_Refund">
                                                    <HBox.margin>
                                                       <Insets bottom="5.0" right="5.0" top="5.0" />
                                                    </HBox.margin>
                                                 </Button>
-                                                 <Button fx:id="viewPaymentDetails_Button" mnemonicParsing="false"
+                                                 <Button fx:id="viewPaymentDetails_Button" disable="true"
+                                                         mnemonicParsing="false"
                                                          onAction="#handleViewPaymentDetailsAction" prefHeight="26.0"
                                                          prefWidth="100.0" text="%Button_DetailsGeneric">
                                                    <HBox.margin>
@@ -403,22 +411,39 @@
                                                 </Button>
                                              </children>
                                           </HBox>
-                                          <GridPane GridPane.columnIndex="1">
-                                            <columnConstraints>
-                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0"
-                                                                   prefWidth="65.0"/>
-                                              <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="10.0" prefWidth="234.0" />
-                                            </columnConstraints>
-                                            <rowConstraints>
-                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                            </rowConstraints>
+                                           <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
                                              <children>
-                                                 <Label styleClass="field_label" stylesheets="@../../css/MtRoomsGUI.css"
-                                                        text="%Label_Credit"/>
-                                                 <Text fx:id="accountCreditField_Text" strokeType="OUTSIDE"
-                                                       strokeWidth="0.0" text="Text" GridPane.columnIndex="1"/>
+                                                 <Label prefHeight="26.0" styleClass="field_label"
+                                                        stylesheets="@../../css/MtRoomsGUI.css" text="%Label_Credit">
+                                                     <HBox.margin>
+                                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                     </HBox.margin>
+                                                     <padding>
+                                                         <Insets left="5.0" right="5.0"/>
+                                                     </padding>
+                                                 </Label>
+                                                 <TextField fx:id="customerCreditField_TextField" editable="false"
+                                                            styleClass="field_credit"
+                                                            stylesheets="@../../css/MtRoomsGUI.css">
+                                                     <padding>
+                                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                                     </padding>
+                                                     <HBox.margin>
+                                                         <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                     </HBox.margin>
+                                                 </TextField>
+                                                 <Button fx:id="detailedBalance_Button" mnemonicParsing="false"
+                                                         onAction="#handleViewDetailedBalanceAction" prefHeight="26.0"
+                                                         prefWidth="100.0" text="%Button_DetailedBalance">
+                                                     <HBox.margin>
+                                                         <Insets bottom="5.0" right="5.0" top="5.0"/>
+                                                     </HBox.margin>
+                                                 </Button>
                                              </children>
-                                          </GridPane>
+                                               <GridPane.margin>
+                                                   <Insets/>
+                                               </GridPane.margin>
+                                           </HBox>
                                        </children>
                                     </GridPane>
                                  </children>

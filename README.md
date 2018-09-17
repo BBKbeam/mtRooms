@@ -12,10 +12,15 @@ __Note:__ _Under development_
 
 - [ ] Frontend (client/UI)
     -  [x] Administration
+        - [x] User accounts
+        - [x] Memberships & discounts
+        - [x] Inventory (Rooms)
     -  [ ] Reservation
-        -  [ ] Client account
-        -  [ ] Room Booking
-    - [ ] Revenue
+        - [ ] Client account
+        - [ ] Room Booking
+    - [x] Revenue
+        - [x] Revenues charts
+        - [x] Customer balances
     - [x] Logistics
 - [x] Backend (server)
 

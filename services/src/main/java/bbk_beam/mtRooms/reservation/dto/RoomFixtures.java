@@ -83,7 +83,7 @@ public class RoomFixtures implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RoomFixtures that = (RoomFixtures) o;
-        return id == that.id &&
+        return id.equals(that.id) &&
                 fixed_chairs == that.fixed_chairs &&
                 catering_space == that.catering_space &&
                 whiteboard == that.whiteboard &&

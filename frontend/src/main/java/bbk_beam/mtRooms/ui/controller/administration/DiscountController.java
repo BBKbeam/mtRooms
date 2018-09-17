@@ -8,6 +8,7 @@ import bbk_beam.mtRooms.ui.controller.common.FieldValidator;
 import bbk_beam.mtRooms.ui.model.SessionManager;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -88,11 +89,13 @@ public class DiscountController implements Initializable {
         return Optional.ofNullable(this.discount);
     }
 
+    @FXML
     public void handleCancelAction(ActionEvent actionEvent) {
         this.discount = null;
         cancelButton.getScene().getWindow().hide();
     }
 
+    @FXML
     public void handleSaveAction(ActionEvent actionEvent) {
         if (this.fieldValidator.check()) {
             this.discount = new Discount(

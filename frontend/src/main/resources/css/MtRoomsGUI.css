@@ -18,6 +18,10 @@
     -fx-font-style: italic;
 }
 
+.field_credit {
+    -fx-font-family: "system";
+}
+
 .cell_middle_alignment {
     -fx-alignment: center;
 }

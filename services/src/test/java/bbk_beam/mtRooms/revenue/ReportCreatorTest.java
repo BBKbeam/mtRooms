@@ -5,10 +5,7 @@ import bbk_beam.mtRooms.db.DbSystemBootstrap;
 import bbk_beam.mtRooms.db.TimestampConverter;
 import bbk_beam.mtRooms.db.session.SessionType;
 import bbk_beam.mtRooms.reservation.dto.*;
-import bbk_beam.mtRooms.revenue.dto.CustomerBalance;
-import bbk_beam.mtRooms.revenue.dto.Invoice;
-import bbk_beam.mtRooms.revenue.dto.RoomOccupancy;
-import bbk_beam.mtRooms.revenue.dto.SimpleCustomerBalance;
+import bbk_beam.mtRooms.revenue.dto.*;
 import bbk_beam.mtRooms.test_data.TestDBGenerator;
 import org.junit.After;
 import org.junit.Assert;
@@ -262,5 +259,17 @@ public class ReportCreatorTest {
         Assert.assertEquals((Double) 75.9375, invoice.customerBalance().getTotalCost());
         Assert.assertEquals((Double) 34., invoice.customerBalance().getTotalPaid());
         Assert.assertEquals((Double) (-41.9375), invoice.customerBalance().getBalance());
+    }
+
+    @Test
+    public void getPayments() throws Exception {
+        List<DetailedPayment> list = this.report_creator.getPayments(
+                this.token,
+                TimestampConverter.getDateObject("2018-02-09 00:00:00"),
+                TimestampConverter.getDateObject("2018-02-11 23:59:59")
+        );
+//        for( DetailedPayment payment : list )
+//            System.out.println(payment);
+        Assert.assertEquals(3, list.size());
     }
 }

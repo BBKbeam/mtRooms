@@ -16,6 +16,7 @@ import bbk_beam.mtRooms.ui.model.administration.DiscountItem;
 import bbk_beam.mtRooms.ui.model.administration.DiscountList;
 import eadjlib.logger.Logger;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
@@ -185,11 +186,13 @@ public class MembershipController implements Initializable {
         return Optional.ofNullable(this.membership);
     }
 
+    @FXML
     public void handleCancelAction(ActionEvent actionEvent) {
         this.membership = null;
         cancelButton.getScene().getWindow().hide();
     }
 
+    @FXML
     public void handleSaveAction(ActionEvent actionEvent) {
         if (this.fieldValidator.check()) {
             if (addMembership()) {
@@ -206,6 +209,7 @@ public class MembershipController implements Initializable {
         }
     }
 
+    @FXML
     public void handleNewDiscountAction(ActionEvent actionEvent) {
         showDiscountDialog();
     }

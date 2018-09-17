@@ -4,16 +4,21 @@ import bbk_beam.mtRooms.admin.dto.Account;
 import bbk_beam.mtRooms.admin.dto.AccountType;
 import javafx.beans.property.*;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class UserAccountItem {
-    private IntegerProperty id;
-    private StringProperty username;
-    private ObjectProperty<Date> created;
-    private ObjectProperty<Date> last_login;
-    private ObjectProperty<Date> last_pwd_change;
-    private ObjectProperty<AccountType> accountType;
-    private BooleanProperty is_active;
+    static private final String CHECK = "\u2713";
+    static private final String CROSS = "\u274C";
+    static private final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY/MM/dd - HH:mm:ss");
+    private Account account;
+    private IntegerProperty id = new SimpleIntegerProperty();
+    private StringProperty username = new SimpleStringProperty();
+    private StringProperty created = new SimpleStringProperty();
+    private StringProperty last_login = new SimpleStringProperty();
+    private StringProperty last_pwd_change = new SimpleStringProperty();
+    private ObjectProperty<AccountType> accountType = new SimpleObjectProperty<>();
+    private StringProperty is_active = new SimpleStringProperty();
 
     /**
      * Constructor
@@ -21,13 +26,14 @@ public class UserAccountItem {
      * @param account Account DTO from backend services
      */
     public UserAccountItem(Account account) {
-        this.id = new SimpleIntegerProperty(account.id());
-        this.username = new SimpleStringProperty(account.username());
-        this.created = new SimpleObjectProperty<>(account.created());
-        this.last_login = new SimpleObjectProperty<>(account.lastLogin());
-        this.last_pwd_change = new SimpleObjectProperty<>(account.lastPwdChange());
-        this.accountType = new SimpleObjectProperty<>(account.type());
-        this.is_active = new SimpleBooleanProperty(account.isActive());
+        this.account = account;
+        this.id.set(account.id());
+        this.username.set(account.username());
+        this.created.set(dateFormat.format(account.created()));
+        this.last_login.set(dateFormat.format(account.lastLogin()));
+        this.last_pwd_change.set(dateFormat.format(account.lastPwdChange()));
+        this.accountType.set(account.type());
+        this.is_active.set(account.isActive() ? CHECK : CROSS);
     }
 
     /**
@@ -42,13 +48,14 @@ public class UserAccountItem {
      * @param is_active       Active account flag
      */
     public UserAccountItem(Integer id, String username, Date created, Date last_login, Date last_pwd_change, AccountType type, boolean is_active) {
-        this.id = new SimpleIntegerProperty(id);
-        this.username = new SimpleStringProperty(username);
-        this.created = new SimpleObjectProperty<>(created);
-        this.last_login = new SimpleObjectProperty<>(last_login);
-        this.last_pwd_change = new SimpleObjectProperty<>(last_pwd_change);
-        this.accountType = new SimpleObjectProperty<>(type);
-        this.is_active = new SimpleBooleanProperty(is_active);
+        this.account = new Account(id, username, created, last_login, last_pwd_change, type, is_active);
+        this.id.set(id);
+        this.username.set(username);
+        this.created.set(dateFormat.format(created));
+        this.last_login.set(dateFormat.format(last_login));
+        this.last_pwd_change.set(dateFormat.format(last_pwd_change));
+        this.accountType.setValue(type);
+        this.is_active.set(is_active ? CHECK : CROSS);
     }
 
     /**
@@ -92,7 +99,7 @@ public class UserAccountItem {
      *
      * @return Creation date property
      */
-    public ObjectProperty<Date> createdProperty() {
+    public StringProperty createdProperty() {
         return created;
     }
 
@@ -101,7 +108,7 @@ public class UserAccountItem {
      *
      * @return Last login date property
      */
-    public ObjectProperty<Date> LastLoginProperty() {
+    public StringProperty LastLoginProperty() {
         return last_login;
     }
 
@@ -110,7 +117,7 @@ public class UserAccountItem {
      *
      * @return Last password change date property
      */
-    public ObjectProperty<Date> lastPwdChangeProperty() {
+    public StringProperty lastPwdChangeProperty() {
         return last_pwd_change;
     }
 
@@ -138,7 +145,7 @@ public class UserAccountItem {
      * @return Active status
      */
     public boolean isActive() {
-        return is_active.get();
+        return this.account.isActive();
     }
 
     /**
@@ -146,7 +153,7 @@ public class UserAccountItem {
      *
      * @return Active status property
      */
-    public BooleanProperty isActiveProperty() {
+    public StringProperty isActiveProperty() {
         return is_active;
     }
 }

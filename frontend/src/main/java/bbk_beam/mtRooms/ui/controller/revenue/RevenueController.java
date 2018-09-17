@@ -68,14 +68,6 @@ public class RevenueController implements Initializable {
     public TableColumn<SimpleCustomerBalanceModel, Double> cost_col;
     public TableColumn<SimpleCustomerBalanceModel, Double> paid_col;
     public TableColumn<SimpleCustomerBalanceModel, Double> balance_col;
-    //Occupancy Tab
-    public DatePicker occupancyFrom_DatePicker;
-    public DatePicker occupancyTo_DatePicker;
-    public Button showOccupancy_Button;
-    public ChoiceBox building_ChoiceBox;
-    public ChoiceBox floor_ChoiceBox;
-    public ChoiceBox room_ChoiceBox;
-    public ChoiceBox granularity_ChoiceBox;
 
     /**
      * Validate a DatePicker date
@@ -166,6 +158,10 @@ public class RevenueController implements Initializable {
         }
     }
 
+    private void loadOccupancyChart() { //TODO
+        log.log_Error("@loadOccupancyChart(): unimplemented");
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         this.resourceBundle = resources;
@@ -232,6 +228,7 @@ public class RevenueController implements Initializable {
             }
         });
         this.balance_col.setCellValueFactory(cellData -> cellData.getValue().balanceProperty().asObject());
+        //
     }
 
     /**
@@ -253,28 +250,8 @@ public class RevenueController implements Initializable {
     }
 
     @FXML
-    public void handleShowOccupancyAction(ActionEvent actionEvent) { //TODO
-        System.out.println("handleShowOccupancyAction");
-    }
-
-    @FXML
     public void handleShowPaymentsAction(ActionEvent actionEvent) {
         populateRevenuesTable();
-    }
-
-    @FXML
-    public void handleShowRevenueGraphOptionsAction(ActionEvent actionEvent) { //TODO
-        System.out.println("handleShowRevenueGraphOptionsAction");
-    }
-
-    @FXML
-    public void handleRevenuesZoomInAction(ActionEvent actionEvent) { //TODO
-        System.out.println("handleRevenuesZoomInAction");
-    }
-
-    @FXML
-    public void handleRevenuesZoomOutAction(ActionEvent actionEvent) { //TODO
-        System.out.println("handleRevenuesZoomOutAction");
     }
 
     @FXML

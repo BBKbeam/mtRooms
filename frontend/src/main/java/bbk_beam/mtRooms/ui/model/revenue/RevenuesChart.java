@@ -127,7 +127,6 @@ public class RevenuesChart {
             this.min_timestamp = data.get(0).timestamp();
             this.max_timestamp = data.get(data.size() - 1).timestamp();
             for (DetailedPayment payment : data) {
-                System.out.println(payment.timestamp());
                 addMethodData(payment.paymentMethod(), payment.amount());
                 addHourlyData(payment.timestamp(), payment.amount());
                 addWeekdayData(payment.timestamp(), payment.amount());

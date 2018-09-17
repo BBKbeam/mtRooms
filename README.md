@@ -18,10 +18,9 @@ __Note:__ _Under development_
     -  [ ] Reservation
         - [ ] Client account
         - [ ] Room Booking
-    - [ ] Revenue
+    - [x] Revenue
         - [x] Revenues charts
         - [x] Customer balances
-        - [ ] Occupancy 
     - [x] Logistics
 - [x] Backend (server)
 
